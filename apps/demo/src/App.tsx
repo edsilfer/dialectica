@@ -1,6 +1,5 @@
 import { DiffViewer, DiffParserAdapter } from '@diff-viewer'
 
-
 export const SAMPLE_DIFF = `
 diff --git a/foo.ts b/foo.ts
 index 0000000..3b18e9a 100644

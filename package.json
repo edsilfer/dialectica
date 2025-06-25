@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "build": "pnpm --filter @diff-viewer build",
+    "build:watch": "pnpm --filter @diff-viewer build:watch",
     "demo": "pnpm --filter demo dev",
     "format": "prettier . --write",
     "test": "pnpm -r test",

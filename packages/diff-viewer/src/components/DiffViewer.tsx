@@ -1,5 +1,14 @@
 import React from 'react'
 import type { ParsedDiff, DiffLine } from '../types/diff'
+import FileViewer from './FileViewer'
+import { css } from '@emotion/react'
+
+const useStyles = () => ({
+  container: css`
+    display: flex;
+    flex-direction: column;
+  `,
+})
 
 export type DiffViewerProps = {
   // Configuration__________________________________________________
@@ -18,9 +27,13 @@ export type DiffViewerProps = {
 }
 
 export const DiffViewer: React.FC<DiffViewerProps> = ({ diff, mode }) => {
+  const styles = useStyles()
+
   return (
-    <div className={`diff-viewer diff-viewer--${mode}`}>
-      Hello World!
+    <div css={styles.container}>
+      {diff.files.map((file, index) => (
+        <FileViewer key={index} file={file} />
+      ))}
     </div>
   )
 }
