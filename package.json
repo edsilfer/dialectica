@@ -1,0 +1,31 @@
+{
+  "name": "diff-viewer",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "pnpm --filter @diff-viewer build",
+    "demo": "pnpm --filter demo dev",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier . --write",
+    "lint": "pnpm dlx eslint . --ext .ts,.tsx",
+    "lint:fix": "pnpm dlx eslint . --ext .ts,.tsx --fix && pnpm format"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.12.3",
+  "devDependencies": {
+    "@eslint/js": "^9.29.0",
+    "@typescript-eslint/eslint-plugin": "^8.35.0",
+    "@typescript-eslint/parser": "^8.35.0",
+    "@typescript-eslint/utils": "^8.35.0",
+    "eslint": "^9.29.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "prettier": "^3.6.1",
+    "typescript-eslint": "^8.35.0"
+  }
+}
