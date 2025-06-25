@@ -72,7 +72,6 @@ Run from the root directory:
 
 ### Parsing Layer
 
-- [ ] Define `IDiffParser` interface with method `parse(diff: string): ParsedDiff`
 - [ ] Implement adapter for `diffparser` to conform to `IDiffParser`
 - [ ] Normalize `diffparser` output to internal IR model
 - [ ] Add toggle to strip or ignore whitespace-only changes

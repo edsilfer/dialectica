@@ -4,7 +4,8 @@
     "outDir": "dist",
     "declaration": true,
     "declarationDir": "dist/types",
-    "emitDeclarationOnly": true
+    "emitDeclarationOnly": true,
+    "typeRoots": ["src/types", "node_modules/@types"]
   },
   "include": ["src"]
 }

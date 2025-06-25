@@ -7,8 +7,10 @@
   "scripts": {
     "build": "pnpm --filter @diff-viewer build",
     "demo": "pnpm --filter demo dev",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier . --write",
+    "test": "pnpm -r test",
+    "test:packages": "pnpm --filter './packages/**' test",
+    "test:apps": "pnpm --filter './apps/**' test",
     "lint": "pnpm dlx eslint . --ext .ts,.tsx",
     "lint:fix": "pnpm dlx eslint . --ext .ts,.tsx --fix && pnpm format"
   },
