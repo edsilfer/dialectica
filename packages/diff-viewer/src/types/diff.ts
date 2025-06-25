@@ -72,3 +72,17 @@ export interface DeleteLine extends BaseLine {
   /** The type of line, which is 'delete' for deleted lines. */
   type: 'delete'
 }
+
+export type DisplayFormat = 'unified' | 'split'
+
+/** Configuration options for how the diff should be displayed */
+export interface DisplayConfig {
+  /** The mode to display the diff in. */
+  mode: DisplayFormat
+  /** Whether to highlight the syntax of the diff. */
+  highlightSyntax?: boolean
+  /** Whether to show line numbers in the diff. */
+  showLineNumbers?: boolean
+  /** Whether to ignore whitespace in the diff. */
+  ignoreWhitespace?: boolean
+}

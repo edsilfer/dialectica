@@ -70,51 +70,22 @@ Run from the root directory:
 
 ## TODO (By Layer)
 
-### Parsing Layer
-
-- [ ] Implement adapter for `diffparser` to conform to `IDiffParser`
-- [ ] Normalize `diffparser` output to internal IR model
-- [ ] Add toggle to strip or ignore whitespace-only changes
-- [ ] Write unit tests for parsing edge cases
-- [ ] Add fallback for diff headers and metadata like file names, modes, renames
-
-### Intermediate Representation
-
-- [ ] Define core types: `ParsedDiff`, `FileDiff`, `Hunk`, `DiffLine`
-- [ ] Add utilities to detect line types (added, deleted, unchanged)
-- [ ] Create optional diff-enrichment pipeline (e.g., mark lines for coverage or linting)
-- [ ] (Optional) Add support for inline character/word diffs
-
 ### Rendering Layer
 
-- [ ] Base React component: `<DiffViewer />`
-- [ ] Accept props: `mode`, `onLineClick`, `highlightSyntax`, `ignoreWhitespace`, `metadata`
-- [ ] Implement virtualized line rendering (using React Virtual or React Window)
-- [ ] Render syntax-highlighted lines with Shiki or fallback highlighter
-- [ ] Style additions, deletions, unchanged lines with scoped classes
-- [ ] Implement both unified and side-by-side layouts
-
-### Interactivity Layer
-
-- [ ] Register line click and hover events
-- [ ] Add ability to attach comments or metadata to lines
-- [ ] Enable external metadata injection (e.g., coverage, review notes)
-- [ ] Add line/column coordinate tracking for integrations
-
-### Utilities and Styling
-
-- [ ] Define CSS tokens for themes (light/dark)
-- [ ] Expose custom class hooks for user theming
-- [ ] Add basic layout tokens (gutter width, line number width)
-- [ ] Provide utility to format diff metadata (file headers, file status)
+- [ ] P0 - Add support for multiple themes (light, dark, etc)
+- [ ] P0 - Implement proper highlighting for partial changes in a line
+- [ ] P0 - Implement the split view
+- [ ] P0 - Add support for ignoring whitespaces
+- [ ] P0 - Add support for rendering inline comments
+- [ ] P1 - Add small toast below the copy button
+- [ ] P1 - Improve buttons to expand / collapse + copy file name
+- [ ] P2 - (Optimization) support virtual rows
+- [ ] P2 - (Optimization) do not load very large diffs
 
 ## Future Considerations
 
-- Support WASM-based parser (Rust, etc.) behind same interface
-- Support inline commenting components
-- Add file folding and hunk collapsing
+- Add support for expanding hunks with more context
 - Add support for blame and annotations
-- Export raw IR for other use cases (e.g., custom renderers or analyzers)
 
 ## License
 

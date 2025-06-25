@@ -39,10 +39,12 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
+    "@ant-design/colors": "^7.2.1",
     "@ant-design/icons": "^6.0.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "antd": "^5.26.2",
-    "diffparser": "^2.0.1"
+    "diffparser": "^2.0.1",
+    "highlight.js": "^11.11.1"
   }
 }

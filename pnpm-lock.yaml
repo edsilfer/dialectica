@@ -46,6 +46,12 @@ importers:
       '@emotion/react':
         specifier: ^11.14.0
         version: 11.14.0(@types/react@19.1.8)(react@19.1.0)
+      '@emotion/styled':
+        specifier: ^11.14.0
+        version: 11.14.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0)
+      antd:
+        specifier: ^5.26.2
+        version: 5.26.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react:
         specifier: ^19.1.0
         version: 19.1.0
@@ -77,6 +83,9 @@ importers:
 
   packages/diff-viewer:
     dependencies:
+      '@ant-design/colors':
+        specifier: ^7.2.1
+        version: 7.2.1
       '@ant-design/icons':
         specifier: ^6.0.0
         version: 6.0.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -92,6 +101,9 @@ importers:
       diffparser:
         specifier: ^2.0.1
         version: 2.0.1
+      highlight.js:
+        specifier: ^11.11.1
+        version: 11.11.1
     devDependencies:
       '@types/react':
         specifier: ^19.1.8
@@ -2241,6 +2253,13 @@ packages:
         integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==,
       }
     engines: { node: '>= 0.4' }
+
+  highlight.js@11.11.1:
+    resolution:
+      {
+        integrity: sha512-Xwwo44whKBVCYoliBQwaPvtd/2tYFkRQtXDWj1nackaV2JPXx3L0+Jvd8/qCJ2p+ML0/XVkJ2q+Mr+UVdpJK5w==,
+      }
+    engines: { node: '>=12.0.0' }
 
   hoist-non-react-statics@3.3.2:
     resolution:
@@ -5587,6 +5606,8 @@ snapshots:
   hasown@2.0.2:
     dependencies:
       function-bind: 1.1.2
+
+  highlight.js@11.11.1: {}
 
   hoist-non-react-statics@3.3.2:
     dependencies:
