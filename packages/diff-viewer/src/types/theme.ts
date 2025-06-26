@@ -4,10 +4,20 @@ export interface ColorTokens {
   borderBg: string
   /** The primary text color */
   textPrimary: string
+  /** The background color of the tooltip */
+  tooltipBg: string
+  /** The text color of the tooltip */
+  tooltipText: string
 
   // File Diff Viewer Tokens_____________________________
   /** The background color of the file diff header */
   fileViewerHeaderBg: string
+  /** The background color of the added square */
+  addedSquareBg: string
+  /** The background color of the deleted square */
+  deletedSquareBg: string
+  /** The background color of the neutral square */
+  neutralSquareBg: string
 
   // Hunk Diff Viewer Tokens_____________________________
   /** The background color of the hunk viewer (code block) */

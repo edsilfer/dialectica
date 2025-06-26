@@ -1,4 +1,3 @@
-import { CopyOutlined, DownOutlined } from '@ant-design/icons'
 import { css } from '@emotion/react'
 import { Typography, Checkbox, Alert } from 'antd'
 import React, { useContext, useMemo, useState } from 'react'
@@ -6,6 +5,9 @@ import type { FileDiff, DisplayConfig } from '../types/diff'
 import UnifiedHunkViewer from './UnifiedHunkViewer'
 import { detectLanguage } from '../parsers/code-utils'
 import { ThemeContext } from '../providers/theme-provider.js'
+import CopyButton from './buttons/CopyButton'
+import ExpandButton from './buttons/ExpandButton'
+import FileActivitySummary from './FileActivitySummary'
 
 const { Text } = Typography
 
@@ -21,9 +23,10 @@ const useStyles = () => {
     `,
     header: css`
       display: flex;
+      flex-direction: row;
       gap: ${theme.spacing.xs};
       align-items: center;
-      padding: ${theme.spacing.xs};
+      padding: ${theme.spacing.sm};
       color: ${theme.colors.textPrimary};
       font-family: ${theme.typography.codeFontFamily};
       border-bottom: 1px solid ${theme.colors.borderBg};
@@ -32,17 +35,6 @@ const useStyles = () => {
       .file-path {
         color: ${theme.colors.textPrimary};
       }
-    `,
-    copyIcon: css`
-      cursor: pointer;
-      font-size: 14px;
-      color: ${theme.colors.textPrimary};
-    `,
-    toggleHunk: (collapsed: boolean) => css`
-      font-size: 10px;
-      color: ${theme.colors.textPrimary};
-      transform: ${collapsed ? 'rotate(-90deg)' : 'rotate(0deg)'};
-      transition: transform 0.2s ease-in-out;
     `,
     viewedCheckbox: css`
       margin-left: auto;
@@ -70,14 +62,16 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, config }) => {
   const [collapsed, setCollapsed] = useState(false)
   const [viewed, setViewed] = useState(false)
   const language = useMemo(() => detectLanguage(file.newPath, ''), [file.newPath])
+  const filePath = useMemo(
+    () => (file.oldPath === file.newPath ? file.newPath : `${file.oldPath} → ${file.newPath}`),
+    [file.oldPath, file.newPath],
+  )
 
   const handleToggleCollapse = () => {
     setCollapsed(!collapsed)
   }
 
   const handleCopyFilePath = () => {
-    const isRenamed = file.oldPath !== file.newPath
-    const filePath = isRenamed ? `${file.oldPath} → ${file.newPath}` : file.newPath
     navigator.clipboard.writeText(filePath).catch((error) => {
       console.error(error)
     })
@@ -93,11 +87,14 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, config }) => {
   return (
     <div css={styles.container}>
       <div css={styles.header}>
-        <DownOutlined css={styles.toggleHunk(collapsed)} onClick={handleToggleCollapse} />
-        <Text className="file-path">
-          {file.oldPath === file.newPath ? file.newPath : `${file.oldPath} → ${file.newPath}`}
-        </Text>
-        <CopyOutlined css={styles.copyIcon} onClick={handleCopyFilePath} />
+        <ExpandButton collapsed={collapsed} size={16} onClick={handleToggleCollapse} />
+        <FileActivitySummary file={file} />
+        <Text className="file-path">{filePath}</Text>
+        <CopyButton
+          onClick={handleCopyFilePath}
+          tooltip="Copy file path"
+          toastText="File path copied to clipboard"
+        />
         <Checkbox
           css={styles.viewedCheckbox}
           checked={viewed}

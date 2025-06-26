@@ -4,7 +4,7 @@ import type { DiffLine, DisplayConfig, Hunk } from '../types/diff'
 import hljs from 'highlight.js/lib/common'
 import 'highlight.js/styles/github.css'
 import { ThemeContext } from '../providers/theme-provider.js'
-import AddButton from './AddButton.js'
+import AddButton from './buttons/AddButton'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
