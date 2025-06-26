@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import type { ParsedDiff, DiffLine, DisplayConfig } from '../types/diff'
-import FileViewer from './FileViewer'
+import FileViewer from './file-viewer/FileViewer'
 import { Interpolation, Theme, css } from '@emotion/react'
 import { DiffViewerThemeProvider, ThemeContext } from '../providers/theme-provider'
 import { ThemeTokens } from '../types/theme'

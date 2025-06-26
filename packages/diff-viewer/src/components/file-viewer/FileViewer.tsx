@@ -1,12 +1,12 @@
 import { css } from '@emotion/react'
 import { Typography, Checkbox, Alert } from 'antd'
 import React, { useContext, useMemo, useState } from 'react'
-import type { FileDiff, DisplayConfig } from '../types/diff'
-import UnifiedHunkViewer from './UnifiedHunkViewer'
-import { detectLanguage } from '../parsers/code-utils'
-import { ThemeContext } from '../providers/theme-provider.js'
-import CopyButton from './buttons/CopyButton'
-import ExpandButton from './buttons/ExpandButton'
+import type { FileDiff, DisplayConfig } from '../../types/diff'
+import UnifiedHunkViewer from '../hunk/UnifiedHunkViewer'
+import { detectLanguage } from '../../parsers/code-utils'
+import { ThemeContext } from '../../providers/theme-provider.js'
+import CopyButton from './CopyButton'
+import ExpandButton from './ExpandButton'
 import FileActivitySummary from './FileActivitySummary'
 
 const { Text } = Typography
