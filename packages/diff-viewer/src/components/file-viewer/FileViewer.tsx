@@ -1,13 +1,21 @@
 import { css } from '@emotion/react'
-import { Typography, Checkbox, Alert } from 'antd'
+import { Typography, Checkbox } from 'antd'
 import React, { useContext, useMemo, useState } from 'react'
 import type { FileDiff, DisplayConfig } from '../../types/diff'
-import UnifiedHunkViewer from '../hunk/UnifiedHunkViewer'
+import UnifiedViewer from '../line-viewer/UnifiedViewer'
+import SplitedViewer from '../line-viewer/SplitedViewer'
 import { detectLanguage } from '../../parsers/code-utils'
 import { ThemeContext } from '../../providers/theme-provider.js'
 import CopyButton from './CopyButton'
 import ExpandButton from './ExpandButton'
 import FileActivitySummary from './FileActivitySummary'
+import {
+  buildSplitHunkPairs,
+  LineWithHighlight,
+  SplitLinePair,
+  highlightContent,
+  escapeHtml,
+} from '../line-viewer/line-utils'
 
 const { Text } = Typography
 
@@ -44,9 +52,6 @@ const useStyles = () => {
       display: flex;
       flex-direction: column;
     `,
-    alert: css`
-      margin: ${theme.spacing.md};
-    `,
   }
 }
 
@@ -65,6 +70,35 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, config }) => {
   const filePath = useMemo(
     () => (file.oldPath === file.newPath ? file.newPath : `${file.oldPath} → ${file.newPath}`),
     [file.oldPath, file.newPath],
+  )
+
+  // Pre-compute flattened line arrays for both display modes so we can directly
+  // pass them to the corresponding viewer components. The expensive work is
+  // memoised and will only run when the hunks or the detected language change.
+  const unifiedLines = useMemo<LineWithHighlight[]>(() => {
+    return file.hunks.flatMap((hunk) => {
+      const headerLine: LineWithHighlight = {
+        type: 'hunk',
+        content: escapeHtml(hunk.content),
+        highlightedContent: escapeHtml(hunk.content),
+        lineNumberOld: null,
+        lineNumberNew: null,
+      }
+
+      const contentLines: LineWithHighlight[] = hunk.changes
+        .filter((line) => line.content.trim() !== '')
+        .map((line) => ({
+          ...line,
+          highlightedContent: highlightContent(line.content, language),
+        })) as unknown as LineWithHighlight[]
+
+      return [headerLine, ...contentLines]
+    })
+  }, [file.hunks, language])
+
+  const splitPairs = useMemo<SplitLinePair[]>(
+    () => file.hunks.flatMap((hunk) => buildSplitHunkPairs(hunk, language)),
+    [file.hunks, language],
   )
 
   const handleToggleCollapse = () => {
@@ -105,20 +139,14 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, config }) => {
       </div>
 
       {!collapsed && config.mode === 'split' && (
-        <Alert
-          css={styles.alert}
-          message="Split mode is not yet implemented"
-          description="Please use unified mode to view the diff."
-          type="error"
-          showIcon
-        />
+        <div css={styles.hunksContainer}>
+          <SplitedViewer pairs={splitPairs} config={config} />
+        </div>
       )}
 
       {!collapsed && config.mode === 'unified' && (
         <div css={styles.hunksContainer}>
-          {file.hunks.map((hunk, index) => (
-            <UnifiedHunkViewer key={index} hunk={hunk} config={config} language={language} />
-          ))}
+          <UnifiedViewer lines={unifiedLines} config={config} />
         </div>
       )}
     </div>

@@ -1,6 +1,6 @@
 import { DiffParserAdapter, DiffViewer, Themes, ThemeTokens } from '@diff-viewer'
 import { css } from '@emotion/react'
-import { Select, Typography } from 'antd'
+import { Select, Switch, Typography } from 'antd'
 import { useState } from 'react'
 import { SAMPLE_DIFF } from './__fixtures__/sample-diffs'
 
@@ -41,6 +41,16 @@ const useStyles = (theme: ThemeTokens) => {
         color: ${theme.colors.textPrimary} !important;
       }
     `,
+    switchContainer: css`
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: ${theme.spacing.sm};
+      margin-top: ${theme.spacing.sm};
+    `,
+    switchLabel: css`
+      color: ${theme.colors.textPrimary} !important;
+    `,
     diffViewer: css`
       margin-top: ${theme.spacing.md};
     `,
@@ -49,6 +59,7 @@ const useStyles = (theme: ThemeTokens) => {
 
 export default function App() {
   const [selectedTheme, setSelectedTheme] = useState(Themes.light)
+  const [isSplitView, setIsSplitView] = useState(false)
   const styles = useStyles(selectedTheme)
   const parser = new DiffParserAdapter()
   const parsedDiff = parser.parse(SAMPLE_DIFF)
@@ -58,7 +69,7 @@ export default function App() {
       <div css={styles.horizontalContainer}>
         <div css={styles.verticalContainer}>
           <Title level={2} css={styles.headers}>
-            A Better Code Reviewer Tool
+            Awesome Diff Viewer
           </Title>
           <Text css={styles.headers}>
             Demo app for the <code>DiffViewer</code> component.
@@ -78,13 +89,17 @@ export default function App() {
               { value: 'solarizedLight', label: 'Solarized Light' },
             ]}
           />
+          <div css={styles.switchContainer}>
+            <Text css={styles.switchLabel}>Split View</Text>
+            <Switch checked={isSplitView} onChange={setIsSplitView} size="small" />
+          </div>
         </div>
       </div>
 
       <DiffViewer
         css={styles.diffViewer}
         diff={parsedDiff}
-        displayConfig={{ mode: 'unified', showLineNumbers: true }}
+        displayConfig={{ mode: isSplitView ? 'split' : 'unified', showLineNumbers: true }}
         theme={selectedTheme}
       />
     </div>
