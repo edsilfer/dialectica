@@ -8,3 +8,4 @@
 
 export * from './components/DiffViewer'
 export * from './parsers/DiffParserAdapter'
+export * from './themes'

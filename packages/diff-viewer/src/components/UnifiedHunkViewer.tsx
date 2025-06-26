@@ -1,31 +1,32 @@
 import { css } from '@emotion/react'
-import { theme } from 'antd'
-import React, { useMemo, useState } from 'react'
+import React, { useContext, useMemo, useState } from 'react'
 import type { DiffLine, DisplayConfig, Hunk } from '../types/diff'
-import { green, red } from '@ant-design/colors'
-import { PlusOutlined } from '@ant-design/icons'
 import hljs from 'highlight.js/lib/common'
 import 'highlight.js/styles/github.css'
+import { ThemeContext } from '../providers/theme-provider.js'
+import AddButton from './AddButton.js'
 
 const useStyles = () => {
-  const { token } = theme.useToken()
+  const theme = useContext(ThemeContext)
 
   const baseLine = css`
     display: flex;
     align-items: center;
-    line-height: 1.6;
+    line-height: ${theme.typography.codeLineHeight};
+    color: ${theme.colors.textPrimary};
   `
 
   return {
     container: css`
       display: flex;
       flex-direction: column;
+      background-color: ${theme.colors.hunkViewerBg};
     `,
 
     hunkHeader: [
       baseLine,
       css`
-        background-color: ${token.colorFillQuaternary};
+        background-color: ${theme.colors.lineHunkBg};
         line-height: 2rem;
       `,
     ],
@@ -34,9 +35,9 @@ const useStyles = () => {
       let backgroundColor = 'transparent'
 
       if (type === 'add') {
-        backgroundColor = green[1]
+        backgroundColor = theme.colors.lineAddedBg
       } else if (type === 'delete') {
-        backgroundColor = red[1]
+        backgroundColor = theme.colors.lineRemovedBg
       }
 
       return [
@@ -54,34 +55,24 @@ const useStyles = () => {
       flex-direction: row;
       min-width: 75px;
       justify-content: flex-end;
-      gap: ${token.paddingSM}px;
-      padding: 0 ${token.paddingXS}px;
-      border-right: 1px solid ${token.colorBorder};
+      gap: ${theme.spacing.sm};
+      padding-left: ${theme.spacing.xs};
+      padding-right: ${theme.spacing.md};
+      border-right: 1px solid ${theme.colors.borderBg};
     `,
 
     codeContainer: css`
-      padding-left: ${token.paddingXS}px;
+      padding-left: ${theme.spacing.xs};
       width: 100%;
-      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-      font-size: ${token.fontSizeSM}px;
+      font-family: ${theme.typography.codeFontFamily};
+      font-size: ${theme.typography.codeFontSize}px;
       white-space: pre-wrap;
     `,
 
-    addComment: css`
+    addButton: css`
       position: absolute;
-      left: 91px;
       transform: translateX(-50%);
-      width: 20px;
-      height: 20px;
-      background-color: ${token.colorPrimary};
-      color: white;
-      border: none;
-      border-radius: ${token.borderRadiusSM}px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
+      left: 95px;
     `,
   }
 }
@@ -106,9 +97,11 @@ const UnifiedHunkViewer: React.FC<UnifiedHunkViewerProps> = ({ hunk, config, lan
       case 'delete':
         return ' - '
       case 'context':
-        return ' '
+        // Keep the same spacing as the add/delete lines
+        return '   '
       default:
-        return ' '
+        // Keep the same spacing as the add/delete lines
+        return '   '
     }
   }
 
@@ -141,9 +134,10 @@ const UnifiedHunkViewer: React.FC<UnifiedHunkViewerProps> = ({ hunk, config, lan
             onMouseLeave={() => setHoveredLine(null)}
           >
             {isHovered && (
-              <button css={styles.addComment}>
-                <PlusOutlined />
-              </button>
+              <AddButton
+                css={styles.addButton}
+                onClick={() => console.log('Add comment clicked')}
+              />
             )}
 
             {config.showLineNumbers && (

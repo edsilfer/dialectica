@@ -1,50 +1,59 @@
 import { CopyOutlined, DownOutlined } from '@ant-design/icons'
 import { css } from '@emotion/react'
-import { theme, Typography, Checkbox, Alert } from 'antd'
-import React, { useMemo, useState } from 'react'
+import { Typography, Checkbox, Alert } from 'antd'
+import React, { useContext, useMemo, useState } from 'react'
 import type { FileDiff, DisplayConfig } from '../types/diff'
 import UnifiedHunkViewer from './UnifiedHunkViewer'
 import { detectLanguage } from '../parsers/code-utils'
+import { ThemeContext } from '../providers/theme-provider.js'
 
 const { Text } = Typography
 
 const useStyles = () => {
-  const { token } = theme.useToken()
+  const theme = useContext(ThemeContext)
 
   return {
     container: css`
       display: flex;
       flex-direction: column;
-      border: 1px solid ${token.colorBorder};
-      border-radius: ${token.borderRadius}px;
-      background-color: ${token.colorBgContainer};
+      border: 1px solid ${theme.colors.borderBg};
+      border-radius: ${theme.spacing.xs};
     `,
     header: css`
       display: flex;
-      gap: ${token.paddingXS}px;
-      padding: ${token.paddingXS}px;
-      border-bottom: 1px solid ${token.colorBorder};
-      background-color: #fafafa; // TODO: use theme color
+      gap: ${theme.spacing.xs};
+      align-items: center;
+      padding: ${theme.spacing.xs};
+      color: ${theme.colors.textPrimary};
+      font-family: ${theme.typography.codeFontFamily};
+      border-bottom: 1px solid ${theme.colors.borderBg};
+      background-color: ${theme.colors.fileViewerHeaderBg};
+
+      .file-path {
+        color: ${theme.colors.textPrimary};
+      }
     `,
     copyIcon: css`
       cursor: pointer;
       font-size: 14px;
+      color: ${theme.colors.textPrimary};
     `,
     toggleHunk: (collapsed: boolean) => css`
       font-size: 10px;
+      color: ${theme.colors.textPrimary};
       transform: ${collapsed ? 'rotate(-90deg)' : 'rotate(0deg)'};
       transition: transform 0.2s ease-in-out;
     `,
     viewedCheckbox: css`
       margin-left: auto;
+      color: ${theme.colors.textPrimary};
     `,
     hunksContainer: css`
       display: flex;
       flex-direction: column;
-      gap: ${token.paddingXS}px;
     `,
     alert: css`
-      margin: ${token.padding}px;
+      margin: ${theme.spacing.md};
     `,
   }
 }
@@ -85,7 +94,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, config }) => {
     <div css={styles.container}>
       <div css={styles.header}>
         <DownOutlined css={styles.toggleHunk(collapsed)} onClick={handleToggleCollapse} />
-        <Text code>
+        <Text className="file-path">
           {file.oldPath === file.newPath ? file.newPath : `${file.oldPath} → ${file.newPath}`}
         </Text>
         <CopyOutlined css={styles.copyIcon} onClick={handleCopyFilePath} />

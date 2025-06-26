@@ -1,19 +1,29 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import type { ParsedDiff, DiffLine, DisplayConfig } from '../types/diff'
 import FileViewer from './FileViewer'
 import { Interpolation, Theme, css } from '@emotion/react'
-import { theme } from 'antd'
+import { DiffViewerThemeProvider, ThemeContext } from '../providers/theme-provider'
+import { ThemeTokens } from '../types/theme'
+import { Themes } from '../themes'
 
 const useStyles = () => {
-  const { token } = theme.useToken()
+  const theme = useContext(ThemeContext)
 
   return {
     container: css`
       display: flex;
       flex-direction: column;
-      gap: ${token.paddingMD}px;
+      gap: ${theme.spacing.md};
     `,
   }
+}
+
+/** The default display configuration for the diff viewer. */
+const DEFAULT_DISPLAY_CONFIG: DisplayConfig = {
+  mode: 'unified',
+  highlightSyntax: false,
+  showLineNumbers: true,
+  ignoreWhitespace: false,
 }
 
 export type DiffViewerProps = {
@@ -21,28 +31,40 @@ export type DiffViewerProps = {
   diff: ParsedDiff
   /** Display configuration options. */
   displayConfig?: DisplayConfig
+  /** The theme for the viewer */
+  theme?: ThemeTokens
   /** Callback for when a line is clicked. */
   onLineClick?: (line: DiffLine) => void
-  /** Custom CSS class to apply to the component's root element. */
+  /** Kept to make typescript happy, but not used by emotion */
   css?: Interpolation<Theme>
+  /** The content of css will be hashed and passed here */
+  className?: string
 }
 
-export const DiffViewer: React.FC<DiffViewerProps> = ({
-  diff,
-  displayConfig = {
-    mode: 'unified',
-    highlightSyntax: false,
-    showLineNumbers: true,
-    ignoreWhitespace: false,
-  },
-  css: customCss,
-}) => {
+export const DiffViewer: React.FC<DiffViewerProps> = (props) => {
+  return (
+    <DiffViewerThemeProvider theme={props.theme || Themes.light}>
+      <Content
+        diff={props.diff}
+        displayConfig={props.displayConfig}
+        css={props.css}
+        className={props.className}
+      />
+    </DiffViewerThemeProvider>
+  )
+}
+
+const Content: React.FC<DiffViewerProps> = (props) => {
   const styles = useStyles()
 
   return (
-    <div css={[styles.container, customCss]}>
-      {diff.files.map((file, index) => (
-        <FileViewer key={index} file={file} config={displayConfig} />
+    <div css={[styles.container, props.css]} className={props.className}>
+      {props.diff.files.map((file, index) => (
+        <FileViewer
+          key={index}
+          file={file}
+          config={props.displayConfig || DEFAULT_DISPLAY_CONFIG}
+        />
       ))}
     </div>
   )
