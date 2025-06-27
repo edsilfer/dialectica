@@ -1,11 +1,11 @@
 import { css } from '@emotion/react'
 import { Typography, Checkbox } from 'antd'
 import React, { useContext, useMemo, useState } from 'react'
-import type { FileDiff, DisplayConfig } from '../../types/diff'
-import UnifiedViewer from '../line-viewer/UnifiedViewer'
-import SplitedViewer from '../line-viewer/SplitedViewer'
-import { detectLanguage } from '../../parsers/code-utils'
-import { ThemeContext } from '../../providers/theme-provider.js'
+import type { FileDiff, DisplayConfig } from '../../../types/diff'
+import UnifiedViewer from '../../line-viewer/UnifiedViewer'
+import SplitedViewer from '../../line-viewer/SplitedViewer'
+import { detectLanguage } from '../../../parsers/code-utils'
+import { ThemeContext } from '../../../providers/theme-provider.js'
 import CopyButton from './CopyButton'
 import ExpandButton from './ExpandButton'
 import FileActivitySummary from './FileActivitySummary'
@@ -15,7 +15,7 @@ import {
   SplitLinePair,
   highlightContent,
   escapeHtml,
-} from '../line-viewer/line-utils'
+} from '../../line-viewer/line-utils'
 
 const { Text } = Typography
 

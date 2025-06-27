@@ -1,8 +1,8 @@
 import React, { useContext, useMemo } from 'react'
 import { css } from '@emotion/react'
-import type { FileDiff } from '../../types/diff'
-import { ThemeContext } from '../../providers/theme-provider'
-import RichTooltip from '../shared/RichTooltip'
+import type { FileDiff } from '../../../types/diff'
+import { ThemeContext } from '../../../providers/theme-provider'
+import RichTooltip from '../../shared/RichTooltip'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)

@@ -11,6 +11,7 @@ const useStyles = (theme: ThemeTokens) => {
     mainContainer: css`
       display: flex;
       flex-direction: column;
+      height: 100vh;
       padding: ${theme.spacing.md};
       background-color: ${theme.colors.hunkViewerBg};
     `,

@@ -72,9 +72,8 @@ Run from the root directory:
 
 ### Rendering Layer
 
-- [ ] P0 - Add support for multiple themes (light, dark, etc)
+- [ ] P0 - Add support for file explorer
 - [ ] P0 - Implement proper highlighting for partial changes in a line
-- [ ] P0 - Implement the split view
 - [ ] P0 - Add support for ignoring whitespaces
 - [ ] P0 - Add support for rendering inline comments
 - [ ] P1 - Add small toast below the copy button

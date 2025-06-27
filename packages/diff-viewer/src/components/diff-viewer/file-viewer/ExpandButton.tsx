@@ -1,8 +1,8 @@
 import React, { useContext } from 'react'
 import { css } from '@emotion/react'
-import ChevronDown from '../../icons/ChevronDown'
-import { ThemeContext } from '../../providers/theme-provider'
-import RichTooltip from '../shared/RichTooltip'
+import ChevronDown from '../../../icons/ChevronDown'
+import { ThemeContext } from '../../../providers/theme-provider'
+import RichTooltip from '../../shared/RichTooltip'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
