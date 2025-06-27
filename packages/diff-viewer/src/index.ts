@@ -6,6 +6,7 @@
  * - Decouples the package's internal structure from its public interface.
  */
 
-export * from './components/diff-viewer/DiffViewer'
-export * from './parsers/DiffParserAdapter'
-export * from './themes'
+export * from './diff-viewer/DiffViewer'
+export * from './file-explorer/FileExplorer'
+export * from './diff-viewer/parsers/DiffParserAdapter'
+export * from './shared/themes'
