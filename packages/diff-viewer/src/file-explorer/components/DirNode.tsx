@@ -3,7 +3,8 @@ import { css } from '@emotion/react'
 import { sortNodes } from '../utils'
 import FileNode from './FileNode'
 import { DirNodeProps } from './types'
-import DirectoryRow from './DirectoryRow'
+import FSNode from './FSNode'
+import ExpandButton from '../../diff-viewer/file-viewer/ExpandButton'
 
 const useStyles = () => {
   return {
@@ -20,19 +21,26 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
 
   return (
     <div key={currentPath} css={styles.wrapper}>
-      <DirectoryRow
-        currentPath={currentPath}
-        collapsed={collapsed}
+      <FSNode
+        config={props.config}
         level={props.level}
         isLast={props.isLast}
-        config={props.config}
-        displayName={props.node.name || (props.parentPath === '' ? '/' : '')}
         isSelected={props.isSelected}
         className={props.className}
-        onDirectoryToggle={props.onDirectoryToggle}
-        cssProp={props.css}
+        onClick={() => props.onDirectoryToggle?.(currentPath, collapsed)}
+        rowPaddingLeftExtra={props.level * props.config.indentPx + 6}
+        verticalConnectorTop={-10}
+        displayName={props.node.name || (props.parentPath === '' ? '/' : '')}
         highlightString={props.highlightString}
-      />
+        css={props.css}
+      >
+        <ExpandButton
+          collapsed={collapsed}
+          size={14}
+          tooltipTextExpand="Expand directory"
+          tooltipTextCollapse="Collapse directory"
+        />
+      </FSNode>
 
       {!collapsed &&
         Array.from(props.node.children.values())

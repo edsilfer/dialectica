@@ -23,6 +23,7 @@ const useStyles = () => {
       color: ${theme.colors.textPrimary};
       font-family: ${theme.typography.regularFontFamily};
       font-size: ${theme.typography.regularFontSize}px;
+      overflow: hidden;
     `,
 
     // Didn't work via token override in the theme provider
@@ -30,6 +31,11 @@ const useStyles = () => {
       .ant-input-search-button .ant-btn-icon svg {
         color: ${theme.colors.placeholderText};
       }
+    `,
+
+    fsTreeContainer: css`
+      overflow: auto;
+      flex: 1;
     `,
   }
 }
@@ -167,47 +173,49 @@ const FileExplorerContent: React.FC<FileExplorerProps> = ({
         css={styles.search}
       />
 
-      {Array.from(tree.children.values())
-        .sort(sortNodes)
-        .map((node, idx, arr) => {
-          const isLast = idx === arr.length - 1
+      <div css={styles.fsTreeContainer}>
+        {Array.from(tree.children.values())
+          .sort(sortNodes)
+          .map((node, idx, arr) => {
+            const isLast = idx === arr.length - 1
 
-          if (node.type === 'file') {
-            const filePath = node.file.newPath || node.file.oldPath
+            if (node.type === 'file') {
+              const filePath = node.file.newPath || node.file.oldPath
+              return (
+                <FileNode
+                  key={node.name}
+                  config={config}
+                  node={node}
+                  level={0}
+                  isLast={isLast}
+                  parentPath=""
+                  isSelected={isNodeSelected(filePath)}
+                  onFileClick={handleFileClick}
+                  highlightString={searchText}
+                />
+              )
+            }
+
+            const dirPath = node.name
             return (
-              <FileNode
+              <DirNode
                 key={node.name}
                 config={config}
                 node={node}
                 level={0}
                 isLast={isLast}
                 parentPath=""
-                isSelected={isNodeSelected(filePath)}
+                expandedDirs={effectiveExpandedDirs}
+                isSelected={isNodeSelected(dirPath)}
+                selectedNode={selectedNode}
+                isNodeSelected={isNodeSelected}
                 onFileClick={handleFileClick}
+                onDirectoryToggle={handleDirectoryClick}
                 highlightString={searchText}
               />
             )
-          }
-
-          const dirPath = node.name
-          return (
-            <DirNode
-              key={node.name}
-              config={config}
-              node={node}
-              level={0}
-              isLast={isLast}
-              parentPath=""
-              expandedDirs={effectiveExpandedDirs}
-              isSelected={isNodeSelected(dirPath)}
-              selectedNode={selectedNode}
-              isNodeSelected={isNodeSelected}
-              onFileClick={handleFileClick}
-              onDirectoryToggle={handleDirectoryClick}
-              highlightString={searchText}
-            />
-          )
-        })}
+          })}
+      </div>
     </div>
   )
 }

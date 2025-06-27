@@ -16,6 +16,8 @@ export interface FSNodeProps {
   level: number
   /** Whether this node is the last in its parent directory */
   isLast: boolean
+  /** The display name of the directory */
+  displayName: string
   /** Whether this node is selected */
   isSelected?: boolean
   /** Extra padding (in px) added to the default indentation */
@@ -26,6 +28,8 @@ export interface FSNodeProps {
   css?: Interpolation<Theme>
   /** Optional class name */
   className?: string
+  /** Optional string to highlight in the display name */
+  highlightString?: string
   /** Row content */
   children: React.ReactNode
 
@@ -65,33 +69,6 @@ export interface DirNodeProps {
   onFileClick?: (file: FileDiff) => void
   /** Called when a directory entry is toggled */
   onDirectoryToggle?: (path: string, expanded: boolean) => void
-}
-
-export interface DirRowProps {
-  /** The current path of the directory */
-  currentPath: string
-  /** Whether the directory is collapsed */
-  collapsed: boolean
-  /** The nesting level of this node */
-  level: number
-  /** Whether this node is the last in its parent directory */
-  isLast: boolean
-  /** The display name of the directory */
-  displayName: string
-  /** Configuration options for the file explorer */
-  config: FileExplorerConfig
-  /** Whether this node is selected */
-  isSelected?: boolean
-  /** Optional string to highlight in the display name */
-  highlightString?: string
-
-  // Callbacks ____________________________________________
-  /** Optional css-in-js style */
-  cssProp?: Interpolation<Theme>
-  /** Optional class name */
-  className?: string
-  /** Called when a directory entry is toggled */
-  onDirectoryToggle?: (path: string, collapsed: boolean) => void
 }
 
 export interface FileNodeProps {

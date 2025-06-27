@@ -3,6 +3,7 @@ import React, { useContext } from 'react'
 import { ThemeContext } from '../../shared/providers/theme-provider'
 import type { FileExplorerConfig } from '../types'
 import { FSNodeProps } from './types'
+import { highlightText } from '../utils'
 
 const useStyles = (config: FileExplorerConfig) => {
   const theme = useContext(ThemeContext)
@@ -18,6 +19,13 @@ const useStyles = (config: FileExplorerConfig) => {
       cursor: pointer;
       position: relative;
       color: ${theme.colors.textPrimary};
+
+      .highlighted-text {
+        background-color: ${theme.colors.textPrimary}20;
+        border: 1px solid ${theme.colors.textPrimary}40;
+        border-radius: 2px;
+        padding: 1px 2px;
+      }
 
       ${isSelected
         ? `
@@ -83,6 +91,9 @@ const FSNode: React.FC<FSNodeProps> = (props) => {
 
       {/* Row content */}
       {props.children}
+
+      {/* Node name */}
+      <span>{highlightText(props.displayName, props.highlightString || '')}</span>
     </div>
   )
 }
