@@ -8,14 +8,34 @@ const useStyles = (config: FileExplorerConfig) => {
   const theme = useContext(ThemeContext)
 
   return {
-    row: css`
+    row: (isSelected?: boolean) => css`
       display: flex;
       flex-direction: row;
       padding: ${theme.spacing.xs};
+      padding-left: ${theme.spacing.sm};
       align-items: center;
       user-select: none;
       cursor: pointer;
       position: relative;
+
+      ${isSelected
+        ? `
+        border-radius: ${theme.spacing.sm};
+        background-color: ${theme.colors.fileViewerHeaderBg};
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 5px;
+          height: 100%;
+          background-color: ${theme.colors.accentColor};
+          border-radius: ${theme.spacing.sm} 0 0 ${theme.spacing.sm};
+        }
+
+      `
+        : ''}
 
       &:hover {
         background-color: ${theme.colors.fileViewerHeaderBg};
@@ -25,16 +45,16 @@ const useStyles = (config: FileExplorerConfig) => {
     verticalConnector: (level: number) => css`
       position: absolute;
       border-left: 1px solid ${theme.colors.fileExplorerlineConnectorBg};
-      top: -5px;
+      top: -12px;
       height: 100%;
       z-index: 100;
-      left: ${level * config.indentPx + 6}px;
+      left: ${level * config.indentPx + 12}px;
     `,
 
     horizontalConnector: (level: number) => css`
       position: absolute;
       border-top: 1px solid ${theme.colors.fileExplorerlineConnectorBg};
-      left: ${(level - 1) * config.indentPx + 6}px;
+      left: ${(level - 1) * config.indentPx + 12}px;
       width: ${level > 0 ? config.indentPx - 6 : 0}px;
       z-index: 100;
     `,
@@ -65,7 +85,7 @@ const FileNode: React.FC<FileNodeProps> = (props) => {
   return (
     <div
       key={currentPath}
-      css={[styles.row, props.css]}
+      css={[styles.row(props.isSelected), props.css]}
       className={props.className}
       onClick={() => props.onFileClick?.(props.node.file)}
     >

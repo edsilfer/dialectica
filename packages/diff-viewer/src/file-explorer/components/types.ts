@@ -22,6 +22,12 @@ export interface DirNodeProps {
   parentPath: string
   /** Whether the parent directory is expanded */
   expandedDirs: Set<string>
+  /** Whether this node is selected */
+  isSelected?: boolean
+  /** The currently selected node path */
+  selectedNode?: string | null
+  /** Function to check if a node path is selected */
+  isNodeSelected?: (nodePath: string) => boolean
   /** Optional css-in-js style */
   css?: Interpolation<Theme>
   /** Optional class name */
@@ -47,6 +53,8 @@ export interface DirRowProps {
   displayName: string
   /** Configuration options for the file explorer */
   config: FileExplorerConfig
+  /** Whether this node is selected */
+  isSelected?: boolean
 
   // Callbacks ____________________________________________
   /** Optional css-in-js style */
@@ -68,6 +76,8 @@ export interface FileNodeProps {
   isLast: boolean
   /** The parent path for building the current path */
   parentPath: string
+  /** Whether this node is selected */
+  isSelected?: boolean
   /** Optional css-in-js style */
   css?: Interpolation<Theme>
   /** Optional class name */

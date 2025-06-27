@@ -1,4 +1,4 @@
-import { css, Interpolation, Theme } from '@emotion/react'
+import { css } from '@emotion/react'
 import React, { useContext, useMemo, useState } from 'react'
 import { ThemeContext } from '../shared/providers/theme-provider'
 import { Themes } from '../shared/themes'
@@ -72,6 +72,7 @@ const FileExplorerContent: React.FC<FileExplorerProps> = ({
 }) => {
   const styles = useStyles()
   const [searchText, setSearchText] = useState('')
+  const [selectedNode, setSelectedNode] = useState<string | null>(null)
 
   // Filter files based on the search text (case-insensitive)
   const filteredFiles = useMemo(() => {
@@ -140,6 +141,19 @@ const FileExplorerContent: React.FC<FileExplorerProps> = ({
     onDirectoryToggle?.(path, expanded)
   }
 
+  const handleFileClick = (file: any) => {
+    const filePath = file.newPath || file.oldPath
+    setSelectedNode(filePath)
+    onFileClick?.(file)
+  }
+
+  const handleDirectoryClick = (path: string, expanded: boolean) => {
+    setSelectedNode(path)
+    handleDirectoryToggle(path, expanded)
+  }
+
+  const isNodeSelected = (nodePath: string) => selectedNode === nodePath
+
   return (
     <div css={[styles.container, customCss]} className={className}>
       <Search
@@ -156,6 +170,7 @@ const FileExplorerContent: React.FC<FileExplorerProps> = ({
           const isLast = idx === arr.length - 1
 
           if (node.type === 'file') {
+            const filePath = node.file.newPath || node.file.oldPath
             return (
               <FileNode
                 key={node.name}
@@ -164,11 +179,13 @@ const FileExplorerContent: React.FC<FileExplorerProps> = ({
                 level={0}
                 isLast={isLast}
                 parentPath=""
-                onFileClick={onFileClick}
+                isSelected={isNodeSelected(filePath)}
+                onFileClick={handleFileClick}
               />
             )
           }
 
+          const dirPath = node.name
           return (
             <DirNode
               key={node.name}
@@ -178,8 +195,11 @@ const FileExplorerContent: React.FC<FileExplorerProps> = ({
               isLast={isLast}
               parentPath=""
               expandedDirs={effectiveExpandedDirs}
-              onFileClick={onFileClick}
-              onDirectoryToggle={handleDirectoryToggle}
+              isSelected={isNodeSelected(dirPath)}
+              selectedNode={selectedNode}
+              isNodeSelected={isNodeSelected}
+              onFileClick={handleFileClick}
+              onDirectoryToggle={handleDirectoryClick}
             />
           )
         })}
