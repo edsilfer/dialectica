@@ -26,10 +26,12 @@ export interface FSNodeProps {
   css?: Interpolation<Theme>
   /** Optional class name */
   className?: string
-  /** Click handler for the row */
-  onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
   /** Row content */
   children: React.ReactNode
+
+  // Callbacks ____________________________________________
+  /** Click handler for the row */
+  onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
 }
 
 export interface DirNodeProps {
@@ -55,6 +57,8 @@ export interface DirNodeProps {
   css?: Interpolation<Theme>
   /** Optional class name */
   className?: string
+  /** Optional string to highlight in the node name */
+  highlightString?: string
 
   // Callbacks ____________________________________________
   /** Called when a file entry is clicked */
@@ -78,6 +82,8 @@ export interface DirRowProps {
   config: FileExplorerConfig
   /** Whether this node is selected */
   isSelected?: boolean
+  /** Optional string to highlight in the display name */
+  highlightString?: string
 
   // Callbacks ____________________________________________
   /** Optional css-in-js style */
@@ -105,6 +111,8 @@ export interface FileNodeProps {
   css?: Interpolation<Theme>
   /** Optional class name */
   className?: string
+  /** Optional string to highlight in the node name */
+  highlightString?: string
 
   // Callbacks ____________________________________________
   /** Called when the file entry is clicked */

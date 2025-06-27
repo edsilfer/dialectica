@@ -4,6 +4,7 @@ import React, { useContext } from 'react'
 import { ThemeContext } from '../../shared/providers/theme-provider'
 import type { FileExplorerConfig } from '../types'
 import { FileNodeProps } from './types'
+import { highlightText } from '../utils'
 
 const useStyles = (config: FileExplorerConfig) => {
   const theme = useContext(ThemeContext)
@@ -14,6 +15,13 @@ const useStyles = (config: FileExplorerConfig) => {
       flex-direction: row;
       align-items: center;
       padding-left: ${level * config.indentPx}px;
+
+      .highlighted-text {
+        background-color: ${theme.colors.textPrimary}20;
+        border: 1px solid ${theme.colors.textPrimary}40;
+        border-radius: 2px;
+        padding: 1px 2px;
+      }
     `,
 
     fileBullet: css`
@@ -44,7 +52,7 @@ const FileNode: React.FC<FileNodeProps> = (props) => {
     >
       <div css={styles.content(props.level)}>
         <span css={styles.fileBullet} />
-        <span>{props.node.name}</span>
+        <span>{highlightText(props.node.name, props.highlightString || '')}</span>
       </div>
     </FSNode>
   )

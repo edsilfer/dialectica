@@ -1,7 +1,25 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { css } from '@emotion/react'
 import ExpandButton from '../../diff-viewer/file-viewer/ExpandButton'
 import { DirRowProps } from './types'
 import FSNode from './FSNode'
+import { highlightText } from '../utils'
+import { ThemeContext } from '../../shared/providers/theme-provider'
+
+const useStyles = () => {
+  const theme = useContext(ThemeContext)
+
+  return {
+    directoryContent: css`
+      .highlighted-text {
+        background-color: ${theme.colors.textPrimary}20;
+        border: 1px solid ${theme.colors.textPrimary}40;
+        border-radius: 2px;
+        padding: 1px 2px;
+      }
+    `,
+  }
+}
 
 /**
  * DirectoryRow component renders a single directory row in the file explorer.
@@ -17,6 +35,7 @@ import FSNode from './FSNode'
  */
 const DirectoryRow: React.FC<DirRowProps> = (props) => {
   const config = props.config
+  const styles = useStyles()
 
   return (
     <FSNode
@@ -29,13 +48,15 @@ const DirectoryRow: React.FC<DirRowProps> = (props) => {
       rowPaddingLeftExtra={props.level * config.indentPx + 6}
       verticalConnectorTop={-10}
     >
-      <ExpandButton
-        collapsed={props.collapsed}
-        size={14}
-        tooltipTextExpand="Expand directory"
-        tooltipTextCollapse="Collapse directory"
-      />
-      <span>{props.displayName}</span>
+      <div css={styles.directoryContent}>
+        <ExpandButton
+          collapsed={props.collapsed}
+          size={14}
+          tooltipTextExpand="Expand directory"
+          tooltipTextCollapse="Collapse directory"
+        />
+        <span>{highlightText(props.displayName, props.highlightString || '')}</span>
+      </div>
     </FSNode>
   )
 }

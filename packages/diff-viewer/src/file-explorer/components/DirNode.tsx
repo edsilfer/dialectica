@@ -31,6 +31,7 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
         className={props.className}
         onDirectoryToggle={props.onDirectoryToggle}
         cssProp={props.css}
+        highlightString={props.highlightString}
       />
 
       {!collapsed &&
@@ -51,6 +52,7 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
                   parentPath={currentPath}
                   isSelected={props.isNodeSelected ? props.isNodeSelected(filePath) : false}
                   onFileClick={props.onFileClick}
+                  highlightString={props.highlightString}
                 />
               )
             }
@@ -69,6 +71,7 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
                 isNodeSelected={props.isNodeSelected}
                 onFileClick={props.onFileClick}
                 onDirectoryToggle={props.onDirectoryToggle}
+                highlightString={props.highlightString}
               />
             )
           })}

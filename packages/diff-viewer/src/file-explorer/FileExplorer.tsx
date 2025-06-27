@@ -184,6 +184,7 @@ const FileExplorerContent: React.FC<FileExplorerProps> = ({
                 parentPath=""
                 isSelected={isNodeSelected(filePath)}
                 onFileClick={handleFileClick}
+                highlightString={searchText}
               />
             )
           }
@@ -203,6 +204,7 @@ const FileExplorerContent: React.FC<FileExplorerProps> = ({
               isNodeSelected={isNodeSelected}
               onFileClick={handleFileClick}
               onDirectoryToggle={handleDirectoryClick}
+              highlightString={searchText}
             />
           )
         })}

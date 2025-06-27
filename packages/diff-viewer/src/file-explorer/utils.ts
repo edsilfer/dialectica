@@ -1,3 +1,4 @@
+import React from 'react'
 import { FileDiff } from '../diff-viewer/types'
 import { DirectoryNode, FileNode, TreeNode } from './types'
 
@@ -90,4 +91,26 @@ export function buildTree(files: FileDiff[], collapsePackages?: boolean): Direct
 export const sortNodes = (a: TreeNode, b: TreeNode) => {
   if (a.type === b.type) return a.name.localeCompare(b.name)
   return a.type === 'directory' ? -1 : 1
+}
+
+/**
+ * Highlights occurrences of a search string within text by wrapping matches
+ * in a span with the 'highlighted-text' class
+ *
+ * @param text      - The text to highlight.
+ * @param highlight - The string to highlight.
+ * @returns         - The highlighted text.
+ */
+export const highlightText = (text: string, highlight: string): React.ReactNode => {
+  if (!highlight) return text
+
+  const regex = new RegExp(`(${highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
+  const parts = text.split(regex)
+
+  return parts.map((part, index) => {
+    if (part.toLowerCase() === highlight.toLowerCase()) {
+      return React.createElement('span', { key: index, className: 'highlighted-text' }, part)
+    }
+    return part
+  })
 }
