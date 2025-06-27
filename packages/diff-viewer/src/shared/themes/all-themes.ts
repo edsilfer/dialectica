@@ -1,4 +1,4 @@
-import { ColorTokens } from '../types/theme'
+import { ColorTokens } from './types'
 import { spacing, typography } from './common.js'
 
 const lightColors: ColorTokens = {
@@ -8,14 +8,15 @@ const lightColors: ColorTokens = {
   tooltipText: '#ffffff',
   fileViewerHeaderBg: '#f6f8fa',
   hunkViewerBg: '#ffffff',
-  lineAddedBg: '#e6ffed',
-  addedSquareBg: '#1f883d',
-  deletedSquareBg: '#d73a49',
-  neutralSquareBg: '#e1e4e8',
-  lineRemovedBg: '#ffeef0',
-  lineContextBg: '#f6f8fa',
-  lineHunkBg: '#f1f8ff',
-  addCommentBg: '#0366d6',
+  hunkViewerLineAddedBg: '#e6ffed',
+  fileViewerAddedSquareBg: '#1f883d',
+  fileViewerDeletedSquareBg: '#d73a49',
+  fileViwerNeutralSquareBg: '#e1e4e8',
+  hunkViewerLineRemovedBg: '#ffeef0',
+  hunkViewerLineContextBg: '#f6f8fa',
+  hunkViewerLineHunkBg: '#f1f8ff',
+  hunkViewerAddCommentBg: '#0366d6',
+  fileExplorerlineConnectorBg: '#cacdd0',
 }
 
 const darkColors: ColorTokens = {
@@ -25,14 +26,15 @@ const darkColors: ColorTokens = {
   tooltipText: '#161b22',
   fileViewerHeaderBg: '#161b22',
   hunkViewerBg: '#0d1117',
-  lineAddedBg: 'rgba(46, 160, 67, 0.15)',
-  addedSquareBg: '#238636',
-  deletedSquareBg: '#da3633',
-  neutralSquareBg: '#30363d',
-  lineRemovedBg: 'rgba(248, 81, 73, 0.15)',
-  lineContextBg: '#0d1117',
-  lineHunkBg: 'rgba(56, 139, 253, 0.15)',
-  addCommentBg: '#0366d6',
+  hunkViewerLineAddedBg: 'rgba(46, 160, 67, 0.15)',
+  fileViewerAddedSquareBg: '#238636',
+  fileViewerDeletedSquareBg: '#da3633',
+  fileViwerNeutralSquareBg: '#30363d',
+  hunkViewerLineRemovedBg: 'rgba(248, 81, 73, 0.15)',
+  hunkViewerLineContextBg: '#0d1117',
+  hunkViewerLineHunkBg: 'rgba(56, 139, 253, 0.15)',
+  hunkViewerAddCommentBg: '#0366d6',
+  fileExplorerlineConnectorBg: '#30363d',
 }
 
 const draculaColors: ColorTokens = {
@@ -42,14 +44,15 @@ const draculaColors: ColorTokens = {
   tooltipText: '#282a36',
   fileViewerHeaderBg: '#282a36',
   hunkViewerBg: '#282a36',
-  lineAddedBg: 'rgba(80, 250, 123, 0.15)',
-  addedSquareBg: '#50fa7b',
-  deletedSquareBg: '#ff5555',
-  neutralSquareBg: '#44475a',
-  lineRemovedBg: 'rgba(255, 85, 85, 0.15)',
-  lineContextBg: '#282a36',
-  lineHunkBg: 'rgba(189, 147, 249, 0.15)',
-  addCommentBg: '#bd93f9',
+  hunkViewerLineAddedBg: 'rgba(80, 250, 123, 0.15)',
+  fileViewerAddedSquareBg: '#50fa7b',
+  fileViewerDeletedSquareBg: '#ff5555',
+  fileViwerNeutralSquareBg: '#44475a',
+  hunkViewerLineRemovedBg: 'rgba(255, 85, 85, 0.15)',
+  hunkViewerLineContextBg: '#282a36',
+  hunkViewerLineHunkBg: 'rgba(189, 147, 249, 0.15)',
+  hunkViewerAddCommentBg: '#bd93f9',
+  fileExplorerlineConnectorBg: '#44475a',
 }
 
 const solarizedDarkColors: ColorTokens = {
@@ -59,14 +62,15 @@ const solarizedDarkColors: ColorTokens = {
   tooltipText: '#002b36',
   fileViewerHeaderBg: '#002b36',
   hunkViewerBg: '#002b36',
-  lineAddedBg: 'rgba(133, 153, 0, 0.15)',
-  addedSquareBg: '#859900',
-  deletedSquareBg: '#dc322f',
-  neutralSquareBg: '#073642',
-  lineRemovedBg: 'rgba(220, 50, 47, 0.15)',
-  lineContextBg: '#002b36',
-  lineHunkBg: 'rgba(38, 139, 210, 0.15)',
-  addCommentBg: '#6c71c4',
+  hunkViewerLineAddedBg: 'rgba(133, 153, 0, 0.15)',
+  fileViewerAddedSquareBg: '#859900',
+  fileViewerDeletedSquareBg: '#dc322f',
+  fileViwerNeutralSquareBg: '#073642',
+  hunkViewerLineRemovedBg: 'rgba(220, 50, 47, 0.15)',
+  hunkViewerLineContextBg: '#002b36',
+  hunkViewerLineHunkBg: 'rgba(38, 139, 210, 0.15)',
+  hunkViewerAddCommentBg: '#6c71c4',
+  fileExplorerlineConnectorBg: '#073642',
 }
 
 const solarizedLightColors: ColorTokens = {
@@ -76,14 +80,15 @@ const solarizedLightColors: ColorTokens = {
   tooltipText: '#fdf6e3',
   fileViewerHeaderBg: '#fdf6e3',
   hunkViewerBg: '#fdf6e3',
-  lineAddedBg: 'rgba(133, 153, 0, 0.15)',
-  addedSquareBg: '#859900',
-  deletedSquareBg: '#dc322f',
-  neutralSquareBg: '#eee8d5',
-  lineRemovedBg: 'rgba(220, 50, 47, 0.15)',
-  lineContextBg: '#fdf6e3',
-  lineHunkBg: 'rgba(38, 139, 210, 0.15)',
-  addCommentBg: '#6c71c4',
+  hunkViewerLineAddedBg: 'rgba(133, 153, 0, 0.15)',
+  fileViewerAddedSquareBg: '#859900',
+  fileViewerDeletedSquareBg: '#dc322f',
+  fileViwerNeutralSquareBg: '#eee8d5',
+  hunkViewerLineRemovedBg: 'rgba(220, 50, 47, 0.15)',
+  hunkViewerLineContextBg: '#fdf6e3',
+  hunkViewerLineHunkBg: 'rgba(38, 139, 210, 0.15)',
+  hunkViewerAddCommentBg: '#6c71c4',
+  fileExplorerlineConnectorBg: '#eee8d5',
 }
 
 export const Themes = {

@@ -1,4 +1,4 @@
-import type { SpacingTokens, TypographyTokens } from '../types/theme'
+import type { SpacingTokens, TypographyTokens } from './types'
 
 export const spacing: SpacingTokens = {
   xxs: '0.125rem', // 2px

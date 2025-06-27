@@ -13,25 +13,29 @@ export interface ColorTokens {
   /** The background color of the file diff header */
   fileViewerHeaderBg: string
   /** The background color of the added square */
-  addedSquareBg: string
+  fileViewerAddedSquareBg: string
   /** The background color of the deleted square */
-  deletedSquareBg: string
+  fileViewerDeletedSquareBg: string
   /** The background color of the neutral square */
-  neutralSquareBg: string
+  fileViwerNeutralSquareBg: string
 
   // Hunk Diff Viewer Tokens_____________________________
   /** The background color of the hunk viewer (code block) */
   hunkViewerBg: string
   /** The background color of added lines */
-  lineAddedBg: string
+  hunkViewerLineAddedBg: string
   /** The background color of removed lines */
-  lineRemovedBg: string
+  hunkViewerLineRemovedBg: string
   /** The background color of context lines */
-  lineContextBg: string
+  hunkViewerLineContextBg: string
   /** The background color of the hunk line */
-  lineHunkBg: string
+  hunkViewerLineHunkBg: string
   /** The background color of the add comment button */
-  addCommentBg: string
+  hunkViewerAddCommentBg: string
+
+  // File Explorer Tokens_____________________________
+  /** The background color of the line connector */
+  fileExplorerlineConnectorBg: string
 }
 export interface SpacingTokens {
   /** The smallest spacing */

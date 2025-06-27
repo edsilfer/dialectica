@@ -9,10 +9,10 @@ const useStyles = () => {
   const theme = useContext(ThemeContext)
 
   const LINE_TYPE_TO_COLOR = {
-    add: theme.colors.lineAddedBg,
-    delete: theme.colors.lineRemovedBg,
+    add: theme.colors.hunkViewerLineAddedBg,
+    delete: theme.colors.hunkViewerLineRemovedBg,
     context: 'transparent',
-    hunk: theme.colors.lineHunkBg,
+    hunk: theme.colors.hunkViewerLineHunkBg,
   }
 
   const sharedCellHeight = css`

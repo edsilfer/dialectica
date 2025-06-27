@@ -1,68 +1,67 @@
-import { css, Interpolation, Theme } from '@emotion/react'
+import { css } from '@emotion/react'
 import React, { useContext } from 'react'
-import { ThemeContext } from '../../shared/providers/theme-provider'
-import { FileDiff } from '../../diff-viewer/types'
 import ExpandButton from '../../diff-viewer/file-viewer/ExpandButton'
+import { ThemeContext } from '../../shared/providers/theme-provider'
+import type { FileExplorerConfig, TreeNode } from '../types'
 import { sortNodes } from '../utils'
 import FileNode from './FileNode'
-import type { DirectoryNode, FileExplorerConfig, TreeNode } from '../types'
+import { DirRowProps, DirNodeProps } from './types'
 
-const useStyles = () => {
+const useStyles = (config: FileExplorerConfig) => {
   const theme = useContext(ThemeContext)
 
   return {
+    wrapper: css`
+      position: relative;
+    `,
+
     row: css`
       display: flex;
       flex-direction: row;
       align-items: center;
-      user-select: none;
-      padding: ${theme.spacing.xs} 0;
+      gap: ${theme.spacing.xs};
+      padding: ${theme.spacing.xs};
       cursor: pointer;
+      position: relative;
 
       &:hover {
+        border-radius: ${theme.spacing.xs};
         background-color: ${theme.colors.fileViewerHeaderBg};
       }
     `,
-    expandBtnWrapper: css`
-      margin-right: ${theme.spacing.xs};
+
+    verticalConnector: (level: number) => css`
+      position: absolute;
+      border-left: 1px solid ${theme.colors.fileExplorerlineConnectorBg};
+      top: -5px;
+      height: 100%;
+      z-index: 100;
+      left: ${level * config.indentPx + 6}px;
+    `,
+
+    horizontalConnector: (level: number) => css`
+      position: absolute;
+      border-top: 1px solid ${theme.colors.fileExplorerlineConnectorBg};
+      left: ${(level - 1) * config.indentPx + 6}px;
+      width: ${level > 0 ? config.indentPx - 6 : 0}px;
+      z-index: 100;
     `,
   }
-}
-
-export interface DirNodeProps {
-  /** Configuration options for the file explorer */
-  config: FileExplorerConfig
-  /** The directory node to render */
-  node: DirectoryNode
-  /** The nesting level of this node */
-  level: number
-  /** The parent path for building the current path */
-  parentPath: string
-  /** Whether the parent directory is expanded */
-  expandedDirs: Set<string>
-  /** Optional css-in-js style */
-  css?: Interpolation<Theme>
-  /** Optional class name */
-  className?: string
-
-  // Callbacks ____________________________________________
-  /** Called when a file entry is clicked */
-  onFileClick?: (file: FileDiff) => void
-  /** Called when a directory entry is toggled */
-  onDirectoryToggle?: (path: string, expanded: boolean) => void
 }
 
 const DirNode: React.FC<DirNodeProps> = (props) => {
   const currentPath = props.parentPath ? `${props.parentPath}/${props.node.name}` : props.node.name
   const collapsed = !props.expandedDirs.has(currentPath)
+  const styles = useStyles(props.config)
 
   return (
-    <div key={currentPath}>
+    <div key={currentPath} css={styles.wrapper}>
       <DirectoryRow
-        config={props.config}
         currentPath={currentPath}
         collapsed={collapsed}
         level={props.level}
+        isLast={props.isLast}
+        config={props.config}
         displayName={props.node.name || (props.parentPath === '' ? '/' : '')}
         cssProp={props.css}
         className={props.className}
@@ -72,7 +71,9 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
       {!collapsed &&
         Array.from(props.node.children.values())
           .sort(sortNodes)
-          .map((child: TreeNode) => {
+          .map((child, idx, arr) => {
+            const isLast = idx === arr.length - 1
+
             if (child.type === 'file') {
               return (
                 <FileNode
@@ -80,6 +81,7 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
                   key={`${currentPath}/${child.name}`}
                   node={child}
                   level={props.level + 1}
+                  isLast={isLast}
                   parentPath={currentPath}
                   onFileClick={props.onFileClick}
                 />
@@ -91,6 +93,7 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
                 key={`${currentPath}/${child.name}`}
                 node={child}
                 level={props.level + 1}
+                isLast={isLast}
                 parentPath={currentPath}
                 expandedDirs={props.expandedDirs}
                 onFileClick={props.onFileClick}
@@ -102,29 +105,9 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
   )
 }
 
-interface DirectoryRowProps {
-  /** Configuration options for the file explorer */
-  config: FileExplorerConfig
-  /** The current path of the directory */
-  currentPath: string
-  /** Whether the directory is collapsed */
-  collapsed: boolean
-  /** The nesting level of this node */
-  level: number
-  /** The display name of the directory */
-  displayName: string
-
-  // Callbacks ____________________________________________
-  /** Optional css-in-js style */
-  cssProp?: Interpolation<Theme>
-  /** Optional class name */
-  className?: string
-  /** Called when a directory entry is toggled */
-  onDirectoryToggle?: (path: string, collapsed: boolean) => void
-}
-
-const DirectoryRow: React.FC<DirectoryRowProps> = (props) => {
-  const styles = useStyles()
+const DirectoryRow: React.FC<DirRowProps> = (props) => {
+  const styles = useStyles(props.config)
+  const connectorCount = props.isLast ? props.level : props.level
 
   return (
     <div
@@ -133,14 +116,21 @@ const DirectoryRow: React.FC<DirectoryRowProps> = (props) => {
       style={{ paddingLeft: props.level * props.config.indentPx }}
       onClick={() => props.onDirectoryToggle?.(props.currentPath, props.collapsed)}
     >
-      <span css={styles.expandBtnWrapper}>
-        <ExpandButton
-          collapsed={props.collapsed}
-          size={14}
-          tooltipTextExpand="Expand directory"
-          tooltipTextCollapse="Collapse directory"
-        />
-      </span>
+      <ExpandButton
+        collapsed={props.collapsed}
+        size={14}
+        tooltipTextExpand="Expand directory"
+        tooltipTextCollapse="Collapse directory"
+      />
+
+      {/* Vertical connector */}
+      {Array.from({ length: connectorCount }).map((_, index) => (
+        <div key={index} css={styles.verticalConnector(index)} />
+      ))}
+
+      {/* Horizontal connector */}
+      <div css={styles.horizontalConnector(props.level)} />
+
       <span>{props.displayName}</span>
     </div>
   )

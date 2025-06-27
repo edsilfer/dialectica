@@ -3,7 +3,6 @@ import type { ParsedDiff, DiffLine, DisplayConfig as DiffViewerConfig } from './
 import FileViewer from './file-viewer/FileViewer'
 import { Interpolation, Theme, css } from '@emotion/react'
 import { DiffViewerThemeProvider, ThemeContext } from '../shared/providers/theme-provider'
-import { ThemeTokens } from '../shared/types/theme'
 import { Themes } from '../shared/themes'
 
 const useStyles = () => {
@@ -30,23 +29,23 @@ export type DiffViewerProps = {
   /** The parsed diff to display. */
   diff: ParsedDiff
   /** Display configuration options. */
-  displayConfig?: DiffViewerConfig
-  /** The theme for the viewer */
-  theme?: ThemeTokens
-  /** Callback for when a line is clicked. */
-  onLineClick?: (line: DiffLine) => void
+  config?: DiffViewerConfig
   /** Kept to make typescript happy, but not used by emotion */
   css?: Interpolation<Theme>
   /** The content of css will be hashed and passed here */
   className?: string
+
+  // Callbacks ____________________________________________
+  /** Callback for when a line is clicked. */
+  onLineClick?: (line: DiffLine) => void
 }
 
 export const DiffViewer: React.FC<DiffViewerProps> = (props) => {
   return (
-    <DiffViewerThemeProvider theme={props.theme || Themes.light}>
+    <DiffViewerThemeProvider theme={props.config?.theme || Themes.light}>
       <Content
         diff={props.diff}
-        displayConfig={props.displayConfig}
+        config={props.config}
         css={props.css}
         className={props.className}
       />
@@ -60,11 +59,7 @@ const Content: React.FC<DiffViewerProps> = (props) => {
   return (
     <div css={[styles.container, props.css]} className={props.className}>
       {props.diff.files.map((file, index) => (
-        <FileViewer
-          key={index}
-          file={file}
-          config={props.displayConfig || DEFAULT_DISPLAY_CONFIG}
-        />
+        <FileViewer key={index} file={file} config={props.config || DEFAULT_DISPLAY_CONFIG} />
       ))}
     </div>
   )

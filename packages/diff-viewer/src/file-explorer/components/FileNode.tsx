@@ -1,55 +1,65 @@
-import { css, Interpolation, Theme } from '@emotion/react'
+import { css } from '@emotion/react'
 import React, { useContext } from 'react'
 import { ThemeContext } from '../../shared/providers/theme-provider'
 import type { FileExplorerConfig, FileNode } from '../types'
+import { FileNodeProps } from './types'
 
-const useStyles = () => {
+const useStyles = (config: FileExplorerConfig) => {
   const theme = useContext(ThemeContext)
 
   return {
     row: css`
       display: flex;
       flex-direction: row;
+      padding: ${theme.spacing.xs};
       align-items: center;
       user-select: none;
-      padding: ${theme.spacing.xs} 0;
       cursor: pointer;
+      position: relative;
 
       &:hover {
         background-color: ${theme.colors.fileViewerHeaderBg};
       }
     `,
+
+    verticalConnector: (level: number) => css`
+      position: absolute;
+      border-left: 1px solid ${theme.colors.fileExplorerlineConnectorBg};
+      top: -5px;
+      height: 100%;
+      z-index: 100;
+      left: ${level * config.indentPx + 6}px;
+    `,
+
+    horizontalConnector: (level: number) => css`
+      position: absolute;
+      border-top: 1px solid ${theme.colors.fileExplorerlineConnectorBg};
+      left: ${(level - 1) * config.indentPx + 6}px;
+      width: ${level > 0 ? config.indentPx - 6 : 0}px;
+      z-index: 100;
+    `,
+
+    content: (level: number) => css`
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding-left: ${level * config.indentPx}px;
+    `,
+
     fileBullet: css`
       width: 6px;
       height: 6px;
       border-radius: 50%;
       background-color: ${theme.colors.textPrimary};
       margin-right: ${theme.spacing.xs};
+      z-index: 100;
     `,
   }
 }
 
-export interface FileExplorerFileNodeProps {
-  /** Configuration options for the file explorer */
-  config: FileExplorerConfig
-  /** The file node to render */
-  node: FileNode
-  /** The nesting level of this node */
-  level: number
-  /** The parent path for building the current path */
-  parentPath: string
-  /** Optional css-in-js style */
-  css?: Interpolation<Theme>
-  /** Optional class name */
-  className?: string
-
-  // Callbacks ____________________________________________
-  /** Called when the file entry is clicked */
-  onFileClick?: (file: FileNode['file']) => void
-}
-
-const FileNode: React.FC<FileExplorerFileNodeProps> = (props) => {
-  const styles = useStyles()
+const FileNode: React.FC<FileNodeProps> = (props) => {
+  const styles = useStyles(props.config)
+  const connectorCount = props.isLast ? props.level : props.level
   const currentPath = props.parentPath ? `${props.parentPath}/${props.node.name}` : props.node.name
 
   return (
@@ -57,11 +67,20 @@ const FileNode: React.FC<FileExplorerFileNodeProps> = (props) => {
       key={currentPath}
       css={[styles.row, props.css]}
       className={props.className}
-      style={{ paddingLeft: props.level * props.config.indentPx }}
       onClick={() => props.onFileClick?.(props.node.file)}
     >
-      <span css={styles.fileBullet} />
-      <span>{props.node.name}</span>
+      {/* Vertical connector */}
+      {Array.from({ length: connectorCount }).map((_, index) => (
+        <div key={index} css={styles.verticalConnector(index)} />
+      ))}
+
+      {/* Horizontal connector */}
+      <div css={styles.horizontalConnector(props.level)} />
+
+      <div css={styles.content(props.level)}>
+        <span css={styles.fileBullet} />
+        <span>{props.node.name}</span>
+      </div>
     </div>
   )
 }

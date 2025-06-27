@@ -42,7 +42,7 @@ const useStyles = (theme: ThemeTokens) => {
 }
 
 export default function App() {
-  const [selectedTheme, setSelectedTheme] = useState(Themes.light)
+  const [selectedTheme, setSelectedTheme] = useState<ThemeTokens>(Themes.light)
   const [isSplitView, setIsSplitView] = useState(false)
   const styles = useStyles(selectedTheme)
   const parser = new DiffParserAdapter()
@@ -58,12 +58,25 @@ export default function App() {
       />
 
       <div css={styles.content}>
-        <FileExplorer css={styles.fileExplorer} diff={parsedDiff} />
+        <FileExplorer
+          css={styles.fileExplorer}
+          diff={parsedDiff}
+          config={{
+            theme: selectedTheme,
+            startExpanded: true,
+            nodeConnector: 'solid',
+            indentPx: 20,
+          }}
+        />
+
         <DiffViewer
           css={styles.diffViewer}
           diff={parsedDiff}
-          displayConfig={{ mode: isSplitView ? 'split' : 'unified', showLineNumbers: true }}
-          theme={selectedTheme}
+          config={{
+            theme: selectedTheme,
+            mode: isSplitView ? 'split' : 'unified',
+            showLineNumbers: true,
+          }}
         />
       </div>
     </div>

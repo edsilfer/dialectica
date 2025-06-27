@@ -82,11 +82,11 @@ const FileActivitySummary: React.FC<FileActivitySummaryProps> = ({ file, maxSqua
   const getColor = (type: 'addition' | 'deletion' | 'neutral') => {
     switch (type) {
       case 'addition':
-        return theme.colors.addedSquareBg
+        return theme.colors.fileViewerAddedSquareBg
       case 'deletion':
-        return theme.colors.deletedSquareBg
+        return theme.colors.fileViewerDeletedSquareBg
       case 'neutral':
-        return theme.colors.neutralSquareBg
+        return theme.colors.fileViwerNeutralSquareBg
     }
   }
 

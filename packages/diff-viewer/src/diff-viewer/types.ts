@@ -1,3 +1,5 @@
+import { ThemeTokens } from '../shared/themes'
+
 // Represents a parser for diff text, which converts raw diff text into a structured ParsedDiff object.
 export interface IDiffParser {
   /**
@@ -77,6 +79,8 @@ export type DisplayFormat = 'unified' | 'split'
 
 /** Configuration options for how the diff should be displayed */
 export interface DisplayConfig {
+  /** The theme for the viewer */
+  theme?: ThemeTokens
   /** The mode to display the diff in. */
   mode: DisplayFormat
   /** Whether to highlight the syntax of the diff. */

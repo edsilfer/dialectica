@@ -1,11 +1,10 @@
-import { css, Interpolation, Theme } from '@emotion/react'
+import { css } from '@emotion/react'
 import React, { useContext, useMemo, useState } from 'react'
 import { ThemeContext } from '../shared/providers/theme-provider'
-import type { FileDiff, ParsedDiff } from '../diff-viewer/types'
-import { buildTree, sortNodes } from './utils'
 import DirNode from './components/DirNode'
 import FileNode from './components/FileNode'
-import { FileExplorerConfig } from './types'
+import { FileExplorerConfig, FileExplorerProps } from './types'
+import { buildTree, sortNodes } from './utils'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -25,23 +24,6 @@ const DEFAULT_CONFIG: FileExplorerConfig = {
   startExpanded: true,
   nodeConnector: 'solid',
   indentPx: 16,
-}
-
-export interface FileExplorerProps {
-  /** Parsed diff used to build the tree */
-  diff: ParsedDiff
-  /** Configuration options for the file explorer */
-  config?: FileExplorerConfig
-  /** Optional css-in-js style */
-  css?: Interpolation<Theme>
-  /** Optional class name */
-  className?: string
-
-  // Callbacks ____________________________________________
-  /** Called when a file entry is clicked */
-  onFileClick?: (file: FileDiff) => void
-  /** Called when a directory entry is toggled */
-  onDirectoryToggle?: (path: string, expanded: boolean) => void
 }
 
 export const FileExplorer: React.FC<FileExplorerProps> = ({
@@ -90,7 +72,9 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({
     <div css={[styles.container, customCss]} className={className}>
       {Array.from(tree.children.values())
         .sort(sortNodes)
-        .map((node) => {
+        .map((node, idx, arr) => {
+          const isLast = idx === arr.length - 1
+
           if (node.type === 'file') {
             return (
               <FileNode
@@ -98,6 +82,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({
                 config={config}
                 node={node}
                 level={0}
+                isLast={isLast}
                 parentPath=""
                 onFileClick={onFileClick}
               />
@@ -110,6 +95,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({
               config={config}
               node={node}
               level={0}
+              isLast={isLast}
               parentPath=""
               expandedDirs={expandedDirs}
               onFileClick={onFileClick}

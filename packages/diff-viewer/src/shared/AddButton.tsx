@@ -18,7 +18,7 @@ const useStyles = () => {
       align-items: center;
       justify-content: center;
       font-size: 12px;
-      background-color: ${theme.colors.addCommentBg};
+      background-color: ${theme.colors.hunkViewerAddCommentBg};
     `,
   }
 }

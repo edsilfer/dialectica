@@ -1,5 +1,5 @@
 import React, { createContext } from 'react'
-import type { ThemeTokens } from '../types/theme'
+import type { ThemeTokens } from '../themes/types'
 import { Themes } from '../themes'
 
 export const ThemeContext = createContext<ThemeTokens>(Themes.light)
