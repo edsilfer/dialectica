@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import type { ParsedDiff, DiffLine, DisplayConfig as DiffViewerConfig } from './types'
 import FileViewer from './file-viewer/FileViewer'
 import { Interpolation, Theme, css } from '@emotion/react'
@@ -28,6 +28,8 @@ const DEFAULT_DISPLAY_CONFIG: DiffViewerConfig = {
 export type DiffViewerProps = {
   /** The parsed diff to display. */
   diff: ParsedDiff
+  /** The file to scroll to when the diff is loaded. */
+  scrollTo?: string | null
   /** Display configuration options. */
   config?: DiffViewerConfig
   /** Kept to make typescript happy, but not used by emotion */
@@ -45,9 +47,11 @@ export const DiffViewer: React.FC<DiffViewerProps> = (props) => {
     <DiffViewerThemeProvider theme={props.config?.theme || Themes.light}>
       <Content
         diff={props.diff}
+        scrollTo={props.scrollTo}
         config={props.config}
         css={props.css}
         className={props.className}
+        onLineClick={props.onLineClick}
       />
     </DiffViewerThemeProvider>
   )
@@ -56,10 +60,24 @@ export const DiffViewer: React.FC<DiffViewerProps> = (props) => {
 const Content: React.FC<DiffViewerProps> = (props) => {
   const styles = useStyles()
 
+  useEffect(() => {
+    if (props.scrollTo) {
+      const element = document.getElementById(`file-diff-${props.scrollTo}`)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }
+  }, [props.scrollTo])
+
   return (
     <div css={[styles.container, props.css]} className={props.className}>
-      {props.diff.files.map((file, index) => (
-        <FileViewer key={index} file={file} config={props.config || DEFAULT_DISPLAY_CONFIG} />
+      {props.diff.files.map((file) => (
+        <FileViewer
+          key={file.newPath || file.oldPath}
+          id={`file-diff-${file.newPath || file.oldPath}`}
+          file={file}
+          config={props.config || DEFAULT_DISPLAY_CONFIG}
+        />
       ))}
     </div>
   )

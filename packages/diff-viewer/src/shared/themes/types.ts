@@ -1,7 +1,7 @@
 export interface ColorTokens {
   // Common Tokens_______________________________________
   /** The background color of the input */
-  defaultBg: string
+  colorPrimary: string
   /** The accent color of the theme */
   accentColor: string
 

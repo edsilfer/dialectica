@@ -56,17 +56,19 @@ const useStyles = () => {
 }
 
 interface FileViewerProps {
+  /** A unique identifier for the file viewer. */
+  id?: string
   /** The file diff object. */
   file: FileDiff
   /** The display configuration options. */
   config: DisplayConfig
 }
 
-const FileViewer: React.FC<FileViewerProps> = ({ file, config }) => {
+const FileViewer: React.FC<FileViewerProps> = ({ id, file, config }) => {
   const styles = useStyles()
   const [collapsed, setCollapsed] = useState(false)
   const [viewed, setViewed] = useState(false)
-  const language = useMemo(() => detectLanguage(file.newPath, ''), [file.newPath])
+  const language = useMemo(() => detectLanguage(file.newPath), [file.newPath])
   const filePath = useMemo(
     () => (file.oldPath === file.newPath ? file.newPath : `${file.oldPath} → ${file.newPath}`),
     [file.oldPath, file.newPath],
@@ -119,7 +121,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, config }) => {
   }
 
   return (
-    <div css={styles.container}>
+    <div css={styles.container} id={id}>
       <div css={styles.header}>
         <ExpandButton collapsed={collapsed} size={16} onClick={handleToggleCollapse} />
         <FileActivitySummary file={file} />

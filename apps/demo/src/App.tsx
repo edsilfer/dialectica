@@ -1,7 +1,7 @@
 import { DiffParserAdapter, DiffViewer, FileExplorer, Themes, ThemeTokens } from '@diff-viewer'
 import { css } from '@emotion/react'
 import { useState } from 'react'
-import { SAMPLE_DIFF } from './__fixtures__/sample-diffs'
+import { SAMPLE_DIFF, TEN_FILES_DIFF } from './__fixtures__/sample-diffs'
 import AppHeader from './components/AppHeader'
 
 const useStyles = (theme: ThemeTokens) => {
@@ -44,9 +44,10 @@ const useStyles = (theme: ThemeTokens) => {
 export default function App() {
   const [selectedTheme, setSelectedTheme] = useState<ThemeTokens>(Themes.light)
   const [isSplitView, setIsSplitView] = useState(false)
+  const [scrollToFile, setScrollToFile] = useState<string | null>(null)
   const styles = useStyles(selectedTheme)
   const parser = new DiffParserAdapter()
-  const parsedDiff = parser.parse(SAMPLE_DIFF)
+  const parsedDiff = parser.parse(TEN_FILES_DIFF)
 
   return (
     <div css={styles.container}>
@@ -61,6 +62,7 @@ export default function App() {
         <FileExplorer
           css={styles.fileExplorer}
           diff={parsedDiff}
+          onFileClick={(file) => setScrollToFile(file.newPath || file.oldPath)}
           config={{
             theme: selectedTheme,
             startExpanded: true,
@@ -72,6 +74,7 @@ export default function App() {
         <DiffViewer
           css={styles.diffViewer}
           diff={parsedDiff}
+          scrollTo={scrollToFile}
           config={{
             theme: selectedTheme,
             mode: isSplitView ? 'split' : 'unified',

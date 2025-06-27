@@ -2,7 +2,7 @@ import { ColorTokens } from './types'
 import { spacing, typography } from './common.js'
 
 const lightColors: ColorTokens = {
-  defaultBg: '#ffffff',
+  colorPrimary: '#ffffff',
   borderBg: '#e1e4e8',
   textPrimary: '#24292e',
   placeholderText: '#6a737d',
@@ -24,7 +24,7 @@ const lightColors: ColorTokens = {
 }
 
 const darkColors: ColorTokens = {
-  defaultBg: '#0d1117',
+  colorPrimary: '#0d1117',
   borderBg: '#30363d',
   textPrimary: '#c9d1d9',
   placeholderText: '#484f58',
@@ -46,7 +46,7 @@ const darkColors: ColorTokens = {
 }
 
 const draculaColors: ColorTokens = {
-  defaultBg: '#282a36',
+  colorPrimary: '#282a36',
   borderBg: '#6272a4',
   textPrimary: '#f8f8f2',
   placeholderText: '#6272a4',
@@ -68,7 +68,7 @@ const draculaColors: ColorTokens = {
 }
 
 const solarizedDarkColors: ColorTokens = {
-  defaultBg: '#002b36',
+  colorPrimary: '#002b36',
   borderBg: '#586e75',
   textPrimary: '#839496',
   placeholderText: '#586e75',
@@ -90,7 +90,7 @@ const solarizedDarkColors: ColorTokens = {
 }
 
 const solarizedLightColors: ColorTokens = {
-  defaultBg: '#fdf6e3',
+  colorPrimary: '#fdf6e3',
   borderBg: '#93a1a1',
   textPrimary: '#657b83',
   placeholderText: '#93a1a1',

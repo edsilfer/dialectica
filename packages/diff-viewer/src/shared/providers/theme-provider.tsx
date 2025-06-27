@@ -16,7 +16,7 @@ interface DiffViewerThemeProps {
 export const DiffViewerThemeProvider = ({ children, theme }: DiffViewerThemeProps) => {
   const antdThemeConfig: ThemeConfig = {
     token: {
-      colorPrimary: theme.colors.defaultBg,
+      colorPrimary: theme.colors.colorPrimary,
       colorPrimaryActive: theme.colors.accentColor,
       colorTextPlaceholder: theme.colors.placeholderText,
       colorText: theme.colors.textPrimary,
@@ -29,7 +29,7 @@ export const DiffViewerThemeProvider = ({ children, theme }: DiffViewerThemeProp
     },
     components: {
       Input: {
-        colorBgContainer: theme.colors.defaultBg,
+        colorBgContainer: theme.colors.colorPrimary,
         hoverBorderColor: theme.colors.borderBg,
         activeBorderColor: theme.colors.borderBg,
         activeShadow: 'none',
