@@ -20,6 +20,7 @@ const lightColors: ColorTokens = {
   hunkViewerLineHunkBg: '#f1f8ff',
   hunkViewerAddCommentBg: '#0366d6',
   fileExplorerBg: '#ffffff',
+  fileExplorerSelectedFileBg: '#f1f8ff',
   fileExplorerlineConnectorBg: '#cacdd0',
 }
 
@@ -42,6 +43,7 @@ const darkColors: ColorTokens = {
   hunkViewerLineHunkBg: 'rgba(56, 139, 253, 0.15)',
   hunkViewerAddCommentBg: '#0366d6',
   fileExplorerBg: '#0d1117',
+  fileExplorerSelectedFileBg: 'rgba(56, 139, 253, 0.25)',
   fileExplorerlineConnectorBg: '#30363d',
 }
 
@@ -64,6 +66,7 @@ const draculaColors: ColorTokens = {
   hunkViewerLineHunkBg: 'rgba(189, 147, 249, 0.15)',
   hunkViewerAddCommentBg: '#bd93f9',
   fileExplorerBg: '#282a36',
+  fileExplorerSelectedFileBg: 'rgba(189, 147, 249, 0.25)',
   fileExplorerlineConnectorBg: '#44475a',
 }
 
@@ -86,6 +89,7 @@ const solarizedDarkColors: ColorTokens = {
   hunkViewerLineHunkBg: 'rgba(38, 139, 210, 0.15)',
   hunkViewerAddCommentBg: '#6c71c4',
   fileExplorerBg: '#002b36',
+  fileExplorerSelectedFileBg: 'rgba(38, 139, 210, 0.25)',
   fileExplorerlineConnectorBg: '#073642',
 }
 
@@ -108,6 +112,7 @@ const solarizedLightColors: ColorTokens = {
   hunkViewerLineHunkBg: 'rgba(38, 139, 210, 0.15)',
   hunkViewerAddCommentBg: '#6c71c4',
   fileExplorerBg: '#fdf6e3',
+  fileExplorerSelectedFileBg: 'rgba(38, 139, 210, 0.25)',
   fileExplorerlineConnectorBg: '#eee8d5',
 }
 

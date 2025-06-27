@@ -11,8 +11,7 @@ const useStyles = (config: FileExplorerConfig) => {
     row: (isSelected?: boolean) => css`
       display: flex;
       flex-direction: row;
-      padding: ${theme.spacing.xs};
-      padding-left: ${theme.spacing.sm};
+      padding: ${theme.spacing.sm};
       align-items: center;
       user-select: none;
       cursor: pointer;
@@ -21,7 +20,7 @@ const useStyles = (config: FileExplorerConfig) => {
       ${isSelected
         ? `
         border-radius: ${theme.spacing.sm};
-        background-color: ${theme.colors.fileViewerHeaderBg};
+        background-color: ${theme.colors.fileExplorerSelectedFileBg};
 
         &::before {
           content: '';
@@ -38,7 +37,8 @@ const useStyles = (config: FileExplorerConfig) => {
         : ''}
 
       &:hover {
-        background-color: ${theme.colors.fileViewerHeaderBg};
+        border-radius: ${theme.spacing.sm};
+        background-color: ${theme.colors.fileExplorerSelectedFileBg};
       }
     `,
 

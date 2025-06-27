@@ -43,6 +43,8 @@ export interface ColorTokens {
   // File Explorer Tokens_____________________________
   /** The background color of the file explorer */
   fileExplorerBg: string
+  /** The background color of the selected file */
+  fileExplorerSelectedFileBg: string
   /** The background color of the line connector */
   fileExplorerlineConnectorBg: string
 }

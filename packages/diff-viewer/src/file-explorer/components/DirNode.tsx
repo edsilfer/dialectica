@@ -29,7 +29,7 @@ const useStyles = (config: FileExplorerConfig) => {
       ${isSelected
         ? `
         border-radius: ${theme.spacing.sm};
-        background-color: ${theme.colors.fileViewerHeaderBg};
+        background-color: ${theme.colors.fileExplorerSelectedFileBg};
 
         &::before {
           content: '';
@@ -46,8 +46,8 @@ const useStyles = (config: FileExplorerConfig) => {
         : ''}
 
       &:hover {
-        border-radius: ${theme.spacing.xs};
-        background-color: ${theme.colors.fileViewerHeaderBg};
+        border-radius: ${theme.spacing.sm};
+        background-color: ${theme.colors.fileExplorerSelectedFileBg};
       }
     `,
 
