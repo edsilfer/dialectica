@@ -1,6 +1,6 @@
 import hljs from 'highlight.js/lib/common'
 import 'highlight.js/styles/github.css'
-import type { Hunk, DisplayConfig } from '../types'
+import type { Hunk, DisplayConfig } from '../../types'
 
 /**
  * Escapes HTML entities so the string can be rendered safely inside \n

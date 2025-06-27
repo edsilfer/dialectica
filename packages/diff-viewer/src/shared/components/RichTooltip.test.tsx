@@ -1,7 +1,7 @@
 import { vi } from 'vitest'
 
 import { afterEach, describe, expect, it } from 'vitest'
-import { act, fireEvent, render, screen } from './test-utils/render'
+import { act, fireEvent, render, screen } from '../test-utils/render'
 import RichTooltip from './RichTooltip'
 
 describe('RichTooltip', () => {

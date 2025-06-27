@@ -1,6 +1,6 @@
 import React, { useContext, useState, useRef, useEffect } from 'react'
 import { Tooltip } from 'antd'
-import { ThemeContext } from './providers/theme-provider'
+import { ThemeContext } from '../providers/theme-provider'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)

@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
-import { ThemeContext } from '../../shared/providers/theme-provider'
-import AddButton from '../../shared/AddButton'
+import { ThemeContext } from '../../../shared/providers/theme-provider'
+import AddButton from '../../../shared/components/AddButton'
 
 type DiffLineType = 'add' | 'delete' | 'context' | 'hunk'
 

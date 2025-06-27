@@ -1,14 +1,14 @@
 import { css } from '@emotion/react'
 import { Typography, Checkbox } from 'antd'
 import React, { useContext, useMemo, useState } from 'react'
-import type { FileDiff, DisplayConfig } from '../types'
+import type { FileDiff, DisplayConfig } from '../../types'
 import UnifiedViewer from '../line-viewer/UnifiedViewer'
 import SplitedViewer from '../line-viewer/SplitedViewer'
-import { detectLanguage } from '../parsers/utils'
-import { ThemeContext } from '../../shared/providers/theme-provider'
+import { detectLanguage } from '../../parsers/utils'
+import { ThemeContext } from '../../../shared/providers/theme-provider'
 import CopyButton from './CopyButton'
 import ExpandButton from './ExpandButton'
-import FileActivitySummary from './FileActivitySummary'
+import FileActivitySummary from '../../../shared/components/FileActivitySummary'
 import {
   buildSplitHunkPairs,
   LineWithHighlight,

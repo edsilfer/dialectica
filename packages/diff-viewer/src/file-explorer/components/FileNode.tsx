@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import React from 'react'
-import File from '../../shared/icons/File'
+import File from '../../shared/components/icons/File'
 import FSNode from './FSNode'
 import { FileNodeProps } from './types'
 

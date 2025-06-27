@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
-import { ThemeContext } from '../../shared/providers/theme-provider'
-import type { DisplayConfig } from '../types'
+import { ThemeContext } from '../../../shared/providers/theme-provider'
+import type { DisplayConfig } from '../../types'
 import type { SplitLinePair } from './line-utils'
 import DiffLine from './DiffLine'
 

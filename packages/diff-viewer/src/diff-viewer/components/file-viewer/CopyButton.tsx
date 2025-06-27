@@ -1,8 +1,8 @@
 import React, { useContext } from 'react'
 import { css } from '@emotion/react'
-import Copy from '../../shared/icons/Copy'
-import { ThemeContext } from '../../shared/providers/theme-provider'
-import RichTooltip from '../../shared/RichTooltip'
+import Copy from '../../../shared/components/icons/Copy'
+import { ThemeContext } from '../../../shared/providers/theme-provider'
+import RichTooltip from '../../../shared/components/RichTooltip'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)

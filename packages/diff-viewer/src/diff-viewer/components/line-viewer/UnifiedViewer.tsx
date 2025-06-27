@@ -1,9 +1,9 @@
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
-import type { DisplayConfig } from '../types.js'
-import type { LineWithHighlight } from './line-utils.js'
-import DiffLine from './DiffLine.js'
-import { ThemeContext } from '../../shared/providers/theme-provider.js'
+import type { DisplayConfig } from '../../types'
+import type { LineWithHighlight } from './line-utils'
+import DiffLine from './DiffLine'
+import { ThemeContext } from '../../../shared/providers/theme-provider'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)

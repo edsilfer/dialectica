@@ -4,8 +4,8 @@ import { sortNodes } from '../utils'
 import FileNode from './FileNode'
 import { DirNodeProps } from './types'
 import FSNode from './FSNode'
-import ExpandButton from '../../diff-viewer/file-viewer/ExpandButton'
-import Directory from '../../shared/icons/Directory'
+import ExpandButton from '../../diff-viewer/components/file-viewer/ExpandButton'
+import Directory from '../../shared/components/icons/Directory'
 import { ThemeContext } from '../../shared/providers/theme-provider'
 
 const useStyles = () => {

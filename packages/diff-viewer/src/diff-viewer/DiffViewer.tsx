@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import type { ParsedDiff, DiffLine, DisplayConfig as DiffViewerConfig } from './types'
-import FileViewer from './file-viewer/FileViewer'
+import FileViewer from './components/file-viewer/FileViewer'
 import { Interpolation, Theme, css } from '@emotion/react'
 import { DiffViewerThemeProvider, ThemeContext } from '../shared/providers/theme-provider'
 import { Themes } from '../shared/themes'
