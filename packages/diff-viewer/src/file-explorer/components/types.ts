@@ -9,6 +9,29 @@ export interface StyleParams {
   config: FileExplorerConfig
 }
 
+export interface FSNodeProps {
+  /** Configuration options for the file explorer */
+  config: FileExplorerConfig
+  /** The nesting level of this node */
+  level: number
+  /** Whether this node is the last in its parent directory */
+  isLast: boolean
+  /** Whether this node is selected */
+  isSelected?: boolean
+  /** Extra padding (in px) added to the default indentation */
+  rowPaddingLeftExtra?: number
+  /** Top offset (in px) for the vertical connector */
+  verticalConnectorTop?: number
+  /** Optional css-in-js style */
+  css?: Interpolation<Theme>
+  /** Optional class name */
+  className?: string
+  /** Click handler for the row */
+  onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
+  /** Row content */
+  children: React.ReactNode
+}
+
 export interface DirNodeProps {
   /** Configuration options for the file explorer */
   config: FileExplorerConfig
