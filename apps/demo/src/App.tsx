@@ -44,6 +44,7 @@ const useStyles = (theme: ThemeTokens) => {
 export default function App() {
   const [selectedTheme, setSelectedTheme] = useState<ThemeTokens>(Themes.light)
   const [isSplitView, setIsSplitView] = useState(false)
+  const [collapsePackages, setCollapsePackages] = useState(true)
   const [scrollToFile, setScrollToFile] = useState<string | null>(null)
   const styles = useStyles(selectedTheme)
   const parser = new DiffParserAdapter()
@@ -56,6 +57,8 @@ export default function App() {
         onThemeChange={setSelectedTheme}
         isSplitView={isSplitView}
         onSplitViewChange={setIsSplitView}
+        collapsePackages={collapsePackages}
+        onCollapsePackagesChange={setCollapsePackages}
       />
 
       <div css={styles.content}>
@@ -68,6 +71,7 @@ export default function App() {
             startExpanded: true,
             nodeConnector: 'solid',
             indentPx: 20,
+            collapsePackages,
           }}
         />
 

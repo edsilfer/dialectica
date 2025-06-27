@@ -46,17 +46,29 @@ const useStyles = (theme: ThemeTokens) => ({
 })
 
 interface AppHeaderProps {
+  /** The selected theme. */
   selectedTheme: ThemeTokens
-  onThemeChange: (theme: ThemeTokens) => void
+  /** Whether to show the split view. */
   isSplitView: boolean
+  /** Whether to collapse the packages. */
+  collapsePackages: boolean
+
+  // Callbacks ____________________________________________
+  /** Callback to change the theme. */
+  onThemeChange: (theme: ThemeTokens) => void
+  /** Callback to change the split view. */
   onSplitViewChange: (checked: boolean) => void
+  /** Callback to change the collapse packages. */
+  onCollapsePackagesChange: (checked: boolean) => void
 }
 
 const AppHeader: React.FC<AppHeaderProps> = ({
   selectedTheme,
-  onThemeChange,
   isSplitView,
+  collapsePackages,
+  onThemeChange,
   onSplitViewChange,
+  onCollapsePackagesChange,
 }) => {
   const styles = useStyles(selectedTheme)
 
@@ -85,8 +97,10 @@ const AppHeader: React.FC<AppHeaderProps> = ({
           ]}
         />
         <div css={styles.switchContainer}>
-          <Text css={styles.switchLabel}>Split View</Text>
+          <Text css={styles.switchLabel}>Split</Text>
           <Switch checked={isSplitView} onChange={onSplitViewChange} size="small" />
+          <Text css={styles.switchLabel}>Collapse Packages</Text>
+          <Switch checked={collapsePackages} onChange={onCollapsePackagesChange} size="small" />
         </div>
       </div>
     </div>

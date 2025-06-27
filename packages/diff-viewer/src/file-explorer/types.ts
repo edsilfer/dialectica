@@ -51,4 +51,6 @@ export interface FileExplorerConfig {
   roundedConnectors?: boolean
   /** The indentation of the nodes. */
   indentPx: number
+  /** Whether to collapse the packages. */
+  collapsePackages?: boolean
 }

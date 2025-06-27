@@ -38,6 +38,7 @@ const DEFAULT_CONFIG: FileExplorerConfig = {
   startExpanded: true,
   nodeConnector: 'solid',
   indentPx: 16,
+  collapsePackages: true,
 }
 
 export const FileExplorer: React.FC<FileExplorerProps> = ({
@@ -85,7 +86,9 @@ const FileExplorerContent: React.FC<FileExplorerProps> = ({
   }, [diff.files, searchText])
 
   // Build tree from the filtered files
-  const tree = useMemo(() => buildTree(filteredFiles), [filteredFiles])
+  const tree = useMemo(() => {
+    return buildTree(filteredFiles, config.collapsePackages)
+  }, [filteredFiles, config.collapsePackages])
 
   // When searching, force expand all directories so the user can see matches
   const searchExpandedDirs = useMemo(() => {
