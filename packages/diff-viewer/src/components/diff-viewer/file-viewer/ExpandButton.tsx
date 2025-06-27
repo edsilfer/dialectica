@@ -18,17 +18,29 @@ const useStyles = () => {
 }
 
 interface ExpandButtonProps {
-  /** Whether the content is currently collapsed */
+  /** Whether the section is currently collapsed */
   collapsed: boolean
   /** The size of the chevron icon */
   size?: number
-  /** The function to call when the expand button is clicked */
-  onClick: (event: React.MouseEvent<SVGSVGElement>) => void
+  /** Tooltip text to show when the section is collapsed (defaults to "Show file content") */
+  tooltipTextExpand?: string
+  /** Tooltip text to show when the section is expanded (defaults to "Hide file content") */
+  tooltipTextCollapse?: string
+
+  // Callbacks ____________________________________________
+  /** Optional click handler attached to the chevron element */
+  onClick?: (event: React.MouseEvent<SVGSVGElement>) => void
 }
 
-const ExpandButton: React.FC<ExpandButtonProps> = ({ collapsed, onClick, size = 16 }) => {
+const ExpandButton: React.FC<ExpandButtonProps> = ({
+  collapsed,
+  onClick,
+  size = 16,
+  tooltipTextExpand = 'Show file content',
+  tooltipTextCollapse = 'Hide file content',
+}) => {
   const styles = useStyles()
-  const tooltipText = collapsed ? 'Show file content' : 'Hide file content'
+  const tooltipText = collapsed ? tooltipTextExpand : tooltipTextCollapse
   const button = <ChevronDown size={size} css={styles.chevron(collapsed)} onClick={onClick} />
   return <RichTooltip tooltipText={tooltipText}>{button}</RichTooltip>
 }
