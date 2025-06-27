@@ -17,7 +17,7 @@ export interface FSNodeProps {
   /** Whether this node is the last in its parent directory */
   isLast: boolean
   /** The display name of the directory */
-  displayName: string
+  displayName?: string
   /** Whether this node is selected */
   isSelected?: boolean
   /** Extra padding (in px) added to the default indentation */
@@ -94,4 +94,15 @@ export interface FileNodeProps {
   // Callbacks ____________________________________________
   /** Called when the file entry is clicked */
   onFileClick?: (file: FileNode['file']) => void
+}
+
+export interface DirNameProps {
+  /** The number of files in the directory */
+  fileCount: number
+  /** Whether to show the file count */
+  showDetails?: boolean
+  /** The name of the directory */
+  name: string
+  /** The string to highlight in the directory name */
+  highlightString?: string
 }

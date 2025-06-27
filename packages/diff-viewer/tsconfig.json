@@ -7,5 +7,5 @@
     "jsxImportSource": "@emotion/react",
     "moduleResolution": "Node"
   },
-  "include": ["src", "vitest.setup.ts"]
+  "include": ["src", "vitest.setup.ts", "../../apps/demo/src/providers/ConfigProvider.tsx"]
 }

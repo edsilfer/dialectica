@@ -114,3 +114,24 @@ export const highlightText = (text: string, highlight: string): React.ReactNode 
     return part
   })
 }
+
+/**
+ * Recursively collects all files within a given directory node using a
+ * Depth-First Search (DFS) traversal.
+ *
+ * @param dirNode - The directory node to start from.
+ * @returns       - An array of all files within the directory.
+ */
+export function getFilesForDir(dirNode: DirectoryNode): FileDiff[] {
+  const files: FileDiff[] = []
+
+  for (const childNode of dirNode.children.values()) {
+    if (childNode.type === 'file') {
+      files.push(childNode.file)
+    } else if (childNode.type === 'directory') {
+      files.push(...getFilesForDir(childNode))
+    }
+  }
+
+  return files
+}

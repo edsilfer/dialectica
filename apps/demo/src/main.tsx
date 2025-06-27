@@ -1,9 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
+import { DiffViewerStateProvider } from './providers/ConfigProvider'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <DiffViewerStateProvider>
+      <App />
+    </DiffViewerStateProvider>
   </React.StrictMode>,
 )

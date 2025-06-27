@@ -1,8 +1,9 @@
-import { DiffParserAdapter, DiffViewer, FileExplorer, Themes, ThemeTokens } from '@diff-viewer'
+import { DiffParserAdapter, DiffViewer, FileExplorer, ThemeTokens } from '@diff-viewer'
 import { css } from '@emotion/react'
 import { useState } from 'react'
-import { SAMPLE_DIFF, TEN_FILES_DIFF } from './__fixtures__/sample-diffs'
+import { TEN_FILES_DIFF } from './__fixtures__/sample-diffs'
 import AppHeader from './components/AppHeader'
+import { useDiffViewerState } from './providers/ConfigProvider'
 
 const useStyles = (theme: ThemeTokens) => {
   return {
@@ -42,24 +43,16 @@ const useStyles = (theme: ThemeTokens) => {
 }
 
 export default function App() {
-  const [selectedTheme, setSelectedTheme] = useState<ThemeTokens>(Themes.light)
-  const [isSplitView, setIsSplitView] = useState(false)
-  const [collapsePackages, setCollapsePackages] = useState(true)
+  const { theme, isSplitView, collapsePackages, showIcons, displayNodeDetails } =
+    useDiffViewerState()
   const [scrollToFile, setScrollToFile] = useState<string | null>(null)
-  const styles = useStyles(selectedTheme)
+  const styles = useStyles(theme)
   const parser = new DiffParserAdapter()
   const parsedDiff = parser.parse(TEN_FILES_DIFF)
 
   return (
     <div css={styles.container}>
-      <AppHeader
-        selectedTheme={selectedTheme}
-        onThemeChange={setSelectedTheme}
-        isSplitView={isSplitView}
-        onSplitViewChange={setIsSplitView}
-        collapsePackages={collapsePackages}
-        onCollapsePackagesChange={setCollapsePackages}
-      />
+      <AppHeader />
 
       <div css={styles.content}>
         <FileExplorer
@@ -67,12 +60,13 @@ export default function App() {
           diff={parsedDiff}
           onFileClick={(file) => setScrollToFile(file.newPath || file.oldPath)}
           config={{
-            theme: selectedTheme,
+            theme: theme,
             startExpanded: true,
             nodeConnector: 'solid',
             indentPx: 20,
             collapsePackages,
-            showIcons: true,
+            showIcons: showIcons,
+            displayNodeDetails: displayNodeDetails,
           }}
         />
 
@@ -81,7 +75,7 @@ export default function App() {
           diff={parsedDiff}
           scrollTo={scrollToFile}
           config={{
-            theme: selectedTheme,
+            theme: theme,
             mode: isSplitView ? 'split' : 'unified',
             showLineNumbers: true,
           }}

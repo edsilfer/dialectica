@@ -55,4 +55,6 @@ export interface FileExplorerConfig {
   collapsePackages?: boolean
   /** Whether to show file/folder icons. */
   showIcons?: boolean
+  /** Whether to show file/folder details. */
+  displayNodeDetails?: boolean
 }

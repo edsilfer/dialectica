@@ -93,7 +93,9 @@ const FSNode: React.FC<FSNodeProps> = (props) => {
       {props.children}
 
       {/* Node name */}
-      <span>{highlightText(props.displayName, props.highlightString || '')}</span>
+      {props.displayName && (
+        <span>{highlightText(props.displayName, props.highlightString || '')}</span>
+      )}
     </div>
   )
 }

@@ -8,7 +8,7 @@ import { detectLanguage } from '../../parsers/utils'
 import { ThemeContext } from '../../../shared/providers/theme-provider'
 import CopyButton from './CopyButton'
 import ExpandButton from './ExpandButton'
-import FileActivitySummary from '../../../shared/components/FileActivitySummary'
+import FileActivitySummary from '../../../shared/components/activity-summary/FileActivitySummary'
 import {
   buildSplitHunkPairs,
   LineWithHighlight,

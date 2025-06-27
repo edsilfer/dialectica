@@ -1,14 +1,16 @@
-import React, { useContext } from 'react'
 import { css } from '@emotion/react'
-import { sortNodes } from '../utils'
-import FileNode from './FileNode'
-import { DirNodeProps } from './types'
-import FSNode from './FSNode'
+import React, { useContext, useMemo } from 'react'
 import ExpandButton from '../../diff-viewer/components/file-viewer/ExpandButton'
 import Directory from '../../shared/components/icons/Directory'
+import RichTooltip from '../../shared/components/RichTooltip'
 import { ThemeContext } from '../../shared/providers/theme-provider'
+import { getFilesForDir, highlightText, sortNodes } from '../utils'
+import FileNode from './FileNode'
+import FSNode from './FSNode'
+import { DirNameProps, DirNodeProps } from './types'
 
 const useStyles = () => {
+  const theme = useContext(ThemeContext)
   return {
     wrapper: css`
       position: relative;
@@ -19,6 +21,21 @@ const useStyles = () => {
       align-items: center;
       gap: 4px;
     `,
+    dirContainer: css`
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: ${theme.spacing.xs};
+    `,
+    fileCount: css`
+      font-size: 0.75rem;
+      border: 1px solid ${theme.colors.borderBg};
+      padding: 1px 4px;
+      border-radius: 4px;
+      color: ${theme.colors.placeholderText};
+      min-width: 12px;
+      text-align: center;
+    `,
   }
 }
 
@@ -27,6 +44,8 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
   const collapsed = !props.expandedDirs.has(currentPath)
   const styles = useStyles()
   const theme = useContext(ThemeContext)
+
+  const files = useMemo(() => getFilesForDir(props.node), [props.node])
 
   return (
     <div key={currentPath} css={styles.wrapper}>
@@ -39,7 +58,6 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
         onClick={() => props.onDirectoryToggle?.(currentPath, collapsed)}
         rowPaddingLeftExtra={props.level * props.config.indentPx + 6}
         verticalConnectorTop={-10}
-        displayName={props.node.name || (props.parentPath === '' ? '/' : '')}
         highlightString={props.highlightString}
         css={props.css}
       >
@@ -59,6 +77,12 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
               `}
             />
           )}
+          <DirName
+            showDetails={props.config.displayNodeDetails}
+            fileCount={files.length}
+            name={props.node.name || (props.parentPath === '' ? '/' : '')}
+            highlightString={props.highlightString}
+          />
         </div>
       </FSNode>
 
@@ -104,6 +128,31 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
             )
           })}
     </div>
+  )
+}
+
+const DirName: React.FC<DirNameProps> = ({
+  showDetails: displayNodeDetails,
+  fileCount,
+  name,
+  highlightString,
+}) => {
+  const styles = useStyles()
+  const fileCountText = `${fileCount} file${fileCount !== 1 ? 's' : ''}`
+
+  return (
+    <RichTooltip
+      tooltipText={`There ${fileCount === 1 ? 'is' : 'are'} ${fileCountText} in this directory`}
+    >
+      <div css={styles.dirContainer}>
+        {displayNodeDetails && (
+          <span css={styles.fileCount} title={`${fileCount} file${fileCount !== 1 ? 's' : ''}`}>
+            {fileCount}
+          </span>
+        )}
+        <span>{highlightText(name, highlightString || '')}</span>
+      </div>
+    </RichTooltip>
   )
 }
 

@@ -6,7 +6,7 @@ import DirNode from './components/DirNode'
 import FileNode from './components/FileNode'
 import { FileExplorerConfig, FileExplorerProps } from './types'
 import { buildTree, sortNodes } from './utils'
-import { Input } from 'antd'
+import { Input, Tag } from 'antd'
 import { DiffViewerThemeProvider } from '../shared/providers/theme-provider'
 
 const { Search } = Input
@@ -24,6 +24,17 @@ const useStyles = () => {
       font-family: ${theme.typography.regularFontFamily};
       font-size: ${theme.typography.regularFontSize}px;
       overflow: hidden;
+    `,
+
+    searchContainer: css`
+      display: flex;
+      flex-direction: column;
+      gap: ${theme.spacing.xs};
+    `,
+
+    searchSummary: css`
+      display: flex;
+      gap: ${theme.spacing.xs};
     `,
 
     // Didn't work via token override in the theme provider
@@ -46,6 +57,7 @@ const DEFAULT_CONFIG: FileExplorerConfig = {
   indentPx: 16,
   collapsePackages: true,
   showIcons: false,
+  displayNodeDetails: false,
 }
 
 export const FileExplorer: React.FC<FileExplorerProps> = ({
@@ -166,13 +178,26 @@ const FileExplorerContent: React.FC<FileExplorerProps> = ({
 
   return (
     <div css={[styles.container, customCss]} className={className}>
-      <Search
-        placeholder="Filter / Search Files"
-        allowClear
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
-        css={styles.search}
-      />
+      <div css={styles.searchContainer}>
+        <Search
+          placeholder="Filter / Search Files"
+          allowClear
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          css={styles.search}
+        />
+        {searchText && (
+          <div css={styles.searchSummary}>
+            {filteredFiles.length > 0 ? (
+              <Tag>
+                {filteredFiles.length} file{filteredFiles.length > 1 ? 's' : ''} found
+              </Tag>
+            ) : (
+              <Tag>No matches for this query</Tag>
+            )}
+          </div>
+        )}
+      </div>
 
       <div css={styles.fsTreeContainer}>
         {Array.from(tree.children.values())

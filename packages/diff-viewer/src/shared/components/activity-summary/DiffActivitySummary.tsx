@@ -1,8 +1,7 @@
-import React, { useContext, useMemo } from 'react'
+import React, { useContext } from 'react'
 import { css } from '@emotion/react'
-import { ThemeContext } from '../providers/theme-provider'
-import RichTooltip from './RichTooltip'
-import { FileDiff } from '../../diff-viewer/types'
+import { ThemeContext } from '../../providers/theme-provider'
+import RichTooltip from '../RichTooltip'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -22,31 +21,22 @@ const useStyles = () => {
   }
 }
 
-interface FileActivitySummaryProps {
-  /** The file diff object */
-  file: FileDiff
-  /** The maximum number of squares to display. Defaults to 10. */
+interface DiffActivitySummaryProps {
+  /** The number of additions */
+  additions: number
+  /** The number of deletions */
+  deletions: number
+  /** The maximum number of squares to display. Defaults to 5. */
   maxSquares?: number
 }
 
-const FileActivitySummary: React.FC<FileActivitySummaryProps> = ({ file, maxSquares = 5 }) => {
+const DiffActivitySummary: React.FC<DiffActivitySummaryProps> = ({
+  additions,
+  deletions,
+  maxSquares = 5,
+}) => {
   const styles = useStyles()
   const theme = useContext(ThemeContext)
-
-  const { additions, deletions } = useMemo(() => {
-    let additions = 0
-    let deletions = 0
-    for (const hunk of file.hunks) {
-      for (const change of hunk.changes) {
-        if (change.type === 'add') {
-          additions++
-        } else if (change.type === 'delete') {
-          deletions++
-        }
-      }
-    }
-    return { additions, deletions }
-  }, [file])
 
   const total = additions + deletions
   const tooltipText = `${additions} addition${
@@ -101,4 +91,4 @@ const FileActivitySummary: React.FC<FileActivitySummaryProps> = ({ file, maxSqua
   )
 }
 
-export default FileActivitySummary
+export default DiffActivitySummary

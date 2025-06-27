@@ -118,26 +118,31 @@ const solarizedLightColors: ColorTokens = {
 
 export const Themes = {
   light: {
+    name: 'light',
     colors: lightColors,
     spacing,
     typography,
   },
   dark: {
+    name: 'dark',
     colors: darkColors,
     spacing,
     typography,
   },
   dracula: {
+    name: 'dracula',
     colors: draculaColors,
     spacing,
     typography,
   },
   solarizedDark: {
+    name: 'solarizedDark',
     colors: solarizedDarkColors,
     spacing,
     typography,
   },
   solarizedLight: {
+    name: 'solarizedLight',
     colors: solarizedLightColors,
     spacing,
     typography,

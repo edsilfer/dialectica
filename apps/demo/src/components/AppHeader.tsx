@@ -2,6 +2,7 @@ import { Themes, ThemeTokens } from '@diff-viewer'
 import { css } from '@emotion/react'
 import { Select, Switch, Typography } from 'antd'
 import React from 'react'
+import { useDiffViewerState } from '../providers/ConfigProvider'
 
 const { Title, Text } = Typography
 
@@ -17,6 +18,12 @@ const useStyles = (theme: ThemeTokens) => ({
   headers: css`
     margin: 0 !important;
     color: ${theme.colors.textPrimary} !important;
+  `,
+  configContainer: css`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    flex: 1;
   `,
   themeSelect: css`
     width: 200px;
@@ -45,32 +52,20 @@ const useStyles = (theme: ThemeTokens) => ({
   `,
 })
 
-interface AppHeaderProps {
-  /** The selected theme. */
-  selectedTheme: ThemeTokens
-  /** Whether to show the split view. */
-  isSplitView: boolean
-  /** Whether to collapse the packages. */
-  collapsePackages: boolean
-
-  // Callbacks ____________________________________________
-  /** Callback to change the theme. */
-  onThemeChange: (theme: ThemeTokens) => void
-  /** Callback to change the split view. */
-  onSplitViewChange: (checked: boolean) => void
-  /** Callback to change the collapse packages. */
-  onCollapsePackagesChange: (checked: boolean) => void
-}
-
-const AppHeader: React.FC<AppHeaderProps> = ({
-  selectedTheme,
-  isSplitView,
-  collapsePackages,
-  onThemeChange,
-  onSplitViewChange,
-  onCollapsePackagesChange,
-}) => {
-  const styles = useStyles(selectedTheme)
+const AppHeader: React.FC = () => {
+  const {
+    theme,
+    isSplitView,
+    collapsePackages,
+    showIcons,
+    displayNodeDetails,
+    setTheme,
+    setIsSplitView,
+    setCollapsePackages,
+    setShowIcons,
+    setDisplayNodeDetails,
+  } = useDiffViewerState()
+  const styles = useStyles(theme)
 
   return (
     <div css={styles.horizontal}>
@@ -83,11 +78,11 @@ const AppHeader: React.FC<AppHeaderProps> = ({
         </Text>
       </div>
 
-      <div css={styles.vertical} style={{ marginLeft: 'auto' }}>
+      <div css={styles.configContainer}>
         <Select
           defaultValue="light"
           css={styles.themeSelect}
-          onChange={(value) => onThemeChange(Themes[value as keyof typeof Themes])}
+          onChange={(value) => setTheme(Themes[value as keyof typeof Themes])}
           options={[
             { value: 'light', label: 'Light' },
             { value: 'dark', label: 'Dark' },
@@ -98,9 +93,13 @@ const AppHeader: React.FC<AppHeaderProps> = ({
         />
         <div css={styles.switchContainer}>
           <Text css={styles.switchLabel}>Split</Text>
-          <Switch checked={isSplitView} onChange={onSplitViewChange} size="small" />
+          <Switch checked={isSplitView} onChange={setIsSplitView} size="small" />
           <Text css={styles.switchLabel}>Collapse Packages</Text>
-          <Switch checked={collapsePackages} onChange={onCollapsePackagesChange} size="small" />
+          <Switch checked={collapsePackages} onChange={setCollapsePackages} size="small" />
+          <Text css={styles.switchLabel}>Show Icons</Text>
+          <Switch checked={showIcons} onChange={setShowIcons} size="small" />
+          <Text css={styles.switchLabel}>Show Details</Text>
+          <Switch checked={displayNodeDetails} onChange={setDisplayNodeDetails} size="small" />
         </div>
       </div>
     </div>
