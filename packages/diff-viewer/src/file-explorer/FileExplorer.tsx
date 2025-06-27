@@ -45,6 +45,7 @@ const DEFAULT_CONFIG: FileExplorerConfig = {
   nodeConnector: 'solid',
   indentPx: 16,
   collapsePackages: true,
+  showIcons: false,
 }
 
 export const FileExplorer: React.FC<FileExplorerProps> = ({

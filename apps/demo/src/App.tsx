@@ -72,6 +72,7 @@ export default function App() {
             nodeConnector: 'solid',
             indentPx: 20,
             collapsePackages,
+            showIcons: true,
           }}
         />
 

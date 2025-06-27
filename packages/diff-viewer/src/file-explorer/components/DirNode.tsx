@@ -1,15 +1,23 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { css } from '@emotion/react'
 import { sortNodes } from '../utils'
 import FileNode from './FileNode'
 import { DirNodeProps } from './types'
 import FSNode from './FSNode'
 import ExpandButton from '../../diff-viewer/file-viewer/ExpandButton'
+import Directory from '../../shared/icons/Directory'
+import { ThemeContext } from '../../shared/providers/theme-provider'
 
 const useStyles = () => {
   return {
     wrapper: css`
       position: relative;
+    `,
+    content: css`
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 4px;
     `,
   }
 }
@@ -18,6 +26,7 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
   const currentPath = props.parentPath ? `${props.parentPath}/${props.node.name}` : props.node.name
   const collapsed = !props.expandedDirs.has(currentPath)
   const styles = useStyles()
+  const theme = useContext(ThemeContext)
 
   return (
     <div key={currentPath} css={styles.wrapper}>
@@ -34,12 +43,23 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
         highlightString={props.highlightString}
         css={props.css}
       >
-        <ExpandButton
-          collapsed={collapsed}
-          size={14}
-          tooltipTextExpand="Expand directory"
-          tooltipTextCollapse="Collapse directory"
-        />
+        <div css={styles.content}>
+          <ExpandButton
+            collapsed={collapsed}
+            size={14}
+            tooltipTextExpand="Expand directory"
+            tooltipTextCollapse="Collapse directory"
+          />
+          {props.config.showIcons && (
+            <Directory
+              size={14}
+              solid
+              css={css`
+                color: ${theme.colors.accentColor};
+              `}
+            />
+          )}
+        </div>
       </FSNode>
 
       {!collapsed &&

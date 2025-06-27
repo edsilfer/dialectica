@@ -1,34 +1,25 @@
-import FSNode from './FSNode'
 import { css } from '@emotion/react'
-import React, { useContext } from 'react'
-import { ThemeContext } from '../../shared/providers/theme-provider'
-import type { FileExplorerConfig } from '../types'
+import React from 'react'
+import File from '../../shared/icons/File'
+import FSNode from './FSNode'
 import { FileNodeProps } from './types'
 
-const useStyles = (config: FileExplorerConfig) => {
-  const theme = useContext(ThemeContext)
-
+const useStyles = () => {
   return {
-    content: (level: number) => css`
+    content: css`
       display: flex;
       flex-direction: row;
       align-items: center;
-      padding-left: ${level * config.indentPx}px;
     `,
 
-    fileBullet: css`
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background-color: ${theme.colors.textPrimary};
-      margin-right: ${theme.spacing.xs};
+    iconContainer: css`
       z-index: 100;
     `,
   }
 }
 
 const FileNode: React.FC<FileNodeProps> = (props) => {
-  const styles = useStyles(props.config)
+  const styles = useStyles()
 
   return (
     <FSNode
@@ -39,13 +30,17 @@ const FileNode: React.FC<FileNodeProps> = (props) => {
       css={props.css}
       className={props.className}
       onClick={() => props.onFileClick?.(props.node.file)}
-      rowPaddingLeftExtra={0}
+      rowPaddingLeftExtra={props.level * props.config.indentPx + 6}
       verticalConnectorTop={-12}
       displayName={props.node.name}
       highlightString={props.highlightString}
     >
-      <div css={styles.content(props.level)}>
-        <span css={styles.fileBullet} />
+      <div css={styles.content}>
+        {props.config.showIcons && (
+          <div css={styles.iconContainer}>
+            <File size={14} />
+          </div>
+        )}
       </div>
     </FSNode>
   )

@@ -53,4 +53,6 @@ export interface FileExplorerConfig {
   indentPx: number
   /** Whether to collapse the packages. */
   collapsePackages?: boolean
+  /** Whether to show file/folder icons. */
+  showIcons?: boolean
 }
