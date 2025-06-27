@@ -23,6 +23,7 @@ const useStyles = (config: FileExplorerConfig) => {
       padding: ${theme.spacing.xs};
       cursor: pointer;
       position: relative;
+      color: ${theme.colors.textPrimary};
 
       &:hover {
         border-radius: ${theme.spacing.xs};

@@ -1,9 +1,14 @@
 export interface ColorTokens {
   // Common Tokens_______________________________________
+  /** The background color of the input */
+  defaultBg: string
+
   /** The background color of all borders */
   borderBg: string
   /** The primary text color */
   textPrimary: string
+  /** The placeholder text color */
+  placeholderText: string
   /** The background color of the tooltip */
   tooltipBg: string
   /** The text color of the tooltip */
@@ -34,6 +39,8 @@ export interface ColorTokens {
   hunkViewerAddCommentBg: string
 
   // File Explorer Tokens_____________________________
+  /** The background color of the file explorer */
+  fileExplorerBg: string
   /** The background color of the line connector */
   fileExplorerlineConnectorBg: string
 }

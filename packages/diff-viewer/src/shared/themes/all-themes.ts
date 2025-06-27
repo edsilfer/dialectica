@@ -2,8 +2,10 @@ import { ColorTokens } from './types'
 import { spacing, typography } from './common.js'
 
 const lightColors: ColorTokens = {
+  defaultBg: '#ffffff',
   borderBg: '#e1e4e8',
   textPrimary: '#24292e',
+  placeholderText: '#6a737d',
   tooltipBg: '#24292e',
   tooltipText: '#ffffff',
   fileViewerHeaderBg: '#f6f8fa',
@@ -16,12 +18,15 @@ const lightColors: ColorTokens = {
   hunkViewerLineContextBg: '#f6f8fa',
   hunkViewerLineHunkBg: '#f1f8ff',
   hunkViewerAddCommentBg: '#0366d6',
+  fileExplorerBg: '#ffffff',
   fileExplorerlineConnectorBg: '#cacdd0',
 }
 
 const darkColors: ColorTokens = {
+  defaultBg: '#0d1117',
   borderBg: '#30363d',
   textPrimary: '#c9d1d9',
+  placeholderText: '#484f58',
   tooltipBg: '#ffffff',
   tooltipText: '#161b22',
   fileViewerHeaderBg: '#161b22',
@@ -34,12 +39,15 @@ const darkColors: ColorTokens = {
   hunkViewerLineContextBg: '#0d1117',
   hunkViewerLineHunkBg: 'rgba(56, 139, 253, 0.15)',
   hunkViewerAddCommentBg: '#0366d6',
+  fileExplorerBg: '#0d1117',
   fileExplorerlineConnectorBg: '#30363d',
 }
 
 const draculaColors: ColorTokens = {
-  borderBg: '#44475a',
+  defaultBg: '#282a36',
+  borderBg: '#6272a4',
   textPrimary: '#f8f8f2',
+  placeholderText: '#6272a4',
   tooltipBg: '#ffffff',
   tooltipText: '#282a36',
   fileViewerHeaderBg: '#282a36',
@@ -52,12 +60,15 @@ const draculaColors: ColorTokens = {
   hunkViewerLineContextBg: '#282a36',
   hunkViewerLineHunkBg: 'rgba(189, 147, 249, 0.15)',
   hunkViewerAddCommentBg: '#bd93f9',
+  fileExplorerBg: '#282a36',
   fileExplorerlineConnectorBg: '#44475a',
 }
 
 const solarizedDarkColors: ColorTokens = {
-  borderBg: '#073642',
+  defaultBg: '#002b36',
+  borderBg: '#586e75',
   textPrimary: '#839496',
+  placeholderText: '#586e75',
   tooltipBg: '#839496',
   tooltipText: '#002b36',
   fileViewerHeaderBg: '#002b36',
@@ -70,12 +81,15 @@ const solarizedDarkColors: ColorTokens = {
   hunkViewerLineContextBg: '#002b36',
   hunkViewerLineHunkBg: 'rgba(38, 139, 210, 0.15)',
   hunkViewerAddCommentBg: '#6c71c4',
+  fileExplorerBg: '#002b36',
   fileExplorerlineConnectorBg: '#073642',
 }
 
 const solarizedLightColors: ColorTokens = {
-  borderBg: '#eee8d5',
+  defaultBg: '#fdf6e3',
+  borderBg: '#93a1a1',
   textPrimary: '#657b83',
+  placeholderText: '#93a1a1',
   tooltipBg: '#657b83',
   tooltipText: '#fdf6e3',
   fileViewerHeaderBg: '#fdf6e3',
@@ -88,6 +102,7 @@ const solarizedLightColors: ColorTokens = {
   hunkViewerLineContextBg: '#fdf6e3',
   hunkViewerLineHunkBg: 'rgba(38, 139, 210, 0.15)',
   hunkViewerAddCommentBg: '#6c71c4',
+  fileExplorerBg: '#fdf6e3',
   fileExplorerlineConnectorBg: '#eee8d5',
 }
 

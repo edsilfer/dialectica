@@ -14,6 +14,6 @@ export const typography: TypographyTokens = {
     '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   regularFontSize: 14,
   codeFontFamily: 'Menlo, Monaco, Consolas, "Courier New", monospace',
-  codeFontSize: 12,
-  codeLineHeight: 1.5,
+  codeFontSize: 11,
+  codeLineHeight: 1,
 }
