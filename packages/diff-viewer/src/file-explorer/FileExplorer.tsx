@@ -5,6 +5,7 @@ import type { FileDiff, ParsedDiff } from '../diff-viewer/types'
 import { buildTree, sortNodes } from './utils'
 import DirNode from './components/DirNode'
 import FileNode from './components/FileNode'
+import { FileExplorerConfig } from './types'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -13,19 +14,24 @@ const useStyles = () => {
     container: css`
       display: flex;
       flex-direction: column;
-      border: 1px solid ${theme.colors.borderBg};
-      border-radius: ${theme.spacing.xs};
-      font-family: ${theme.typography.regularFontFamily};
       color: ${theme.colors.textPrimary};
+      font-family: ${theme.typography.regularFontFamily};
       font-size: ${theme.typography.regularFontSize}px;
-      overflow: hidden;
     `,
   }
+}
+
+const DEFAULT_CONFIG: FileExplorerConfig = {
+  startExpanded: true,
+  nodeConnector: 'solid',
+  indentPx: 16,
 }
 
 export interface FileExplorerProps {
   /** Parsed diff used to build the tree */
   diff: ParsedDiff
+  /** Configuration options for the file explorer */
+  config?: FileExplorerConfig
   /** Optional css-in-js style */
   css?: Interpolation<Theme>
   /** Optional class name */
@@ -38,17 +44,34 @@ export interface FileExplorerProps {
   onDirectoryToggle?: (path: string, expanded: boolean) => void
 }
 
-const FileExplorer: React.FC<FileExplorerProps> = ({
+export const FileExplorer: React.FC<FileExplorerProps> = ({
   diff,
-  css: cssProp,
+  config = DEFAULT_CONFIG,
+  css: customCss,
   className,
   onFileClick,
   onDirectoryToggle,
 }) => {
   const styles = useStyles()
   const tree = useMemo(() => buildTree(diff.files), [diff.files])
-  const [expandedDirs, setExpandedDirs] = useState<Set<string>>(new Set())
-  const indentPx = 16
+
+  // Handle expanding the initial directories based on the configuration.
+  const initialExpandedDirs = useMemo(() => {
+    if (!config.startExpanded) return new Set<string>()
+    const dirs = new Set<string>()
+    const collectDirs = (node: typeof tree, currentPath: string) => {
+      if (currentPath) dirs.add(currentPath)
+      node.children.forEach((child) => {
+        if (child.type === 'directory') {
+          const childPath = currentPath ? `${currentPath}/${child.name}` : child.name
+          collectDirs(child, childPath)
+        }
+      })
+    }
+    collectDirs(tree, '')
+    return dirs
+  }, [tree, config.startExpanded])
+  const [expandedDirs, setExpandedDirs] = useState<Set<string>>(initialExpandedDirs)
 
   const handleDirectoryToggle = (path: string, expanded: boolean) => {
     setExpandedDirs((prev) => {
@@ -64,7 +87,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
   }
 
   return (
-    <div css={[styles.container, cssProp]} className={className}>
+    <div css={[styles.container, customCss]} className={className}>
       {Array.from(tree.children.values())
         .sort(sortNodes)
         .map((node) => {
@@ -72,9 +95,9 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
             return (
               <FileNode
                 key={node.name}
+                config={config}
                 node={node}
                 level={0}
-                indentPx={indentPx}
                 parentPath=""
                 onFileClick={onFileClick}
               />
@@ -84,9 +107,9 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
           return (
             <DirNode
               key={node.name}
+              config={config}
               node={node}
               level={0}
-              indentPx={indentPx}
               parentPath=""
               expandedDirs={expandedDirs}
               onFileClick={onFileClick}
@@ -97,5 +120,3 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
     </div>
   )
 }
-
-export default FileExplorer

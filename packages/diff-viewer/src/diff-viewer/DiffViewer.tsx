@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import type { ParsedDiff, DiffLine, DisplayConfig } from './types'
+import type { ParsedDiff, DiffLine, DisplayConfig as DiffViewerConfig } from './types'
 import FileViewer from './file-viewer/FileViewer'
 import { Interpolation, Theme, css } from '@emotion/react'
 import { DiffViewerThemeProvider, ThemeContext } from '../shared/providers/theme-provider'
@@ -19,7 +19,7 @@ const useStyles = () => {
 }
 
 /** The default display configuration for the diff viewer. */
-const DEFAULT_DISPLAY_CONFIG: DisplayConfig = {
+const DEFAULT_DISPLAY_CONFIG: DiffViewerConfig = {
   mode: 'unified',
   highlightSyntax: false,
   showLineNumbers: true,
@@ -30,7 +30,7 @@ export type DiffViewerProps = {
   /** The parsed diff to display. */
   diff: ParsedDiff
   /** Display configuration options. */
-  displayConfig?: DisplayConfig
+  displayConfig?: DiffViewerConfig
   /** The theme for the viewer */
   theme?: ThemeTokens
   /** Callback for when a line is clicked. */

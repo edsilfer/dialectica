@@ -1,7 +1,7 @@
 import { css, Interpolation, Theme } from '@emotion/react'
 import React, { useContext } from 'react'
 import { ThemeContext } from '../../shared/providers/theme-provider'
-import type { FileNode } from '../types'
+import type { FileExplorerConfig, FileNode } from '../types'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -30,12 +30,12 @@ const useStyles = () => {
 }
 
 export interface FileExplorerFileNodeProps {
+  /** Configuration options for the file explorer */
+  config: FileExplorerConfig
   /** The file node to render */
   node: FileNode
   /** The nesting level of this node */
   level: number
-  /** The indentation width in pixels */
-  indentPx: number
   /** The parent path for building the current path */
   parentPath: string
   /** Optional css-in-js style */
@@ -57,7 +57,7 @@ const FileNode: React.FC<FileExplorerFileNodeProps> = (props) => {
       key={currentPath}
       css={[styles.row, props.css]}
       className={props.className}
-      style={{ paddingLeft: props.level * props.indentPx }}
+      style={{ paddingLeft: props.level * props.config.indentPx }}
       onClick={() => props.onFileClick?.(props.node.file)}
     >
       <span css={styles.fileBullet} />

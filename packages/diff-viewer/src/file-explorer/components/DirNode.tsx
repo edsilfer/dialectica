@@ -5,7 +5,7 @@ import { FileDiff } from '../../diff-viewer/types'
 import ExpandButton from '../../diff-viewer/file-viewer/ExpandButton'
 import { sortNodes } from '../utils'
 import FileNode from './FileNode'
-import type { DirectoryNode, TreeNode } from '../types'
+import type { DirectoryNode, FileExplorerConfig, TreeNode } from '../types'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -30,12 +30,12 @@ const useStyles = () => {
 }
 
 export interface DirNodeProps {
+  /** Configuration options for the file explorer */
+  config: FileExplorerConfig
   /** The directory node to render */
   node: DirectoryNode
   /** The nesting level of this node */
   level: number
-  /** The indentation width in pixels */
-  indentPx: number
   /** The parent path for building the current path */
   parentPath: string
   /** Whether the parent directory is expanded */
@@ -59,10 +59,10 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
   return (
     <div key={currentPath}>
       <DirectoryRow
+        config={props.config}
         currentPath={currentPath}
         collapsed={collapsed}
         level={props.level}
-        indentPx={props.indentPx}
         displayName={props.node.name || (props.parentPath === '' ? '/' : '')}
         cssProp={props.css}
         className={props.className}
@@ -76,10 +76,10 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
             if (child.type === 'file') {
               return (
                 <FileNode
+                  config={props.config}
                   key={`${currentPath}/${child.name}`}
                   node={child}
                   level={props.level + 1}
-                  indentPx={props.indentPx}
                   parentPath={currentPath}
                   onFileClick={props.onFileClick}
                 />
@@ -87,10 +87,10 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
             }
             return (
               <DirNode
+                config={props.config}
                 key={`${currentPath}/${child.name}`}
                 node={child}
                 level={props.level + 1}
-                indentPx={props.indentPx}
                 parentPath={currentPath}
                 expandedDirs={props.expandedDirs}
                 onFileClick={props.onFileClick}
@@ -103,14 +103,14 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
 }
 
 interface DirectoryRowProps {
+  /** Configuration options for the file explorer */
+  config: FileExplorerConfig
   /** The current path of the directory */
   currentPath: string
   /** Whether the directory is collapsed */
   collapsed: boolean
   /** The nesting level of this node */
   level: number
-  /** The indentation width in pixels */
-  indentPx: number
   /** The display name of the directory */
   displayName: string
 
@@ -130,7 +130,7 @@ const DirectoryRow: React.FC<DirectoryRowProps> = (props) => {
     <div
       css={[styles.row, props.cssProp]}
       className={props.className}
-      style={{ paddingLeft: props.level * props.indentPx }}
+      style={{ paddingLeft: props.level * props.config.indentPx }}
       onClick={() => props.onDirectoryToggle?.(props.currentPath, props.collapsed)}
     >
       <span css={styles.expandBtnWrapper}>

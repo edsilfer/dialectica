@@ -19,3 +19,12 @@ export interface FileNode {
 }
 
 export type TreeNode = DirectoryNode | FileNode
+
+export interface FileExplorerConfig {
+  /** The initial expanded directories. */
+  startExpanded?: boolean
+  /** The connector style between nodes. */
+  nodeConnector?: 'solid' | 'dashed' | 'none'
+  /** The indentation of the nodes. */
+  indentPx: number
+}
