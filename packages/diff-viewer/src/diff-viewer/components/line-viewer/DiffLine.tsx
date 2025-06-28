@@ -14,6 +14,13 @@ const useStyles = () => {
     hunk: theme.colors.hunkViewerLineHunkBg,
   }
 
+  const LINE_TYPE_TO_NUMBER_BG_COLOR = {
+    add: theme.colors.hunkViewerLineNumberAddedBg,
+    delete: theme.colors.hunkViewerLineNumberRemovedBg,
+    context: theme.colors.hunkViewerLineNumberContextBg,
+    hunk: theme.colors.hunkViewerLineNumberHunkBg,
+  }
+
   const sharedCellHeight = css`
     vertical-align: middle;
     height: ${theme.typography.codeLineHeight}rem;
@@ -36,13 +43,14 @@ const useStyles = () => {
       `,
     ],
 
-    numberContainer: (side: 'left' | 'right') => css`
+    numberContainer: (side: 'left' | 'right', lineType: DiffLineType) => css`
       ${sharedCellHeight};
       text-align: center;
       font-family: ${theme.typography.codeFontFamily};
       font-size: ${theme.typography.codeFontSize}px;
       padding: 0 ${theme.spacing.sm};
       border-${side}: 1px solid ${theme.colors.borderBg};
+      background-color: ${LINE_TYPE_TO_NUMBER_BG_COLOR[lineType]};
       user-select: none;
     `,
 
@@ -89,13 +97,13 @@ const DiffLine: React.FC<DiffLineProps> = (props) => {
   return (
     <tr css={styles.container(props.type)}>
       {!props.hideLeftNumber && (
-        <td css={styles.numberContainer('left')}>
+        <td css={styles.numberContainer('left', props.type)}>
           {props.leftNumber !== null ? <span>{props.leftNumber}</span> : null}
         </td>
       )}
 
       {!props.hideRightNumber && (
-        <td css={styles.numberContainer('right')}>
+        <td css={styles.numberContainer('right', props.type)}>
           {props.rightNumber !== null ? <span>{props.rightNumber}</span> : null}
         </td>
       )}

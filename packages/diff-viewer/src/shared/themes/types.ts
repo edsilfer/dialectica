@@ -31,12 +31,20 @@ export interface ColorTokens {
   hunkViewerBg: string
   /** The background color of added lines */
   hunkViewerLineAddedBg: string
+  /** The background color of the line number of added lines */
+  hunkViewerLineNumberAddedBg: string
   /** The background color of removed lines */
   hunkViewerLineRemovedBg: string
+  /** The background color of the line number of removed lines */
+  hunkViewerLineNumberRemovedBg: string
   /** The background color of context lines */
   hunkViewerLineContextBg: string
+  /** The background color of the line number of context lines */
+  hunkViewerLineNumberContextBg: string
   /** The background color of the hunk line */
   hunkViewerLineHunkBg: string
+  /** The background color of the line number of hunk lines */
+  hunkViewerLineNumberHunkBg: string
   /** The background color of the add comment button */
   hunkViewerAddCommentBg: string
 
