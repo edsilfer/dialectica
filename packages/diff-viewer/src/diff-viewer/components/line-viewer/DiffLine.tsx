@@ -1,9 +1,8 @@
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
-import { ThemeContext } from '../../../shared/providers/theme-provider'
 import AddButton from '../../../shared/components/AddButton'
-
-type DiffLineType = 'add' | 'delete' | 'context' | 'hunk'
+import { ThemeContext } from '../../../shared/providers/theme-provider'
+import { DiffLineProps, DiffLineType } from './types'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -42,7 +41,7 @@ const useStyles = () => {
       text-align: center;
       font-family: ${theme.typography.codeFontFamily};
       font-size: ${theme.typography.codeFontSize}px;
-      padding: 0 ${theme.spacing.xs}px;
+      padding: 0 ${theme.spacing.sm};
       border-${side}: 1px solid ${theme.colors.borderBg};
       user-select: none;
     `,
@@ -54,11 +53,12 @@ const useStyles = () => {
       font-size: 0.85rem;
       text-align: center;
       font-family: ${theme.typography.codeFontFamily};
+      padding: 0 ${theme.spacing.sm};
     `,
 
     codeContainer: css`
       ${sharedCellHeight};
-      padding-left: ${theme.spacing.xs}px;
+      padding: 0 ${theme.spacing.sm};
       font-family: ${theme.typography.codeFontFamily};
       font-size: ${theme.typography.codeFontSize}px;
       white-space: pre-wrap;
@@ -81,26 +81,6 @@ const useStyles = () => {
       z-index: 1;
     `,
   }
-}
-
-interface DiffLineProps {
-  /** The line number of the left side of the hunk. If null, the line number is not shown. */
-  leftNumber: number | null
-  /** The line number of the right side of the hunk. If null, the line number is not shown. */
-  rightNumber: number | null
-  /** The content of the line */
-  content: string
-  /** Whether to show the line numbers */
-  showNumber: boolean
-  /** The type of the line */
-  type: DiffLineType
-  /** Whether to hide the left number column entirely */
-  hideLeftNumber?: boolean
-  /** Whether to hide the right number column entirely */
-  hideRightNumber?: boolean
-
-  /** The function to call when the add button is clicked */
-  onAddButtonClick: () => void
 }
 
 const DiffLine: React.FC<DiffLineProps> = (props) => {

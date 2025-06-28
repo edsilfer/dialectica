@@ -1,9 +1,8 @@
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
-import type { DisplayConfig } from '../../types'
-import type { LineWithHighlight } from './line-utils'
-import DiffLine from './DiffLine'
 import { ThemeContext } from '../../../shared/providers/theme-provider'
+import DiffLine from './DiffLine'
+import { UnifiedViewerProps } from './types'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -13,17 +12,10 @@ const useStyles = () => {
       display: table;
       width: 100%;
       border-collapse: collapse;
-      table-layout: fixed;
+      table-layout: auto;
       background-color: ${theme.colors.hunkViewerBg};
     `,
   }
-}
-
-interface UnifiedViewerProps {
-  /** Flattened list of diff lines (already highlighted) */
-  lines: LineWithHighlight[]
-  /** Display options */
-  config: DisplayConfig
 }
 
 const UnifiedViewer: React.FC<UnifiedViewerProps> = ({ lines, config }) => {
@@ -40,9 +32,10 @@ const UnifiedViewer: React.FC<UnifiedViewerProps> = ({ lines, config }) => {
       */}
       <colgroup>
         {[
-          <col key="left" style={{ width: '50px' }} />,
-          <col key="right" style={{ width: '50px' }} />,
-          <col key="prefix" style={{ width: '25px' }} />,
+          /* Columns without explicit widths so they expand to fit their widest cell */
+          <col key="left" />,
+          <col key="right" />,
+          <col key="prefix" />,
           <col key="code" />,
         ]}
       </colgroup>

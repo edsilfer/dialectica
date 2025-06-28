@@ -1,6 +1,7 @@
 import hljs from 'highlight.js/lib/common'
 import 'highlight.js/styles/github.css'
-import type { Hunk, DisplayConfig } from '../../types'
+import type { Hunk } from '../../types'
+import { LineWithHighlight, SplitLinePair } from './types'
 
 /**
  * Escapes HTML entities so the string can be rendered safely inside \n
@@ -34,48 +35,17 @@ export const highlightContent = (content: string, language: string): string => {
 }
 
 /**
- * Shared props for both UnifiedHunkViewer and SplitHunkViewer.
- */
-export interface HunkViewerProps {
-  /** The hunk to display */
-  hunk: Hunk
-  /** Display configuration options */
-  config: DisplayConfig
-  /** Detected language for syntax highlighting */
-  language: string
-}
-
-// ADD: define LineWithHighlight and SplitLinePair along with builder utility
-export type DiffLineType = 'add' | 'delete' | 'context' | 'hunk'
-
-/**
- * Diff line augmented with a pre-computed syntax-highlighted HTML string.
- */
-export interface LineWithHighlight {
-  type: DiffLineType
-  content: string
-  highlightedContent: string
-  lineNumberOld: number | null
-  lineNumberNew: number | null
-}
-
-/**
- * Represents a single visual row in a split diff – the left and right halves.
- */
-export interface SplitLinePair {
-  left: LineWithHighlight | null
-  right: LineWithHighlight | null
-}
-
-/**
- * Convert the changes inside a hunk into an array of left/right pairs that can be
- * consumed by the SplitHunkViewer component.
+ * Build pairs of lines for a hunk.
  *
- * The algorithm tries to pair consecutive deletions and additions so that they
- * appear on the same visual row. Context lines are duplicated on both sides
- * while the hunk header spans the full width.
+ * The algorithm tries to:
+ * 1. Pair consecutive deletions and additions - so that they appear on the same visual row.
+ * 2. Duplicate context lines on both sides.
+ * 3. Span the hunk header across the full width.
+ * 4. Ignore empty diff lines (only whitespace) to avoid rendering blank rows.
  *
- * Empty diff lines (only whitespace) are ignored to avoid rendering blank rows.
+ * @param hunk     - The hunk to build pairs for.
+ * @param language - The language of the code snippet.
+ * @returns        - The pairs of lines.
  */
 export const buildSplitHunkPairs = (hunk: Hunk, language: string): SplitLinePair[] => {
   // Helper to build the @@ header line that spans the whole row.

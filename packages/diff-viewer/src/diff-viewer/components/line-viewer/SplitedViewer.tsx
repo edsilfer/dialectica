@@ -18,7 +18,25 @@ const useStyles = () => {
     sideTable: css`
       width: 50%;
       border-collapse: collapse;
-      table-layout: fixed;
+      table-layout: auto;
+
+      /* Add horizontal gap between the two side tables */
+      &:not(:first-of-type) {
+        margin-left: ${theme.spacing.xs};
+      }
+
+      /* Ensure correct borders for the line-number column */
+      /* Left panel (first table): show ONLY the right border */
+      &:first-of-type td:first-of-type {
+        border-left: none !important;
+        border-right: 1px solid ${theme.colors.borderBg};
+      }
+
+      /* Right panel (second table): show BOTH left and right borders */
+      &:not(:first-of-type) td:first-of-type {
+        border-left: 1px solid ${theme.colors.borderBg};
+        border-right: 1px solid ${theme.colors.borderBg};
+      }
     `,
   }
 }
@@ -41,8 +59,9 @@ const SideTable: React.FC<{
   return (
     <table css={styles.sideTable}>
       <colgroup>
-        <col style={{ width: '50px' }} /> {/* Line number (old on left, new on right) */}
-        <col style={{ width: '25px' }} /> {/* Prefix (-/+) */}
+        {/* Columns without explicit widths so they expand to fit their widest cell */}
+        <col /> {/* Line number (old on left, new on right) */}
+        <col /> {/* Prefix (-/+) */}
         <col /> {/* Code */}
       </colgroup>
       <tbody>
