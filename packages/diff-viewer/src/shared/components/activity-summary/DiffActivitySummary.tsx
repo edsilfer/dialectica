@@ -84,7 +84,7 @@ const DiffActivitySummary: React.FC<DiffActivitySummaryProps> = ({
     <RichTooltip tooltipText={tooltipText}>
       <div css={styles.container}>
         {squares.map((type, index) => (
-          <div key={index} css={styles.square(getColor(type))} />
+          <div key={index} css={styles.square(getColor(type))} data-testid="diff-activity-square" />
         ))}
       </div>
     </RichTooltip>
