@@ -26,14 +26,27 @@ export const DiffViewerThemeProvider = ({ children, theme }: DiffViewerThemeProp
       colorBgBase: theme.colors.hunkViewerBg,
       colorBgContainer: theme.colors.hunkViewerBg,
       colorBgElevated: theme.colors.fileExplorerBg,
+
+      // Global hover token so components pick accent color on hover
+      colorPrimaryHover: theme.colors.accentColor,
+      colorPrimaryTextHover: theme.colors.accentColor,
+
+      // Typography
+      fontFamily: theme.typography.regularFontFamily,
+      fontSize: theme.typography.regularFontSize,
+      fontSizeSM: theme.typography.regularFontSizeSM,
     },
     components: {
       Input: {
         colorBgContainer: theme.colors.colorPrimary,
-        hoverBorderColor: theme.colors.borderBg,
-        activeBorderColor: theme.colors.borderBg,
+        hoverBorderColor: theme.colors.accentColor,
+        activeBorderColor: theme.colors.accentColor,
         activeShadow: 'none',
-        inputFontSize: theme.typography.codeFontSize,
+        inputFontSize: theme.typography.regularFontSize,
+      },
+      Button: {
+        fontSize: theme.typography.regularFontSize,
+        fontSizeSM: theme.typography.regularFontSizeSM,
       },
     },
   }

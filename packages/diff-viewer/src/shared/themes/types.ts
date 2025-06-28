@@ -68,6 +68,8 @@ export interface TypographyTokens {
   regularFontFamily: string
   /** The font size of the regular text */
   regularFontSize: number
+  /** The font size of the regular text */
+  regularFontSizeSM: number
   /** The font family of the code text */
   codeFontFamily: string
   /** The font size of the code text */

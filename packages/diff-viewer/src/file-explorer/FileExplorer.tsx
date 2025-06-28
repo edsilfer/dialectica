@@ -5,7 +5,7 @@ import { Themes } from '../shared/themes'
 import DirNode from './components/DirNode'
 import FileNode from './components/FileNode'
 import { FileExplorerConfig, FileExplorerProps } from './types'
-import { nodeComparator } from './node-utils'
+import { nodeComparator, listDirPaths } from './node-utils'
 import { DiffViewerThemeProvider } from '../shared/providers/theme-provider'
 import { FileExplorerProvider, useFileExplorerContext } from './provider/file-explorer-context'
 import { ExplorerBar } from './components/Toolbar'
@@ -60,6 +60,14 @@ const FileExplorerContent: React.FC<Omit<FileExplorerProps, 'diff' | 'config'>> 
   const styles = useStyles()
   const { setSelectedNode, setExpandedDirs, tree } = useFileExplorerContext()
 
+  const handleExpandAll = () => {
+    setExpandedDirs(listDirPaths(tree))
+  }
+
+  const handleCollapseAll = () => {
+    setExpandedDirs(new Set<string>())
+  }
+
   const handleDirectoryToggle = (path: string, expanded: boolean) => {
     setExpandedDirs((prev) => {
       const newSet = new Set(prev)
@@ -86,7 +94,7 @@ const FileExplorerContent: React.FC<Omit<FileExplorerProps, 'diff' | 'config'>> 
 
   return (
     <div css={[styles.container, props.css]} className={props.className}>
-      <ExplorerBar />
+      <ExplorerBar onExpandAll={handleExpandAll} onCollapseAll={handleCollapseAll} />
 
       <div css={styles.fsTreeContainer}>
         {Array.from(tree.children.values())
