@@ -4,6 +4,8 @@ import { ThemeContext } from '../../shared/providers/theme-provider'
 import type { FileExplorerConfig } from '../types'
 import { FSNodeProps } from './types'
 import { useFileExplorerContext } from '../provider/file-explorer-context'
+import { Dropdown } from 'antd'
+import type { MenuProps } from 'antd'
 
 const useStyles = (config: FileExplorerConfig) => {
   const theme = useContext(ThemeContext)
@@ -70,6 +72,8 @@ const useStyles = (config: FileExplorerConfig) => {
       width: ${level > 0 ? config.indentPx - 6 : 0}px;
       z-index: 100;
     `,
+
+    // Removed custom context menu styles – using antd Dropdown instead
   }
 }
 
@@ -78,23 +82,46 @@ const FSNode: React.FC<FSNodeProps> = (props) => {
   const styles = useStyles(config)
   const connectorCount = props.isLast ? props.level : props.level
 
+  // antd dropdown menu items
+  const menuItems: MenuProps['items'] = [
+    {
+      key: 'copy',
+      label: 'Copy name',
+    },
+  ]
+
+  const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
+    if (key === 'copy' && props.displayName) {
+      navigator.clipboard.writeText(props.displayName)
+    }
+  }
+
   return (
-    <div
-      css={[styles.row(props.rowPaddingLeftExtra || 0, props.isSelected), props.css]}
-      className={props.className}
-      onClick={props.onClick}
+    <Dropdown
+      trigger={['contextMenu']}
+      menu={{ items: menuItems, onClick: handleMenuClick }}
+      placement="bottomLeft"
     >
-      {/* Vertical connector(s) */}
-      {Array.from({ length: connectorCount }).map((_, index) => (
-        <div key={index} css={styles.verticalConnector(index, props.verticalConnectorTop || -12)} />
-      ))}
+      <div
+        css={[styles.row(props.rowPaddingLeftExtra || 0, props.isSelected), props.css]}
+        className={props.className}
+        onClick={props.onClick}
+      >
+        {/* Vertical connector(s) */}
+        {Array.from({ length: connectorCount }).map((_, index) => (
+          <div
+            key={index}
+            css={styles.verticalConnector(index, props.verticalConnectorTop || -12)}
+          />
+        ))}
 
-      {/* Horizontal connector */}
-      <div css={styles.horizontalConnector(props.level)} />
+        {/* Horizontal connector */}
+        <div css={styles.horizontalConnector(props.level)} />
 
-      {/* Row content */}
-      {props.children}
-    </div>
+        {/* Row content */}
+        {props.children}
+      </div>
+    </Dropdown>
   )
 }
 

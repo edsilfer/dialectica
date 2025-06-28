@@ -74,7 +74,7 @@ export interface FileNodeProps {
   onFileClick?: (file: FileNode['file']) => void
 }
 
-export interface DirNameProps {
+export interface DirectoryNameProps {
   /** The number of files in the directory */
   fileCount: number
   /** Whether to show the file count */
@@ -83,4 +83,6 @@ export interface DirNameProps {
   name: string
   /** The string to highlight in the directory name */
   highlightString?: string
+  /** The full path of the directory for displaying in tooltips */
+  fullPath: string
 }

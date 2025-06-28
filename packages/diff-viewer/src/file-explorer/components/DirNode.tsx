@@ -7,7 +7,7 @@ import { ThemeContext } from '../../shared/providers/theme-provider'
 import { listFilesIn, highlightText, nodeComparator } from '../node-utils'
 import FileNode from './FileNode'
 import FSNode from './FSNode'
-import { DirNameProps, DirNodeProps } from './types'
+import { DirectoryNameProps, DirNodeProps } from './types'
 import { useFileExplorerContext } from '../provider/file-explorer-context'
 
 const useStyles = () => {
@@ -61,6 +61,7 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
         level={props.level}
         isLast={props.isLast}
         isSelected={isSelected}
+        displayName={currentPath}
         className={props.className}
         onClick={() => props.onDirectoryToggle?.(currentPath, collapsed)}
         rowPaddingLeftExtra={props.level * config.indentPx + 6}
@@ -83,10 +84,11 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
               `}
             />
           )}
-          <DirName
+          <DirectoryName
             showDetails={config.displayNodeDetails}
             fileCount={files.length}
             name={props.node.name || (props.parentPath === '' ? '/' : '')}
+            fullPath={currentPath}
             highlightString={highlightString}
           />
         </div>
@@ -126,26 +128,27 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
   )
 }
 
-const DirName: React.FC<DirNameProps> = ({
-  showDetails: displayNodeDetails,
-  fileCount,
-  name,
-  highlightString,
-}) => {
+const DirectoryName: React.FC<DirectoryNameProps> = (props) => {
   const styles = useStyles()
-  const fileCountText = `${fileCount} file${fileCount !== 1 ? 's' : ''}`
+  const fileCountText = `${props.fileCount} file${props.fileCount !== 1 ? 's' : ''}`
+  const tooltipText = (
+    <span>
+      {`There ${props.fileCount === 1 ? 'is' : 'are'} ${fileCountText} in this directory`}
+      <br />
+      {props.fullPath}
+    </span>
+  )
+  const title = `${props.fileCount} file${props.fileCount !== 1 ? 's' : ''}`
 
   return (
-    <RichTooltip
-      tooltipText={`There ${fileCount === 1 ? 'is' : 'are'} ${fileCountText} in this directory`}
-    >
+    <RichTooltip tooltipText={tooltipText}>
       <div css={styles.dirContainer}>
-        {displayNodeDetails && (
-          <span css={styles.fileCount} title={`${fileCount} file${fileCount !== 1 ? 's' : ''}`}>
-            {fileCount}
+        {props.showDetails && (
+          <span css={styles.fileCount} title={title}>
+            {props.fileCount}
           </span>
         )}
-        <span>{highlightText(name, highlightString || '')}</span>
+        <span>{highlightText(props.name, props.highlightString || '')}</span>
       </div>
     </RichTooltip>
   )

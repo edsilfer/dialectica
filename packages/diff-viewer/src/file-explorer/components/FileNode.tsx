@@ -7,6 +7,7 @@ import FileActivitySummary from '../../shared/components/activity-summary/FileAc
 import { ThemeContext } from '../../shared/providers/theme-provider'
 import { highlightText } from '../node-utils'
 import { useFileExplorerContext } from '../provider/file-explorer-context'
+import RichTooltip from '../../shared/components/RichTooltip'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -42,6 +43,7 @@ const FileNode: React.FC<FileNodeProps> = (props) => {
       level={props.level}
       isLast={props.isLast}
       isSelected={isSelected}
+      displayName={filePath}
       css={props.css}
       className={props.className}
       onClick={() => props.onFileClick?.(props.node.file)}
@@ -54,10 +56,12 @@ const FileNode: React.FC<FileNodeProps> = (props) => {
             <File size={14} />
           </div>
         )}
-        <div css={styles.fileContainer}>
-          <span>{highlightText(props.node.name, highlightString || '')}</span>
-          {config.displayNodeDetails && <FileActivitySummary file={props.node.file} />}
-        </div>
+        <RichTooltip tooltipText={filePath}>
+          <div css={styles.fileContainer}>
+            <span>{highlightText(props.node.name, highlightString || '')}</span>
+            {config.displayNodeDetails && <FileActivitySummary file={props.node.file} />}
+          </div>
+        </RichTooltip>
       </div>
     </FSNode>
   )
