@@ -1,6 +1,6 @@
 import { DisplayConfig, Hunk } from '../../types'
 
-export type DiffLineType = 'add' | 'delete' | 'context' | 'hunk'
+export type DiffLineType = 'add' | 'delete' | 'context' | 'hunk' | 'empty'
 
 /**
  * Shared props for both UnifiedHunkViewer and SplitHunkViewer.

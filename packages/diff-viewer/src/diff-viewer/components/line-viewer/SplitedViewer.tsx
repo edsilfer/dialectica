@@ -2,7 +2,7 @@ import { css } from '@emotion/react'
 import React, { useContext } from 'react'
 import { ThemeContext } from '../../../shared/providers/theme-provider'
 import type { DisplayConfig } from '../../types'
-import type { SplitLinePair } from './line-utils'
+import type { SplitLinePair } from './types'
 import DiffLine from './DiffLine'
 
 const useStyles = () => {
@@ -19,11 +19,6 @@ const useStyles = () => {
       width: 50%;
       border-collapse: collapse;
       table-layout: auto;
-
-      /* Add horizontal gap between the two side tables */
-      &:not(:first-of-type) {
-        margin-left: ${theme.spacing.xs};
-      }
 
       /* Ensure correct borders for the line-number column */
       /* Left panel (first table): show ONLY the right border */
@@ -78,7 +73,7 @@ const SideTable: React.FC<{
               hideLeftNumber={!isLeft}
               content={!isLeft && isHeader ? '' : line ? line.highlightedContent : ''}
               showNumber={!!config.showLineNumbers}
-              type={line ? (line.type as any) : 'context'}
+              type={line ? (line.type as any) : 'empty'}
               onAddButtonClick={() => console.log('Add comment clicked')}
             />
           )

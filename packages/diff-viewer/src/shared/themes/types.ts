@@ -45,6 +45,10 @@ export interface ColorTokens {
   hunkViewerLineHunkBg: string
   /** The background color of the line number of hunk lines */
   hunkViewerLineNumberHunkBg: string
+  /** The background color of empty lines (null lines in split view) */
+  hunkViewerLineEmptyBg: string
+  /** The background color of the line number of empty lines */
+  hunkViewerLineNumberEmptyBg: string
   /** The background color of the add comment button */
   hunkViewerAddCommentBg: string
 

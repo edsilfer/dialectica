@@ -28,6 +28,8 @@ const lightColors: ColorTokens = {
   hunkViewerLineNumberContextBg: '#f6f8fa',
   hunkViewerLineHunkBg: '#f1f8ff',
   hunkViewerLineNumberHunkBg: '#f1f8ff',
+  hunkViewerLineEmptyBg: '#f6f8fa',
+  hunkViewerLineNumberEmptyBg: '#f6f8fa',
   hunkViewerAddCommentBg: '#0366d6',
 
   // File Explorer
@@ -63,6 +65,8 @@ const darkColors: ColorTokens = {
   hunkViewerLineNumberContextBg: '#0d1117',
   hunkViewerLineHunkBg: 'rgba(56, 139, 253, 0.15)',
   hunkViewerLineNumberHunkBg: 'rgba(56, 139, 253, 0.15)',
+  hunkViewerLineEmptyBg: 'rgba(56, 139, 253, 0.1)',
+  hunkViewerLineNumberEmptyBg: 'rgba(56, 139, 253, 0.1)',
   hunkViewerAddCommentBg: '#0366d6',
 
   // File Explorer
@@ -98,6 +102,8 @@ const draculaColors: ColorTokens = {
   hunkViewerLineNumberContextBg: '#282a36',
   hunkViewerLineHunkBg: 'rgba(189, 147, 249, 0.15)',
   hunkViewerLineNumberHunkBg: 'rgba(189, 147, 249, 0.15)',
+  hunkViewerLineEmptyBg: 'rgba(139, 233, 253, 0.15)',
+  hunkViewerLineNumberEmptyBg: 'rgba(139, 233, 253, 0.15)',
   hunkViewerAddCommentBg: '#bd93f9',
 
   // File Explorer
@@ -131,6 +137,8 @@ const solarizedDarkColors: ColorTokens = {
   hunkViewerLineNumberContextBg: '#002b36',
   hunkViewerLineHunkBg: 'rgba(38, 139, 210, 0.15)',
   hunkViewerLineNumberHunkBg: 'rgba(38, 139, 210, 0.15)',
+  hunkViewerLineEmptyBg: 'rgba(42, 161, 152, 0.15)',
+  hunkViewerLineNumberEmptyBg: 'rgba(42, 161, 152, 0.15)',
   hunkViewerAddCommentBg: '#6c71c4',
 
   // File Explorer
@@ -166,6 +174,8 @@ const solarizedLightColors: ColorTokens = {
   hunkViewerLineNumberContextBg: '#fdf6e3',
   hunkViewerLineHunkBg: 'rgba(38, 139, 210, 0.15)',
   hunkViewerLineNumberHunkBg: 'rgba(38, 139, 210, 0.15)',
+  hunkViewerLineEmptyBg: 'rgba(42, 161, 152, 0.12)',
+  hunkViewerLineNumberEmptyBg: 'rgba(42, 161, 152, 0.12)',
   hunkViewerAddCommentBg: '#6c71c4',
 
   // File Explorer

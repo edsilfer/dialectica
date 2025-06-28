@@ -12,6 +12,7 @@ const useStyles = () => {
     delete: theme.colors.hunkViewerLineRemovedBg,
     context: 'transparent',
     hunk: theme.colors.hunkViewerLineHunkBg,
+    empty: theme.colors.hunkViewerLineEmptyBg,
   }
 
   const LINE_TYPE_TO_NUMBER_BG_COLOR = {
@@ -19,6 +20,7 @@ const useStyles = () => {
     delete: theme.colors.hunkViewerLineNumberRemovedBg,
     context: theme.colors.hunkViewerLineNumberContextBg,
     hunk: theme.colors.hunkViewerLineNumberHunkBg,
+    empty: theme.colors.hunkViewerLineNumberEmptyBg,
   }
 
   const sharedCellHeight = css`
@@ -35,11 +37,20 @@ const useStyles = () => {
         cursor: default;
         position: relative;
         background-color: ${LINE_TYPE_TO_COLOR[lineType]};
+        width: 100%;
 
         &:hover .add-comment-btn {
           opacity: 1;
           pointer-events: auto;
         }
+
+        /* Ensure empty lines extend to full width */
+        ${lineType === 'empty' &&
+        css`
+          & > td {
+            background-color: ${LINE_TYPE_TO_COLOR[lineType]};
+          }
+        `}
       `,
     ],
 
@@ -71,6 +82,7 @@ const useStyles = () => {
       font-size: ${theme.typography.codeFontSize}px;
       white-space: pre-wrap;
       cursor: text;
+      width: 100%;
 
       & > span {
         display: block;
