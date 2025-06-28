@@ -33,6 +33,7 @@ const useStyles = () => {
       ${isSelected
         ? `
           border-radius: ${theme.spacing.sm};
+          border: 1px solid ${theme.colors.accentColor};
           background-color: ${theme.colors.fileExplorerSelectedFileBg};
 
           &::before {
@@ -58,15 +59,17 @@ const useStyles = () => {
       display: flex;
       align-items: center;
       // This is a bit brittle, but we need a fixed width
-      min-width: 40px;
-      gap: ${theme.spacing.xs};
+      min-width: 50px;
+      gap: ${theme.spacing.sm};
     `,
 
-    metadataTitle: css`
-      border: 1px solid ${theme.colors.borderBg};
+    metadataTitle: (color: string) => css`
+      min-width: 25px;
+      font-size: 0.65rem !important;
+      color: ${color};
+      border: 1px solid ${color};
       padding: 1px ${theme.spacing.xs};
       border-radius: ${theme.spacing.xs};
-      color: ${theme.colors.placeholderText};
       text-align: center;
     `,
 
@@ -226,7 +229,33 @@ const NodeMetadata: React.FC<NodeMetadataProps> = (props) => {
   }
 
   if (!props.isDirectory) {
-    return props.showIcons ? <FileIcon size={14} /> : null
+    const { showIcons, displayDetails } = props
+    const fileNode = props.node as FileNode
+
+    // Determine background color and label based on file diff flags
+    let bgColor = theme.colors.fileViwerNeutralSquareBg
+    let title = 'Modified file'
+    let label = 'M'
+    if (fileNode.file.isNew) {
+      bgColor = theme.colors.fileViewerAddedSquareBg
+      title = 'Added file'
+      label = 'A'
+    } else if (fileNode.file.isDeleted) {
+      bgColor = theme.colors.fileViewerDeletedSquareBg
+      title = 'Deleted file'
+      label = 'D'
+    }
+
+    return (
+      <>
+        {showIcons && <FileIcon size={14} />}
+        {displayDetails && (
+          <span css={styles.metadataTitle(bgColor)} title={title}>
+            {label}
+          </span>
+        )}
+      </>
+    )
   }
 
   const fileTotal = listFilesIn(props.node as DirectoryNode).length
@@ -242,7 +271,7 @@ const NodeMetadata: React.FC<NodeMetadataProps> = (props) => {
         />
       )}
       {props.displayDetails && (
-        <span css={styles.metadataTitle} title={`${fileTotal} files`}>
+        <span css={styles.metadataTitle(theme.colors.borderBg)} title={`${fileTotal} files`}>
           {fileTotal}
         </span>
       )}
