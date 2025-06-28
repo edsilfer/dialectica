@@ -62,11 +62,12 @@ export default function App() {
           config={{
             theme: theme,
             startExpanded: true,
-            nodeConnector: 'solid',
+            nodeConnector: 'dashed',
             indentPx: 20,
             collapsePackages,
             showIcons: showIcons,
             displayNodeDetails: displayNodeDetails,
+            roundedConnectors: true,
           }}
         />
 

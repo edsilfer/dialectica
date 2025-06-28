@@ -1,49 +1,13 @@
 import { Interpolation, Theme } from '@emotion/react'
-import { FileDiff } from '../../diff-viewer/types'
-import { DirectoryNode, FileExplorerConfig, FileNode } from '../types'
-
-export interface StyleParams {
-  /** The nesting level of this node */
-  level: number
-  /** Configuration options for the file explorer */
-  config: FileExplorerConfig
-}
+import { RefObject } from 'react'
+import { DirectoryNode, FileNode, TreeNode } from '../types'
 
 export interface FSNodeProps {
-  /** The nesting level of this node */
+  /** Node to render */
+  node: TreeNode
+  /** Nesting level */
   level: number
-  /** Whether this node is the last in its parent directory */
-  isLast: boolean
-  /** The display name of the directory */
-  displayName?: string
-  /** Whether this node is selected */
-  isSelected?: boolean
-  /** Extra padding (in px) added to the default indentation */
-  rowPaddingLeftExtra?: number
-  /** Top offset (in px) for the vertical connector */
-  verticalConnectorTop?: number
-  /** Optional css-in-js style */
-  css?: Interpolation<Theme>
-  /** Optional class name */
-  className?: string
-  /** Optional metadata element to be rendered in the metadata container */
-  metadata?: React.ReactNode
-  /** Row content */
-  children: React.ReactNode
-
-  // Callbacks ____________________________________________
-  /** Click handler for the row */
-  onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
-}
-
-export interface DirNodeProps {
-  /** The directory node to render */
-  node: DirectoryNode
-  /** The nesting level of this node */
-  level: number
-  /** Whether this node is the last in its parent directory */
-  isLast: boolean
-  /** The parent path for building the current path */
+  /** Parent path for building the current path */
   parentPath: string
   /** Optional css-in-js style */
   css?: Interpolation<Theme>
@@ -52,39 +16,51 @@ export interface DirNodeProps {
 
   // Callbacks ____________________________________________
   /** Called when a file entry is clicked */
-  onFileClick?: (file: FileDiff) => void
+  onFileClick?: (file: FileNode['file']) => void
   /** Called when a directory entry is toggled */
   onDirectoryToggle?: (path: string, expanded: boolean) => void
 }
 
-export interface FileNodeProps {
-  /** The file node to render */
-  node: FileNode
-  /** The nesting level of this node */
-  level: number
-  /** Whether this node is the last in its parent directory */
-  isLast: boolean
-  /** The parent path for building the current path */
-  parentPath: string
-  /** Optional css-in-js style */
-  css?: Interpolation<Theme>
-  /** Optional class name */
-  className?: string
-
-  // Callbacks ____________________________________________
-  /** Called when the file entry is clicked */
-  onFileClick?: (file: FileNode['file']) => void
+export interface NodeMetadataProps {
+  /** Node to render */
+  node: DirectoryNode | FileNode
+  /** Whether the node is a directory */
+  isDirectory: boolean
+  /** Whether to show the icon */
+  showIcons: boolean | undefined
+  /** Whether to show the file count */
+  displayDetails: boolean | undefined
 }
 
-export interface DirectoryNameProps {
-  /** The number of files in the directory */
-  fileCount: number
-  /** Whether to show the file count */
-  showDetails?: boolean
-  /** The name of the directory */
-  name: string
-  /** The string to highlight in the directory name */
-  highlightString?: string
-  /** The full path of the directory for displaying in tooltips */
-  fullPath: string
+export interface TreeSkeletonProps {
+  /** The ref to the container element. */
+  containerRef: RefObject<HTMLDivElement | null>
+}
+
+export interface Node {
+  /** x coordinate of the node */
+  cx: number
+  /** y coordinate of the node */
+  cy: number
+  /** level of the node */
+  level: number
+  /** parent path of the node */
+  parentPath: string
+  /** path of the node */
+  path: string
+  /** type of the node */
+  type: 'file' | 'directory'
+  /** Whether the node is collapsed */
+  collapsed: boolean
+}
+
+export interface LineSegment {
+  /** x coordinate of the start of the line */
+  x1: number
+  /** y coordinate of the start of the line */
+  y1: number
+  /** x coordinate of the end of the line */
+  x2: number
+  /** y coordinate of the end of the line */
+  y2: number
 }

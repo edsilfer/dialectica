@@ -2,13 +2,13 @@ import { css } from '@emotion/react'
 import React, { useContext } from 'react'
 import { ThemeContext } from '../shared/providers/theme-provider'
 import { Themes } from '../shared/themes'
-import DirNode from './components/DirNode'
-import FileNode from './components/FileNode'
+import FSNode from './components/FSNode'
 import { FileExplorerConfig, FileExplorerProps } from './types'
 import { nodeComparator, listDirPaths } from './node-utils'
 import { DiffViewerThemeProvider } from '../shared/providers/theme-provider'
 import { FileExplorerProvider, useFileExplorerContext } from './provider/file-explorer-context'
 import { ExplorerBar } from './components/Toolbar'
+import TreeSkeleton from './components/TreeSkeleton'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -28,6 +28,7 @@ const useStyles = () => {
     fsTreeContainer: css`
       overflow: auto;
       flex: 1;
+      position: relative;
     `,
   }
 }
@@ -59,6 +60,8 @@ export const FileExplorer: React.FC<FileExplorerProps> = (props) => {
 const FileExplorerContent: React.FC<Omit<FileExplorerProps, 'diff' | 'config'>> = (props) => {
   const styles = useStyles()
   const { setSelectedNode, setExpandedDirs, tree } = useFileExplorerContext()
+
+  const containerRef = React.useRef<HTMLDivElement>(null)
 
   const handleExpandAll = () => {
     setExpandedDirs(listDirPaths(tree))
@@ -96,36 +99,20 @@ const FileExplorerContent: React.FC<Omit<FileExplorerProps, 'diff' | 'config'>> 
     <div css={[styles.container, props.css]} className={props.className}>
       <ExplorerBar onExpandAll={handleExpandAll} onCollapseAll={handleCollapseAll} />
 
-      <div css={styles.fsTreeContainer}>
+      <div css={styles.fsTreeContainer} ref={containerRef}>
+        <TreeSkeleton containerRef={containerRef} />
         {Array.from(tree.children.values())
           .sort(nodeComparator)
-          .map((node, idx, arr) => {
-            const isLast = idx === arr.length - 1
-            if (node.type === 'file') {
-              return (
-                <FileNode
-                  key={node.name}
-                  node={node}
-                  level={0}
-                  isLast={isLast}
-                  parentPath=""
-                  onFileClick={handleFileClick}
-                />
-              )
-            }
-
-            return (
-              <DirNode
-                key={node.name}
-                node={node}
-                level={0}
-                isLast={isLast}
-                parentPath=""
-                onFileClick={handleFileClick}
-                onDirectoryToggle={handleDirectoryClick}
-              />
-            )
-          })}
+          .map((node) => (
+            <FSNode
+              key={node.name}
+              node={node}
+              level={0}
+              parentPath=""
+              onFileClick={handleFileClick}
+              onDirectoryToggle={handleDirectoryClick}
+            />
+          ))}
       </div>
     </div>
   )
