@@ -26,6 +26,8 @@ export interface FSNodeProps {
   css?: Interpolation<Theme>
   /** Optional class name */
   className?: string
+  /** Optional metadata element to be rendered in the metadata container */
+  metadata?: React.ReactNode
   /** Row content */
   children: React.ReactNode
 

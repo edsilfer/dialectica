@@ -28,6 +28,7 @@ const useStyles = () => {
 
     actions: css`
       display: flex;
+      margin-top: ${theme.spacing.xs};
       gap: ${theme.spacing.xs};
     `,
 

@@ -55,6 +55,26 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
 
   const files = useMemo(() => listFilesIn(props.node), [props.node])
 
+  // Build metadata content (icon + file count)
+  const metadata = (
+    <>
+      {config.showIcons && (
+        <Directory
+          size={14}
+          solid
+          css={css`
+            color: ${theme.colors.accentColor};
+          `}
+        />
+      )}
+      {config.displayNodeDetails && (
+        <span css={styles.fileCount} title={`${files.length} files`}>
+          {files.length}
+        </span>
+      )}
+    </>
+  )
+
   return (
     <div key={currentPath} css={styles.wrapper}>
       <FSNode
@@ -62,6 +82,7 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
         isLast={props.isLast}
         isSelected={isSelected}
         displayName={currentPath}
+        metadata={metadata}
         className={props.className}
         onClick={() => props.onDirectoryToggle?.(currentPath, collapsed)}
         rowPaddingLeftExtra={props.level * config.indentPx + 6}
@@ -75,17 +96,8 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
             tooltipTextExpand="Expand directory"
             tooltipTextCollapse="Collapse directory"
           />
-          {config.showIcons && (
-            <Directory
-              size={14}
-              solid
-              css={css`
-                color: ${theme.colors.accentColor};
-              `}
-            />
-          )}
           <DirectoryName
-            showDetails={config.displayNodeDetails}
+            showDetails={false /* Details handled in metadata */}
             fileCount={files.length}
             name={props.node.name || (props.parentPath === '' ? '/' : '')}
             fullPath={currentPath}
@@ -138,16 +150,10 @@ const DirectoryName: React.FC<DirectoryNameProps> = (props) => {
       {props.fullPath}
     </span>
   )
-  const title = `${props.fileCount} file${props.fileCount !== 1 ? 's' : ''}`
 
   return (
     <RichTooltip tooltipText={tooltipText}>
       <div css={styles.dirContainer}>
-        {props.showDetails && (
-          <span css={styles.fileCount} title={title}>
-            {props.fileCount}
-          </span>
-        )}
         <span>{highlightText(props.name, props.highlightString || '')}</span>
       </div>
     </RichTooltip>

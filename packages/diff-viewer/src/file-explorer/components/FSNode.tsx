@@ -78,6 +78,7 @@ const useStyles = (config: FileExplorerConfig) => {
 }
 
 const FSNode: React.FC<FSNodeProps> = (props) => {
+  const { metadata } = props
   const { config } = useFileExplorerContext()
   const styles = useStyles(config)
   const connectorCount = props.isLast ? props.level : props.level
@@ -117,6 +118,9 @@ const FSNode: React.FC<FSNodeProps> = (props) => {
 
         {/* Horizontal connector */}
         <div css={styles.horizontalConnector(props.level)} />
+
+        {/* Metadata */}
+        {metadata}
 
         {/* Row content */}
         {props.children}

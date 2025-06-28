@@ -1,4 +1,3 @@
-import { SerializedStyles } from '@emotion/react'
 import { DisplayConfig, Hunk } from '../../types'
 
 export type DiffLineType = 'add' | 'delete' | 'context' | 'hunk' | 'empty'
@@ -68,22 +67,6 @@ export interface DiffLineProps {
 
   /** The function to call when the add button is clicked */
   onAddButtonClick: () => void
-}
-
-export interface SideTableProps {
-  /** The side of the table (left or right) */
-  side: 'left' | 'right'
-  /** The pairs of lines to render */
-  pairs: SplitLinePair[]
-  /** The display configuration */
-  config: DisplayConfig
-  /** Emotion style for the <table> element */
-  tableStyle: SerializedStyles
-  /** The view type */
-  view?: 'split' | 'unified'
-
-  /** Returns a ref callback for the given visual row index */
-  rowRef: (index: number) => (el: HTMLTableRowElement | null) => void
 }
 
 export interface SplitLineViewerProps {

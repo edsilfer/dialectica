@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
 import { ThemeContext } from '../../../shared/providers/theme-provider'
-import SideTable from './SideTable'
+import DiffLine from './DiffLine'
 import useRowHeightSync from './hooks/use-row-height-sync'
 import type { SplitLineViewerProps } from './types'
 
@@ -29,17 +29,41 @@ const SplitedViewer: React.FC<SplitLineViewerProps> = ({ pairs, config }) => {
 
   return (
     <div css={styles.container}>
-      {(['left', 'right'] as const).map((side) => (
-        <SideTable
-          key={side}
-          side={side}
-          pairs={pairs}
-          config={config}
-          tableStyle={styles.table}
-          rowRef={(index) => registerRow(side, index)}
-          view="split"
-        />
-      ))}
+      {(['left', 'right'] as const).map((side) => {
+        const isLeft = side === 'left'
+
+        return (
+          <table key={side} css={styles.table}>
+            <colgroup>
+              <col />
+              <col />
+              <col />
+            </colgroup>
+            <tbody>
+              {pairs.map((pair, i) => {
+                const line = isLeft ? pair.left : pair.right
+                const isHeader = pair.left?.type === 'hunk' || pair.right?.type === 'hunk'
+
+                return (
+                  <DiffLine
+                    ref={registerRow(side, i)}
+                    key={`${side}-${i}`}
+                    leftNumber={isLeft && line ? line.lineNumberOld : null}
+                    rightNumber={!isLeft && line ? line.lineNumberNew : null}
+                    hideRightNumber={isLeft}
+                    hideLeftNumber={!isLeft}
+                    content={!isLeft && isHeader ? '' : line ? line.highlightedContent : ''}
+                    showNumber={!!config.showLineNumbers}
+                    type={line ? (line.type as any) : 'empty'}
+                    onAddButtonClick={() => console.log('Add comment clicked')}
+                    view="split"
+                  />
+                )
+              })}
+            </tbody>
+          </table>
+        )
+      })}
     </div>
   )
 }

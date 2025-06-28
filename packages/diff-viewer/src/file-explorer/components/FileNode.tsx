@@ -38,31 +38,34 @@ const FileNode: React.FC<FileNodeProps> = (props) => {
   const filePath = props.node.file.newPath || props.node.file.oldPath
   const isSelected = selectedNode === filePath
 
+  // Build metadata content (icon + activity summary)
+  const metadata = (
+    <>
+      {config.showIcons && (
+        <div css={styles.iconContainer}>
+          <File size={14} />
+        </div>
+      )}
+      {config.displayNodeDetails && <FileActivitySummary file={props.node.file} />}
+    </>
+  )
+
   return (
     <FSNode
       level={props.level}
       isLast={props.isLast}
       isSelected={isSelected}
       displayName={filePath}
+      metadata={metadata}
       css={props.css}
       className={props.className}
       onClick={() => props.onFileClick?.(props.node.file)}
       rowPaddingLeftExtra={props.level * config.indentPx + 6}
       verticalConnectorTop={-12}
     >
-      <div css={styles.content}>
-        {config.showIcons && (
-          <div css={styles.iconContainer}>
-            <File size={14} />
-          </div>
-        )}
-        <RichTooltip tooltipText={filePath}>
-          <div css={styles.fileContainer}>
-            <span>{highlightText(props.node.name, highlightString || '')}</span>
-            {config.displayNodeDetails && <FileActivitySummary file={props.node.file} />}
-          </div>
-        </RichTooltip>
-      </div>
+      <RichTooltip tooltipText={filePath}>
+        <span>{highlightText(props.node.name, highlightString || '')}</span>
+      </RichTooltip>
     </FSNode>
   )
 }
