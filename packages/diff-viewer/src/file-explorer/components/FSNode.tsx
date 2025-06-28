@@ -3,7 +3,7 @@ import React, { useContext } from 'react'
 import { ThemeContext } from '../../shared/providers/theme-provider'
 import type { FileExplorerConfig } from '../types'
 import { FSNodeProps } from './types'
-import { highlightText } from '../utils'
+import { useFileExplorerContext } from '../provider/file-explorer-context'
 
 const useStyles = (config: FileExplorerConfig) => {
   const theme = useContext(ThemeContext)
@@ -20,6 +20,8 @@ const useStyles = (config: FileExplorerConfig) => {
       position: relative;
       color: ${theme.colors.textPrimary};
 
+      // This class is used in DirNode and FileNode to highlight the text
+      // We keep it here to avoid redeclaring it in each component
       .highlighted-text {
         background-color: ${theme.colors.textPrimary}20;
         border: 1px solid ${theme.colors.textPrimary}40;
@@ -72,7 +74,8 @@ const useStyles = (config: FileExplorerConfig) => {
 }
 
 const FSNode: React.FC<FSNodeProps> = (props) => {
-  const styles = useStyles(props.config)
+  const { config } = useFileExplorerContext()
+  const styles = useStyles(config)
   const connectorCount = props.isLast ? props.level : props.level
 
   return (
@@ -91,11 +94,6 @@ const FSNode: React.FC<FSNodeProps> = (props) => {
 
       {/* Row content */}
       {props.children}
-
-      {/* Node name */}
-      {props.displayName && (
-        <span>{highlightText(props.displayName, props.highlightString || '')}</span>
-      )}
     </div>
   )
 }

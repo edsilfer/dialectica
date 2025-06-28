@@ -1,15 +1,14 @@
 import { css } from '@emotion/react'
-import React, { useContext, useMemo, useState } from 'react'
+import React, { useContext } from 'react'
 import { ThemeContext } from '../shared/providers/theme-provider'
 import { Themes } from '../shared/themes'
 import DirNode from './components/DirNode'
 import FileNode from './components/FileNode'
 import { FileExplorerConfig, FileExplorerProps } from './types'
-import { buildTree, sortNodes } from './utils'
-import { Input, Tag } from 'antd'
+import { sortNodes } from './utils'
 import { DiffViewerThemeProvider } from '../shared/providers/theme-provider'
-
-const { Search } = Input
+import { FileExplorerProvider, useFileExplorerContext } from './provider/file-explorer-context'
+import { ExplorerBar } from './components/ExplorerBar'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -24,24 +23,6 @@ const useStyles = () => {
       font-family: ${theme.typography.regularFontFamily};
       font-size: ${theme.typography.regularFontSize}px;
       overflow: hidden;
-    `,
-
-    searchContainer: css`
-      display: flex;
-      flex-direction: column;
-      gap: ${theme.spacing.xs};
-    `,
-
-    searchSummary: css`
-      display: flex;
-      gap: ${theme.spacing.xs};
-    `,
-
-    // Didn't work via token override in the theme provider
-    search: css`
-      .ant-input-search-button .ant-btn-icon svg {
-        color: ${theme.colors.placeholderText};
-      }
     `,
 
     fsTreeContainer: css`
@@ -60,95 +41,24 @@ const DEFAULT_CONFIG: FileExplorerConfig = {
   displayNodeDetails: false,
 }
 
-export const FileExplorer: React.FC<FileExplorerProps> = ({
-  diff,
-  config = DEFAULT_CONFIG,
-  css: customCss,
-  className,
-  onFileClick,
-  onDirectoryToggle,
-}) => {
+export const FileExplorer: React.FC<FileExplorerProps> = (props) => {
   return (
-    <DiffViewerThemeProvider theme={config.theme || Themes.light}>
-      <FileExplorerContent
-        diff={diff}
-        config={config}
-        css={customCss}
-        className={className}
-        onFileClick={onFileClick}
-        onDirectoryToggle={onDirectoryToggle}
-      />
+    <DiffViewerThemeProvider theme={props.config?.theme || Themes.light}>
+      <FileExplorerProvider diff={props.diff} config={props.config || DEFAULT_CONFIG}>
+        <FileExplorerContent
+          css={props.css}
+          className={props.className}
+          onFileClick={props.onFileClick}
+          onDirectoryToggle={props.onDirectoryToggle}
+        />
+      </FileExplorerProvider>
     </DiffViewerThemeProvider>
   )
 }
 
-const FileExplorerContent: React.FC<FileExplorerProps> = ({
-  diff,
-  config = DEFAULT_CONFIG,
-  css: customCss,
-  className,
-  onFileClick,
-  onDirectoryToggle,
-}) => {
+const FileExplorerContent: React.FC<Omit<FileExplorerProps, 'diff' | 'config'>> = (props) => {
   const styles = useStyles()
-  const [searchText, setSearchText] = useState('')
-  const [selectedNode, setSelectedNode] = useState<string | null>(null)
-
-  // Filter files based on the search text (case-insensitive)
-  const filteredFiles = useMemo(() => {
-    if (!searchText) return diff.files
-    const lower = searchText.toLowerCase()
-    return diff.files.filter((file) => {
-      const fullPath = (file.newPath || file.oldPath).toLowerCase()
-      return fullPath.includes(lower)
-    })
-  }, [diff.files, searchText])
-
-  // Build tree from the filtered files
-  const tree = useMemo(() => {
-    return buildTree(filteredFiles, config.collapsePackages)
-  }, [filteredFiles, config.collapsePackages])
-
-  // When searching, force expand all directories so the user can see matches
-  const searchExpandedDirs = useMemo(() => {
-    if (!searchText) return new Set<string>()
-    const dirs = new Set<string>()
-    const collectDirs = (node: typeof tree, currentPath: string) => {
-      if (currentPath) dirs.add(currentPath)
-      node.children.forEach((child) => {
-        if (child.type === 'directory') {
-          const childPath = currentPath ? `${currentPath}/${child.name}` : child.name
-          collectDirs(child, childPath)
-        }
-      })
-    }
-    collectDirs(tree, '')
-    return dirs
-  }, [tree, searchText])
-
-  // Handle expanding the initial directories based on the configuration.
-  const initialExpandedDirs = useMemo(() => {
-    if (!config.startExpanded) return new Set<string>()
-    const dirs = new Set<string>()
-    const collectDirs = (node: typeof tree, currentPath: string) => {
-      if (currentPath) dirs.add(currentPath)
-      node.children.forEach((child) => {
-        if (child.type === 'directory') {
-          const childPath = currentPath ? `${currentPath}/${child.name}` : child.name
-          collectDirs(child, childPath)
-        }
-      })
-    }
-    collectDirs(tree, '')
-    return dirs
-  }, [tree, config.startExpanded])
-  const [expandedDirs, setExpandedDirs] = useState<Set<string>>(initialExpandedDirs)
-
-  // Combine the regular expanded dirs with the forced ones when searching
-  const effectiveExpandedDirs = useMemo(() => {
-    if (!searchText) return expandedDirs
-    return new Set<string>([...expandedDirs, ...searchExpandedDirs])
-  }, [expandedDirs, searchExpandedDirs, searchText])
+  const { setSelectedNode, setExpandedDirs, tree } = useFileExplorerContext()
 
   const handleDirectoryToggle = (path: string, expanded: boolean) => {
     setExpandedDirs((prev) => {
@@ -160,13 +70,13 @@ const FileExplorerContent: React.FC<FileExplorerProps> = ({
       }
       return newSet
     })
-    onDirectoryToggle?.(path, expanded)
+    props.onDirectoryToggle?.(path, expanded)
   }
 
   const handleFileClick = (file: any) => {
     const filePath = file.newPath || file.oldPath
     setSelectedNode(filePath)
-    onFileClick?.(file)
+    props.onFileClick?.(file)
   }
 
   const handleDirectoryClick = (path: string, expanded: boolean) => {
@@ -174,70 +84,37 @@ const FileExplorerContent: React.FC<FileExplorerProps> = ({
     handleDirectoryToggle(path, expanded)
   }
 
-  const isNodeSelected = (nodePath: string) => selectedNode === nodePath
-
   return (
-    <div css={[styles.container, customCss]} className={className}>
-      <div css={styles.searchContainer}>
-        <Search
-          placeholder="Filter / Search Files"
-          allowClear
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          css={styles.search}
-        />
-        {searchText && (
-          <div css={styles.searchSummary}>
-            {filteredFiles.length > 0 ? (
-              <Tag>
-                {filteredFiles.length} file{filteredFiles.length > 1 ? 's' : ''} found
-              </Tag>
-            ) : (
-              <Tag>No matches for this query</Tag>
-            )}
-          </div>
-        )}
-      </div>
+    <div css={[styles.container, props.css]} className={props.className}>
+      <ExplorerBar />
 
       <div css={styles.fsTreeContainer}>
         {Array.from(tree.children.values())
           .sort(sortNodes)
           .map((node, idx, arr) => {
             const isLast = idx === arr.length - 1
-
             if (node.type === 'file') {
-              const filePath = node.file.newPath || node.file.oldPath
               return (
                 <FileNode
                   key={node.name}
-                  config={config}
                   node={node}
                   level={0}
                   isLast={isLast}
                   parentPath=""
-                  isSelected={isNodeSelected(filePath)}
                   onFileClick={handleFileClick}
-                  highlightString={searchText}
                 />
               )
             }
 
-            const dirPath = node.name
             return (
               <DirNode
                 key={node.name}
-                config={config}
                 node={node}
                 level={0}
                 isLast={isLast}
                 parentPath=""
-                expandedDirs={effectiveExpandedDirs}
-                isSelected={isNodeSelected(dirPath)}
-                selectedNode={selectedNode}
-                isNodeSelected={isNodeSelected}
                 onFileClick={handleFileClick}
                 onDirectoryToggle={handleDirectoryClick}
-                highlightString={searchText}
               />
             )
           })}

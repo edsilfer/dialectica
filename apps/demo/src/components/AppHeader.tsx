@@ -2,7 +2,7 @@ import { Themes, ThemeTokens } from '@diff-viewer'
 import { css } from '@emotion/react'
 import { Select, Switch, Typography } from 'antd'
 import React from 'react'
-import { useDiffViewerState } from '../providers/ConfigProvider'
+import { useDiffViewerState } from '../providers/config-provider'
 
 const { Title, Text } = Typography
 

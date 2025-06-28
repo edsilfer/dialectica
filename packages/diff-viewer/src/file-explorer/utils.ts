@@ -2,32 +2,6 @@ import React from 'react'
 import { FileDiff } from '../diff-viewer/types'
 import { DirectoryNode, FileNode, TreeNode } from './types'
 
-function collapse(node: DirectoryNode): DirectoryNode {
-  if (node.children.size !== 1) {
-    const newChildren = new Map<string, TreeNode>()
-    for (const child of node.children.values()) {
-      if (child.type === 'directory') {
-        const collapsedChild = collapse(child)
-        newChildren.set(collapsedChild.name, collapsedChild)
-      } else {
-        newChildren.set(child.name, child)
-      }
-    }
-    node.children = newChildren
-    return node
-  }
-
-  const child = node.children.values().next().value
-
-  if (child?.type === 'directory') {
-    const collapsedChild = collapse(child)
-    collapsedChild.name = `${node.name}/${collapsedChild.name}`
-    return collapsedChild
-  }
-
-  return node
-}
-
 /**
  * Builds a directory tree from the list of files inside the diff.
  *
@@ -79,6 +53,38 @@ export function buildTree(files: FileDiff[], collapsePackages?: boolean): Direct
   }
 
   return root
+}
+
+/**
+ * Collapses a directory node if it has only one child directory.
+ *
+ * @param node - The directory node to collapse.
+ * @returns    - The collapsed directory node.
+ */
+function collapse(node: DirectoryNode): DirectoryNode {
+  if (node.children.size !== 1) {
+    const newChildren = new Map<string, TreeNode>()
+    for (const child of node.children.values()) {
+      if (child.type === 'directory') {
+        const collapsedChild = collapse(child)
+        newChildren.set(collapsedChild.name, collapsedChild)
+      } else {
+        newChildren.set(child.name, child)
+      }
+    }
+    node.children = newChildren
+    return node
+  }
+
+  const child = node.children.values().next().value
+
+  if (child?.type === 'directory') {
+    const collapsedChild = collapse(child)
+    collapsedChild.name = `${node.name}/${collapsedChild.name}`
+    return collapsedChild
+  }
+
+  return node
 }
 
 /**
@@ -134,4 +140,30 @@ export function getFilesForDir(dirNode: DirectoryNode): FileDiff[] {
   }
 
   return files
+}
+
+/**
+ * Recursively collects all directory paths from a tree.
+ *
+ * @param tree - The root of the tree.
+ * @returns    - A set of all directory paths.
+ */
+export function getAllDirPaths(tree: DirectoryNode): Set<string> {
+  const dirs = new Set<string>()
+
+  const collectDirs = (node: DirectoryNode, currentPath: string) => {
+    if (currentPath) {
+      dirs.add(currentPath)
+    }
+
+    node.children.forEach((child) => {
+      if (child.type === 'directory') {
+        const childPath = currentPath ? `${currentPath}/${child.name}` : child.name
+        collectDirs(child, childPath)
+      }
+    })
+  }
+
+  collectDirs(tree, '')
+  return dirs
 }

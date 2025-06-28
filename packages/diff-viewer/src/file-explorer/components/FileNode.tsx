@@ -6,6 +6,7 @@ import { FileNodeProps } from './types'
 import FileActivitySummary from '../../shared/components/activity-summary/FileActivitySummary'
 import { ThemeContext } from '../../shared/providers/theme-provider'
 import { highlightText } from '../utils'
+import { useFileExplorerContext } from '../provider/file-explorer-context'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -32,29 +33,30 @@ const useStyles = () => {
 
 const FileNode: React.FC<FileNodeProps> = (props) => {
   const styles = useStyles()
+  const { config, selectedNode, searchQuery: highlightString } = useFileExplorerContext()
+  const filePath = props.node.file.newPath || props.node.file.oldPath
+  const isSelected = selectedNode === filePath
 
   return (
     <FSNode
-      config={props.config}
       level={props.level}
       isLast={props.isLast}
-      isSelected={props.isSelected}
+      isSelected={isSelected}
       css={props.css}
       className={props.className}
       onClick={() => props.onFileClick?.(props.node.file)}
-      rowPaddingLeftExtra={props.level * props.config.indentPx + 6}
+      rowPaddingLeftExtra={props.level * config.indentPx + 6}
       verticalConnectorTop={-12}
-      highlightString={props.highlightString}
     >
       <div css={styles.content}>
-        {props.config.showIcons && (
+        {config.showIcons && (
           <div css={styles.iconContainer}>
             <File size={14} />
           </div>
         )}
         <div css={styles.fileContainer}>
-          <span>{highlightText(props.node.name, props.highlightString || '')}</span>
-          {props.config.displayNodeDetails && <FileActivitySummary file={props.node.file} />}
+          <span>{highlightText(props.node.name, highlightString || '')}</span>
+          {config.displayNodeDetails && <FileActivitySummary file={props.node.file} />}
         </div>
       </div>
     </FSNode>

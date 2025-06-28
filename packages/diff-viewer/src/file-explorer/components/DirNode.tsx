@@ -8,6 +8,7 @@ import { getFilesForDir, highlightText, sortNodes } from '../utils'
 import FileNode from './FileNode'
 import FSNode from './FSNode'
 import { DirNameProps, DirNodeProps } from './types'
+import { useFileExplorerContext } from '../provider/file-explorer-context'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -40,8 +41,15 @@ const useStyles = () => {
 }
 
 const DirNode: React.FC<DirNodeProps> = (props) => {
+  const {
+    config,
+    selectedNode,
+    searchQuery: highlightString,
+    expandedDirs,
+  } = useFileExplorerContext()
   const currentPath = props.parentPath ? `${props.parentPath}/${props.node.name}` : props.node.name
-  const collapsed = !props.expandedDirs.has(currentPath)
+  const collapsed = !expandedDirs.has(currentPath)
+  const isSelected = selectedNode === currentPath
   const styles = useStyles()
   const theme = useContext(ThemeContext)
 
@@ -50,15 +58,13 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
   return (
     <div key={currentPath} css={styles.wrapper}>
       <FSNode
-        config={props.config}
         level={props.level}
         isLast={props.isLast}
-        isSelected={props.isSelected}
+        isSelected={isSelected}
         className={props.className}
         onClick={() => props.onDirectoryToggle?.(currentPath, collapsed)}
-        rowPaddingLeftExtra={props.level * props.config.indentPx + 6}
+        rowPaddingLeftExtra={props.level * config.indentPx + 6}
         verticalConnectorTop={-10}
-        highlightString={props.highlightString}
         css={props.css}
       >
         <div css={styles.content}>
@@ -68,7 +74,7 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
             tooltipTextExpand="Expand directory"
             tooltipTextCollapse="Collapse directory"
           />
-          {props.config.showIcons && (
+          {config.showIcons && (
             <Directory
               size={14}
               solid
@@ -78,10 +84,10 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
             />
           )}
           <DirName
-            showDetails={props.config.displayNodeDetails}
+            showDetails={config.displayNodeDetails}
             fileCount={files.length}
             name={props.node.name || (props.parentPath === '' ? '/' : '')}
-            highlightString={props.highlightString}
+            highlightString={highlightString}
           />
         </div>
       </FSNode>
@@ -93,37 +99,26 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
             const isLast = idx === arr.length - 1
 
             if (child.type === 'file') {
-              const filePath = child.file.newPath || child.file.oldPath
               return (
                 <FileNode
-                  config={props.config}
                   key={`${currentPath}/${child.name}`}
                   node={child}
                   level={props.level + 1}
                   isLast={isLast}
                   parentPath={currentPath}
-                  isSelected={props.isNodeSelected ? props.isNodeSelected(filePath) : false}
                   onFileClick={props.onFileClick}
-                  highlightString={props.highlightString}
                 />
               )
             }
-            const childPath = `${currentPath}/${child.name}`
             return (
               <DirNode
-                config={props.config}
                 key={`${currentPath}/${child.name}`}
                 node={child}
                 level={props.level + 1}
                 isLast={isLast}
                 parentPath={currentPath}
-                expandedDirs={props.expandedDirs}
-                isSelected={props.isNodeSelected ? props.isNodeSelected(childPath) : false}
-                selectedNode={props.selectedNode}
-                isNodeSelected={props.isNodeSelected}
                 onFileClick={props.onFileClick}
                 onDirectoryToggle={props.onDirectoryToggle}
-                highlightString={props.highlightString}
               />
             )
           })}

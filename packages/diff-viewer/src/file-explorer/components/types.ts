@@ -10,8 +10,6 @@ export interface StyleParams {
 }
 
 export interface FSNodeProps {
-  /** Configuration options for the file explorer */
-  config: FileExplorerConfig
   /** The nesting level of this node */
   level: number
   /** Whether this node is the last in its parent directory */
@@ -28,8 +26,6 @@ export interface FSNodeProps {
   css?: Interpolation<Theme>
   /** Optional class name */
   className?: string
-  /** Optional string to highlight in the display name */
-  highlightString?: string
   /** Row content */
   children: React.ReactNode
 
@@ -39,8 +35,6 @@ export interface FSNodeProps {
 }
 
 export interface DirNodeProps {
-  /** Configuration options for the file explorer */
-  config: FileExplorerConfig
   /** The directory node to render */
   node: DirectoryNode
   /** The nesting level of this node */
@@ -49,20 +43,10 @@ export interface DirNodeProps {
   isLast: boolean
   /** The parent path for building the current path */
   parentPath: string
-  /** Whether the parent directory is expanded */
-  expandedDirs: Set<string>
-  /** Whether this node is selected */
-  isSelected?: boolean
-  /** The currently selected node path */
-  selectedNode?: string | null
-  /** Function to check if a node path is selected */
-  isNodeSelected?: (nodePath: string) => boolean
   /** Optional css-in-js style */
   css?: Interpolation<Theme>
   /** Optional class name */
   className?: string
-  /** Optional string to highlight in the node name */
-  highlightString?: string
 
   // Callbacks ____________________________________________
   /** Called when a file entry is clicked */
@@ -72,8 +56,6 @@ export interface DirNodeProps {
 }
 
 export interface FileNodeProps {
-  /** Configuration options for the file explorer */
-  config: FileExplorerConfig
   /** The file node to render */
   node: FileNode
   /** The nesting level of this node */
@@ -82,14 +64,10 @@ export interface FileNodeProps {
   isLast: boolean
   /** The parent path for building the current path */
   parentPath: string
-  /** Whether this node is selected */
-  isSelected?: boolean
   /** Optional css-in-js style */
   css?: Interpolation<Theme>
   /** Optional class name */
   className?: string
-  /** Optional string to highlight in the node name */
-  highlightString?: string
 
   // Callbacks ____________________________________________
   /** Called when the file entry is clicked */

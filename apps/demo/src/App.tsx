@@ -3,7 +3,7 @@ import { css } from '@emotion/react'
 import { useState } from 'react'
 import { TEN_FILES_DIFF } from './__fixtures__/sample-diffs'
 import AppHeader from './components/AppHeader'
-import { useDiffViewerState } from './providers/ConfigProvider'
+import { useDiffViewerState } from './providers/config-provider'
 
 const useStyles = (theme: ThemeTokens) => {
   return {
