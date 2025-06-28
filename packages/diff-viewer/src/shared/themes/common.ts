@@ -16,5 +16,5 @@ export const typography: TypographyTokens = {
   regularFontSizeSM: 11,
   codeFontFamily: 'Menlo, Monaco, Consolas, "Courier New", monospace',
   codeFontSize: 11,
-  codeLineHeight: 1,
+  codeLineHeight: 1.2,
 }

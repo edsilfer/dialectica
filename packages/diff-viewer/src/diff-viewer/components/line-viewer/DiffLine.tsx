@@ -4,7 +4,7 @@ import AddButton from '../../../shared/components/AddButton'
 import { ThemeContext } from '../../../shared/providers/theme-provider'
 import { DiffLineProps, DiffLineType } from './types'
 
-const useStyles = () => {
+const useStyles = (lineType: DiffLineType) => {
   const theme = useContext(ThemeContext)
 
   const LINE_TYPE_TO_COLOR = {
@@ -30,7 +30,7 @@ const useStyles = () => {
   `
 
   return {
-    container: (lineType: DiffLineType) => [
+    container: [
       css`
         display: table-row;
         color: ${theme.colors.textPrimary};
@@ -54,15 +54,17 @@ const useStyles = () => {
       `,
     ],
 
-    numberContainer: (side: 'left' | 'right', lineType: DiffLineType) => css`
+    numberContainer: (viewer: 'split' | 'unified' | undefined, side: 'left' | 'right') => css`
       ${sharedCellHeight};
       text-align: center;
       font-family: ${theme.typography.codeFontFamily};
       font-size: ${theme.typography.codeFontSize}px;
       padding: 0 ${theme.spacing.sm};
-      border-${side}: 1px solid ${theme.colors.borderBg};
       background-color: ${LINE_TYPE_TO_NUMBER_BG_COLOR[lineType]};
       user-select: none;
+      ${viewer === 'split' && side === 'right' && !['hunk', 'empty'].includes(lineType)
+        ? `border-left: 1px solid ${theme.colors.borderBg}`
+        : ''};
     `,
 
     prefixContainer: css`
@@ -94,7 +96,8 @@ const useStyles = () => {
 
     addButton: css`
       position: absolute;
-      transform: translateX(-50%) translateY(-50%);
+      top: 50%;
+      left: 0;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.15s ease-in-out;
@@ -104,18 +107,18 @@ const useStyles = () => {
 }
 
 const DiffLine = forwardRef<HTMLTableRowElement, DiffLineProps>((props, ref) => {
-  const styles = useStyles()
+  const styles = useStyles(props.type)
 
   return (
-    <tr ref={ref} css={styles.container(props.type)}>
+    <tr ref={ref} css={styles.container}>
       {!props.hideLeftNumber && (
-        <td css={styles.numberContainer('left', props.type)}>
+        <td css={styles.numberContainer(props.view, 'left')}>
           {props.leftNumber !== null ? <span>{props.leftNumber}</span> : null}
         </td>
       )}
 
       {!props.hideRightNumber && (
-        <td css={styles.numberContainer('right', props.type)}>
+        <td css={styles.numberContainer(props.view, 'right')}>
           {props.rightNumber !== null ? <span>{props.rightNumber}</span> : null}
         </td>
       )}

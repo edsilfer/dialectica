@@ -63,6 +63,8 @@ export interface DiffLineProps {
   hideLeftNumber?: boolean
   /** Whether to hide the right number column entirely */
   hideRightNumber?: boolean
+  /** The view type */
+  view?: 'split' | 'unified'
 
   /** The function to call when the add button is clicked */
   onAddButtonClick: () => void
@@ -77,6 +79,8 @@ export interface SideTableProps {
   config: DisplayConfig
   /** Emotion style for the <table> element */
   tableStyle: SerializedStyles
+  /** The view type */
+  view?: 'split' | 'unified'
 
   /** Returns a ref callback for the given visual row index */
   rowRef: (index: number) => (el: HTMLTableRowElement | null) => void

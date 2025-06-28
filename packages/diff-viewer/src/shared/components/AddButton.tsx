@@ -19,6 +19,21 @@ const useStyles = () => {
       justify-content: center;
       font-size: 12px;
       background-color: ${theme.colors.hunkViewerAddCommentBg};
+
+      /* Smooth scaling animation */
+      transition:
+        transform 250ms ease-in-out,
+        background-color 0.15s ease-in-out;
+
+      /* Ensure the button scales from its own center while remaining anchored on the border */
+      transform-origin: center;
+
+      /* Initial transform keeps the button centered on the border */
+      transform: translate(-50%, -50%) scale(1);
+
+      &:hover {
+        transform: translate(-50%, -50%) scale(1.1);
+      }
     `,
   }
 }

@@ -49,6 +49,7 @@ const UnifiedViewer: React.FC<UnifiedViewerProps> = ({ lines, config }) => {
             showNumber={!!config.showLineNumbers}
             type={line.type}
             onAddButtonClick={() => console.log('Add comment clicked')}
+            view="unified"
           />
         ))}
       </tbody>

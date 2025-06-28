@@ -3,7 +3,7 @@ import DiffLine from './DiffLine'
 import type { SideTableProps } from './types'
 
 // Renders a table with the given pairs of lines
-const SideTable: React.FC<SideTableProps> = ({ side, pairs, config, tableStyle, rowRef }) => {
+const SideTable: React.FC<SideTableProps> = ({ side, pairs, config, tableStyle, rowRef, view }) => {
   const isLeft = side === 'left'
 
   return (
@@ -30,6 +30,7 @@ const SideTable: React.FC<SideTableProps> = ({ side, pairs, config, tableStyle, 
               showNumber={!!config.showLineNumbers}
               type={line ? (line.type as any) : 'empty'}
               onAddButtonClick={() => console.log('Add comment clicked')}
+              view={view}
             />
           )
         })}

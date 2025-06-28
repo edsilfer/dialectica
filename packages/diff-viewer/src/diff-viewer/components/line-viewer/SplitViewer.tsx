@@ -15,23 +15,10 @@ const useStyles = () => {
       background-color: ${theme.colors.hunkViewerBg};
     `,
 
-    sideTable: css`
+    table: css`
       width: 50%;
       border-collapse: collapse;
       table-layout: auto;
-
-      /* Ensure correct borders for the line-number column */
-      /* Left panel (first table): show ONLY the right border */
-      &:first-of-type td:first-of-type {
-        border-left: none !important;
-        border-right: 1px solid ${theme.colors.borderBg};
-      }
-
-      /* Right panel (second table): show BOTH left and right borders */
-      &:not(:first-of-type) td:first-of-type {
-        border-left: 1px solid ${theme.colors.borderBg};
-        border-right: 1px solid ${theme.colors.borderBg};
-      }
     `,
   }
 }
@@ -48,8 +35,9 @@ const SplitedViewer: React.FC<SplitLineViewerProps> = ({ pairs, config }) => {
           side={side}
           pairs={pairs}
           config={config}
-          tableStyle={styles.sideTable}
+          tableStyle={styles.table}
           rowRef={(index) => registerRow(side, index)}
+          view="split"
         />
       ))}
     </div>
