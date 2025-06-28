@@ -8,7 +8,7 @@ import {
   RENAME_DIFF,
   MULTI_FILE_DIFF,
   MULTI_HUNK_DIFF,
-} from './__fixtures__/sample-diffs'
+} from '../../__fixtures__/raw-diffs'
 
 describe('DiffParserAdapter', () => {
   const adapter = new DiffParserAdapter()

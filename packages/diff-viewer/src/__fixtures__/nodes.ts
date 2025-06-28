@@ -1,5 +1,5 @@
-import { DirectoryNode, TreeNode } from '../../types'
-import { SAMPLE_FILE_DIFFS } from '../../__fixtures__/file-diffs'
+import { DirectoryNode, TreeNode } from '../file-explorer/types'
+import { SAMPLE_FILE_DIFFS } from './file-diffs'
 
 export const MOCKED_NODE_TREE: DirectoryNode = {
   name: 'root',

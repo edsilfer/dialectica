@@ -4,7 +4,7 @@ import { waitFor, act } from '@testing-library/react'
 import { buildTree, listDirPaths } from '../node-utils'
 import { filterFiles, listExpandedDirs } from './context-utils'
 import { FileExplorerProvider, useFileExplorerContext } from './file-explorer-context'
-import { SAMPLE_FILE_DIFFS } from '../__fixtures__/file-diffs'
+import { SAMPLE_FILE_DIFFS } from '../../__fixtures__/file-diffs'
 import { FileExplorerConfig } from '../types'
 import { render } from '../../shared/test-utils/render'
 
