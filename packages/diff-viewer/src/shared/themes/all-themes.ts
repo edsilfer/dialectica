@@ -3,7 +3,7 @@ import { spacing, typography } from './common.js'
 
 const lightColors: ColorTokens = {
   colorPrimary: '#ffffff',
-  borderBg: '#e1e4e8',
+  borderBg: '#cacdd0',
   textPrimary: '#24292e',
   placeholderText: '#6a737d',
   accentColor: '#0366d6',
@@ -16,7 +16,7 @@ const lightColors: ColorTokens = {
   fileViewerHeaderBg: '#f6f8fa',
   fileViewerAddedSquareBg: '#1f883d',
   fileViewerDeletedSquareBg: '#d73a49',
-  fileViwerNeutralSquareBg: '#e1e4e8',
+  fileViwerNeutralSquareBg: '#cacdd0',
 
   // Hunk Viewer
   hunkViewerBg: '#ffffff',

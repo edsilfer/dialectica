@@ -37,6 +37,7 @@ const useStyles = (lineType: DiffLineType) => {
         cursor: default;
         position: relative;
         background-color: ${LINE_TYPE_TO_COLOR[lineType]};
+        border-radius: ${theme.spacing.xs};
         width: 100%;
 
         &:hover .add-comment-btn {
@@ -54,17 +55,14 @@ const useStyles = (lineType: DiffLineType) => {
       `,
     ],
 
-    numberContainer: (viewer: 'split' | 'unified' | undefined, side: 'left' | 'right') => css`
+    numberContainer: css`
       ${sharedCellHeight};
       text-align: center;
       font-family: ${theme.typography.codeFontFamily};
       font-size: ${theme.typography.codeFontSize}px;
       padding: 0 ${theme.spacing.sm};
-      background-color: ${LINE_TYPE_TO_NUMBER_BG_COLOR[lineType]};
       user-select: none;
-      ${viewer === 'split' && side === 'right' && !['hunk', 'empty'].includes(lineType)
-        ? `border-left: 1px solid ${theme.colors.borderBg}`
-        : ''};
+      ${lineType !== 'hunk' ? `background-color: ${LINE_TYPE_TO_NUMBER_BG_COLOR[lineType]};` : ''}
     `,
 
     prefixContainer: css`
@@ -112,13 +110,13 @@ const DiffLine = forwardRef<HTMLTableRowElement, DiffLineProps>((props, ref) => 
   return (
     <tr ref={ref} css={styles.container}>
       {!props.hideLeftNumber && (
-        <td css={styles.numberContainer(props.view, 'left')}>
+        <td css={styles.numberContainer}>
           {props.leftNumber !== null ? <span>{props.leftNumber}</span> : null}
         </td>
       )}
 
       {!props.hideRightNumber && (
-        <td css={styles.numberContainer(props.view, 'right')}>
+        <td css={styles.numberContainer}>
           {props.rightNumber !== null ? <span>{props.rightNumber}</span> : null}
         </td>
       )}

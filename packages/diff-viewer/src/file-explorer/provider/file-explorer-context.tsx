@@ -18,6 +18,7 @@ export const FileExplorerProvider: React.FC<FileExplorerProviderProps> = ({
     [diff.files, searchQuery],
   )
 
+  // Builds the tree that every component reads
   const tree = useMemo(
     () => buildTree(filteredFiles, config.collapsePackages),
     [filteredFiles, config.collapsePackages],
@@ -32,11 +33,18 @@ export const FileExplorerProvider: React.FC<FileExplorerProviderProps> = ({
   useEffect(() => {
     if (config.startExpanded) {
       const initialTree = buildTree(diff.files, config.collapsePackages)
-      setUserExpandedDirs(listDirPaths(initialTree))
+      setUserExpandedDirs((prev) => {
+        const validPrev = [...prev].filter((dir) => listDirPaths(initialTree).has(dir))
+        return validPrev.length > 0 ? new Set(validPrev) : listDirPaths(initialTree)
+      })
     } else {
-      setUserExpandedDirs(new Set<string>())
+      setUserExpandedDirs((prev) => {
+        const initialTree = buildTree(diff.files, config.collapsePackages)
+        const validPrev = [...prev].filter((dir) => listDirPaths(initialTree).has(dir))
+        return new Set(validPrev)
+      })
     }
-  }, [diff.files, config.startExpanded, config.collapsePackages])
+  }, [config.startExpanded, config.collapsePackages, diff.files])
 
   const expandedDirs = useMemo(() => {
     if (!searchQuery) return userExpandedDirs

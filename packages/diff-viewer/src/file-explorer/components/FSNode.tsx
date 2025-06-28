@@ -141,7 +141,7 @@ const FSNode: React.FC<FSNodeProps> = ({
       collapsed ? next.add(currentPath) : next.delete(currentPath)
       return next
     })
-    onDirectoryToggle?.(currentPath, collapsed)
+    onDirectoryToggle?.(currentPath, !collapsed)
   }, [collapsed, currentPath, isDirectory, onDirectoryToggle, setExpandedDirs, setSelectedNode])
 
   const handleRowClick = useCallback(

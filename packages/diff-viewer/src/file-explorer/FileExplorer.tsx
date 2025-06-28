@@ -71,16 +71,10 @@ const FileExplorerContent: React.FC<Omit<FileExplorerProps, 'diff' | 'config'>> 
     setExpandedDirs(new Set<string>())
   }
 
+  // Called when a directory is toggled (expand/collapse) deeper in the tree.
+  // The FSNode component already updates the `expandedDirs` state, so we only
+  // need to bubble the event up to any external consumer.
   const handleDirectoryToggle = (path: string, expanded: boolean) => {
-    setExpandedDirs((prev) => {
-      const newSet = new Set(prev)
-      if (expanded) {
-        newSet.add(path)
-      } else {
-        newSet.delete(path)
-      }
-      return newSet
-    })
     props.onDirectoryToggle?.(path, expanded)
   }
 

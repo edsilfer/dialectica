@@ -9,13 +9,8 @@ import { ThemeContext } from '../../../shared/providers/theme-provider'
 import CopyButton from './CopyButton'
 import ExpandButton from './ExpandButton'
 import FileActivitySummary from '../../../shared/components/activity-summary/FileActivitySummary'
-import {
-  buildSplitHunkPairs,
-  LineWithHighlight,
-  SplitLinePair,
-  highlightContent,
-  escapeHtml,
-} from '../line-viewer/line-utils'
+import { buildSplitHunkPairs, highlightContent, escapeHtml } from '../line-viewer/line-utils'
+import type { LineWithHighlight, SplitLinePair } from '../line-viewer/types'
 
 const { Text } = Typography
 
@@ -28,6 +23,8 @@ const useStyles = () => {
       flex-direction: column;
       border: 1px solid ${theme.colors.borderBg};
       border-radius: ${theme.spacing.xs};
+      overflow: hidden;
+      flex: 0 0 auto;
     `,
     header: css`
       display: flex;
