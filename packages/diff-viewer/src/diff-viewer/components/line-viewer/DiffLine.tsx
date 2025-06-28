@@ -1,5 +1,5 @@
 import { css } from '@emotion/react'
-import React, { useContext } from 'react'
+import React, { useContext, forwardRef } from 'react'
 import AddButton from '../../../shared/components/AddButton'
 import { ThemeContext } from '../../../shared/providers/theme-provider'
 import { DiffLineProps, DiffLineType } from './types'
@@ -103,11 +103,11 @@ const useStyles = () => {
   }
 }
 
-const DiffLine: React.FC<DiffLineProps> = (props) => {
+const DiffLine = forwardRef<HTMLTableRowElement, DiffLineProps>((props, ref) => {
   const styles = useStyles()
 
   return (
-    <tr css={styles.container(props.type)}>
+    <tr ref={ref} css={styles.container(props.type)}>
       {!props.hideLeftNumber && (
         <td css={styles.numberContainer('left', props.type)}>
           {props.leftNumber !== null ? <span>{props.leftNumber}</span> : null}
@@ -137,6 +137,6 @@ const DiffLine: React.FC<DiffLineProps> = (props) => {
       </td>
     </tr>
   )
-}
+})
 
 export default DiffLine

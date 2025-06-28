@@ -1,9 +1,9 @@
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
 import { ThemeContext } from '../../../shared/providers/theme-provider'
-import type { DisplayConfig } from '../../types'
-import type { SplitLinePair } from './types'
-import DiffLine from './DiffLine'
+import SideTable from './SideTable'
+import useRowHeightSync from './hooks/use-row-height-sync'
+import type { SplitLineViewerProps } from './types'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -36,60 +36,21 @@ const useStyles = () => {
   }
 }
 
-interface SplitLineViewerProps {
-  /** Pre-built left/right line pairs ready for rendering */
-  pairs: SplitLinePair[]
-  /** Display options */
-  config: DisplayConfig
-}
-
-// ADD: factor out duplicated table markup into a helper component
-const SideTable: React.FC<{
-  side: 'left' | 'right'
-  pairs: SplitLinePair[]
-  config: DisplayConfig
-  styles: ReturnType<typeof useStyles>
-}> = ({ side, pairs, config, styles }) => {
-  const isLeft = side === 'left'
-  return (
-    <table css={styles.sideTable}>
-      <colgroup>
-        {/* Columns without explicit widths so they expand to fit their widest cell */}
-        <col /> {/* Line number (old on left, new on right) */}
-        <col /> {/* Prefix (-/+) */}
-        <col /> {/* Code */}
-      </colgroup>
-      <tbody>
-        {pairs.map((pair, i) => {
-          const line = isLeft ? pair.left : pair.right
-          const isHeader = pair.left?.type === 'hunk' || pair.right?.type === 'hunk'
-
-          return (
-            <DiffLine
-              key={`${side}-${i}`}
-              leftNumber={isLeft && line ? line.lineNumberOld : null}
-              rightNumber={!isLeft && line ? line.lineNumberNew : null}
-              hideRightNumber={isLeft}
-              hideLeftNumber={!isLeft}
-              content={!isLeft && isHeader ? '' : line ? line.highlightedContent : ''}
-              showNumber={!!config.showLineNumbers}
-              type={line ? (line.type as any) : 'empty'}
-              onAddButtonClick={() => console.log('Add comment clicked')}
-            />
-          )
-        })}
-      </tbody>
-    </table>
-  )
-}
-
 const SplitedViewer: React.FC<SplitLineViewerProps> = ({ pairs, config }) => {
   const styles = useStyles()
+  const registerRow = useRowHeightSync(pairs.length)
 
   return (
     <div css={styles.container}>
       {(['left', 'right'] as const).map((side) => (
-        <SideTable key={side} side={side} pairs={pairs} config={config} styles={styles} />
+        <SideTable
+          key={side}
+          side={side}
+          pairs={pairs}
+          config={config}
+          tableStyle={styles.sideTable}
+          rowRef={(index) => registerRow(side, index)}
+        />
       ))}
     </div>
   )
