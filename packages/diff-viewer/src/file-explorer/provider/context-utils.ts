@@ -16,8 +16,8 @@ export const filterFiles = (files: FileDiff[], searchQuery: string): FileDiff[] 
   const lowerCaseQuery = searchQuery.toLowerCase()
 
   return files.filter((file) => {
-    const filePath = (file.newPath || file.oldPath).toLowerCase()
-    return filePath.includes(lowerCaseQuery)
+    const path = file.isDeleted ? file.oldPath : file.newPath
+    return path.toLowerCase().includes(lowerCaseQuery)
   })
 }
 

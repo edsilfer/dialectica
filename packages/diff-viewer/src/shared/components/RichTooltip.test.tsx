@@ -1,7 +1,7 @@
 import { vi } from 'vitest'
 
 import { afterEach, describe, expect, it } from 'vitest'
-import { act, fireEvent, render, screen } from '../test-utils/render'
+import { act, fireEvent, render, screen, waitFor } from '../test-utils/render'
 import RichTooltip from './RichTooltip'
 
 describe('RichTooltip', () => {
@@ -11,7 +11,6 @@ describe('RichTooltip', () => {
 
   it('given tooltip when hover expect content visible only when hovered', async () => {
     // GIVEN
-    vi.useFakeTimers()
     const tooltipText = 'This is a tooltip'
     render(
       <RichTooltip tooltipText={tooltipText}>
@@ -21,14 +20,22 @@ describe('RichTooltip', () => {
 
     // WHEN HOVER EXPECT
     const trigger = screen.getByRole('button', { name: /hover me/i })
-    act(() => fireEvent.mouseOver(trigger))
-    act(vi.runAllTimers)
-    expect(screen.getByText(tooltipText)).toBeInTheDocument()
+    act(() => {
+      fireEvent.mouseOver(trigger)
+    })
+
+    expect(await screen.findByText(tooltipText)).toBeInTheDocument()
 
     // WHEN UNHOVER EXPECT
-    act(() => fireEvent.mouseOut(trigger))
-    act(vi.runAllTimers)
-    expect(screen.getByText(tooltipText).closest('.ant-tooltip')).toHaveClass('ant-tooltip-hidden')
+    act(() => {
+      fireEvent.mouseOut(trigger)
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText(tooltipText).closest('.ant-tooltip')).toHaveClass(
+        'ant-tooltip-hidden',
+      )
+    })
   })
 
   it('given tooltip and toast when clicd expect toast visible and tooltip invisble', async () => {

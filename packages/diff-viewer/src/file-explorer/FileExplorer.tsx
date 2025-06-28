@@ -5,10 +5,10 @@ import { Themes } from '../shared/themes'
 import DirNode from './components/DirNode'
 import FileNode from './components/FileNode'
 import { FileExplorerConfig, FileExplorerProps } from './types'
-import { sortNodes } from './utils'
+import { nodeComparator } from './node-utils'
 import { DiffViewerThemeProvider } from '../shared/providers/theme-provider'
 import { FileExplorerProvider, useFileExplorerContext } from './provider/file-explorer-context'
-import { ExplorerBar } from './components/ExplorerBar'
+import { ExplorerBar } from './components/Toolbar'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -90,7 +90,7 @@ const FileExplorerContent: React.FC<Omit<FileExplorerProps, 'diff' | 'config'>> 
 
       <div css={styles.fsTreeContainer}>
         {Array.from(tree.children.values())
-          .sort(sortNodes)
+          .sort(nodeComparator)
           .map((node, idx, arr) => {
             const isLast = idx === arr.length - 1
             if (node.type === 'file') {

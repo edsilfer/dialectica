@@ -31,11 +31,20 @@ const UnifiedViewer: React.FC<UnifiedViewerProps> = ({ lines, config }) => {
 
   return (
     <table css={styles.container}>
+      {/*
+        React inserts whitespace text nodes for the literal spaces/newlines that
+        appear between elements inside <colgroup>, which is invalid HTML and
+        triggers a hydration error. By generating the <col> elements via a
+        JavaScript expression and keeping the closing tag tight to the
+        expression, no stray whitespace nodes are produced.
+      */}
       <colgroup>
-        <col style={{ width: '50px' }} /> {/* Left line number */}
-        <col style={{ width: '50px' }} /> {/* Right line number */}
-        <col style={{ width: '25px' }} /> {/* Prefix (+/-) */}
-        <col /> {/* Code */}
+        {[
+          <col key="left" style={{ width: '50px' }} />,
+          <col key="right" style={{ width: '50px' }} />,
+          <col key="prefix" style={{ width: '25px' }} />,
+          <col key="code" />,
+        ]}
       </colgroup>
       <tbody>
         {lines.map((line, i) => (

@@ -4,7 +4,7 @@ import ExpandButton from '../../diff-viewer/components/file-viewer/ExpandButton'
 import Directory from '../../shared/components/icons/Directory'
 import RichTooltip from '../../shared/components/RichTooltip'
 import { ThemeContext } from '../../shared/providers/theme-provider'
-import { getFilesForDir, highlightText, sortNodes } from '../utils'
+import { listFilesIn, highlightText, nodeComparator } from '../node-utils'
 import FileNode from './FileNode'
 import FSNode from './FSNode'
 import { DirNameProps, DirNodeProps } from './types'
@@ -53,7 +53,7 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
   const styles = useStyles()
   const theme = useContext(ThemeContext)
 
-  const files = useMemo(() => getFilesForDir(props.node), [props.node])
+  const files = useMemo(() => listFilesIn(props.node), [props.node])
 
   return (
     <div key={currentPath} css={styles.wrapper}>
@@ -94,7 +94,7 @@ const DirNode: React.FC<DirNodeProps> = (props) => {
 
       {!collapsed &&
         Array.from(props.node.children.values())
-          .sort(sortNodes)
+          .sort(nodeComparator)
           .map((child, idx, arr) => {
             const isLast = idx === arr.length - 1
 

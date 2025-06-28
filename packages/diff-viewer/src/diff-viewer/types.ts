@@ -24,6 +24,10 @@ export interface FileDiff {
   newPath: string
   /** Indicates if the file was renamed. */
   isRenamed: boolean
+  /** Indicates if the file is new. */
+  isNew?: boolean
+  /** Indicates if the file is deleted. */
+  isDeleted?: boolean
   /** An array of hunks representing the changes in the file. */
   hunks: Hunk[]
 }

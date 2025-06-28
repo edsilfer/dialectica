@@ -5,7 +5,7 @@ import FSNode from './FSNode'
 import { FileNodeProps } from './types'
 import FileActivitySummary from '../../shared/components/activity-summary/FileActivitySummary'
 import { ThemeContext } from '../../shared/providers/theme-provider'
-import { highlightText } from '../utils'
+import { highlightText } from '../node-utils'
 import { useFileExplorerContext } from '../provider/file-explorer-context'
 
 const useStyles = () => {

@@ -2,6 +2,12 @@ import diffparser from 'diffparser'
 import type { IDiffParser, ParsedDiff, FileDiff, Hunk, DiffLine } from '../types'
 import type { RawFile, RawChunk, RawLine } from 'diffparser'
 
+/**
+ * - diffparse library's convention is to use `/dev/null` as the path for new or deleted files
+ * - we use this constant to check for this specific path to determine the file's status.
+ */
+const NULL_PATH = '/dev/null'
+
 export class DiffParserAdapter implements IDiffParser {
   parse(diffText: string): ParsedDiff {
     const raw = diffparser(diffText)
@@ -41,6 +47,8 @@ export class DiffParserAdapter implements IDiffParser {
         oldPath: file.from,
         newPath: file.to,
         isRenamed: file.from !== file.to,
+        isNew: file.from === NULL_PATH,
+        isDeleted: file.to === NULL_PATH,
         hunks,
       }
     })

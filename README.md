@@ -72,12 +72,9 @@ Run from the root directory:
 
 ### Rendering Layer
 
-- [ ] P0 - Add support for file explorer
 - [ ] P0 - Implement proper highlighting for partial changes in a line
 - [ ] P0 - Add support for ignoring whitespaces
 - [ ] P0 - Add support for rendering inline comments
-- [ ] P1 - Add small toast below the copy button
-- [ ] P1 - Improve buttons to expand / collapse + copy file name
 - [ ] P2 - (Optimization) support virtual rows
 - [ ] P2 - (Optimization) do not load very large diffs
 

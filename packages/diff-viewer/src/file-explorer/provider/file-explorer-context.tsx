@@ -1,19 +1,15 @@
-import React, { createContext, useContext, useState, useMemo } from 'react'
-import { FileExplorerConfig } from '../types'
-import { ParsedDiff } from '../../diff-viewer/types'
-import { buildTree, getAllDirPaths } from '../utils'
+import React, { createContext, useContext, useState, useMemo, useEffect } from 'react'
+import { buildTree, listDirPaths } from '../node-utils'
 import { FileExplorerContextState, FileExplorerProviderProps } from './types'
-import { filterFiles, listExpandedDirs } from './utils'
+import { filterFiles, listExpandedDirs } from './context-utils'
 
 export const FileExplorerContext = createContext<FileExplorerContextState | undefined>(undefined)
 
 export const FileExplorerProvider: React.FC<FileExplorerProviderProps> = ({
   children,
-  diff: initialDiff,
-  config: initialConfig,
+  diff,
+  config,
 }) => {
-  const [diff] = useState<ParsedDiff>(initialDiff)
-  const [config] = useState<FileExplorerConfig>(initialConfig)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedNode, setSelectedNode] = useState<string | null>(null)
 
@@ -28,10 +24,19 @@ export const FileExplorerProvider: React.FC<FileExplorerProviderProps> = ({
   )
 
   const [userExpandedDirs, setUserExpandedDirs] = useState<Set<string>>(() => {
-    if (!initialConfig.startExpanded) return new Set<string>()
-    const initialTree = buildTree(initialDiff.files, initialConfig.collapsePackages)
-    return getAllDirPaths(initialTree)
+    if (!config.startExpanded) return new Set<string>()
+    const initialTree = buildTree(diff.files, config.collapsePackages)
+    return listDirPaths(initialTree)
   })
+
+  useEffect(() => {
+    if (config.startExpanded) {
+      const initialTree = buildTree(diff.files, config.collapsePackages)
+      setUserExpandedDirs(listDirPaths(initialTree))
+    } else {
+      setUserExpandedDirs(new Set<string>())
+    }
+  }, [diff.files, config.startExpanded, config.collapsePackages])
 
   const expandedDirs = useMemo(() => {
     if (!searchQuery) return userExpandedDirs

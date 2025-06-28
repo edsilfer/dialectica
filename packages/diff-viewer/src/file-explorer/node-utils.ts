@@ -94,7 +94,7 @@ function collapse(node: DirectoryNode): DirectoryNode {
  * @param b - The second node to compare.
  * @returns - The result of the comparison.
  */
-export const sortNodes = (a: TreeNode, b: TreeNode) => {
+export const nodeComparator = (a: TreeNode, b: TreeNode): number => {
   if (a.type === b.type) return a.name.localeCompare(b.name)
   return a.type === 'directory' ? -1 : 1
 }
@@ -125,17 +125,17 @@ export const highlightText = (text: string, highlight: string): React.ReactNode 
  * Recursively collects all files within a given directory node using a
  * Depth-First Search (DFS) traversal.
  *
- * @param dirNode - The directory node to start from.
- * @returns       - An array of all files within the directory.
+ * @param dir - The directory node to start from.
+ * @returns   - An array of all files within the directory.
  */
-export function getFilesForDir(dirNode: DirectoryNode): FileDiff[] {
+export function listFilesIn(dir: DirectoryNode): FileDiff[] {
   const files: FileDiff[] = []
 
-  for (const childNode of dirNode.children.values()) {
+  for (const childNode of dir.children.values()) {
     if (childNode.type === 'file') {
       files.push(childNode.file)
     } else if (childNode.type === 'directory') {
-      files.push(...getFilesForDir(childNode))
+      files.push(...listFilesIn(childNode))
     }
   }
 
@@ -148,7 +148,7 @@ export function getFilesForDir(dirNode: DirectoryNode): FileDiff[] {
  * @param tree - The root of the tree.
  * @returns    - A set of all directory paths.
  */
-export function getAllDirPaths(tree: DirectoryNode): Set<string> {
+export function listDirPaths(tree: DirectoryNode): Set<string> {
   const dirs = new Set<string>()
 
   const collectDirs = (node: DirectoryNode, currentPath: string) => {
