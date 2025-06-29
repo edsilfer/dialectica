@@ -72,6 +72,8 @@ Run from the root directory:
 
 ### Rendering Layer
 
+- [ ] P0 - Add a ReviewToolbar in demo
+- [ ] P0 - Add a hide drawer button
 - [ ] P0 - Implement proper highlighting for partial changes in a line
 - [ ] P0 - Add support for ignoring whitespaces
 - [ ] P0 - Add support for rendering inline comments

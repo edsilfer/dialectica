@@ -25,7 +25,7 @@ export const DiffViewerThemeProvider = ({ children, theme }: DiffViewerThemeProp
       colorBorder: theme.colors.borderBg,
       colorBgBase: theme.colors.hunkViewerBg,
       colorBgContainer: theme.colors.hunkViewerBg,
-      colorBgElevated: theme.colors.fileExplorerBg,
+      colorBgElevated: theme.colors.tooltipBg,
 
       // Global hover token so components pick accent color on hover
       colorPrimaryHover: theme.colors.accentColor,

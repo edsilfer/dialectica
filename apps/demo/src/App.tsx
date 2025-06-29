@@ -42,7 +42,7 @@ const useStyles = (theme: ThemeTokens) => ({
   diffViewer: css`
     flex: 1;
     border-radius: ${theme.spacing.xs};
-    overflow: hidden;
+    overflow: auto;
   `,
 })
 

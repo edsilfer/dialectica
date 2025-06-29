@@ -1,14 +1,14 @@
 import { css } from '@emotion/react'
 import React, { useCallback, useContext, useMemo } from 'react'
 import ExpandButton from '../../diff-viewer/components/file-viewer/ExpandButton'
-import DirectoryIcon from '../../shared/components/icons/Directory'
-import FileIcon from '../../shared/components/icons/File'
 import RichTooltip from '../../shared/components/RichTooltip'
 import { ThemeContext } from '../../shared/providers/theme-provider'
-import { highlightText, listFilesIn, nodeComparator } from '../node-utils'
+import { highlightText, nodeComparator } from '../node-utils'
 import { useFileExplorerContext } from '../provider/file-explorer-context'
-import { DirectoryNode, FileNode } from '../types'
-import { FSNodeProps, NodeMetadataProps } from './types'
+import { FileNode } from '../types'
+import { FSNodeProps } from './types'
+import { Dropdown, message, MenuProps } from 'antd'
+import NodeMetadata from './NodeMetadata'
 
 const useStyles = (level: number) => {
   const theme = useContext(ThemeContext)
@@ -108,6 +108,7 @@ const FSNode: React.FC<FSNodeProps> = ({
   onDirectoryToggle,
   onFileClick,
 }) => {
+  const theme = useContext(ThemeContext)
   const { config, selectedNode, expandedDirs, searchQuery, setSelectedNode, setExpandedDirs } =
     useFileExplorerContext()
   const styles = useStyles(level)
@@ -167,47 +168,80 @@ const FSNode: React.FC<FSNodeProps> = ({
     [filePath, isDirectory, node, onFileClick, setSelectedNode, toggleDirectory],
   )
 
+  const nodePath = isDirectory ? currentPath : filePath || currentPath
+
+  const onMenuClick: MenuProps['onClick'] = ({ key }) => {
+    if (key === 'copy') {
+      navigator.clipboard
+        .writeText(nodePath)
+        .then(() => {
+          message.success('Path copied to clipboard')
+        })
+        .catch(() => {
+          message.error('Failed to copy path')
+        })
+    }
+  }
+
+  const menuProps = useMemo(() => {
+    return {
+      items: [
+        {
+          key: 'copy',
+          label: <span style={{ color: theme.colors.tooltipText }}>Copy path</span>,
+        },
+      ],
+      onClick: onMenuClick,
+      style: {
+        backgroundColor: theme.colors.tooltipBg,
+        color: theme.colors.tooltipText,
+      },
+    }
+  }, [onMenuClick, theme])
+
   return (
     <div>
-      <div
-        css={[styles.row(isSelected), cssProp]}
-        className={className}
-        onClick={handleRowClick}
-        data-depth={level}
-      >
-        {/* Metadata (icon + details) */}
-        <div css={styles.metadataContainer}>{metadata}</div>
+      <Dropdown menu={menuProps as any} trigger={['contextMenu']}>
+        <div
+          css={[styles.row(isSelected), cssProp]}
+          className={className}
+          onClick={handleRowClick}
+          data-depth={level}
+        >
+          {/* Metadata (icon + details) */}
+          <div css={styles.metadataContainer}>{metadata}</div>
 
-        {/* Content (indentation + chevron + name) */}
-        <div css={styles.content(indentPx)}>
-          {/* Auxiliary element to help the TreeSkeleton calculate the position of the node */}
-          <div
-            data-fs-node-row
-            data-node-level={level}
-            data-node-parent-path={parentPath}
-            data-node-type={node.type}
-            data-node-path={currentPath}
-            data-node-collapsed={collapsed}
-          />
-
-          {isDirectory && (
-            <ExpandButton
-              collapsed={collapsed}
-              size={14}
-              tooltipTextExpand="Expand directory"
-              tooltipTextCollapse="Collapse directory"
-              onClick={(e) => {
-                e.stopPropagation()
-                toggleDirectory()
-              }}
+          {/* Content (indentation + chevron + name) */}
+          <div css={styles.content(indentPx)}>
+            {/* Auxiliary element to help the TreeSkeleton calculate the position of the node */}
+            <div
+              data-fs-node-row
+              data-node-level={level}
+              data-node-parent-path={parentPath}
+              data-node-type={node.type}
+              data-node-path={currentPath}
+              data-node-collapsed={collapsed}
             />
-          )}
 
-          <RichTooltip tooltipText={isDirectory ? currentPath : filePath || ''}>
-            <span>{highlightedName}</span>
-          </RichTooltip>
+            {isDirectory && (
+              <ExpandButton
+                collapsed={collapsed}
+                size={14}
+                tooltipTextExpand="Expand directory"
+                tooltipTextCollapse="Collapse directory"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  toggleDirectory()
+                }}
+              />
+            )}
+
+            <RichTooltip tooltipText={isDirectory ? currentPath : filePath || ''}>
+              <span>{highlightedName}</span>
+            </RichTooltip>
+          </div>
         </div>
-      </div>
+      </Dropdown>
 
       {/* Children */}
       {isDirectory &&
@@ -225,65 +259,6 @@ const FSNode: React.FC<FSNodeProps> = ({
             />
           ))}
     </div>
-  )
-}
-
-const NodeMetadata: React.FC<NodeMetadataProps> = (props) => {
-  const theme = useContext(ThemeContext)
-  const styles = useStyles()
-
-  if (!props.showIcons && !props.displayDetails) {
-    return null
-  }
-
-  if (!props.isDirectory) {
-    const { showIcons, displayDetails } = props
-    const fileNode = props.node as FileNode
-
-    // Determine background color and label based on file diff flags
-    let bgColor = theme.colors.fileViwerNeutralSquareBg
-    let title = 'Modified file'
-    let label = 'M'
-    if (fileNode.file.isNew) {
-      bgColor = theme.colors.fileViewerAddedSquareBg
-      title = 'Added file'
-      label = 'A'
-    } else if (fileNode.file.isDeleted) {
-      bgColor = theme.colors.fileViewerDeletedSquareBg
-      title = 'Deleted file'
-      label = 'D'
-    }
-
-    return (
-      <>
-        {showIcons && <FileIcon size={14} />}
-        {displayDetails && (
-          <span css={styles.metadataTitle(bgColor)} title={title}>
-            {label}
-          </span>
-        )}
-      </>
-    )
-  }
-
-  const fileTotal = listFilesIn(props.node as DirectoryNode).length
-  return (
-    <>
-      {props.showIcons && (
-        <DirectoryIcon
-          size={14}
-          solid
-          css={css`
-            color: ${theme.colors.accentColor};
-          `}
-        />
-      )}
-      {props.displayDetails && (
-        <span css={styles.metadataTitle(theme.colors.borderBg)} title={`${fileTotal} files`}>
-          {fileTotal}
-        </span>
-      )}
-    </>
   )
 }
 
