@@ -1,16 +1,17 @@
 import { css } from '@emotion/react'
-import { Typography, Checkbox } from 'antd'
+import { Checkbox, Tooltip, Typography } from 'antd'
 import React, { useContext, useMemo, useState } from 'react'
-import type { FileDiff, DisplayConfig } from '../../types'
-import UnifiedViewer from '../line-viewer/UnifiedViewer'
-import SplitViewer from '../line-viewer/SplitViewer'
-import { detectLanguage } from '../../parsers/language-utils'
+import FileActivitySummary from '../../../shared/components/activity-summary/FileActivitySummary'
+import WrapLines from '../../../shared/components/icons/WrapLines'
 import { ThemeContext } from '../../../shared/providers/theme-provider'
+import { detectLanguage } from '../../parsers/language-utils'
+import type { DisplayConfig, FileDiff } from '../../types'
+import { buildSplitHunkPairs, escapeHtml, highlightContent } from '../line-viewer/line-utils'
+import SplitViewer from '../line-viewer/SplitViewer'
+import type { LineWithHighlight, SplitLinePair } from '../line-viewer/types'
+import UnifiedViewer from '../line-viewer/UnifiedViewer'
 import CopyButton from './CopyButton'
 import ExpandButton from './ExpandButton'
-import FileActivitySummary from '../../../shared/components/activity-summary/FileActivitySummary'
-import { buildSplitHunkPairs, highlightContent, escapeHtml } from '../line-viewer/line-utils'
-import type { LineWithHighlight, SplitLinePair } from '../line-viewer/types'
 
 const { Text } = Typography
 
@@ -56,8 +57,23 @@ const useStyles = () => {
         color: ${theme.colors.textPrimary};
       }
     `,
-    viewedCheckbox: css`
+
+    rightContainer: css`
+      display: flex;
+      flex-direction: row;
       margin-left: auto;
+      align-items: center;
+      gap: ${theme.spacing.sm};
+    `,
+
+    wrapLines: (isActive: boolean) => css`
+      color: ${isActive ? theme.colors.accentColor : theme.colors.textPrimary};
+      cursor: pointer;
+      border: 1px solid ${isActive ? theme.colors.accentColor : theme.colors.textPrimary};
+      border-radius: ${theme.spacing.xs};
+    `,
+
+    viewedCheckbox: css`
       color: ${theme.colors.textPrimary};
     `,
 
@@ -81,6 +97,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ id, file, config }) => {
   const styles = useStyles()
   const [collapsed, setCollapsed] = useState(false)
   const [viewed, setViewed] = useState(false)
+  const [wrapLines, setWrapLines] = useState<boolean>(config.wrapLines ?? true)
   const language = useMemo(() => detectLanguage(file.newPath), [file.newPath])
   const filePath = useMemo(
     () => (file.oldPath === file.newPath ? file.newPath : `${file.oldPath} → ${file.newPath}`),
@@ -116,6 +133,14 @@ const FileViewer: React.FC<FileViewerProps> = ({ id, file, config }) => {
     [file.hunks, language],
   )
 
+  const viewerConfig = useMemo<DisplayConfig>(
+    () => ({
+      ...config,
+      wrapLines,
+    }),
+    [config, wrapLines],
+  )
+
   const handleToggleCollapse = () => {
     setCollapsed(!collapsed)
   }
@@ -144,25 +169,37 @@ const FileViewer: React.FC<FileViewerProps> = ({ id, file, config }) => {
           tooltip="Copy file path"
           toastText="File path copied to clipboard"
         />
-        <Checkbox
-          css={styles.viewedCheckbox}
-          checked={viewed}
-          onChange={(e) => handleToggleViewed(e.target.checked)}
-        >
-          Viewed
-        </Checkbox>
+
+        <div css={styles.rightContainer}>
+          <Tooltip title={wrapLines ? 'Disable line wrap' : 'Enable line wrap'}>
+            <WrapLines
+              css={styles.wrapLines(wrapLines)}
+              size={16}
+              onClick={() => setWrapLines((prev) => !prev)}
+              style={{ cursor: 'pointer' }}
+            />
+          </Tooltip>
+
+          <Checkbox
+            css={styles.viewedCheckbox}
+            checked={viewed}
+            onChange={(e) => handleToggleViewed(e.target.checked)}
+          >
+            Viewed
+          </Checkbox>
+        </div>
       </div>
 
       <div css={styles.body}>
         {!collapsed && config.mode === 'split' && (
           <div css={styles.hunksContainer}>
-            <SplitViewer pairs={splitPairs} config={config} />
+            <SplitViewer pairs={splitPairs} config={viewerConfig} />
           </div>
         )}
 
         {!collapsed && config.mode === 'unified' && (
           <div css={styles.hunksContainer}>
-            <UnifiedViewer lines={unifiedLines} config={config} />
+            <UnifiedViewer lines={unifiedLines} config={viewerConfig} />
           </div>
         )}
       </div>
