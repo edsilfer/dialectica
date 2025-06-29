@@ -10,7 +10,7 @@ import { useFileExplorerContext } from '../provider/file-explorer-context'
 import { DirectoryNode, FileNode } from '../types'
 import { FSNodeProps, NodeMetadataProps } from './types'
 
-const useStyles = () => {
+const useStyles = (level: number) => {
   const theme = useContext(ThemeContext)
 
   return {
@@ -21,7 +21,15 @@ const useStyles = () => {
       padding: ${theme.spacing.sm};
       cursor: pointer;
       color: ${theme.colors.textPrimary};
-      position: relative;
+      background-color: ${theme.colors.fileExplorerBg};
+
+      ${level === 0
+        ? `
+          position: sticky;
+          top: 0;
+          z-index: 1000;
+        `
+        : 'position: relative;'}
 
       .highlighted-text {
         background-color: ${theme.colors.textPrimary}20;
@@ -102,7 +110,7 @@ const FSNode: React.FC<FSNodeProps> = ({
 }) => {
   const { config, selectedNode, expandedDirs, searchQuery, setSelectedNode, setExpandedDirs } =
     useFileExplorerContext()
-  const styles = useStyles()
+  const styles = useStyles(level)
 
   const currentPath = parentPath ? `${parentPath}/${node.name}` : node.name
   const isDirectory = node.type === 'directory'

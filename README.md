@@ -72,7 +72,6 @@ Run from the root directory:
 
 ### Rendering Layer
 
-- [ ] P0 - Make the FileExplorer FSNode sticky too
 - [ ] P0 - Fix SVG not being generated when we need to scroll (FSNode grow out of window)
 - [ ] P0 - Add support for wrapping / not-wrapping lines
 - [ ] P0 - Fix the theme tokens for checkbox

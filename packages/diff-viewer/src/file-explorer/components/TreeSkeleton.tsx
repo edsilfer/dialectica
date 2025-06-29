@@ -45,7 +45,7 @@ const useStyles = (connector: ConnectorStyle) => {
       position: absolute;
       inset: 0;
       pointer-events: none;
-      z-index: 1000;
+      z-index: 10;
     `,
     line: css`
       stroke: ${theme.colors.borderBg};
