@@ -1,0 +1,53 @@
+import { useCallback, useRef, useState } from 'react'
+
+/**
+ * Hook that encapsulates the logic for a horizontally resizable panel (the file explorer)
+ *
+ * @param initialPercentage - The initial percentage of the width of the panel.
+ * @param min               - The minimum percentage of the width of the panel.
+ * @param max               - The maximum percentage of the width of the panel.
+ * @returns                 - The width of the panel, the ref to the container element, and the onMouseDown handler.
+ */
+export function useResizablePanel(
+  initialPercentage = 25,
+  {
+    min = 10,
+    max = 60,
+  }: {
+    min?: number
+    max?: number
+  } = {},
+) {
+  const [width, setWidth] = useState(initialPercentage)
+  const containerRef = useRef<HTMLDivElement | null>(null)
+
+  const onMouseDown = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      e.preventDefault()
+      const startX = e.clientX
+      const startWidth = width
+
+      const handleMouseMove = (moveEvent: MouseEvent) => {
+        if (!containerRef.current) return
+        const containerWidth = containerRef.current.clientWidth
+        if (containerWidth === 0) return
+
+        const deltaX = moveEvent.clientX - startX
+        const deltaPercent = (deltaX / containerWidth) * 100
+        const nextWidth = Math.min(Math.max(startWidth + deltaPercent, min), max)
+        setWidth(nextWidth)
+      }
+
+      const removeListeners = () => {
+        document.removeEventListener('mousemove', handleMouseMove)
+        document.removeEventListener('mouseup', removeListeners)
+      }
+
+      document.addEventListener('mousemove', handleMouseMove)
+      document.addEventListener('mouseup', removeListeners)
+    },
+    [width, min, max],
+  )
+
+  return { width, containerRef, onMouseDown }
+}
