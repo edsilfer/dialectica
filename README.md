@@ -75,7 +75,6 @@ Run from the root directory:
 - [ ] P0 - Implement proper highlighting for partial changes in a line
 - [ ] P0 - Add support for ignoring whitespaces
 - [ ] P0 - Add support for rendering inline comments
-- [ ] P2 - (Optimization) Memoize the SVG
 - [ ] P2 - (Optimization) support virtual rows
 - [ ] P2 - (Optimization) do not load very large diffs
 

@@ -2,6 +2,8 @@ import { Interpolation, Theme } from '@emotion/react'
 import { RefObject } from 'react'
 import { DirectoryNode, FileNode, TreeNode } from '../types'
 
+export type ConnectorStyle = 'solid' | 'dashed' | 'none'
+
 export interface FSNodeProps {
   /** Node to render */
   node: TreeNode

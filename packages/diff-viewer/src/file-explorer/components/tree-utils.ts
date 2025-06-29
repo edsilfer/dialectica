@@ -1,5 +1,7 @@
 import { Node } from './types'
 
+const ROOT_PATH = 'root'
+
 /**
  * Builds SVG path definitions that connect each node to its parent.
  *
@@ -56,4 +58,49 @@ export function getConnectorPaths(nodes: Map<string, Node[]>, radius = 0): strin
   }
 
   return paths
+}
+
+/**
+ * Builds a map of nodes by their parent path.
+ *
+ * @param rows       - The rows to search through.
+ * @param parentRect - The parent rectangle.
+ * @returns          - The map of nodes by their parent path.
+ */
+export const buildNodeMap = (
+  rows: NodeListOf<Element>,
+  parentRect: DOMRect,
+): Map<string, Node[]> => {
+  const map = new Map<string, Node[]>()
+  rows.forEach((el) => {
+    const node = toNode(el, parentRect)
+    if (!node) return
+    const list = map.get(node.parentPath) ?? []
+    list.push(node)
+    map.set(node.parentPath, list)
+  })
+  return map
+}
+
+/**
+ * Converts an element to a node.
+ *
+ * @param el         - The element to convert.
+ * @param parentRect - The parent rectangle.
+ * @returns          - The node.
+ */
+const toNode = (el: Element, parentRect: DOMRect): Node | null => {
+  const level = Number(el.getAttribute('data-node-level'))
+  const path = el.getAttribute('data-node-path')
+  if (isNaN(level) || !path) return null
+  const rect = el.getBoundingClientRect()
+  return {
+    cx: rect.left - parentRect.left,
+    cy: rect.top - parentRect.top + rect.height / 2,
+    level,
+    parentPath: el.getAttribute('data-node-parent-path') || ROOT_PATH,
+    path,
+    type: el.getAttribute('data-node-type') === 'file' ? 'file' : 'directory',
+    collapsed: el.getAttribute('data-node-collapsed') === 'true',
+  }
 }

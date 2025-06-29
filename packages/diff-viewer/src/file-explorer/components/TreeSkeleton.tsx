@@ -1,41 +1,9 @@
-import { useEffect, useState, useContext } from 'react'
-import { getConnectorPaths } from './tree-utils'
-import { Node, TreeSkeletonProps } from './types'
 import { css } from '@emotion/react'
+import { useContext, useEffect, useState } from 'react'
 import { ThemeContext } from '../../shared/providers/theme-provider'
 import { useFileExplorerContext } from '../provider/file-explorer-context'
-
-const ROOT_PATH = 'root'
-
-const toNode = (el: Element, parentRect: DOMRect): Node | null => {
-  const level = Number(el.getAttribute('data-node-level'))
-  const path = el.getAttribute('data-node-path')
-  if (isNaN(level) || !path) return null
-  const rect = el.getBoundingClientRect()
-  return {
-    cx: rect.left - parentRect.left,
-    cy: rect.top - parentRect.top + rect.height / 2,
-    level,
-    parentPath: el.getAttribute('data-node-parent-path') || ROOT_PATH,
-    path,
-    type: el.getAttribute('data-node-type') === 'file' ? 'file' : 'directory',
-    collapsed: el.getAttribute('data-node-collapsed') === 'true',
-  }
-}
-
-const buildNodeMap = (rows: NodeListOf<Element>, parentRect: DOMRect): Map<string, Node[]> => {
-  const map = new Map<string, Node[]>()
-  rows.forEach((el) => {
-    const node = toNode(el, parentRect)
-    if (!node) return
-    const list = map.get(node.parentPath) ?? []
-    list.push(node)
-    map.set(node.parentPath, list)
-  })
-  return map
-}
-
-type ConnectorStyle = 'solid' | 'dashed' | 'none'
+import { buildNodeMap, getConnectorPaths } from './tree-utils'
+import { ConnectorStyle, Node, TreeSkeletonProps } from './types'
 
 const useStyles = (connector: ConnectorStyle) => {
   const theme = useContext(ThemeContext)
