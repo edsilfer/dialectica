@@ -26,6 +26,15 @@ const useStyles = () => {
       overflow: hidden;
       flex: 0 0 auto;
     `,
+
+    body: css`
+      border: 1px solid ${theme.colors.borderBg};
+      border-top: none;
+      border-bottom-left-radius: ${theme.spacing.xs};
+      border-bottom-right-radius: ${theme.spacing.xs};
+      overflow: hidden;
+    `,
+
     header: css`
       display: flex;
       flex-direction: row;
@@ -34,8 +43,14 @@ const useStyles = () => {
       padding: ${theme.spacing.sm};
       color: ${theme.colors.textPrimary};
       font-family: ${theme.typography.codeFontFamily};
+      border: 1px solid ${theme.colors.borderBg};
       border-bottom: 1px solid ${theme.colors.borderBg};
+      border-top-left-radius: ${theme.spacing.xs};
+      border-top-right-radius: ${theme.spacing.xs};
       background-color: ${theme.colors.fileViewerHeaderBg};
+      position: sticky;
+      top: 0;
+      z-index: 5;
 
       .file-path {
         color: ${theme.colors.textPrimary};
@@ -45,6 +60,7 @@ const useStyles = () => {
       margin-left: auto;
       color: ${theme.colors.textPrimary};
     `,
+
     hunksContainer: css`
       display: flex;
       flex-direction: column;
@@ -118,7 +134,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ id, file, config }) => {
   }
 
   return (
-    <div css={styles.container} id={id}>
+    <div id={id}>
       <div css={styles.header}>
         <ExpandButton collapsed={collapsed} size={16} onClick={handleToggleCollapse} />
         <FileActivitySummary file={file} />
@@ -137,17 +153,19 @@ const FileViewer: React.FC<FileViewerProps> = ({ id, file, config }) => {
         </Checkbox>
       </div>
 
-      {!collapsed && config.mode === 'split' && (
-        <div css={styles.hunksContainer}>
-          <SplitedViewer pairs={splitPairs} config={config} />
-        </div>
-      )}
+      <div css={styles.body}>
+        {!collapsed && config.mode === 'split' && (
+          <div css={styles.hunksContainer}>
+            <SplitedViewer pairs={splitPairs} config={config} />
+          </div>
+        )}
 
-      {!collapsed && config.mode === 'unified' && (
-        <div css={styles.hunksContainer}>
-          <UnifiedViewer lines={unifiedLines} config={config} />
-        </div>
-      )}
+        {!collapsed && config.mode === 'unified' && (
+          <div css={styles.hunksContainer}>
+            <UnifiedViewer lines={unifiedLines} config={config} />
+          </div>
+        )}
+      </div>
     </div>
   )
 }

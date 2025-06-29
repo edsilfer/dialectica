@@ -1,9 +1,9 @@
+import { css } from '@emotion/react'
 import React, { useContext, useEffect } from 'react'
-import type { ParsedDiff, DiffLine, DisplayConfig as DiffViewerConfig } from './types'
-import FileViewer from './components/file-viewer/FileViewer'
-import { Interpolation, Theme, css } from '@emotion/react'
 import { DiffViewerThemeProvider, ThemeContext } from '../shared/providers/theme-provider'
 import { Themes } from '../shared/themes'
+import FileViewer from './components/file-viewer/FileViewer'
+import type { DisplayConfig as DiffViewerConfig, DiffViewerProps } from './types'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -23,23 +23,6 @@ const DEFAULT_DISPLAY_CONFIG: DiffViewerConfig = {
   highlightSyntax: false,
   showLineNumbers: true,
   ignoreWhitespace: false,
-}
-
-export type DiffViewerProps = {
-  /** The parsed diff to display. */
-  diff: ParsedDiff
-  /** The file to scroll to when the diff is loaded. */
-  scrollTo?: string | null
-  /** Display configuration options. */
-  config?: DiffViewerConfig
-  /** Kept to make typescript happy, but not used by emotion */
-  css?: Interpolation<Theme>
-  /** The content of css will be hashed and passed here */
-  className?: string
-
-  // Callbacks ____________________________________________
-  /** Callback for when a line is clicked. */
-  onLineClick?: (line: DiffLine) => void
 }
 
 export const DiffViewer: React.FC<DiffViewerProps> = (props) => {
