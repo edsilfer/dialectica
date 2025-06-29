@@ -7,9 +7,10 @@ import { useCallback, useEffect, useRef } from 'react'
  * be attached to every <tr> on both sides.
  *
  * @param pairCount - The number of pairs of lines to sync
+ * @param wrapLines - Whether to wrap lines
  * @returns         - A function that registers a row for a given side and index
  */
-export default function useRowHeightSync(pairCount: number) {
+export default function useRowHeightSync(pairCount: number, wrapLines?: boolean) {
   const leftRows = useRef<(HTMLTableRowElement | null)[]>([])
   const rightRows = useRef<(HTMLTableRowElement | null)[]>([])
 
@@ -31,6 +32,16 @@ export default function useRowHeightSync(pairCount: number) {
 
     const observers: ResizeObserver[] = []
 
+    /**
+     * Reset any inline height that might have been applied during a previous
+     * synchronization so that the natural height of each row (which may have
+     * changed after toggling line wrapping) can be measured accurately.
+     */
+    for (let i = 0; i < pairCount; i += 1) {
+      leftRows.current[i]?.style.removeProperty('height')
+      rightRows.current[i]?.style.removeProperty('height')
+    }
+
     for (let i = 0; i < pairCount; i += 1) {
       const l = leftRows.current[i]
       const r = rightRows.current[i]
@@ -51,7 +62,7 @@ export default function useRowHeightSync(pairCount: number) {
     }
 
     return () => observers.forEach((o) => o.disconnect())
-  }, [pairCount])
+  }, [pairCount, wrapLines])
 
   return registerRow
 }

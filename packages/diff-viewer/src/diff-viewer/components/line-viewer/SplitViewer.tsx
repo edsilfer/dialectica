@@ -31,7 +31,7 @@ const SIDES: Side[] = ['left', 'right']
 const SplitViewer: React.FC<SplitLineViewerProps> = ({ pairs, config }) => {
   const wrapLines = config.wrapLines ?? true
   const styles = useStyles(wrapLines)
-  const registerRow = useRowHeightSync(pairs.length)
+  const registerRow = useRowHeightSync(pairs.length, wrapLines)
 
   const leftTableRef = useRef<HTMLTableElement>(null)
   const rightTableRef = useRef<HTMLTableElement>(null)
