@@ -80,7 +80,7 @@ const AppHeader: React.FC = () => {
 
       <div css={styles.configContainer}>
         <Select
-          defaultValue="light"
+          value={theme.name}
           css={styles.themeSelect}
           onChange={(value) => setTheme(Themes[value as keyof typeof Themes])}
           options={[

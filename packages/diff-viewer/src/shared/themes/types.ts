@@ -91,6 +91,8 @@ export interface TypographyTokens {
 }
 
 export interface ThemeTokens {
+  /** The name of the theme */
+  name: string
   /** The colors of the theme */
   colors: ColorTokens
   /** The spacing of the theme */
