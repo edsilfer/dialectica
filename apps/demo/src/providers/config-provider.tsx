@@ -14,6 +14,8 @@ interface DiffViewerContextState {
   showIcons: boolean
   /** Whether to show file details in the file explorer */
   displayNodeDetails: boolean
+  /** Whether to wrap long lines in diff viewer */
+  wrapLines: boolean
   /** Set the theme to use for the diff viewer */
   setTheme: (theme: ThemeTokens) => void
   /** Set whether to split the view into two panes */
@@ -24,6 +26,8 @@ interface DiffViewerContextState {
   setShowIcons: (showIcons: boolean) => void
   /** Set whether to show file details in the file explorer */
   setDisplayNodeDetails: (displayNodeDetails: boolean) => void
+  /** Set whether to wrap lines */
+  setWrapLines: (wrapLines: boolean) => void
 }
 
 const DiffViewerContext = createContext<DiffViewerContextState | undefined>(undefined)
@@ -60,6 +64,7 @@ export const DiffViewerStateProvider: React.FC<DiffViewerStateProviderProps> = (
   const [displayNodeDetails, setDisplayNodeDetails] = useState<boolean>(
     initialState.displayNodeDetails ?? false,
   )
+  const [wrapLines, setWrapLines] = useState<boolean>(initialState.wrapLines ?? false)
 
   useEffect(() => {
     const themeName = Object.keys(Themes).find(
@@ -71,6 +76,7 @@ export const DiffViewerStateProvider: React.FC<DiffViewerStateProviderProps> = (
       collapsePackages,
       showIcons,
       displayNodeDetails,
+      wrapLines,
     }
     try {
       const serializedState = JSON.stringify(stateToSave)
@@ -78,7 +84,7 @@ export const DiffViewerStateProvider: React.FC<DiffViewerStateProviderProps> = (
     } catch (error) {
       console.error('Error saving state to local storage:', error)
     }
-  }, [theme, isSplitView, collapsePackages, showIcons, displayNodeDetails])
+  }, [theme, isSplitView, collapsePackages, showIcons, displayNodeDetails, wrapLines])
 
   const contextValue: DiffViewerContextState = {
     theme,
@@ -86,11 +92,13 @@ export const DiffViewerStateProvider: React.FC<DiffViewerStateProviderProps> = (
     collapsePackages,
     showIcons,
     displayNodeDetails,
+    wrapLines,
     setTheme,
     setIsSplitView,
     setCollapsePackages,
     setShowIcons,
     setDisplayNodeDetails,
+    setWrapLines,
   }
 
   return <DiffViewerContext.Provider value={contextValue}>{children}</DiffViewerContext.Provider>

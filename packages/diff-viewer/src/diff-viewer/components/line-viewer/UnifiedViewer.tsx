@@ -1,10 +1,10 @@
 import { css } from '@emotion/react'
-import React, { useContext } from 'react'
+import React, { useContext, useLayoutEffect, useRef, useState } from 'react'
 import { ThemeContext } from '../../../shared/providers/theme-provider'
 import DiffLine from './DiffLine'
 import { UnifiedViewerProps } from './types'
 
-const useStyles = () => {
+const useStyles = (wrapLines: boolean) => {
   const theme = useContext(ThemeContext)
 
   return {
@@ -12,17 +12,37 @@ const useStyles = () => {
       display: table;
       width: 100%;
       border-collapse: collapse;
-      table-layout: auto;
+      table-layout: ${wrapLines ? 'auto' : 'fixed'};
+      ${!wrapLines ? 'display: block; overflow-x: auto;' : ''}
       background-color: ${theme.colors.hunkViewerBg};
     `,
   }
 }
 
 const UnifiedViewer: React.FC<UnifiedViewerProps> = ({ lines, config }) => {
-  const styles = useStyles()
+  const wrapLines = config.wrapLines ?? true
+  const styles = useStyles(wrapLines)
+
+  const tableRef = useRef<HTMLTableElement>(null)
+  const [offsets, setOffsets] = useState<{ rightNumber: number; prefix: number }>({
+    rightNumber: 0,
+    prefix: 0,
+  })
+
+  // Measure column widths after first render
+  useLayoutEffect(() => {
+    if (!tableRef.current) return
+    const firstRow = tableRef.current.querySelector('tbody tr')
+    if (!firstRow) return
+    const cells = Array.from(firstRow.children) as HTMLElement[]
+    if (cells.length < 3) return
+    const leftWidth = cells[0].getBoundingClientRect().width
+    const rightWidth = cells[1].getBoundingClientRect().width
+    setOffsets({ rightNumber: leftWidth, prefix: leftWidth + rightWidth })
+  }, [lines])
 
   return (
-    <table css={styles.container}>
+    <table css={styles.container} ref={tableRef}>
       {/*
         React inserts whitespace text nodes for the literal spaces/newlines that
         appear between elements inside <colgroup>, which is invalid HTML and
@@ -31,13 +51,7 @@ const UnifiedViewer: React.FC<UnifiedViewerProps> = ({ lines, config }) => {
         expression, no stray whitespace nodes are produced.
       */}
       <colgroup>
-        {[
-          /* Columns without explicit widths so they expand to fit their widest cell */
-          <col key="left" />,
-          <col key="right" />,
-          <col key="prefix" />,
-          <col key="code" />,
-        ]}
+        {[<col key="left" />, <col key="right" />, <col key="prefix" />, <col key="code" />]}
       </colgroup>
       <tbody>
         {lines.map((line, i) => (
@@ -49,7 +63,9 @@ const UnifiedViewer: React.FC<UnifiedViewerProps> = ({ lines, config }) => {
             showNumber={!!config.showLineNumbers}
             type={line.type}
             onAddButtonClick={() => console.log('Add comment clicked')}
+            wrapLines={config.wrapLines}
             view="unified"
+            stickyOffsets={offsets}
           />
         ))}
       </tbody>

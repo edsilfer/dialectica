@@ -23,6 +23,7 @@ const DEFAULT_DISPLAY_CONFIG: DiffViewerConfig = {
   highlightSyntax: false,
   showLineNumbers: true,
   ignoreWhitespace: false,
+  wrapLines: true,
 }
 
 export const DiffViewer: React.FC<DiffViewerProps> = (props) => {

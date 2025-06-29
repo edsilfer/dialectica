@@ -43,7 +43,7 @@ const useStyles = (theme: ThemeTokens) => {
 }
 
 export default function App() {
-  const { theme, isSplitView, collapsePackages, showIcons, displayNodeDetails } =
+  const { theme, isSplitView, collapsePackages, showIcons, displayNodeDetails, wrapLines } =
     useDiffViewerState()
   const [scrollToFile, setScrollToFile] = useState<string | null>(null)
   const styles = useStyles(theme)
@@ -79,6 +79,7 @@ export default function App() {
             theme: theme,
             mode: isSplitView ? 'split' : 'unified',
             showLineNumbers: true,
+            wrapLines: wrapLines,
           }}
         />
       </div>

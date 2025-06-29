@@ -4,7 +4,7 @@ import AddButton from '../../../shared/components/AddButton'
 import { ThemeContext } from '../../../shared/providers/theme-provider'
 import { DiffLineProps, DiffLineType } from './types'
 
-const useStyles = (lineType: DiffLineType) => {
+const useStyles = (lineType: DiffLineType, wrapLines: boolean) => {
   const theme = useContext(ThemeContext)
 
   const LINE_TYPE_TO_COLOR = {
@@ -55,32 +55,43 @@ const useStyles = (lineType: DiffLineType) => {
       `,
     ],
 
-    numberContainer: css`
-      ${sharedCellHeight};
-      text-align: center;
-      font-family: ${theme.typography.codeFontFamily};
-      font-size: ${theme.typography.codeFontSize}px;
-      padding: 0 ${theme.spacing.sm};
-      user-select: none;
-      ${lineType !== 'hunk' ? `background-color: ${LINE_TYPE_TO_NUMBER_BG_COLOR[lineType]};` : ''}
-    `,
+    getNumberContainer: (left: number) => [
+      css`
+        ${sharedCellHeight};
+        text-align: center;
+        font-family: ${theme.typography.codeFontFamily};
+        font-size: ${theme.typography.codeFontSize}px;
+        padding: 0 ${theme.spacing.sm};
+        user-select: none;
+        background-color: ${LINE_TYPE_TO_NUMBER_BG_COLOR[lineType]};
+        position: sticky;
+        z-index: 3;
+        left: ${left}px;
+      `,
+    ],
 
-    prefixContainer: css`
-      ${sharedCellHeight};
-      position: relative;
-      user-select: none;
-      font-size: 0.85rem;
-      text-align: center;
-      font-family: ${theme.typography.codeFontFamily};
-      padding: 0 ${theme.spacing.sm};
-    `,
+    getPrefixContainer: (left: number) => [
+      css`
+        ${sharedCellHeight};
+        position: relative;
+        user-select: none;
+        font-size: 0.85rem;
+        text-align: center;
+        font-family: ${theme.typography.codeFontFamily};
+        padding: 0 ${theme.spacing.sm};
+        background-color: ${LINE_TYPE_TO_NUMBER_BG_COLOR[lineType]};
+        position: sticky;
+        z-index: 3;
+        left: ${left}px;
+      `,
+    ],
 
     codeContainer: css`
       ${sharedCellHeight};
       padding: 0 ${theme.spacing.sm};
       font-family: ${theme.typography.codeFontFamily};
       font-size: ${theme.typography.codeFontSize}px;
-      white-space: pre-wrap;
+      white-space: ${wrapLines ? 'pre-wrap' : 'pre'};
       cursor: text;
       width: 100%;
 
@@ -89,6 +100,7 @@ const useStyles = (lineType: DiffLineType) => {
         height: 100%;
         line-height: inherit;
         vertical-align: middle;
+        ${!wrapLines ? 'max-width: 100%;' : ''}
       }
     `,
 
@@ -105,23 +117,25 @@ const useStyles = (lineType: DiffLineType) => {
 }
 
 const DiffLine = forwardRef<HTMLTableRowElement, DiffLineProps>((props, ref) => {
-  const styles = useStyles(props.type)
+  const styles = useStyles(props.type, props.wrapLines ?? true)
+  const rightOffset = props.stickyOffsets?.rightNumber ?? 0
+  const prefixOffset = props.stickyOffsets?.prefix ?? 0
 
   return (
     <tr ref={ref} css={styles.container}>
       {!props.hideLeftNumber && (
-        <td css={styles.numberContainer}>
+        <td css={styles.getNumberContainer(0)}>
           {props.leftNumber !== null ? <span>{props.leftNumber}</span> : null}
         </td>
       )}
 
       {!props.hideRightNumber && (
-        <td css={styles.numberContainer}>
+        <td css={styles.getNumberContainer(rightOffset)}>
           {props.rightNumber !== null ? <span>{props.rightNumber}</span> : null}
         </td>
       )}
 
-      <td css={styles.prefixContainer}>
+      <td css={styles.getPrefixContainer(prefixOffset)}>
         {props.type !== 'hunk' && (
           <AddButton
             css={styles.addButton}

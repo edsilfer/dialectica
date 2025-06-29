@@ -2,6 +2,8 @@ import { DisplayConfig, Hunk } from '../../types'
 
 export type DiffLineType = 'add' | 'delete' | 'context' | 'hunk' | 'empty'
 
+export type Side = 'left' | 'right'
+
 /**
  * Shared props for both UnifiedHunkViewer and SplitHunkViewer.
  */
@@ -64,9 +66,17 @@ export interface DiffLineProps {
   hideRightNumber?: boolean
   /** The view type */
   view?: 'split' | 'unified'
+  /** Whether to wrap long lines or enable horizontal scrolling (defaults to true) */
+  wrapLines?: boolean
 
   /** The function to call when the add button is clicked */
   onAddButtonClick: () => void
+
+  /** Pre-computed left offsets (in px) for sticky columns */
+  stickyOffsets?: {
+    rightNumber: number
+    prefix: number
+  }
 }
 
 export interface SplitLineViewerProps {

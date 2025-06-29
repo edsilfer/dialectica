@@ -3,7 +3,7 @@ import { Typography, Checkbox } from 'antd'
 import React, { useContext, useMemo, useState } from 'react'
 import type { FileDiff, DisplayConfig } from '../../types'
 import UnifiedViewer from '../line-viewer/UnifiedViewer'
-import SplitedViewer from '../line-viewer/SplitViewer'
+import SplitViewer from '../line-viewer/SplitViewer'
 import { detectLanguage } from '../../parsers/language-utils'
 import { ThemeContext } from '../../../shared/providers/theme-provider'
 import CopyButton from './CopyButton'
@@ -156,7 +156,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ id, file, config }) => {
       <div css={styles.body}>
         {!collapsed && config.mode === 'split' && (
           <div css={styles.hunksContainer}>
-            <SplitedViewer pairs={splitPairs} config={config} />
+            <SplitViewer pairs={splitPairs} config={config} />
           </div>
         )}
 

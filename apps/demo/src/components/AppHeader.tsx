@@ -59,11 +59,13 @@ const AppHeader: React.FC = () => {
     collapsePackages,
     showIcons,
     displayNodeDetails,
+    wrapLines,
     setTheme,
     setIsSplitView,
     setCollapsePackages,
     setShowIcons,
     setDisplayNodeDetails,
+    setWrapLines,
   } = useDiffViewerState()
   const styles = useStyles(theme)
 
@@ -100,6 +102,8 @@ const AppHeader: React.FC = () => {
           <Switch checked={showIcons} onChange={setShowIcons} size="small" />
           <Text css={styles.switchLabel}>Show Details</Text>
           <Switch checked={displayNodeDetails} onChange={setDisplayNodeDetails} size="small" />
+          <Text css={styles.switchLabel}>Wrap Lines</Text>
+          <Switch checked={wrapLines} onChange={setWrapLines} size="small" />
         </div>
       </div>
     </div>
