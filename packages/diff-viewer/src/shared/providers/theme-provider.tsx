@@ -48,6 +48,10 @@ export const DiffViewerThemeProvider = ({ children, theme }: DiffViewerThemeProp
         fontSize: theme.typography.regularFontSize,
         fontSizeSM: theme.typography.regularFontSizeSM,
       },
+      Checkbox: {
+        colorPrimary: theme.colors.accentColor,
+        colorPrimaryHover: theme.colors.accentColor,
+      },
     },
   }
 

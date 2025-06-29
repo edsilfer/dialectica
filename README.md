@@ -72,9 +72,7 @@ Run from the root directory:
 
 ### Rendering Layer
 
-- [ ] P0 - Fix SVG not being generated when we need to scroll (FSNode grow out of window)
 - [ ] P0 - Add support for wrapping / not-wrapping lines
-- [ ] P0 - Fix the theme tokens for checkbox
 - [ ] P0 - Implement proper highlighting for partial changes in a line
 - [ ] P0 - Add support for ignoring whitespaces
 - [ ] P0 - Add support for rendering inline comments

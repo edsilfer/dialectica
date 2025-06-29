@@ -43,7 +43,8 @@ const useStyles = (connector: ConnectorStyle) => {
   return {
     svg: css`
       position: absolute;
-      inset: 0;
+      top: 0;
+      left: 0;
       pointer-events: none;
       z-index: 10;
     `,
@@ -75,7 +76,14 @@ function TreeSkeleton({ containerRef }: TreeSkeletonProps) {
     const rows = container.querySelectorAll('[data-fs-node-row]')
 
     setNodeMap(buildNodeMap(rows, parentRect))
-    setSize({ width: parentRect.width, height: parentRect.height })
+
+    /*
+     * The SVG needs to cover the full scrollable area so that the connector lines remain
+     * visible while the user scrolls. Using the container's bounding-box height only
+     * accounts for the visible viewport. Instead we rely on the `scrollHeight`/`scrollWidth`
+     * values so the SVG is tall/wide enough to span the entire content area.
+     */
+    setSize({ width: container.scrollWidth, height: container.scrollHeight })
   }, [containerRef, expandedDirs])
 
   const paths = connector === 'none' ? [] : getConnectorPaths(nodeMap, radius)
