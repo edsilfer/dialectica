@@ -3,10 +3,14 @@ import { ThemeProvider } from '../providers/theme-context'
 import { Themes } from '../themes'
 import React from 'react'
 
-// A very leniently typed wrapper to avoid React 18 vs 19 type clashes
-const Wrapper: React.ComponentType<any> = ({ children }: { children: any }) => (
-  <ThemeProvider theme={Themes.light}>{children}</ThemeProvider>
+// Wrapper component used to provide the default light theme in tests
+const WrapperComponent = ({ children }: { children?: unknown }) => (
+  <ThemeProvider theme={Themes.light}>{children as React.ReactNode}</ThemeProvider>
 )
+
+type AnyPropsWithChildren = { children?: unknown; [key: string]: unknown }
+
+const Wrapper = WrapperComponent as React.ComponentType<AnyPropsWithChildren>
 
 export function render(
   ui: React.ReactElement,

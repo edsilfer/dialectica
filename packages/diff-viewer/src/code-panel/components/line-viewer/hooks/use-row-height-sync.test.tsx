@@ -1,6 +1,5 @@
-import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
-import { describe, it, expect, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import useRowHeightSync from './use-row-height-sync'
 
@@ -17,23 +16,19 @@ class FakeResizeObserver {
   disconnect() {}
 }
 
-vi.stubGlobal('ResizeObserver', FakeResizeObserver as any)
+// `ResizeObserver` is not available in JSDOM so we replace it with our stub.
+vi.stubGlobal('ResizeObserver', FakeResizeObserver)
 
 const withHeight =
-  (register: (el: HTMLTableRowElement | null) => void, height: number) =>
-  (el: HTMLTableRowElement | null) => {
+  (register: (el: HTMLTableRowElement | null) => void, height: number) => (el: HTMLTableRowElement | null) => {
     if (el) {
-      vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({
-        width: 0,
-        height,
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0,
-        x: 0,
-        y: 0,
-        toJSON: () => {},
-      } as any)
+      /*
+       * Stub `getBoundingClientRect` so it returns an object whose `height`
+       * equals the provided `height` argument. Constructing a `DOMRect` gives
+       * us a correctly-typed object without resorting to `any` casts.
+       */
+      const rect = new DOMRect(0, 0, 0, height)
+      vi.spyOn(el, 'getBoundingClientRect').mockReturnValue(rect)
     }
     register(el)
   }

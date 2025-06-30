@@ -44,11 +44,7 @@ const useStyles = () => {
 
 export const ExplorerBar: React.FC<ExplorerBarProps> = ({ onExpandAll, onCollapseAll }) => {
   const styles = useStyles()
-  const {
-    searchQuery: searchText,
-    setSearchQuery: setSearchText,
-    filteredFiles,
-  } = useFileExplorerContext()
+  const { searchQuery: searchText, setSearchQuery: setSearchText, filteredFiles } = useFileExplorerContext()
 
   return (
     <div css={styles.searchContainer}>

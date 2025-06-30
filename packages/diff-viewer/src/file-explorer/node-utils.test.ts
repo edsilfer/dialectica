@@ -9,8 +9,7 @@ import { DirectoryNode, FileNode } from './types'
 /**
  * Convenience helper that builds a fresh tree before every assertion
  */
-const buildDefaultTree = (collapsePackages?: boolean) =>
-  buildTree(SAMPLE_FILE_DIFFS, collapsePackages)
+const buildDefaultTree = (collapsePackages?: boolean) => buildTree(SAMPLE_FILE_DIFFS, collapsePackages)
 
 describe('file-explorer/node-utils', () => {
   describe('buildTree()', () => {
@@ -36,9 +35,7 @@ describe('file-explorer/node-utils', () => {
       const src = collapsed.children.get('src') as DirectoryNode
 
       // The "singlechild/inner" chain should be collapsed into one directory key
-      const hasCollapsedDir = [...src.children.keys()].some((key) =>
-        key.includes('singlechild/inner'),
-      )
+      const hasCollapsedDir = [...src.children.keys()].some((key) => key.includes('singlechild/inner'))
       expect(hasCollapsedDir).toBe(true)
     })
   })

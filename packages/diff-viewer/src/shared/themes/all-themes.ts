@@ -123,9 +123,7 @@ const createThemeColors = (palette: ThemePalette): ColorTokens => {
 
     // File Explorer Tokens___________________________________________________
     fileExplorerBg: palette.backgroundPrimary,
-    fileExplorerSelectedFileBg: isDarkPalette
-      ? transparentize(STATUS.hunk, SIDEBAR_ALPHA)
-      : lighten(STATUS.hunk, 55),
+    fileExplorerSelectedFileBg: isDarkPalette ? transparentize(STATUS.hunk, SIDEBAR_ALPHA) : lighten(STATUS.hunk, 55),
     fileExplorerlineConnectorBg: palette.border,
   }
 }

@@ -83,7 +83,7 @@ const SplitViewer: React.FC<SplitLineViewerProps> = ({ pairs, wrapLines: initial
                   hideLeftNumber={!isLeft}
                   content={!isLeft && isHeader ? '' : line ? line.highlightedContent : ''}
                   showNumber={!!config.showLineNumbers}
-                  type={line ? (line.type as any) : 'empty'}
+                  type={line ? line.type : 'empty'}
                   onAddButtonClick={() => console.log('Add comment clicked')}
                   wrapLines={wrapLines}
                   view="split"
@@ -98,7 +98,7 @@ const SplitViewer: React.FC<SplitLineViewerProps> = ({ pairs, wrapLines: initial
         </table>
       )
     },
-    [pairs, prefixOffsets, registerRow, config.showLineNumbers, wrapLines],
+    [pairs, prefixOffsets, registerRow, config.showLineNumbers, wrapLines, styles.table],
   )
 
   return <div css={styles.container}>{SIDES.map(renderTable)}</div>

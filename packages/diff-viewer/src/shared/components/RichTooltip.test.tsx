@@ -32,13 +32,11 @@ describe('RichTooltip', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText(tooltipText).closest('.ant-tooltip')).toHaveClass(
-        'ant-tooltip-hidden',
-      )
+      expect(screen.getByText(tooltipText).closest('.ant-tooltip')).toHaveClass('ant-tooltip-hidden')
     })
   })
 
-  it('given tooltip and toast when clicd expect toast visible and tooltip invisble', async () => {
+  it('given tooltip and toast when clicd expect toast visible and tooltip invisble', () => {
     // GIVEN
     vi.useFakeTimers()
     const tooltipText = 'This is a tooltip'
@@ -51,18 +49,28 @@ describe('RichTooltip', () => {
 
     // WHEN CLICK EXPECT
     const trigger = screen.getByRole('button', { name: /click me/i })
-    act(() => fireEvent.click(trigger))
-    act(vi.runAllTimers)
+    act(() => {
+      fireEvent.click(trigger)
+    })
+    act(() => {
+      vi.runAllTimers()
+    })
     expect(screen.getByText(toastText)).toBeInTheDocument()
     expect(screen.queryByText(tooltipText)).not.toBeInTheDocument()
 
     // EXPECT TOAST DISAPPEARS
-    act(() => vi.advanceTimersByTime(2000))
+    act(() => {
+      vi.advanceTimersByTime(2000)
+    })
     expect(screen.getByText(toastText).closest('.ant-tooltip')).toHaveClass('ant-tooltip-hidden')
 
     // WHEN HOVER EXPECT TOOLTIP TO SHOW
-    act(() => fireEvent.mouseOver(trigger))
-    act(vi.runAllTimers)
+    act(() => {
+      fireEvent.mouseOver(trigger)
+    })
+    act(() => {
+      vi.runAllTimers()
+    })
     expect(screen.getByText(tooltipText)).toBeInTheDocument()
   }, 5000)
 })

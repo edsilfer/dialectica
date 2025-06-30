@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import React, { ReactNode } from 'react'
 import { CodePanelConfig } from '../../code-panel/providers/types'
 import { FileExplorerConfig } from '../../file-explorer/types'
 import { ThemeTokens } from '../themes'

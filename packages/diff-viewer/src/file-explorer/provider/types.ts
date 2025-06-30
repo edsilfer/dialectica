@@ -1,3 +1,4 @@
+import React from 'react'
 import { ReactNode } from 'react'
 import { ParsedDiff } from '../../shared/parsers/types'
 import { DirectoryNode, FileExplorerConfig } from '../types'

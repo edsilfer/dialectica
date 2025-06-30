@@ -14,14 +14,8 @@ const useStyles = (theme: ThemeTokens) => ({
 })
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
-  const {
-    theme,
-    setTheme,
-    codePanelConfig,
-    fileExplorerConfig,
-    setCodePanelConfig,
-    setFileExplorerConfig,
-  } = useDiffViewerConfig()
+  const { theme, setTheme, codePanelConfig, fileExplorerConfig, setCodePanelConfig, setFileExplorerConfig } =
+    useDiffViewerConfig()
 
   const isSplitView = codePanelConfig.mode === 'split'
   const collapsePackages = fileExplorerConfig.collapsePackages ?? false
@@ -30,10 +24,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
 
   const setIsSplitView = (value: boolean) =>
     setCodePanelConfig((cfg) => ({ ...cfg, mode: value ? 'split' : 'unified' }))
-  const setCollapsePackages = (value: boolean) =>
-    setFileExplorerConfig((cfg) => ({ ...cfg, collapsePackages: value }))
-  const setShowIcons = (value: boolean) =>
-    setFileExplorerConfig((cfg) => ({ ...cfg, showIcons: value }))
+  const setCollapsePackages = (value: boolean) => setFileExplorerConfig((cfg) => ({ ...cfg, collapsePackages: value }))
+  const setShowIcons = (value: boolean) => setFileExplorerConfig((cfg) => ({ ...cfg, showIcons: value }))
   const setDisplayNodeDetails = (value: boolean) =>
     setFileExplorerConfig((cfg) => ({ ...cfg, displayNodeDetails: value }))
 
@@ -67,7 +59,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               value: '',
               placeholder: '********',
               inputType: 'password',
-              onChange: (value: string) => console.log('WIP'),
+              onChange: (_: string) => {},
             },
           ]}
         />
@@ -95,8 +87,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
             {
               type: 'switch',
               label: 'Show node details',
-              description:
-                'Render additional metadata such as additions / deletions next to each node.',
+              description: 'Render additional metadata such as additions / deletions next to each node.',
               checked: displayNodeDetails,
               onChange: setDisplayNodeDetails,
             },
@@ -112,8 +103,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
             {
               type: 'switch',
               label: 'Split view mode',
-              description:
-                'Toggle between unified (single column) and split (side-by-side) diff presentation.',
+              description: 'Toggle between unified (single column) and split (side-by-side) diff presentation.',
               checked: isSplitView,
               onChange: setIsSplitView,
             },

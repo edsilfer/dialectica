@@ -1,3 +1,5 @@
+import React from 'react'
+
 export interface WrapLinesButtonProps {
   /** Whether the lines are currently wrapped */
   isWrapped: boolean

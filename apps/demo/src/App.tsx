@@ -1,11 +1,14 @@
 import { CodePanel, DiffParserAdapter, FileExplorer, useDiffViewerConfig } from '@diff-viewer'
 import { css } from '@emotion/react'
-import { Tooltip } from 'antd'
-import { useMemo, useState, useCallback } from 'react'
+import { Tooltip, Typography } from 'antd'
+import { useCallback, useMemo, useState } from 'react'
 import { TEN_FILES_DIFF } from './__fixtures__/sample-diffs'
 import AppToolbar from './components/AppToolbar'
 import HandleIcon from './components/icons/HandleIcon'
+import PixelHeartIcon from './components/icons/PixelHeartIcon'
 import { useResizablePanel } from './hooks/use-resizable-panel'
+
+const { Text } = Typography
 
 // Extracted outside the component to keep reference stable
 const createStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) => ({
@@ -44,6 +47,14 @@ const createStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) =>
     border-radius: ${theme.spacing.xs};
     overflow: auto;
   `,
+  footer: css`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    * {
+      font-size: 0.8rem !important;
+    }
+  `,
 })
 
 export default function App() {
@@ -57,10 +68,10 @@ export default function App() {
   const { width: explorerWidth, containerRef, onMouseDown } = useResizablePanel()
 
   // Stable callback so FileExplorer receives an unchanged prop between drags
-  const handleFileClick = useCallback(
-    (file: any) => setScrollToFile(file.newPath || file.oldPath),
-    [],
-  )
+  // Prefer the new path when available, otherwise fall back to the old one
+  const handleFileClick = useCallback((file: { newPath: string; oldPath: string }) => {
+    setScrollToFile(file.newPath ?? file.oldPath)
+  }, [])
 
   // Memoise heavy children so they don't re-render on width updates
   const fileExplorerElement = useMemo(
@@ -110,6 +121,14 @@ export default function App() {
 
         {/* Diff viewer */}
         {codePanelElement}
+      </div>
+
+      <div css={styles.footer}>
+        <Text>
+          Made with
+          <PixelHeartIcon size={16} />
+          by edsilfer
+        </Text>
       </div>
     </div>
   )

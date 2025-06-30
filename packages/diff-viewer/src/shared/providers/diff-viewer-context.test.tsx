@@ -67,8 +67,6 @@ describe('DiffViewerConfigProvider / useDiffViewerConfig', () => {
     }
 
     // Using a function to wrap the render call so we can assert on the thrown error
-    expect(() => render(<HookConsumer />)).toThrow(
-      'useDiffViewerConfig must be used within a ConfigProvider',
-    )
+    expect(() => render(<HookConsumer />)).toThrow('useDiffViewerConfig must be used within a ConfigProvider')
   })
 })

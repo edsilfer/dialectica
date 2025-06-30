@@ -11,10 +11,7 @@ export const FSTreeContextProvider: React.FC<FSTreeContextProviderProps> = ({ ch
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedNode, setSelectedNode] = useState<string | null>(null)
 
-  const filteredFiles = useMemo(
-    () => filterFiles(diff.files, searchQuery),
-    [diff.files, searchQuery],
-  )
+  const filteredFiles = useMemo(() => filterFiles(diff.files, searchQuery), [diff.files, searchQuery])
 
   // Builds the tree that every component reads
   const tree = useMemo(

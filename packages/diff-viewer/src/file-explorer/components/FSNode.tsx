@@ -5,7 +5,6 @@ import RichTooltip from '../../shared/components/RichTooltip'
 import { ThemeContext } from '../../shared/providers/theme-context'
 import { highlightText, nodeComparator } from '../node-utils'
 import { useFileExplorerContext } from '../provider/fstree-context'
-import { FileNode } from '../types'
 import { FSNodeProps } from './types'
 import { Dropdown, message, MenuProps } from 'antd'
 import NodeMetadata from './NodeMetadata'
@@ -112,15 +111,12 @@ const FSNode: React.FC<FSNodeProps> = ({
   onFileClick,
 }) => {
   const theme = useContext(ThemeContext)
-  const { config, selectedNode, expandedDirs, searchQuery, setSelectedNode, setExpandedDirs } =
-    useFileExplorerContext()
+  const { config, selectedNode, expandedDirs, searchQuery, setSelectedNode, setExpandedDirs } = useFileExplorerContext()
   const styles = useStyles(level)
 
   const currentPath = parentPath ? `${parentPath}/${node.name}` : node.name
   const isDirectory = node.type === 'directory'
-  const filePath = isDirectory
-    ? undefined
-    : (node as FileNode).file.newPath || (node as FileNode).file.oldPath
+  const filePath = isDirectory ? undefined : node.file.newPath || node.file.oldPath
 
   const collapsed = isDirectory ? !expandedDirs.has(currentPath) : false
   const isSelected = selectedNode === (isDirectory ? currentPath : filePath)
@@ -128,10 +124,7 @@ const FSNode: React.FC<FSNodeProps> = ({
   // File don't have an expand button, hence we need to count 20 for it
   const indentPx = isDirectory ? baseIndentPx : baseIndentPx + 20
 
-  const highlightedName = useMemo(
-    () => highlightText(node.name, searchQuery || ''),
-    [node.name, searchQuery],
-  )
+  const highlightedName = useMemo(() => highlightText(node.name, searchQuery || ''), [node.name, searchQuery])
 
   const metadata = useMemo(
     () => (
@@ -150,10 +143,16 @@ const FSNode: React.FC<FSNodeProps> = ({
     setSelectedNode(currentPath)
     setExpandedDirs((prev) => {
       const next = new Set(prev)
-      collapsed ? next.add(currentPath) : next.delete(currentPath)
+      if (collapsed) {
+        next.add(currentPath)
+      } else {
+        next.delete(currentPath)
+      }
       return next
     })
-    onDirectoryToggle?.(currentPath, !collapsed)
+    if (onDirectoryToggle) {
+      onDirectoryToggle(currentPath, !collapsed)
+    }
   }, [collapsed, currentPath, isDirectory, onDirectoryToggle, setExpandedDirs, setSelectedNode])
 
   const handleRowClick = useCallback(
@@ -163,9 +162,11 @@ const FSNode: React.FC<FSNodeProps> = ({
         toggleDirectory()
         return
       }
-      if (filePath) {
+      if (!isDirectory && filePath) {
         setSelectedNode(filePath)
-        onFileClick?.((node as FileNode).file)
+        if (onFileClick) {
+          onFileClick(node.file)
+        }
       }
     },
     [filePath, isDirectory, node, onFileClick, setSelectedNode, toggleDirectory],
@@ -173,21 +174,24 @@ const FSNode: React.FC<FSNodeProps> = ({
 
   const nodePath = isDirectory ? currentPath : filePath || currentPath
 
-  const onMenuClick: MenuProps['onClick'] = ({ key }) => {
-    if (key === 'copy') {
-      navigator.clipboard
-        .writeText(nodePath)
-        .then(() => {
-          message.success('Path copied to clipboard')
-        })
-        .catch(() => {
-          message.error('Failed to copy path')
-        })
-    }
-  }
+  const onMenuClick = useCallback(
+    ({ key }: { key: string | number }) => {
+      if (key === 'copy') {
+        navigator.clipboard
+          .writeText(nodePath)
+          .then(() => {
+            message.success('Path copied to clipboard')
+          })
+          .catch(() => {
+            message.error('Failed to copy path')
+          })
+      }
+    },
+    [nodePath],
+  )
 
-  const menuProps = useMemo(() => {
-    return {
+  const menuProps: MenuProps = useMemo(
+    () => ({
       items: [
         {
           key: 'copy',
@@ -199,18 +203,14 @@ const FSNode: React.FC<FSNodeProps> = ({
         backgroundColor: theme.colors.backgroundContainer,
         color: theme.colors.textPrimary,
       },
-    }
-  }, [onMenuClick, theme])
+    }),
+    [onMenuClick, theme],
+  )
 
   return (
     <div>
-      <Dropdown menu={menuProps as any} trigger={['contextMenu']}>
-        <div
-          css={[styles.row(isSelected), cssProp]}
-          className={className}
-          onClick={handleRowClick}
-          data-depth={level}
-        >
+      <Dropdown menu={menuProps} trigger={['contextMenu']}>
+        <div css={[styles.row(isSelected), cssProp]} className={className} onClick={handleRowClick} data-depth={level}>
           {/* Metadata (icon + details) */}
           <div css={styles.metadataContainer}>{metadata}</div>
 

@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from 'vitest'
 vi.mock('highlight.js/styles/github.css', () => ({}))
 
 import { escapeHtml, highlightContent, buildSplitHunkPairs } from './split-utils'
-import type { Hunk } from '../../types'
+import { Hunk } from '../../../shared/parsers/types'
 
 const SAMPLE_HUNK: Hunk = {
   content: '@@ -1,4 +1,4 @@',

@@ -1,6 +1,7 @@
-import React, { useContext, useState, useRef, useEffect } from 'react'
 import { Tooltip } from 'antd'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { ThemeContext } from '../providers/theme-context'
+import { RichTooltipProps } from './types'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -8,30 +9,14 @@ const useStyles = () => {
   return {
     tooltip: {
       body: {
-        backgroundColor: theme.colors.tooltipBg,
-        color: theme.colors.tooltipText,
+        backgroundColor: theme.colors.backgroundContainer,
+        color: theme.colors.textPrimary,
       },
     },
   }
 }
 
-interface RichTooltipProps {
-  /** The content to display in the tooltip */
-  tooltipText?: React.ReactNode
-  /** The content to display in the toast message after an action */
-  toastText?: React.ReactNode
-  /** The duration in seconds to show the toast message (defaults to 2) */
-  toastTimeSeconds?: number
-  /** The content that will trigger the tooltip */
-  children: React.ReactElement
-}
-
-const RichTooltip: React.FC<RichTooltipProps> = ({
-  tooltipText,
-  toastText,
-  toastTimeSeconds = 2,
-  children,
-}) => {
+const RichTooltip: React.FC<RichTooltipProps> = ({ tooltipText, toastText, toastTimeSeconds = 2, children }) => {
   const styles = useStyles()
   const [isToastVisible, setIsToastVisible] = useState(false)
   const [tooltipTitle, setTooltipTitle] = useState(tooltipText)
@@ -66,14 +51,26 @@ const RichTooltip: React.FC<RichTooltipProps> = ({
     }
   }
 
-  // We need to clone the child element to attach the onClick handler
-  // This is because the child is the trigger for the tooltip
-  const childWithClickHandler = React.cloneElement(children, {
+  /*
+   * We need to clone the child element to attach the onClick handler.
+   * Cast `children` so that the TypeScript compiler recognises it as a
+   * concrete ReactElement whose props we can safely read & extend.
+   */
+  // Explicitly type the child element so that we can safely access its props
+  const childElement = children as React.ReactElement<
+    {
+      onClick?: (event: React.MouseEvent<HTMLElement>) => void
+    },
+    string | React.JSXElementConstructor<unknown>
+  >
+  const childWithClickHandler = React.cloneElement(childElement, {
     onClick: (e: React.MouseEvent<HTMLElement>) => {
       handleShowToast()
-      // If the child has its own onClick, we should call it too
-      if (children.props.onClick) {
-        children.props.onClick(e)
+      // If the original element provided its own onClick, preserve it.
+      const originalOnClick = childElement.props?.onClick
+
+      if (originalOnClick) {
+        originalOnClick(e)
       }
     },
   })

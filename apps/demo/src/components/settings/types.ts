@@ -67,8 +67,4 @@ export interface SelectSettingProps extends BaseSettingProps<'select', string> {
   selectCss?: ReturnType<typeof import('@emotion/react').css>
 }
 
-export type SettingConfig =
-  | SwitchSettingProps
-  | CheckboxSettingProps
-  | InputSettingProps
-  | SelectSettingProps
+export type SettingConfig = SwitchSettingProps | CheckboxSettingProps | InputSettingProps | SelectSettingProps

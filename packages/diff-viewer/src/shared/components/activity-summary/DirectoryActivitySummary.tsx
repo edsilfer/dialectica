@@ -2,10 +2,7 @@ import React, { useMemo } from 'react'
 import DiffActivitySummary from './DiffActivitySummary'
 import { DirectoryActivitySummaryProps } from './types'
 
-const DirectoryActivitySummary: React.FC<DirectoryActivitySummaryProps> = ({
-  files,
-  maxSquares = 5,
-}) => {
+const DirectoryActivitySummary: React.FC<DirectoryActivitySummaryProps> = ({ files, maxSquares = 5 }) => {
   const { additions, deletions } = useMemo(() => {
     let additions = 0
     let deletions = 0

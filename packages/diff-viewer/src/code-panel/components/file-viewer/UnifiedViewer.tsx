@@ -53,9 +53,7 @@ const UnifiedViewer: React.FC<UnifiedViewerProps> = ({ lines, wrapLines: initial
         JavaScript expression and keeping the closing tag tight to the
         expression, no stray whitespace nodes are produced.
       */}
-      <colgroup>
-        {[<col key="left" />, <col key="right" />, <col key="prefix" />, <col key="code" />]}
-      </colgroup>
+      <colgroup>{[<col key="left" />, <col key="right" />, <col key="prefix" />, <col key="code" />]}</colgroup>
       <tbody>
         {lines.map((line, i) => (
           <DiffLine

@@ -32,77 +32,11 @@ const useStyles = (theme: ThemeTokens) => ({
     display: flex;
     align-items: center;
   `,
-  themeSelect: css`
-    width: 200px;
-
-    /* the part that draws the grey/white rectangle */
-    & .ant-select-selector {
-      background-color: ${theme.colors.hunkViewerBg} !important;
-      color: ${theme.colors.textPrimary} !important;
-    }
-
-    /* the item text itself */
-    & .ant-select-selection-item,
-    & .ant-select-selection-placeholder {
-      color: ${theme.colors.textPrimary} !important;
-    }
-  `,
-  switchContainer: css`
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: ${theme.spacing.sm};
-    margin-top: ${theme.spacing.sm};
-  `,
-  modalContent: css`
-    display: flex;
-    flex-direction: column;
-    gap: ${theme.spacing.md};
-    margin-top: ${theme.spacing.md};
-  `,
-  switchLabel: css`
-    color: ${theme.colors.textPrimary} !important;
-  `,
-  sectionTitle: css`
-    color: ${theme.colors.textPrimary} !important;
-    margin-top: ${theme.spacing.sm};
-    margin-bottom: ${theme.spacing.xs};
-  `,
-  settingContainer: css`
-    display: flex;
-    align-items: center;
-    gap: ${theme.spacing.sm};
-  `,
-  input: css`
-    background-color: ${theme.colors.hunkViewerBg} !important;
-    color: ${theme.colors.textPrimary} !important;
-  `,
 })
 
 const AppToolbar: React.FC = () => {
   const [settingsOpen, setSettingsOpen] = React.useState(false)
-  const {
-    theme,
-    setTheme,
-    codePanelConfig,
-    fileExplorerConfig,
-    setCodePanelConfig,
-    setFileExplorerConfig,
-  } = useDiffViewerConfig()
-
-  const isSplitView = codePanelConfig.mode === 'split'
-  const collapsePackages = fileExplorerConfig.collapsePackages ?? false
-  const showIcons = fileExplorerConfig.showIcons ?? false
-  const displayNodeDetails = fileExplorerConfig.displayNodeDetails ?? false
-
-  const setIsSplitView = (value: boolean) =>
-    setCodePanelConfig((cfg) => ({ ...cfg, mode: value ? 'split' : 'unified' }))
-  const setCollapsePackages = (value: boolean) =>
-    setFileExplorerConfig((cfg) => ({ ...cfg, collapsePackages: value }))
-  const setShowIcons = (value: boolean) =>
-    setFileExplorerConfig((cfg) => ({ ...cfg, showIcons: value }))
-  const setDisplayNodeDetails = (value: boolean) =>
-    setFileExplorerConfig((cfg) => ({ ...cfg, displayNodeDetails: value }))
+  const { theme } = useDiffViewerConfig()
 
   const styles = useStyles(theme)
 

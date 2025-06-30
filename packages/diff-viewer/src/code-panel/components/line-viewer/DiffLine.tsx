@@ -116,7 +116,7 @@ const useStyles = (lineType: DiffLineType, wrapLines: boolean) => {
   }
 }
 
-const DiffLine = forwardRef<HTMLTableRowElement, DiffLineProps>((props, ref) => {
+const DiffLine = forwardRef<HTMLTableRowElement, DiffLineProps>(function DiffLine(props, ref) {
   const styles = useStyles(props.type, props.wrapLines ?? true)
   const rightOffset = props.stickyOffsets?.rightNumber ?? 0
   const prefixOffset = props.stickyOffsets?.prefix ?? 0
@@ -124,9 +124,7 @@ const DiffLine = forwardRef<HTMLTableRowElement, DiffLineProps>((props, ref) => 
   return (
     <tr ref={ref} css={styles.container}>
       {!props.hideLeftNumber && (
-        <td css={styles.getNumberContainer(0)}>
-          {props.leftNumber !== null ? <span>{props.leftNumber}</span> : null}
-        </td>
+        <td css={styles.getNumberContainer(0)}>{props.leftNumber !== null ? <span>{props.leftNumber}</span> : null}</td>
       )}
 
       {!props.hideRightNumber && (
@@ -137,11 +135,7 @@ const DiffLine = forwardRef<HTMLTableRowElement, DiffLineProps>((props, ref) => 
 
       <td css={styles.getPrefixContainer(prefixOffset)}>
         {props.type !== 'hunk' && (
-          <AddButton
-            css={styles.addButton}
-            className="add-comment-btn"
-            onClick={props.onAddButtonClick}
-          />
+          <AddButton css={styles.addButton} className="add-comment-btn" onClick={props.onAddButtonClick} />
         )}
         {props.type === 'add' && '+'}
         {props.type === 'delete' && '-'}

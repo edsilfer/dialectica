@@ -28,8 +28,8 @@ export const CodePanel: React.FC<CodePanelProps> = (props) => {
 
   let inheritedConfig
   try {
-    const { codePanelConfig } = useDiffViewerConfig()
-    inheritedConfig = codePanelConfig
+    const diffViewerConfig = useDiffViewerConfig()
+    inheritedConfig = diffViewerConfig.codePanelConfig
   } catch {
     inheritedConfig = undefined
   }
@@ -59,11 +59,7 @@ const CodePanelContent: React.FC<CodePanelProps> = (props) => {
   return (
     <div css={[styles.container, props.css]} className={props.className}>
       {props.diff.files.map((file) => (
-        <FileViewer
-          key={file.newPath || file.oldPath}
-          id={`file-diff-${file.newPath || file.oldPath}`}
-          file={file}
-        />
+        <FileViewer key={file.newPath || file.oldPath} id={`file-diff-${file.newPath || file.oldPath}`} file={file} />
       ))}
     </div>
   )

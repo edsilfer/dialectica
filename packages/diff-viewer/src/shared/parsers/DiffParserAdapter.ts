@@ -29,7 +29,7 @@ export class DiffParserAdapter implements IDiffParser {
             case 'normal':
               return { ...base, type: 'context' }
             default:
-              throw new Error(`Unknown line type: ${line.type}`)
+              throw new Error('Unknown line type encountered')
           }
         })
 

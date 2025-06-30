@@ -72,10 +72,7 @@ const NodeMetadata: React.FC<NodeMetadataProps> = (props) => {
     <>
       {props.showIcons && <DirectoryIcon size={14} solid css={styles.directoryIcon} />}
       {props.displayDetails && (
-        <span
-          css={styles.metadataTitle(theme.colors.textPrimaryPlaceholder)}
-          title={`${fileTotal} files`}
-        >
+        <span css={styles.metadataTitle(theme.colors.textPrimaryPlaceholder)} title={`${fileTotal} files`}>
           {fileTotal}
         </span>
       )}

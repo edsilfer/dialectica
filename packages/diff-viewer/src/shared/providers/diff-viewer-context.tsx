@@ -11,7 +11,7 @@ import { DiffViewerConfigContextProps, DiffViewerConfigContextState } from './ty
 /**
  * Keeps the configuration context for the DiffViewer component.
  */
-const DiffViewerConfigContext = createContext<DiffViewerConfigContextState | undefined>(undefined)
+export const DiffViewerConfigContext = createContext<DiffViewerConfigContextState | undefined>(undefined)
 
 export const DiffViewerConfigProvider: React.FC<DiffViewerConfigContextProps> = ({
   children,
@@ -23,18 +23,24 @@ export const DiffViewerConfigProvider: React.FC<DiffViewerConfigContextProps> = 
   const STORAGE_KEY = '__diff_viewer_config__'
 
   // Hydrate from localStorage if requested
-  const storedConfig = useMemo(() => {
-    if (storage !== 'local' || typeof window === 'undefined') return null
-    try {
-      return JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null')
-    } catch {
-      return null
-    }
-  }, [storage]) as {
+  const storedConfig = useMemo<{
     theme?: ThemeTokens
     codePanelConfig?: CodePanelConfig
     fileExplorerConfig?: FileExplorerConfig
-  } | null
+  } | null>(() => {
+    if (storage !== 'local' || typeof window === 'undefined') return null
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY)
+      if (!raw) return null
+      return JSON.parse(raw) as {
+        theme?: ThemeTokens
+        codePanelConfig?: CodePanelConfig
+        fileExplorerConfig?: FileExplorerConfig
+      }
+    } catch {
+      return null
+    }
+  }, [storage])
 
   const [theme, setTheme] = useState<ThemeTokens>(storedConfig?.theme ?? initialTheme)
 
@@ -55,8 +61,7 @@ export const DiffViewerConfigProvider: React.FC<DiffViewerConfigContextProps> = 
   )
 
   const [codePanelConfig, setCodePanelConfig] = useState<CodePanelConfig>(mergedCodePanelConfig)
-  const [fileExplorerConfig, setFileExplorerConfig] =
-    useState<FileExplorerConfig>(mergedFileExplorerConfig)
+  const [fileExplorerConfig, setFileExplorerConfig] = useState<FileExplorerConfig>(mergedFileExplorerConfig)
 
   const value = {
     codePanelConfig,

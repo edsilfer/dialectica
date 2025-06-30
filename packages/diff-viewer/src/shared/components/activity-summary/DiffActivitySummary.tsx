@@ -39,11 +39,7 @@ const useStyles = () => {
   }
 }
 
-const DiffActivitySummary: React.FC<DiffActivitySummaryProps> = ({
-  additions,
-  deletions,
-  maxSquares = 5,
-}) => {
+const DiffActivitySummary: React.FC<DiffActivitySummaryProps> = ({ additions, deletions, maxSquares = 5 }) => {
   const styles = useStyles()
   const theme = useContext(ThemeContext)
 
@@ -55,7 +51,7 @@ const DiffActivitySummary: React.FC<DiffActivitySummaryProps> = ({
   let squares: ('addition' | 'deletion' | 'neutral')[] = []
 
   if (total === 0) {
-    squares = Array(maxSquares).fill('neutral')
+    squares = Array.from({ length: maxSquares }, () => 'neutral' as const)
   } else {
     let additionSquares = Math.round((additions / total) * maxSquares)
     let deletionSquares = maxSquares - additionSquares
@@ -71,11 +67,12 @@ const DiffActivitySummary: React.FC<DiffActivitySummaryProps> = ({
 
     const emptySquares = maxSquares - (additionSquares + deletionSquares)
 
-    squares = [
-      ...Array(additionSquares).fill('addition'),
-      ...Array(deletionSquares).fill('deletion'),
-      ...Array(emptySquares).fill('neutral'),
-    ]
+    // Build the squares array with properly typed helpers to avoid any `any` leakage
+    const additionSquaresArr = Array.from({ length: additionSquares }, () => 'addition' as const)
+    const deletionSquaresArr = Array.from({ length: deletionSquares }, () => 'deletion' as const)
+    const neutralSquaresArr = Array.from({ length: emptySquares }, () => 'neutral' as const)
+
+    squares = [...additionSquaresArr, ...deletionSquaresArr, ...neutralSquaresArr]
   }
 
   const getColor = (type: 'addition' | 'deletion' | 'neutral') => {
@@ -100,11 +97,7 @@ const DiffActivitySummary: React.FC<DiffActivitySummaryProps> = ({
       <RichTooltip tooltipText={tooltipText}>
         <div css={styles.squaresContainer}>
           {squares.map((type, index) => (
-            <div
-              key={index}
-              css={styles.square(getColor(type))}
-              data-testid="diff-activity-square"
-            />
+            <div key={index} css={styles.square(getColor(type))} data-testid="diff-activity-square" />
           ))}
         </div>
       </RichTooltip>

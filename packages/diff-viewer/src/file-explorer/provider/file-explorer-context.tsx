@@ -16,7 +16,7 @@ export const DEFAULT_FILE_EXPLORER_CONFIG: FileExplorerConfig = {
 /**
  * Keeps the configuration context for the FileExplorer component.
  */
-const FileExplorerConfigContext = createContext<FileExplorerConfigState | undefined>(undefined)
+export const FileExplorerConfigContext = createContext<FileExplorerConfigState | undefined>(undefined)
 
 export const FileExplorerConfigProvider: React.FC<FileExplorerConfigContextProps> = ({
   children,
@@ -40,9 +40,7 @@ export const FileExplorerConfigProvider: React.FC<FileExplorerConfigContextProps
 
   return (
     <ThemeProvider theme={themeToUse}>
-      <FileExplorerConfigContext.Provider value={value}>
-        {children}
-      </FileExplorerConfigContext.Provider>
+      <FileExplorerConfigContext.Provider value={value}>{children}</FileExplorerConfigContext.Provider>
     </ThemeProvider>
   )
 }

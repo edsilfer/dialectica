@@ -23,7 +23,7 @@ const ContextSpy: React.FC<{
   const ctx = useFileExplorerContext()
   useEffect(() => {
     cb(ctx)
-  }, [ctx])
+  }, [ctx, cb])
   return null
 }
 

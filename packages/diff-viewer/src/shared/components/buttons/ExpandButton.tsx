@@ -27,14 +27,7 @@ const ExpandButton: React.FC<ExpandButtonProps> = ({
 }) => {
   const styles = useStyles()
   const tooltipText = collapsed ? tooltipTextExpand : tooltipTextCollapse
-  const button = (
-    <ChevronDown
-      size={size}
-      css={styles.chevron(collapsed)}
-      onClick={onClick}
-      className="expand-button"
-    />
-  )
+  const button = <ChevronDown size={size} css={styles.chevron(collapsed)} onClick={onClick} className="expand-button" />
   return <RichTooltip tooltipText={tooltipText}>{button}</RichTooltip>
 }
 

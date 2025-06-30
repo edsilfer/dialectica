@@ -152,23 +152,11 @@ const FileViewer: React.FC<FileViewerProps> = ({ id, file }) => {
         <ExpandButton collapsed={collapsed} size={16} onClick={handleToggleCollapse} />
         <FileActivitySummary file={file} />
         <Text className="file-path">{filePath}</Text>
-        <CopyButton
-          onClick={handleCopyFilePath}
-          tooltip="Copy file path"
-          toastText="File path copied to clipboard"
-        />
-        <WrapLinesButton
-          isWrapped={wrapLines}
-          onClick={() => setWrapLines((prev) => !prev)}
-          size={16}
-        />
+        <CopyButton onClick={handleCopyFilePath} tooltip="Copy file path" toastText="File path copied to clipboard" />
+        <WrapLinesButton isWrapped={wrapLines} onClick={() => setWrapLines((prev) => !prev)} size={16} />
 
         <div css={styles.rightContainer}>
-          <Checkbox
-            css={styles.viewedCheckbox}
-            checked={viewed}
-            onChange={(e) => handleToggleViewed(e.target.checked)}
-          >
+          <Checkbox css={styles.viewedCheckbox} checked={viewed} onChange={(e) => handleToggleViewed(e.target.checked)}>
             Viewed
           </Checkbox>
         </div>

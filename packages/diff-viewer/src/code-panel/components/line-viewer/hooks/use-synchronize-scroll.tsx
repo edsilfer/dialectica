@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react'
+import React, { useLayoutEffect } from 'react'
 
 /**
  * Keep two scrollable elements horizontally in sync.
@@ -36,5 +36,5 @@ export const useSynchronizedScroll = (
       leftEl.removeEventListener('scroll', handleLeft)
       rightEl.removeEventListener('scroll', handleRight)
     }
-  }, [])
+  }, [left, right])
 }

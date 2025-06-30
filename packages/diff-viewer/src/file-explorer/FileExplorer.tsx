@@ -1,12 +1,13 @@
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
-import { useDiffViewerConfig } from '../shared/providers/diff-viewer-context'
+import type { FileDiff } from '../shared/parsers/types'
+import { DiffViewerConfigContext } from '../shared/providers/diff-viewer-context'
 import { ThemeContext } from '../shared/providers/theme-context'
 import FSNode from './components/FSNode'
 import { ExplorerBar } from './components/Toolbar'
 import TreeSkeleton from './components/TreeSkeleton'
 import { listDirPaths, nodeComparator } from './node-utils'
-import { FileExplorerConfigProvider, useFileExplorerConfig } from './provider/file-explorer-context'
+import { FileExplorerConfigContext, FileExplorerConfigProvider } from './provider/file-explorer-context'
 import { FSTreeContextProvider, useFileExplorerContext } from './provider/fstree-context'
 import { FileExplorerProps } from './types'
 
@@ -34,30 +35,19 @@ const useStyles = () => {
 }
 
 export const FileExplorer: React.FC<FileExplorerProps> = (props) => {
-  let hasSpecificProvider = true
-  try {
-    void useFileExplorerConfig()
-  } catch {
-    hasSpecificProvider = false
-  }
+  const existingFileExplorerConfig = useContext(FileExplorerConfigContext)
 
-  let inheritedConfig
-  try {
-    const { fileExplorerConfig } = useDiffViewerConfig()
-    inheritedConfig = fileExplorerConfig
-  } catch {
-    inheritedConfig = undefined
-  }
+  // Try to inherit the configuration from an ancestor DiffViewerConfigProvider (if any)
+  const diffViewerConfig = useContext(DiffViewerConfigContext)
+  const inheritedConfig = diffViewerConfig?.fileExplorerConfig
 
   const explorer = <FileExplorerInner {...props} />
 
-  if (hasSpecificProvider) {
+  if (existingFileExplorerConfig) {
     return explorer
   }
 
-  return (
-    <FileExplorerConfigProvider config={inheritedConfig}>{explorer}</FileExplorerConfigProvider>
-  )
+  return <FileExplorerConfigProvider config={inheritedConfig}>{explorer}</FileExplorerConfigProvider>
 }
 
 /**
@@ -84,7 +74,7 @@ const FileExplorerContent: React.FC<FileExplorerProps> = (props) => {
     props.onDirectoryToggle?.(path, expanded)
   }
 
-  const handleFileClick = (file: any) => {
+  const handleFileClick = (file: FileDiff) => {
     const filePath = file.newPath || file.oldPath
     setSelectedNode(filePath)
     props.onFileClick?.(file)

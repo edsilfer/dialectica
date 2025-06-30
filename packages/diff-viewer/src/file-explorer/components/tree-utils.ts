@@ -67,10 +67,7 @@ export function getConnectorPaths(nodes: Map<string, Node[]>, radius = 0): strin
  * @param parentRect - The parent rectangle.
  * @returns          - The map of nodes by their parent path.
  */
-export const buildNodeMap = (
-  rows: NodeListOf<Element>,
-  parentRect: DOMRect,
-): Map<string, Node[]> => {
+export const buildNodeMap = (rows: NodeListOf<Element>, parentRect: DOMRect): Map<string, Node[]> => {
   const map = new Map<string, Node[]>()
   rows.forEach((el) => {
     const node = toNode(el, parentRect)

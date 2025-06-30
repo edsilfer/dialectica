@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import React, { ReactNode } from 'react'
 import { ThemeTokens } from '../../shared/themes/types'
 
 export interface CodePanelConfigContextProps {
