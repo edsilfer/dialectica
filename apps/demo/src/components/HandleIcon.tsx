@@ -17,17 +17,17 @@ const HandleIcon = React.forwardRef<
     strokeLinejoin="round"
     {...props}
   >
-    {/* Vertical bars */}
-    <line x1="9" y1="4" x2="9" y2="20" />
-    <line x1="15" y1="4" x2="15" y2="20" />
+    {/* Center bar (twice stroke and slightly longer) */}
+    <line x1="12" y1="2" x2="12" y2="22" strokeWidth="4" />
 
-    {/* Arrows pointing outward from bars */}
-    {/* Left arrow: move outward */}
-    <polyline points="8 12 4 8" />
-    <polyline points="8 12 4 16" />
+    {/* Horizontal shaft */}
+    <line x1="0" y1="12" x2="24" y2="12" />
+
+    {/* Left arrow */}
+    <polygon points="0,12 6,16 6,8" fill="currentColor" stroke="none" />
+
     {/* Right arrow */}
-    <polyline points="16 12 20 8" />
-    <polyline points="16 12 20 16" />
+    <polygon points="24,12 18,16 18,8" fill="currentColor" stroke="none" />
   </svg>
 ))
 

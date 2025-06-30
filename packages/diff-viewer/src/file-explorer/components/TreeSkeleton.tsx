@@ -17,7 +17,7 @@ const useStyles = (connector: ConnectorStyle) => {
       z-index: 10;
     `,
     line: css`
-      stroke: ${theme.colors.borderBg};
+      stroke: ${theme.colors.textPrimary};
       stroke-width: 1;
       stroke-linecap: round;
       stroke-linejoin: round;

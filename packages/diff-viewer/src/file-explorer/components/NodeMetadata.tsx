@@ -24,7 +24,7 @@ const useStyles = () => {
 
     /* Style for the directory icon */
     directoryIcon: css`
-      color: ${theme.colors.accentColor};
+      color: ${theme.colors.accent};
     `,
   }
 }
@@ -42,7 +42,7 @@ const NodeMetadata: React.FC<NodeMetadataProps> = (props) => {
     const fileNode = props.node as FileNode
 
     // Determine background color and label based on file diff flags
-    let bgColor = theme.colors.fileViwerNeutralSquareBg
+    let bgColor = theme.colors.fileViewerModifiedSquareBg
     let title = 'Modified file'
     let label = 'M'
     if (fileNode.file.isNew) {
@@ -72,7 +72,10 @@ const NodeMetadata: React.FC<NodeMetadataProps> = (props) => {
     <>
       {props.showIcons && <DirectoryIcon size={14} solid css={styles.directoryIcon} />}
       {props.displayDetails && (
-        <span css={styles.metadataTitle(theme.colors.borderBg)} title={`${fileTotal} files`}>
+        <span
+          css={styles.metadataTitle(theme.colors.textPrimaryPlaceholder)}
+          title={`${fileTotal} files`}
+        >
           {fileTotal}
         </span>
       )}

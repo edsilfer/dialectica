@@ -13,11 +13,14 @@ const useStyles = () => {
       align-items: center;
     `,
     square: (color: string) => css`
-      width: ${theme.spacing.sm};
-      height: ${theme.spacing.sm};
+      width: 10px;
+      height: 10px;
       background-color: ${color};
-      border: 1px solid ${theme.colors.borderBg};
-      border-radius: ${theme.spacing.xxs};
+      border: 1px solid ${theme.colors.border};
+      /* Prevent double borders between adjacent squares by removing the left border from every square except the first */
+      &:not(:first-of-type) {
+        border-left: none;
+      }
     `,
   }
 }

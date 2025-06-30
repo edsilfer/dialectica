@@ -23,14 +23,14 @@ const useStyles = () => {
     container: css`
       display: flex;
       flex-direction: column;
-      border: 1px solid ${theme.colors.borderBg};
+      border: 1px solid ${theme.colors.border};
       border-radius: ${theme.spacing.xs};
       overflow: hidden;
       flex: 0 0 auto;
     `,
 
     body: css`
-      border: 1px solid ${theme.colors.borderBg};
+      border: 1px solid ${theme.colors.border};
       border-top: none;
       border-bottom-left-radius: ${theme.spacing.xs};
       border-bottom-right-radius: ${theme.spacing.xs};
@@ -45,8 +45,8 @@ const useStyles = () => {
       padding: ${theme.spacing.sm};
       color: ${theme.colors.textPrimary};
       font-family: ${theme.typography.codeFontFamily};
-      border: 1px solid ${theme.colors.borderBg};
-      border-bottom: 1px solid ${theme.colors.borderBg};
+      border: 1px solid ${theme.colors.border};
+      border-bottom: 1px solid ${theme.colors.border};
       border-top-left-radius: ${theme.spacing.xs};
       border-top-right-radius: ${theme.spacing.xs};
       background-color: ${theme.colors.fileViewerHeaderBg};
@@ -68,7 +68,7 @@ const useStyles = () => {
     `,
 
     wrapLines: (isActive: boolean) => css`
-      color: ${isActive ? theme.colors.accentColor : theme.colors.textPrimary};
+      color: ${isActive ? theme.colors.accent : theme.colors.textPrimary};
       cursor: pointer;
     `,
 

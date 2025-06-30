@@ -9,9 +9,13 @@ import { FileNode } from '../types'
 import { FSNodeProps } from './types'
 import { Dropdown, message, MenuProps } from 'antd'
 import NodeMetadata from './NodeMetadata'
+import { theme } from 'antd'
+
+const { useToken } = theme
 
 const useStyles = (level: number) => {
   const theme = useContext(ThemeContext)
+  const { token: antdTheme } = useToken()
 
   return {
     row: (isSelected?: boolean) => css`
@@ -41,8 +45,7 @@ const useStyles = (level: number) => {
       ${isSelected
         ? `
           border-radius: ${theme.spacing.sm};
-          border: 1px solid ${theme.colors.accentColor};
-          background-color: ${theme.colors.fileExplorerSelectedFileBg};
+          background-color: ${antdTheme.colorBgTextHover};
 
           &::before {
             content: '';
@@ -51,7 +54,7 @@ const useStyles = (level: number) => {
             left: 0;
             width: 5px;
             height: 100%;
-            background-color: ${theme.colors.accentColor};
+            background-color: ${theme.colors.accent};
             border-radius: ${theme.spacing.sm} 0 0 ${theme.spacing.sm};
           }
         `
@@ -59,7 +62,7 @@ const useStyles = (level: number) => {
 
       &:hover {
         border-radius: ${theme.spacing.sm};
-        background-color: ${theme.colors.fileExplorerSelectedFileBg};
+        background-color: ${antdTheme.colorBgTextHover};
       }
     `,
 
@@ -90,10 +93,10 @@ const useStyles = (level: number) => {
     `,
 
     fileCount: css`
-      border: 1px solid ${theme.colors.borderBg};
+      border: 1px solid ${theme.colors.border};
       padding: 1px ${theme.spacing.xs};
       border-radius: ${theme.spacing.xs};
-      color: ${theme.colors.placeholderText};
+      color: ${theme.colors.textPrimaryPlaceholder};
       text-align: center;
     `,
   }
@@ -188,13 +191,13 @@ const FSNode: React.FC<FSNodeProps> = ({
       items: [
         {
           key: 'copy',
-          label: <span style={{ color: theme.colors.tooltipText }}>Copy path</span>,
+          label: <span style={{ color: theme.colors.textPrimary }}>Copy path</span>,
         },
       ],
       onClick: onMenuClick,
       style: {
-        backgroundColor: theme.colors.tooltipBg,
-        color: theme.colors.tooltipText,
+        backgroundColor: theme.colors.backgroundContainer,
+        color: theme.colors.textPrimary,
       },
     }
   }, [onMenuClick, theme])

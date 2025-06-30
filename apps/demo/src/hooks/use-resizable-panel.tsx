@@ -11,7 +11,7 @@ import { useCallback, useRef, useState } from 'react'
 export function useResizablePanel(
   initialPercentage = 25,
   {
-    min = 10,
+    min = 15,
     max = 60,
   }: {
     min?: number
@@ -27,20 +27,34 @@ export function useResizablePanel(
       const startX = e.clientX
       const startWidth = width
 
-      const handleMouseMove = (moveEvent: MouseEvent) => {
-        if (!containerRef.current) return
-        const containerWidth = containerRef.current.clientWidth
-        if (containerWidth === 0) return
+      // Use requestAnimationFrame to throttle state updates and avoid excessive re-renders
+      const animationFrameIdRef = { current: null as number | null }
 
-        const deltaX = moveEvent.clientX - startX
-        const deltaPercent = (deltaX / containerWidth) * 100
-        const nextWidth = Math.min(Math.max(startWidth + deltaPercent, min), max)
-        setWidth(nextWidth)
+      const handleMouseMove = (moveEvent: MouseEvent) => {
+        if (animationFrameIdRef.current !== null) return
+
+        animationFrameIdRef.current = requestAnimationFrame(() => {
+          animationFrameIdRef.current = null
+
+          if (!containerRef.current) return
+          const containerWidth = containerRef.current.clientWidth
+          if (containerWidth === 0) return
+
+          const deltaX = moveEvent.clientX - startX
+          const deltaPercent = (deltaX / containerWidth) * 100
+          const nextWidth = Math.min(Math.max(startWidth + deltaPercent, min), max)
+          setWidth(nextWidth)
+        })
       }
 
       const removeListeners = () => {
         document.removeEventListener('mousemove', handleMouseMove)
         document.removeEventListener('mouseup', removeListeners)
+
+        if (animationFrameIdRef.current !== null) {
+          cancelAnimationFrame(animationFrameIdRef.current)
+          animationFrameIdRef.current = null
+        }
       }
 
       document.addEventListener('mousemove', handleMouseMove)

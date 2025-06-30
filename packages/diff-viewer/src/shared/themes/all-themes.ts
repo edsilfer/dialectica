@@ -1,217 +1,163 @@
-import { ColorTokens } from './types'
+import { blend, darken, lighten, transparentize } from './color-utils'
 import { spacing, typography } from './common.js'
+import { ColorTokens } from './types'
 
-const lightColors: ColorTokens = {
-  colorPrimary: '#ffffff',
-  borderBg: '#cacdd0',
-  textPrimary: '#24292e',
-  placeholderText: '#6a737d',
-  accentColor: '#0366d6',
+const LEAD_THEME_COLORS = {
+  statusColors: {
+    added: '#2ea043',
+    removed: '#f85149',
+    modified: '#9d6507',
+    hunk: '#388bfd',
+    neutral: '#6e7781',
+  },
 
-  // Tooltip
-  tooltipBg: '#24292e',
-  tooltipText: '#ffffff',
+  light: {
+    border: '#cacdd0',
+    accent: '#0366d6',
+    backgroundPrimary: '#ffffff',
+    backgroundContainer: '#f6f8fa',
+    textPrimary: '#24292e',
+    textContainerPlaceholder: '#6a737d',
+    textPrimaryPlaceholder: '#6a737d',
+  },
+  dark: {
+    border: '#30363d',
+    accent: '#388bfd',
+    backgroundPrimary: '#0d1117',
+    backgroundContainer: '#161b22',
+    textPrimary: '#c9d1d9',
+    textContainerPlaceholder: '#8b949e',
+    textPrimaryPlaceholder: '#8b949e',
+  },
+  dracula: {
+    border: '#6272a4',
+    accent: '#bd93f9',
+    backgroundPrimary: '#282a36',
+    backgroundContainer: '#44475a',
+    textPrimary: '#f8f8f2',
+    textContainerPlaceholder: '#6272a4',
+    textPrimaryPlaceholder: '#6272a4',
+  },
+  solarizedDark: {
+    border: '#30363d',
+    accent: '#2aa198',
+    backgroundPrimary: '#002b36',
+    backgroundContainer: '#073642',
+    textPrimary: '#839496',
+    textContainerPlaceholder: '#586e75',
+    textPrimaryPlaceholder: '#839496',
+  },
+  solarizedLight: {
+    border: '#93a1a1',
+    accent: '#2aa198',
+    backgroundPrimary: '#fdf6e3',
+    backgroundContainer: '#eee8d5',
+    textPrimary: '#657b83',
+    textContainerPlaceholder: '#93a1a1',
+    textPrimaryPlaceholder: '#93a1a1',
+  },
+} as const
 
-  // File Viewer
-  fileViewerHeaderBg: '#f6f8fa',
-  fileViewerAddedSquareBg: '#1f883d',
-  fileViewerDeletedSquareBg: '#d73a49',
-  fileViwerNeutralSquareBg: '#cacdd0',
+type ThemeVariantKeys = Exclude<keyof typeof LEAD_THEME_COLORS, 'statusColors'>
+type ThemePalette = (typeof LEAD_THEME_COLORS)[ThemeVariantKeys]
+const STATUS = LEAD_THEME_COLORS.statusColors
 
-  // Hunk Viewer
-  hunkViewerBg: '#ffffff',
-  hunkViewerLineAddedBg: '#dafbe1',
-  hunkViewerLineNumberAddedBg: '#aceebb',
-  hunkViewerLineRemovedBg: '#ffebe9',
-  hunkViewerLineNumberRemovedBg: '#ffcecb',
-  hunkViewerLineContextBg: '#f6f8fa',
-  hunkViewerLineNumberContextBg: '#f6f8fa',
-  hunkViewerLineHunkBg: '#f1f8ff',
-  hunkViewerLineNumberHunkBg: '#f1f8ff',
-  hunkViewerLineEmptyBg: '#f6f8fa',
-  hunkViewerLineNumberEmptyBg: '#f6f8fa',
-  hunkViewerAddCommentBg: '#0366d6',
+const createThemeColors = (palette: ThemePalette): ColorTokens => {
+  // Helpers --------------------------------------------------------------
+  const isDarkPalette = (() => {
+    const hex = palette.backgroundPrimary.replace('#', '')
+    const int = parseInt(hex, 16)
+    const r = (int >> 16) & 0xff
+    const g = (int >> 8) & 0xff
+    const b = int & 0xff
+    // Perceived luminance formula
+    const luma = 0.299 * r + 0.587 * g + 0.114 * b
+    return luma < 128
+  })()
 
-  // File Explorer
-  fileExplorerBg: '#ffffff',
-  fileExplorerSelectedFileBg: '#f1f8ff',
-  fileExplorerlineConnectorBg: '#cacdd0',
-}
+  // GitHub uses a 15 % translucent overlay for diff lines in dark themes
+  const CODE_ALPHA = 0.15
+  const SIDEBAR_ALPHA = 0.25
 
-const darkColors: ColorTokens = {
-  colorPrimary: '#0d1117',
-  borderBg: '#30363d',
-  textPrimary: '#c9d1d9',
-  placeholderText: '#484f58',
-  accentColor: '#388bfd',
+  const tint = (hex: string) => (isDarkPalette ? transparentize(hex, CODE_ALPHA) : lighten(hex, 45))
 
-  // Tooltip
-  tooltipBg: '#ffffff',
-  tooltipText: '#161b22',
+  // Line-number columns must stay opaque for sticky scroll; we pre-blend
+  const numberBg = (hex: string) =>
+    isDarkPalette ? blend(hex, palette.backgroundPrimary, CODE_ALPHA) : darken(lighten(hex, 45), 10)
 
-  // File Viewer
-  fileViewerHeaderBg: '#161b22',
-  fileViewerAddedSquareBg: '#238636',
-  fileViewerDeletedSquareBg: '#da3633',
-  fileViwerNeutralSquareBg: '#30363d',
+  return {
+    // Common Tokens__________________________________________________________
+    ...palette,
 
-  // Hunk Viewer
-  hunkViewerBg: '#0d1117',
-  hunkViewerLineAddedBg: 'rgba(46, 160, 67, 0.15)',
-  hunkViewerLineNumberAddedBg: '#12261e',
-  hunkViewerLineRemovedBg: 'rgba(248, 81, 73, 0.15)',
-  hunkViewerLineNumberRemovedBg: '#301b1f',
-  hunkViewerLineContextBg: '#0d1117',
-  hunkViewerLineNumberContextBg: '#0d1117',
-  hunkViewerLineHunkBg: 'rgba(56, 139, 253, 0.15)',
-  hunkViewerLineNumberHunkBg: '#13233a',
-  hunkViewerLineEmptyBg: '#111d2e',
-  hunkViewerLineNumberEmptyBg: '#111d2e',
-  hunkViewerAddCommentBg: '#0366d6',
+    hover: lighten(palette.accent, 10),
+    hoverContainer: lighten(palette.backgroundContainer, 10),
 
-  // File Explorer
-  fileExplorerBg: '#0d1117',
-  fileExplorerSelectedFileBg: 'rgba(56, 139, 253, 0.25)',
-  fileExplorerlineConnectorBg: '#30363d',
-}
+    // File Diff Viewer Tokens_______________________________________________
+    fileViewerHeaderBg: isDarkPalette ? palette.backgroundContainer : palette.backgroundPrimary,
+    fileViewerAddedSquareBg: isDarkPalette ? tint(STATUS.added) : darken(STATUS.added, 10),
+    fileViewerDeletedSquareBg: isDarkPalette ? tint(STATUS.removed) : darken(STATUS.removed, 10),
+    fileViewerModifiedSquareBg: isDarkPalette ? tint(STATUS.modified) : darken(STATUS.modified, 10),
+    fileViwerNeutralSquareBg: isDarkPalette ? tint(STATUS.neutral) : darken(STATUS.neutral, 10),
 
-const draculaColors: ColorTokens = {
-  colorPrimary: '#282a36',
-  borderBg: '#6272a4',
-  textPrimary: '#f8f8f2',
-  placeholderText: '#6272a4',
-  accentColor: '#bd93f9',
+    // Hunk Diff Viewer Tokens_______________________________________________
+    hunkViewerBg: palette.backgroundPrimary,
+    hunkViewerLineAddedBg: tint(STATUS.added),
+    hunkViewerLineNumberAddedBg: numberBg(STATUS.added),
+    hunkViewerLineRemovedBg: tint(STATUS.removed),
+    hunkViewerLineNumberRemovedBg: numberBg(STATUS.removed),
+    hunkViewerLineContextBg: palette.backgroundPrimary,
+    hunkViewerLineNumberContextBg: palette.backgroundPrimary,
+    hunkViewerLineHunkBg: isDarkPalette
+      ? numberBg(STATUS.hunk)
+      : blend(STATUS.hunk, palette.backgroundPrimary, CODE_ALPHA),
+    hunkViewerLineNumberHunkBg: isDarkPalette
+      ? numberBg(STATUS.hunk)
+      : blend(STATUS.hunk, palette.backgroundPrimary, CODE_ALPHA),
+    hunkViewerLineEmptyBg: isDarkPalette
+      ? blend('#000000', palette.backgroundPrimary, 0.1)
+      : lighten(palette.border, 15),
+    hunkViewerLineNumberEmptyBg: isDarkPalette
+      ? blend('#000000', palette.backgroundPrimary, 0.1)
+      : lighten(palette.border, 15),
+    hunkViewerAddCommentBg: palette.accent,
 
-  // Tooltip
-  tooltipBg: '#ffffff',
-  tooltipText: '#282a36',
-
-  // File Viewer
-  fileViewerHeaderBg: '#282a36',
-  fileViewerAddedSquareBg: '#50fa7b',
-  fileViewerDeletedSquareBg: '#ff5555',
-  fileViwerNeutralSquareBg: '#44475a',
-
-  // Hunk Viewer
-  hunkViewerBg: '#282a36',
-  hunkViewerLineAddedBg: 'rgba(80, 250, 123, 0.15)',
-  hunkViewerLineNumberAddedBg: '#2e4940',
-  hunkViewerLineRemovedBg: 'rgba(255, 85, 85, 0.15)',
-  hunkViewerLineNumberRemovedBg: '#48303b',
-  hunkViewerLineContextBg: '#282a36',
-  hunkViewerLineNumberContextBg: '#282a36',
-  hunkViewerLineHunkBg: 'rgba(189, 147, 249, 0.15)',
-  hunkViewerLineNumberHunkBg: '#3e3a53',
-  hunkViewerLineEmptyBg: '#374754',
-  hunkViewerLineNumberEmptyBg: '#374754',
-  hunkViewerAddCommentBg: '#bd93f9',
-
-  // File Explorer
-  fileExplorerBg: '#282a36',
-  fileExplorerSelectedFileBg: 'rgba(189, 147, 249, 0.25)',
-  fileExplorerlineConnectorBg: '#44475a',
-}
-
-const solarizedDarkColors: ColorTokens = {
-  colorPrimary: '#002b36',
-  borderBg: '#586e75',
-  textPrimary: '#839496',
-  placeholderText: '#586e75',
-  accentColor: '#268bd2',
-  tooltipBg: '#839496',
-  tooltipText: '#002b36',
-
-  // File Viewer
-  fileViewerHeaderBg: '#002b36',
-  fileViewerAddedSquareBg: '#859900',
-  fileViewerDeletedSquareBg: '#dc322f',
-  fileViwerNeutralSquareBg: '#073642',
-
-  // Hunk Viewer
-  hunkViewerBg: '#002b36',
-  hunkViewerLineAddedBg: 'rgba(133, 153, 0, 0.15)',
-  hunkViewerLineNumberAddedBg: '#143c2e',
-  hunkViewerLineRemovedBg: 'rgba(220, 50, 47, 0.15)',
-  hunkViewerLineNumberRemovedBg: '#212c35',
-  hunkViewerLineContextBg: '#002b36',
-  hunkViewerLineNumberContextBg: '#002b36',
-  hunkViewerLineHunkBg: 'rgba(38, 139, 210, 0.15)',
-  hunkViewerLineNumberHunkBg: '#06394d',
-  hunkViewerLineEmptyBg: '#063d45',
-  hunkViewerLineNumberEmptyBg: '#063d45',
-  hunkViewerAddCommentBg: '#6c71c4',
-
-  // File Explorer
-  fileExplorerBg: '#002b36',
-  fileExplorerSelectedFileBg: 'rgba(38, 139, 210, 0.25)',
-  fileExplorerlineConnectorBg: '#073642',
-}
-
-const solarizedLightColors: ColorTokens = {
-  colorPrimary: '#fdf6e3',
-  borderBg: '#93a1a1',
-  textPrimary: '#657b83',
-  placeholderText: '#93a1a1',
-  accentColor: '#268bd2',
-
-  // Tooltip
-  tooltipBg: '#657b83',
-  tooltipText: '#fdf6e3',
-
-  // File Viewer
-  fileViewerHeaderBg: '#fdf6e3',
-  fileViewerAddedSquareBg: '#859900',
-  fileViewerDeletedSquareBg: '#dc322f',
-  fileViwerNeutralSquareBg: '#eee8d5',
-
-  // Hunk Viewer
-  hunkViewerBg: '#fdf6e3',
-  hunkViewerLineAddedBg: 'rgba(133, 153, 0, 0.15)',
-  hunkViewerLineNumberAddedBg: '#ebe8c1',
-  hunkViewerLineRemovedBg: 'rgba(220, 50, 47, 0.15)',
-  hunkViewerLineNumberRemovedBg: '#f8d9c8',
-  hunkViewerLineContextBg: '#fdf6e3',
-  hunkViewerLineNumberContextBg: '#fdf6e3',
-  hunkViewerLineHunkBg: 'rgba(38, 139, 210, 0.15)',
-  hunkViewerLineNumberHunkBg: '#dde6e0',
-  hunkViewerLineEmptyBg: '#e4ecda',
-  hunkViewerLineNumberEmptyBg: '#e4ecda',
-  hunkViewerAddCommentBg: '#6c71c4',
-
-  // File Explorer
-  fileExplorerBg: '#fdf6e3',
-  fileExplorerSelectedFileBg: 'rgba(38, 139, 210, 0.25)',
-  fileExplorerlineConnectorBg: '#eee8d5',
+    // File Explorer Tokens___________________________________________________
+    fileExplorerBg: palette.backgroundPrimary,
+    fileExplorerSelectedFileBg: isDarkPalette
+      ? transparentize(STATUS.hunk, SIDEBAR_ALPHA)
+      : lighten(STATUS.hunk, 55),
+    fileExplorerlineConnectorBg: palette.border,
+  }
 }
 
 export const Themes = {
   light: {
     name: 'light',
-    colors: lightColors,
+    colors: createThemeColors(LEAD_THEME_COLORS.light),
     spacing,
     typography,
   },
   dark: {
     name: 'dark',
-    colors: darkColors,
+    colors: createThemeColors(LEAD_THEME_COLORS.dark),
     spacing,
     typography,
   },
   dracula: {
     name: 'dracula',
-    colors: draculaColors,
+    colors: createThemeColors(LEAD_THEME_COLORS.dracula),
     spacing,
     typography,
   },
   solarizedDark: {
     name: 'solarizedDark',
-    colors: solarizedDarkColors,
+    colors: createThemeColors(LEAD_THEME_COLORS.solarizedDark),
     spacing,
     typography,
   },
   solarizedLight: {
     name: 'solarizedLight',
-    colors: solarizedLightColors,
+    colors: createThemeColors(LEAD_THEME_COLORS.solarizedLight),
     spacing,
     typography,
   },

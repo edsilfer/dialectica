@@ -80,7 +80,7 @@ const AppHeader: React.FC = () => {
   return (
     <div css={styles.horizontal}>
       <div css={styles.vertical}>
-        <Title level={2} css={styles.headers}>
+        <Title level={4} css={styles.headers}>
           Awesome Diff Viewer
         </Title>
         <Text css={styles.headers}>

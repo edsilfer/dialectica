@@ -1,20 +1,25 @@
 export interface ColorTokens {
   // Common Tokens_______________________________________
-  /** The background color of the input */
-  colorPrimary: string
+  /** The base background color of the theme */
+  backgroundPrimary: string
   /** The accent color of the theme */
-  accentColor: string
+  accent: string
+  /** The hover color of the accent color */
+  hover: string
+  /** The hover color of the container background */
+  hoverContainer: string
+  /** The background color for any elevated elements (modals, popovers, etc.) */
+  backgroundContainer: string
 
-  /** The background color of all borders */
-  borderBg: string
   /** The primary text color */
   textPrimary: string
   /** The placeholder text color */
-  placeholderText: string
-  /** The background color of the tooltip */
-  tooltipBg: string
-  /** The text color of the tooltip */
-  tooltipText: string
+  textPrimaryPlaceholder: string
+  /** The placeholder text color for container elements */
+  textContainerPlaceholder: string
+
+  /** The background color of all borders */
+  border: string
 
   // File Diff Viewer Tokens_____________________________
   /** The background color of the file diff header */
@@ -23,6 +28,8 @@ export interface ColorTokens {
   fileViewerAddedSquareBg: string
   /** The background color of the deleted square */
   fileViewerDeletedSquareBg: string
+  /** The background color of the modified square */
+  fileViewerModifiedSquareBg: string
   /** The background color of the neutral square */
   fileViwerNeutralSquareBg: string
 

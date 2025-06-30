@@ -72,11 +72,6 @@ Run from the root directory:
 
 ### Rendering Layer
 
-- [ ] P0 - Refactor FileExplorer to support external context
-- [ ] P0 - Refactor DiffViewer to support external context
-- [ ] P0 - Support GlobalContext provider
-- [ ] P0 - Fix the bug with wrap lines
-
 - [ ] P0 - Add a ReviewToolbar in demo
 - [ ] P0 - Add a hide drawer button
 - [ ] P0 - Implement proper highlighting for partial changes in a line

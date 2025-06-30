@@ -8,7 +8,6 @@ export const DEFAULT_CODE_PANEL_CONFIG: CodePanelConfig = {
   highlightSyntax: false,
   showLineNumbers: true,
   ignoreWhitespace: false,
-  wrapLines: true,
 }
 
 /**

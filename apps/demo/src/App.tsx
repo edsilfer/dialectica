@@ -1,60 +1,91 @@
 import { CodePanel, DiffParserAdapter, FileExplorer, useDiffViewerConfig } from '@diff-viewer'
 import { css } from '@emotion/react'
 import { Tooltip } from 'antd'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useCallback } from 'react'
 import { TEN_FILES_DIFF } from './__fixtures__/sample-diffs'
 import AppHeader from './components/AppHeader'
 import HandleIcon from './components/HandleIcon'
 import { useResizablePanel } from './hooks/use-resizable-panel'
 
-const useStyles = () => {
-  const { theme } = useDiffViewerConfig()
-
-  return {
-    container: css`
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      width: 100%;
-      padding: ${theme.spacing.md};
-      background-color: ${theme.colors.hunkViewerBg};
-      overflow: hidden;
-    `,
-    content: css`
-      display: flex;
-      flex: 1;
-      gap: ${theme.spacing.xs};
-      margin-top: ${theme.spacing.md};
-      overflow: hidden;
-    `,
-    fileExplorer: css`
-      height: 100%;
-      padding: ${theme.spacing.md};
-      border: 1px solid ${theme.colors.borderBg};
-      border-radius: ${theme.spacing.xs};
-      overflow: auto;
-    `,
-    resizer: css`
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: col-resize;
-      color: ${theme.colors.textPrimary};
-    `,
-    diffViewer: css`
-      flex: 1;
-      border-radius: ${theme.spacing.xs};
-      overflow: auto;
-    `,
-  }
-}
+// Extracted outside the component to keep reference stable
+const createStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) => ({
+  container: css`
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    padding: ${theme.spacing.md};
+    background-color: ${theme.colors.hunkViewerBg};
+    overflow: hidden;
+  `,
+  content: css`
+    display: flex;
+    flex: 1;
+    gap: ${theme.spacing.xs};
+    margin-top: ${theme.spacing.md};
+    overflow: hidden;
+  `,
+  fileExplorer: css`
+    height: 100%;
+    padding: ${theme.spacing.md};
+    border: 1px solid ${theme.colors.border};
+    border-radius: ${theme.spacing.xs};
+    overflow: auto;
+  `,
+  resizer: css`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: col-resize;
+    color: ${theme.colors.textPrimary};
+  `,
+  diffViewer: css`
+    flex: 1;
+    border-radius: ${theme.spacing.xs};
+    overflow: auto;
+  `,
+})
 
 export default function App() {
-  const styles = useStyles()
+  const { theme, fileExplorerConfig, codePanelConfig } = useDiffViewerConfig()
+
+  // Memoize style object so Emotion doesn't recompute the classes on every drag frame
+  const styles = useMemo(() => createStyles(theme), [theme])
 
   const parsedDiff = useMemo(() => new DiffParserAdapter().parse(TEN_FILES_DIFF), [])
   const [scrollToFile, setScrollToFile] = useState<string | null>(null)
   const { width: explorerWidth, containerRef, onMouseDown } = useResizablePanel()
+
+  // Stable callback so FileExplorer receives an unchanged prop between drags
+  const handleFileClick = useCallback(
+    (file: any) => setScrollToFile(file.newPath || file.oldPath),
+    [],
+  )
+
+  // Memoise heavy children so they don't re-render on width updates
+  const fileExplorerElement = useMemo(
+    () => (
+      <FileExplorer
+        key={JSON.stringify(fileExplorerConfig)}
+        css={styles.fileExplorer}
+        diff={parsedDiff}
+        onFileClick={handleFileClick}
+      />
+    ),
+    [parsedDiff, handleFileClick, styles.fileExplorer, fileExplorerConfig],
+  )
+
+  const codePanelElement = useMemo(
+    () => (
+      <CodePanel
+        key={JSON.stringify(codePanelConfig)}
+        css={styles.diffViewer}
+        diff={parsedDiff}
+        scrollTo={scrollToFile}
+      />
+    ),
+    [parsedDiff, scrollToFile, styles.diffViewer, codePanelConfig],
+  )
 
   return (
     <div css={styles.container}>
@@ -67,11 +98,7 @@ export default function App() {
             width: ${explorerWidth}%;
           `}
         >
-          <FileExplorer
-            css={styles.fileExplorer}
-            diff={parsedDiff}
-            onFileClick={(file) => setScrollToFile(file.newPath || file.oldPath)}
-          />
+          {fileExplorerElement}
         </div>
 
         {/* Drag handle */}
@@ -82,7 +109,7 @@ export default function App() {
         </Tooltip>
 
         {/* Diff viewer */}
-        <CodePanel css={styles.diffViewer} diff={parsedDiff} scrollTo={scrollToFile} />
+        {codePanelElement}
       </div>
     </div>
   )

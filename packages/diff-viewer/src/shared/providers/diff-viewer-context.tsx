@@ -37,12 +37,26 @@ export const DiffViewerConfigProvider: React.FC<DiffViewerConfigContextProps> = 
   } | null
 
   const [theme, setTheme] = useState<ThemeTokens>(storedConfig?.theme ?? initialTheme)
-  const [codePanelConfig, setCodePanelConfig] = useState<CodePanelConfig>(
-    storedConfig?.codePanelConfig ?? initialCodePanelConfig,
+
+  /*
+   * Merge the persisted configuration (if any) with the initial one that the
+   * consumer passes via props. The initial configuration takes precedence so
+   * that changes made by the integrator are immediately reflected even when a
+   * previous session has been cached in localStorage.
+   */
+  const mergedCodePanelConfig = useMemo<CodePanelConfig>(
+    () => ({ ...initialCodePanelConfig, ...(storedConfig?.codePanelConfig ?? {}) }),
+    [storedConfig?.codePanelConfig, initialCodePanelConfig],
   )
-  const [fileExplorerConfig, setFileExplorerConfig] = useState<FileExplorerConfig>(
-    storedConfig?.fileExplorerConfig ?? initialFileExplorerConfig,
+
+  const mergedFileExplorerConfig = useMemo<FileExplorerConfig>(
+    () => ({ ...initialFileExplorerConfig, ...(storedConfig?.fileExplorerConfig ?? {}) }),
+    [storedConfig?.fileExplorerConfig, initialFileExplorerConfig],
   )
+
+  const [codePanelConfig, setCodePanelConfig] = useState<CodePanelConfig>(mergedCodePanelConfig)
+  const [fileExplorerConfig, setFileExplorerConfig] =
+    useState<FileExplorerConfig>(mergedFileExplorerConfig)
 
   const value = {
     codePanelConfig,

@@ -1,5 +1,5 @@
 import { css } from '@emotion/react'
-import { Input, Tag, Button } from 'antd'
+import { Button, Input, Tag } from 'antd'
 import React, { useContext } from 'react'
 import { ThemeContext } from '../../shared/providers/theme-context'
 import { useFileExplorerContext } from '../provider/fstree-context'
@@ -23,6 +23,7 @@ const useStyles = () => {
 
     searchSummary: css`
       display: flex;
+      margin-top: ${theme.spacing.sm};
       gap: ${theme.spacing.xs};
     `,
 
@@ -35,7 +36,7 @@ const useStyles = () => {
     // Didn't work via token override in the theme provider
     search: css`
       .ant-input-search-button .ant-btn-icon svg {
-        color: ${theme.colors.placeholderText};
+        color: ${theme.colors.textPrimaryPlaceholder};
       }
     `,
   }
@@ -59,15 +60,6 @@ export const ExplorerBar: React.FC<ExplorerBarProps> = ({ onExpandAll, onCollaps
         css={styles.search}
       />
 
-      <div css={styles.actions}>
-        <Button type="default" onClick={onExpandAll} size="small" data-testid="expand-all-btn">
-          Expand All
-        </Button>
-        <Button type="default" onClick={onCollapseAll} size="small" data-testid="collapse-all-btn">
-          Collapse All
-        </Button>
-      </div>
-
       {searchText && (
         <div css={styles.searchSummary}>
           {filteredFiles.length > 0 ? (
@@ -79,6 +71,15 @@ export const ExplorerBar: React.FC<ExplorerBarProps> = ({ onExpandAll, onCollaps
           )}
         </div>
       )}
+
+      <div css={styles.actions}>
+        <Button type="default" onClick={onExpandAll} size="small" data-testid="expand-all-btn">
+          Expand All
+        </Button>
+        <Button type="default" onClick={onCollapseAll} size="small" data-testid="collapse-all-btn">
+          Collapse All
+        </Button>
+      </div>
     </div>
   )
 }

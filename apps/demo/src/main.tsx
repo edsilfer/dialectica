@@ -1,12 +1,32 @@
+import { CodePanelConfig, DiffViewerConfigProvider, FileExplorerConfig, Themes } from '@diff-viewer'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
-import { Themes } from '@diff-viewer'
-import { DiffViewerConfigProvider } from '@diff-viewer'
+
+const DEFAULT_FILE_EXPLORER_CONFIG: FileExplorerConfig = {
+  startExpanded: true,
+  nodeConnector: 'dashed',
+  indentPx: 15,
+  collapsePackages: true,
+  showIcons: false,
+  displayNodeDetails: false,
+}
+
+const DEFAULT_CODE_PANEL_CONFIG: CodePanelConfig = {
+  mode: 'unified',
+  highlightSyntax: false,
+  showLineNumbers: true,
+  ignoreWhitespace: false,
+}
 
 function Root() {
   return (
-    <DiffViewerConfigProvider theme={Themes.light} storage="local">
+    <DiffViewerConfigProvider
+      theme={Themes.light}
+      fileExplorerConfig={DEFAULT_FILE_EXPLORER_CONFIG}
+      codePanelConfig={DEFAULT_CODE_PANEL_CONFIG}
+      storage="local"
+    >
       <App />
     </DiffViewerConfigProvider>
   )

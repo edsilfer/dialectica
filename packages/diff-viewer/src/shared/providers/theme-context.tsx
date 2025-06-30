@@ -1,4 +1,5 @@
-import { ConfigProvider } from 'antd'
+import { ConfigProvider, theme as antdTheme } from 'antd'
+import { Global, css } from '@emotion/react'
 import type { ThemeConfig } from 'antd/es/config-provider/context'
 import { createContext } from 'react'
 import { Themes } from '../themes'
@@ -8,53 +9,59 @@ import { ThemeProps } from './types'
 export const ThemeContext = createContext<ThemeTokens>(Themes.light)
 
 export const ThemeProvider = ({ children, theme }: ThemeProps) => {
+  const isDarkTheme = ['dark', 'dracula', 'solarizedDark'].includes(theme.name)
   const antdThemeConfig: ThemeConfig = {
+    algorithm: isDarkTheme ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
     token: {
-      colorPrimary: theme.colors.colorPrimary,
-      colorPrimaryActive: theme.colors.accentColor,
-      colorTextPlaceholder: theme.colors.placeholderText,
+      colorPrimary: theme.colors.accent,
       colorText: theme.colors.textPrimary,
-      colorIcon: theme.colors.textPrimary,
-      colorIconHover: theme.colors.textPrimary,
-      colorBorder: theme.colors.borderBg,
-      colorBgBase: theme.colors.hunkViewerBg,
-      colorBgContainer: theme.colors.hunkViewerBg,
-      colorBgElevated: theme.colors.tooltipBg,
+      colorTextPlaceholder: theme.colors.textPrimaryPlaceholder,
+      colorBorder: theme.colors.border,
+      colorBgBase: theme.colors.backgroundPrimary,
 
-      // Global hover token so components pick accent color on hover
-      colorPrimaryHover: theme.colors.accentColor,
-      colorPrimaryTextHover: theme.colors.accentColor,
+      // We want all elevated elements to have the same background color
+      colorBgContainer: theme.colors.backgroundContainer,
+      colorBgElevated: theme.colors.backgroundContainer,
 
       // Typography
       fontFamily: theme.typography.regularFontFamily,
       fontSize: theme.typography.regularFontSize,
       fontSizeSM: theme.typography.regularFontSizeSM,
     },
-    components: {
-      Input: {
-        colorBgContainer: theme.colors.colorPrimary,
-        hoverBorderColor: theme.colors.accentColor,
-        activeBorderColor: theme.colors.accentColor,
-        activeShadow: 'none',
-        inputFontSize: theme.typography.regularFontSize,
-      },
-      Button: {
-        fontSize: theme.typography.regularFontSize,
-        fontSizeSM: theme.typography.regularFontSizeSM,
-      },
-      Checkbox: {
-        colorPrimary: theme.colors.accentColor,
-        colorPrimaryHover: theme.colors.accentColor,
-      },
-      Switch: {
-        colorPrimary: theme.colors.accentColor,
-        colorPrimaryHover: theme.colors.accentColor,
-      },
-    },
+    components: {},
   }
 
   return (
     <ThemeContext.Provider value={theme}>
+      {/* Global styles ensure scrollbars follow the active theme */}
+      <Global
+        styles={css`
+          /* WebKit-based browsers */
+          *::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+          }
+
+          *::-webkit-scrollbar-track {
+            background: ${theme.colors.hunkViewerBg};
+          }
+
+          *::-webkit-scrollbar-thumb {
+            background-color: ${theme.colors.border};
+            border-radius: 4px;
+          }
+
+          *::-webkit-scrollbar-thumb:hover {
+            background-color: ${theme.colors.accent};
+          }
+
+          /* Firefox */
+          * {
+            scrollbar-width: thin;
+            scrollbar-color: ${theme.colors.border} ${theme.colors.hunkViewerBg};
+          }
+        `}
+      />
       <ConfigProvider theme={antdThemeConfig}>{children}</ConfigProvider>
     </ThemeContext.Provider>
   )
