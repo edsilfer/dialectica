@@ -1,8 +1,7 @@
-import React from 'react'
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { render, screen } from '../../test-utils/render'
-import type { FileDiff } from '../../../diff-viewer/types'
 
+import { FileDiff } from '../../parsers/types'
 import FileActivitySummary from './FileActivitySummary'
 
 export const MOCKED_FILE_DIFF: FileDiff = {

@@ -1,13 +1,6 @@
 import React, { useMemo } from 'react'
-import { FileDiff } from '../../../diff-viewer/types'
 import DiffActivitySummary from './DiffActivitySummary'
-
-interface DirectoryActivitySummaryProps {
-  /** The file diff object */
-  files: FileDiff[]
-  /** The maximum number of squares to display. Defaults to 10. */
-  maxSquares?: number
-}
+import { DirectoryActivitySummaryProps } from './types'
 
 const DirectoryActivitySummary: React.FC<DirectoryActivitySummaryProps> = ({
   files,

@@ -1,5 +1,5 @@
 import React from 'react'
-import { FileDiff } from '../diff-viewer/types'
+import { FileDiff } from '../shared/parsers/types'
 import { DirectoryNode, FileNode, TreeNode } from './types'
 
 /**

@@ -1,20 +1,6 @@
-import { DiffViewerConfig, Hunk } from '../../types'
-
 export type DiffLineType = 'add' | 'delete' | 'context' | 'hunk' | 'empty'
 
 export type Side = 'left' | 'right'
-
-/**
- * Shared props for both UnifiedHunkViewer and SplitHunkViewer.
- */
-export interface HunkViewerProps {
-  /** The hunk to display */
-  hunk: Hunk
-  /** Display configuration options */
-  config: DiffViewerConfig
-  /** Detected language for syntax highlighting */
-  language: string
-}
 
 /**
  * Diff line augmented with a pre-computed syntax-highlighted HTML string.
@@ -30,21 +16,6 @@ export interface LineWithHighlight {
   lineNumberOld: number | null
   /** The line number of the right side of the hunk. If null, the line number is not shown. */
   lineNumberNew: number | null
-}
-
-/**
- * Represents a single visual row in a split diff – the left and right halves.
- */
-export interface SplitLinePair {
-  /** The left side of the line pair */
-  left: LineWithHighlight | null
-  /** The right side of the line pair */
-  right: LineWithHighlight | null
-}
-
-export interface UnifiedViewerProps {
-  /** Flattened list of diff lines (already highlighted) */
-  lines: LineWithHighlight[]
 }
 
 export interface DiffLineProps {
@@ -75,9 +46,4 @@ export interface DiffLineProps {
     rightNumber: number
     prefix: number
   }
-}
-
-export interface SplitLineViewerProps {
-  /** Pre-built left/right line pairs ready for rendering */
-  pairs: SplitLinePair[]
 }

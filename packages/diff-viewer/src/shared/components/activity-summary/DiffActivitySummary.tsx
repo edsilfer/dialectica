@@ -1,7 +1,8 @@
-import React, { useContext } from 'react'
 import { css } from '@emotion/react'
+import React, { useContext } from 'react'
 import { ThemeContext } from '../../providers/theme-context'
 import RichTooltip from '../RichTooltip'
+import { DiffActivitySummaryProps } from './types'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -19,15 +20,6 @@ const useStyles = () => {
       border-radius: ${theme.spacing.xxs};
     `,
   }
-}
-
-interface DiffActivitySummaryProps {
-  /** The number of additions */
-  additions: number
-  /** The number of deletions */
-  deletions: number
-  /** The maximum number of squares to display. Defaults to 5. */
-  maxSquares?: number
 }
 
 const DiffActivitySummary: React.FC<DiffActivitySummaryProps> = ({

@@ -2,8 +2,8 @@ import { css } from '@emotion/react'
 import React, { useContext, useEffect } from 'react'
 import { ThemeContext } from '../shared/providers/theme-context'
 import FileViewer from './components/file-viewer/FileViewer'
-import { DiffViewerConfigProvider, useDiffViewerConfig } from './providers/diff-viewer-context'
-import type { DiffViewerProps } from './types'
+import { CodePanelConfigProvider, useCodePanelConfig } from './providers/code-panel-context'
+import type { CodePanelProps } from './types'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -17,24 +17,20 @@ const useStyles = () => {
   }
 }
 
-export const DiffViewer: React.FC<DiffViewerProps> = (props) => {
+export const CodePanel: React.FC<CodePanelProps> = (props) => {
   let hasProvider = true
   try {
-    void useDiffViewerConfig()
+    void useCodePanelConfig()
   } catch {
     hasProvider = false
   }
 
-  const diffViewer = <DiffViewerContent {...props} />
+  const diffViewer = <CodePanelContent {...props} />
 
-  return hasProvider ? (
-    diffViewer
-  ) : (
-    <DiffViewerConfigProvider>{diffViewer}</DiffViewerConfigProvider>
-  )
+  return hasProvider ? diffViewer : <CodePanelConfigProvider>{diffViewer}</CodePanelConfigProvider>
 }
 
-const DiffViewerContent: React.FC<DiffViewerProps> = (props) => {
+const CodePanelContent: React.FC<CodePanelProps> = (props) => {
   const styles = useStyles()
 
   useEffect(() => {

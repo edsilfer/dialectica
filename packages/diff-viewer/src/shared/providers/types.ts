@@ -1,29 +1,33 @@
 import { ReactNode } from 'react'
-import { DiffViewerConfig } from '../../diff-viewer/providers/types'
+import { CodePanelConfig } from '../../code-panel/providers/types'
 import { FileExplorerConfig } from '../../file-explorer/types'
 import { ThemeTokens } from '../themes'
 
-export interface DiffViewerGlobalConfigContextProps {
+export interface DiffViewerConfigContextProps {
   /** The children of the diff viewer config provider */
   children: ReactNode
   /** The theme to use for the diff viewer */
   theme: ThemeTokens
-  /** The configuration for the diff viewer*/
-  diffViewerConfig?: Omit<DiffViewerConfig, 'theme'>
+  /** The configuration for the code panel*/
+  codePanelConfig?: Omit<CodePanelConfig, 'theme'>
   /** The configuration for the file explorer */
   fileExplorerConfig?: Omit<FileExplorerConfig, 'theme'>
 }
 
-export interface DiffViewerGlobalConfigContextState {
+export interface DiffViewerConfigContextState {
   /** The configuration for the diff viewer */
-  diffViewerConfig: DiffViewerConfig
+  codePanelConfig: CodePanelConfig
   /** The configuration for the file explorer */
   fileExplorerConfig: FileExplorerConfig
+  /** The currently selected theme tokens */
+  theme: ThemeTokens
 
   /** Set the configuration for the diff viewer */
-  setDiffViewerConfig: React.Dispatch<React.SetStateAction<DiffViewerConfig>>
+  setCodePanelConfig: React.Dispatch<React.SetStateAction<CodePanelConfig>>
   /** Set the configuration for the file explorer */
   setFileExplorerConfig: React.Dispatch<React.SetStateAction<FileExplorerConfig>>
+  /** Setter for the theme tokens */
+  setTheme: React.Dispatch<React.SetStateAction<ThemeTokens>>
 }
 
 export interface ThemeProps {

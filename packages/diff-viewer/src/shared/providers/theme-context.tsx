@@ -46,6 +46,10 @@ export const ThemeProvider = ({ children, theme }: ThemeProps) => {
         colorPrimary: theme.colors.accentColor,
         colorPrimaryHover: theme.colors.accentColor,
       },
+      Switch: {
+        colorPrimary: theme.colors.accentColor,
+        colorPrimaryHover: theme.colors.accentColor,
+      },
     },
   }
 

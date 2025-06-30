@@ -1,4 +1,4 @@
-import { FileDiff } from '../diff-viewer/types'
+import { FileDiff } from '../shared/parsers/types'
 
 /**
  * A representative list of FileDiff objects covering the main diff scenarios

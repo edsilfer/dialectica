@@ -1,28 +1,28 @@
 import { ReactNode } from 'react'
 import { ThemeTokens } from '../../shared/themes/types'
 
-export interface DiffViewerConfigContextProps {
+export interface CodePanelConfigContextProps {
   /** The children of the diff viewer config provider */
   children: ReactNode
   /** The configuration for the diff viewer*/
-  config?: DiffViewerConfig
+  config?: CodePanelConfig
 
   /** Set the configuration for the diff viewer */
-  setConfig?: React.Dispatch<React.SetStateAction<DiffViewerConfig>>
+  setConfig?: React.Dispatch<React.SetStateAction<CodePanelConfig>>
 }
 
-export interface DiffViewerConfigContextState {
+export interface CodePanelConfigContextState {
   /** The configuration for the diff viewer */
-  config: DiffViewerConfig
+  config: CodePanelConfig
 
   /** Set the configuration for the diff viewer */
-  setConfig: React.Dispatch<React.SetStateAction<DiffViewerConfig>>
+  setConfig: React.Dispatch<React.SetStateAction<CodePanelConfig>>
 }
 
 export type DisplayFormat = 'unified' | 'split'
 
 /** Configuration options for how the diff should be displayed */
-export interface DiffViewerConfig {
+export interface CodePanelConfig {
   /** The theme for the viewer */
   theme?: ThemeTokens
   /** The mode to display the diff in. */

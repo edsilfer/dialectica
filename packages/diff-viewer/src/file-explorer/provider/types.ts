@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { ParsedDiff } from '../../diff-viewer/types'
+import { ParsedDiff } from '../../shared/parsers/types'
 import { DirectoryNode, FileExplorerConfig } from '../types'
 
 export interface FileExplorerConfigContextProps {

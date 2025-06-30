@@ -4,15 +4,15 @@ import React, { useContext, useMemo, useState } from 'react'
 import FileActivitySummary from '../../../shared/components/activity-summary/FileActivitySummary'
 import WrapLines from '../../../shared/components/icons/WrapLines'
 import { ThemeContext } from '../../../shared/providers/theme-context'
-import { detectLanguage } from '../../parsers/language-utils'
-import { useDiffViewerConfig } from '../../providers/diff-viewer-context'
-import type { FileDiff } from '../../types'
-import { buildSplitHunkPairs, escapeHtml, highlightContent } from '../line-viewer/line-utils'
-import SplitViewer from '../line-viewer/SplitViewer'
-import type { LineWithHighlight, SplitLinePair } from '../line-viewer/types'
-import UnifiedViewer from '../line-viewer/UnifiedViewer'
+import { useCodePanelConfig } from '../../providers/code-panel-context'
+import type { LineWithHighlight } from '../line-viewer/types'
 import CopyButton from './CopyButton'
 import ExpandButton from './ExpandButton'
+import SplitViewer from './SplitViewer'
+import { FileViewerProps, SplitLinePair } from './types'
+import UnifiedViewer from './UnifiedViewer'
+import { detectLanguage } from '../../../shared/parsers/language-utils'
+import { buildSplitHunkPairs, escapeHtml, highlightContent } from './split-utils'
 
 const { Text } = Typography
 
@@ -85,16 +85,9 @@ const useStyles = () => {
   }
 }
 
-interface FileViewerProps {
-  /** A unique identifier for the file viewer. */
-  id?: string
-  /** The file diff object. */
-  file: FileDiff
-}
-
 const FileViewer: React.FC<FileViewerProps> = ({ id, file }) => {
   const styles = useStyles()
-  const { config } = useDiffViewerConfig()
+  const { config } = useCodePanelConfig()
   const [collapsed, setCollapsed] = useState(false)
   const [viewed, setViewed] = useState(false)
   const [wrapLines, setWrapLines] = useState<boolean>(config.wrapLines ?? true)

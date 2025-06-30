@@ -1,6 +1,6 @@
+import type { RawChunk, RawFile, RawLine } from 'diffparser'
 import diffparser from 'diffparser'
-import type { IDiffParser, ParsedDiff, FileDiff, Hunk, DiffLine } from '../types'
-import type { RawFile, RawChunk, RawLine } from 'diffparser'
+import { DiffLine, FileDiff, Hunk, IDiffParser, ParsedDiff } from './types'
 
 /**
  * - diffparse library's convention is to use `/dev/null` as the path for new or deleted files

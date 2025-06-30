@@ -1,4 +1,4 @@
-import { DiffParserAdapter, DiffViewer, FileExplorer, ThemeTokens } from '@diff-viewer'
+import { CodePanel, DiffParserAdapter, FileExplorer, useDiffViewerConfig } from '@diff-viewer'
 import { css } from '@emotion/react'
 import { Tooltip } from 'antd'
 import { useMemo, useState } from 'react'
@@ -6,49 +6,51 @@ import { TEN_FILES_DIFF } from './__fixtures__/sample-diffs'
 import AppHeader from './components/AppHeader'
 import HandleIcon from './components/HandleIcon'
 import { useResizablePanel } from './hooks/use-resizable-panel'
-import { useDiffViewerState } from './providers/config-provider'
 
-const useStyles = (theme: ThemeTokens) => ({
-  container: css`
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-    padding: ${theme.spacing.md};
-    background-color: ${theme.colors.hunkViewerBg};
-    overflow: hidden;
-  `,
-  content: css`
-    display: flex;
-    flex: 1;
-    gap: ${theme.spacing.xs};
-    margin-top: ${theme.spacing.md};
-    overflow: hidden;
-  `,
-  fileExplorer: css`
-    height: 100%;
-    padding: ${theme.spacing.md};
-    border: 1px solid ${theme.colors.borderBg};
-    border-radius: ${theme.spacing.xs};
-    overflow: auto;
-  `,
-  resizer: css`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: col-resize;
-    color: ${theme.colors.textPrimary};
-  `,
-  diffViewer: css`
-    flex: 1;
-    border-radius: ${theme.spacing.xs};
-    overflow: auto;
-  `,
-})
+const useStyles = () => {
+  const { theme } = useDiffViewerConfig()
+
+  return {
+    container: css`
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      padding: ${theme.spacing.md};
+      background-color: ${theme.colors.hunkViewerBg};
+      overflow: hidden;
+    `,
+    content: css`
+      display: flex;
+      flex: 1;
+      gap: ${theme.spacing.xs};
+      margin-top: ${theme.spacing.md};
+      overflow: hidden;
+    `,
+    fileExplorer: css`
+      height: 100%;
+      padding: ${theme.spacing.md};
+      border: 1px solid ${theme.colors.borderBg};
+      border-radius: ${theme.spacing.xs};
+      overflow: auto;
+    `,
+    resizer: css`
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: col-resize;
+      color: ${theme.colors.textPrimary};
+    `,
+    diffViewer: css`
+      flex: 1;
+      border-radius: ${theme.spacing.xs};
+      overflow: auto;
+    `,
+  }
+}
 
 export default function App() {
-  const { theme, isSplitView, wrapLines } = useDiffViewerState()
-  const styles = useStyles(theme)
+  const styles = useStyles()
 
   const parsedDiff = useMemo(() => new DiffParserAdapter().parse(TEN_FILES_DIFF), [])
   const [scrollToFile, setScrollToFile] = useState<string | null>(null)
@@ -80,17 +82,7 @@ export default function App() {
         </Tooltip>
 
         {/* Diff viewer */}
-        <DiffViewer
-          css={styles.diffViewer}
-          diff={parsedDiff}
-          scrollTo={scrollToFile}
-          config={{
-            theme,
-            mode: isSplitView ? 'split' : 'unified',
-            showLineNumbers: true,
-            wrapLines,
-          }}
-        />
+        <CodePanel css={styles.diffViewer} diff={parsedDiff} scrollTo={scrollToFile} />
       </div>
     </div>
   )

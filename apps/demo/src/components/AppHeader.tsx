@@ -1,8 +1,7 @@
-import { Themes, ThemeTokens } from '@diff-viewer'
+import { Themes, ThemeTokens, useDiffViewerConfig } from '@diff-viewer'
 import { css } from '@emotion/react'
 import { Select, Switch, Typography } from 'antd'
 import React from 'react'
-import { useDiffViewerState } from '../providers/config-provider'
 
 const { Title, Text } = Typography
 
@@ -55,18 +54,30 @@ const useStyles = (theme: ThemeTokens) => ({
 const AppHeader: React.FC = () => {
   const {
     theme,
-    isSplitView,
-    collapsePackages,
-    showIcons,
-    displayNodeDetails,
-    wrapLines,
     setTheme,
-    setIsSplitView,
-    setCollapsePackages,
-    setShowIcons,
-    setDisplayNodeDetails,
-    setWrapLines,
-  } = useDiffViewerState()
+    codePanelConfig,
+    fileExplorerConfig,
+    setCodePanelConfig,
+    setFileExplorerConfig,
+  } = useDiffViewerConfig()
+
+  const isSplitView = codePanelConfig.mode === 'split'
+  const collapsePackages = fileExplorerConfig.collapsePackages ?? false
+  const showIcons = fileExplorerConfig.showIcons ?? false
+  const displayNodeDetails = fileExplorerConfig.displayNodeDetails ?? false
+  const wrapLines = codePanelConfig.wrapLines ?? false
+
+  const setIsSplitView = (value: boolean) =>
+    setCodePanelConfig((cfg) => ({ ...cfg, mode: value ? 'split' : 'unified' }))
+  const setCollapsePackages = (value: boolean) =>
+    setFileExplorerConfig((cfg) => ({ ...cfg, collapsePackages: value }))
+  const setShowIcons = (value: boolean) =>
+    setFileExplorerConfig((cfg) => ({ ...cfg, showIcons: value }))
+  const setDisplayNodeDetails = (value: boolean) =>
+    setFileExplorerConfig((cfg) => ({ ...cfg, displayNodeDetails: value }))
+  const setWrapLines = (value: boolean) =>
+    setCodePanelConfig((cfg) => ({ ...cfg, wrapLines: value }))
+
   const styles = useStyles(theme)
 
   return (

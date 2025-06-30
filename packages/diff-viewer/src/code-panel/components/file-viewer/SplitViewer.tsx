@@ -1,12 +1,13 @@
 import { css } from '@emotion/react'
 import React, { useCallback, useContext, useLayoutEffect, useRef, useState } from 'react'
 import { ThemeContext } from '../../../shared/providers/theme-context'
-import { useDiffViewerConfig } from '../../providers/diff-viewer-context'
-import DiffLine from './DiffLine'
-import useRowHeightSync from './hooks/use-row-height-sync'
-import { useSynchronizedScroll } from './hooks/use-synchronize-scroll'
-import { measurePrefixWidth } from './split-utils'
-import type { Side, SplitLineViewerProps } from './types'
+import { useCodePanelConfig } from '../../providers/code-panel-context'
+import DiffLine from '../line-viewer/DiffLine'
+import useRowHeightSync from '../line-viewer/hooks/use-row-height-sync'
+import { useSynchronizedScroll } from '../line-viewer/hooks/use-synchronize-scroll'
+import { measurePrefixWidth } from '../line-viewer/lint-utils'
+import { Side } from '../line-viewer/types'
+import { SplitLineViewerProps } from './types'
 
 const useStyles = (wrapLines: boolean) => {
   const theme = useContext(ThemeContext)
@@ -30,7 +31,7 @@ const useStyles = (wrapLines: boolean) => {
 const SIDES: Side[] = ['left', 'right']
 
 const SplitViewer: React.FC<SplitLineViewerProps> = ({ pairs }) => {
-  const { config } = useDiffViewerConfig()
+  const { config } = useCodePanelConfig()
   const wrapLines = config.wrapLines ?? true
   const styles = useStyles(wrapLines)
   const registerRow = useRowHeightSync(pairs.length, wrapLines)

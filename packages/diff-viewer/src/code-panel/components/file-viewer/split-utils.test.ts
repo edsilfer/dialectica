@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 
 vi.mock('highlight.js/styles/github.css', () => ({}))
 
-import { escapeHtml, highlightContent, buildSplitHunkPairs } from './line-utils'
+import { escapeHtml, highlightContent, buildSplitHunkPairs } from './split-utils'
 import type { Hunk } from '../../types'
 
 const SAMPLE_HUNK: Hunk = {

@@ -1,13 +1,6 @@
 import React, { useMemo } from 'react'
-import { FileDiff } from '../../../diff-viewer/types'
 import DiffActivitySummary from './DiffActivitySummary'
-
-interface FileActivitySummaryProps {
-  /** The file diff object */
-  file: FileDiff
-  /** The maximum number of squares to display. Defaults to 10. */
-  maxSquares?: number
-}
+import { FileActivitySummaryProps } from './types'
 
 const FileActivitySummary: React.FC<FileActivitySummaryProps> = ({ file, maxSquares = 5 }) => {
   const { additions, deletions } = useMemo(() => {

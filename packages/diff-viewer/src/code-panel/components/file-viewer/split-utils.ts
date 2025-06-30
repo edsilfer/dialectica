@@ -1,7 +1,8 @@
 import hljs from 'highlight.js/lib/common'
 import 'highlight.js/styles/github.css'
-import type { Hunk } from '../../types'
-import { LineWithHighlight, SplitLinePair } from './types'
+import { Hunk } from '../../../shared/parsers/types'
+import { LineWithHighlight } from '../line-viewer/types'
+import { SplitLinePair } from './types'
 
 /**
  * Escapes HTML entities so the string can be rendered safely inside \n

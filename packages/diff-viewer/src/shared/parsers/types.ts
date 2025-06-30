@@ -1,6 +1,3 @@
-import { Interpolation, Theme } from '@emotion/react'
-import { DiffViewerConfig } from './providers/types'
-
 // Represents a parser for diff text, which converts raw diff text into a structured ParsedDiff object.
 export interface IDiffParser {
   /**
@@ -15,23 +12,6 @@ export interface IDiffParser {
 export interface ParsedDiff {
   /** An array of file differences parsed from the diff text. */
   files: FileDiff[]
-}
-
-export type DiffViewerProps = {
-  /** The parsed diff to display. */
-  diff: ParsedDiff
-  /** The file to scroll to when the diff is loaded. */
-  scrollTo?: string | null
-  /** Display configuration options. */
-  config?: DiffViewerConfig
-  /** Kept to make typescript happy, but not used by emotion */
-  css?: Interpolation<Theme>
-  /** The content of css will be hashed and passed here */
-  className?: string
-
-  // Callbacks ____________________________________________
-  /** Callback for when a line is clicked. */
-  onLineClick?: (line: DiffLine) => void
 }
 
 // Represents the differences in a single file, including path changes and hunks.

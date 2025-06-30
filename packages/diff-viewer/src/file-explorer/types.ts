@@ -1,7 +1,6 @@
-import { Interpolation } from '@emotion/react'
-import { FileDiff, ParsedDiff } from '../diff-viewer/types'
+import { Interpolation, Theme } from '@emotion/react'
+import { FileDiff, ParsedDiff } from '../shared/parsers/types'
 import { ThemeTokens } from '../shared/themes'
-import { Theme } from '@emotion/react'
 
 export interface FileExplorerProps {
   /** Parsed diff used to build the tree */

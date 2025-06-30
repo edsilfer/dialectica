@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest'
 import { DiffParserAdapter } from './DiffParserAdapter'
-import type { ParsedDiff } from '../types'
 import {
   SAMPLE_DIFF,
   DELETION_DIFF,
@@ -9,6 +8,7 @@ import {
   MULTI_FILE_DIFF,
   MULTI_HUNK_DIFF,
 } from '../../__fixtures__/raw-diffs'
+import { ParsedDiff } from './types'
 
 describe('DiffParserAdapter', () => {
   const adapter = new DiffParserAdapter()
