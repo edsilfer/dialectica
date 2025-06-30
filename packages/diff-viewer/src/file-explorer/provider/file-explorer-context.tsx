@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useState } from 'react'
-import { DiffViewerThemeProvider } from '../../shared/providers/theme-provider'
+import { ThemeProvider } from '../../shared/providers/theme-context'
 import { Themes } from '../../shared/themes'
 import { FileExplorerConfig } from '../types'
 import { FileExplorerConfigContextProps, FileExplorerConfigState } from './types'
 
-const DEFAULT_CONFIG: FileExplorerConfig = {
+export const DEFAULT_FILE_EXPLORER_CONFIG: FileExplorerConfig = {
   startExpanded: true,
   nodeConnector: 'solid',
   indentPx: 16,
@@ -20,7 +20,7 @@ const FileExplorerConfigContext = createContext<FileExplorerConfigState | undefi
 
 export const FileExplorerConfigProvider: React.FC<FileExplorerConfigContextProps> = ({
   children,
-  config: initialConfig = DEFAULT_CONFIG,
+  config: initialConfig = DEFAULT_FILE_EXPLORER_CONFIG,
 }) => {
   const [config, setConfig] = useState<FileExplorerConfig>(initialConfig)
 
@@ -30,11 +30,11 @@ export const FileExplorerConfigProvider: React.FC<FileExplorerConfigContextProps
   }
 
   return (
-    <DiffViewerThemeProvider theme={config.theme ?? Themes.light}>
+    <ThemeProvider theme={config.theme ?? Themes.light}>
       <FileExplorerConfigContext.Provider value={value}>
         {children}
       </FileExplorerConfigContext.Provider>
-    </DiffViewerThemeProvider>
+    </ThemeProvider>
   )
 }
 

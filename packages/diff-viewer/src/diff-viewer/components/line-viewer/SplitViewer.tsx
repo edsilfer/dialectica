@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import React, { useCallback, useContext, useLayoutEffect, useRef, useState } from 'react'
-import { ThemeContext } from '../../../shared/providers/theme-provider'
+import { ThemeContext } from '../../../shared/providers/theme-context'
 import { useDiffViewerConfig } from '../../providers/diff-viewer-context'
 import DiffLine from './DiffLine'
 import useRowHeightSync from './hooks/use-row-height-sync'

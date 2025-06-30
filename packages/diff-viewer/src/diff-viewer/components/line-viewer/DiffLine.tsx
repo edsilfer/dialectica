@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import React, { useContext, forwardRef } from 'react'
 import AddButton from '../../../shared/components/AddButton'
-import { ThemeContext } from '../../../shared/providers/theme-provider'
+import { ThemeContext } from '../../../shared/providers/theme-context'
 import { DiffLineProps, DiffLineType } from './types'
 
 const useStyles = (lineType: DiffLineType, wrapLines: boolean) => {

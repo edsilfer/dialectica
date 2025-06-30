@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react'
-import { DiffViewerThemeProvider } from '../../shared/providers/theme-provider'
+import { ThemeProvider } from '../../shared/providers/theme-context'
 import { Themes } from '../../shared/themes'
 import {
   DiffViewerConfig,
@@ -7,7 +7,7 @@ import {
   DiffViewerConfigContextState,
 } from './types'
 
-const DEFAULT_CONFIG: DiffViewerConfig = {
+export const DEFAULT_DIFF_VIEWER_CONFIG: DiffViewerConfig = {
   mode: 'unified',
   highlightSyntax: false,
   showLineNumbers: true,
@@ -22,7 +22,7 @@ const DiffViewerConfigContext = createContext<DiffViewerConfigContextState | und
 
 export const DiffViewerConfigProvider: React.FC<DiffViewerConfigContextProps> = ({
   children,
-  config: initialConfig = DEFAULT_CONFIG,
+  config: initialConfig = DEFAULT_DIFF_VIEWER_CONFIG,
 }) => {
   const [config, setConfig] = useState<DiffViewerConfig>(initialConfig)
 
@@ -32,9 +32,9 @@ export const DiffViewerConfigProvider: React.FC<DiffViewerConfigContextProps> = 
   }
 
   return (
-    <DiffViewerThemeProvider theme={config.theme ?? Themes.light}>
+    <ThemeProvider theme={config.theme ?? Themes.light}>
       <DiffViewerConfigContext.Provider value={value}>{children}</DiffViewerConfigContext.Provider>
-    </DiffViewerThemeProvider>
+    </ThemeProvider>
   )
 }
 

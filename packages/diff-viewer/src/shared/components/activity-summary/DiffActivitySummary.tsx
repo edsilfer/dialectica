@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { css } from '@emotion/react'
-import { ThemeContext } from '../../providers/theme-provider'
+import { ThemeContext } from '../../providers/theme-context'
 import RichTooltip from '../RichTooltip'
 
 const useStyles = () => {

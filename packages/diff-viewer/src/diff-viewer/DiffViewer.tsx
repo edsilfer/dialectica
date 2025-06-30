@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import React, { useContext, useEffect } from 'react'
-import { ThemeContext } from '../shared/providers/theme-provider'
+import { ThemeContext } from '../shared/providers/theme-context'
 import FileViewer from './components/file-viewer/FileViewer'
 import { DiffViewerConfigProvider, useDiffViewerConfig } from './providers/diff-viewer-context'
 import type { DiffViewerProps } from './types'

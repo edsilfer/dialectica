@@ -1,19 +1,13 @@
-import React, { createContext } from 'react'
 import { ConfigProvider } from 'antd'
 import type { ThemeConfig } from 'antd/es/config-provider/context'
-import type { ThemeTokens } from '../themes/types'
+import { createContext } from 'react'
 import { Themes } from '../themes'
+import type { ThemeTokens } from '../themes/types'
+import { ThemeProps } from './types'
 
 export const ThemeContext = createContext<ThemeTokens>(Themes.light)
 
-interface DiffViewerThemeProps {
-  /** The children of the theme provider */
-  children: React.ReactNode
-  /** The theme to use for the diff viewer */
-  theme: ThemeTokens
-}
-
-export const DiffViewerThemeProvider = ({ children, theme }: DiffViewerThemeProps) => {
+export const ThemeProvider = ({ children, theme }: ThemeProps) => {
   const antdThemeConfig: ThemeConfig = {
     token: {
       colorPrimary: theme.colors.colorPrimary,

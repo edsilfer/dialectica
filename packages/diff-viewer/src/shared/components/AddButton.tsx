@@ -1,7 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons'
 import { css, Interpolation, Theme } from '@emotion/react'
 import React, { useContext } from 'react'
-import { ThemeContext } from '../providers/theme-provider'
+import { ThemeContext } from '../providers/theme-context'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)

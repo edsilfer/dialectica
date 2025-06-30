@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
-import { ThemeContext } from '../shared/providers/theme-provider'
+import { ThemeContext } from '../shared/providers/theme-context'
 import FSNode from './components/FSNode'
 import { ExplorerBar } from './components/Toolbar'
 import TreeSkeleton from './components/TreeSkeleton'

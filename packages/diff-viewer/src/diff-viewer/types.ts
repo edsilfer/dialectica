@@ -1,5 +1,5 @@
 import { Interpolation, Theme } from '@emotion/react'
-import { ThemeTokens } from '../shared/themes'
+import { DiffViewerConfig } from './providers/types'
 
 // Represents a parser for diff text, which converts raw diff text into a structured ParsedDiff object.
 export interface IDiffParser {
@@ -96,4 +96,3 @@ export interface DeleteLine extends BaseLine {
   /** The type of line, which is 'delete' for deleted lines. */
   type: 'delete'
 }
-

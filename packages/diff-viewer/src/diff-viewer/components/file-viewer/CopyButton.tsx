@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { css } from '@emotion/react'
 import Copy from '../../../shared/components/icons/Copy'
-import { ThemeContext } from '../../../shared/providers/theme-provider'
+import { ThemeContext } from '../../../shared/providers/theme-context'
 import RichTooltip from '../../../shared/components/RichTooltip'
 
 const useStyles = () => {

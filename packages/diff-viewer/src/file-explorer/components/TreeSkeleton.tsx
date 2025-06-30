@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import { useContext, useEffect, useState } from 'react'
-import { ThemeContext } from '../../shared/providers/theme-provider'
+import { ThemeContext } from '../../shared/providers/theme-context'
 import { useFileExplorerContext } from '../provider/fstree-context'
 import { buildNodeMap, getConnectorPaths } from './tree-utils'
 import { ConnectorStyle, Node, TreeSkeletonProps } from './types'
