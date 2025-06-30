@@ -14,15 +14,16 @@ const useStyles = (wrapLines: boolean) => {
       width: 100%;
       border-collapse: collapse;
       table-layout: ${wrapLines ? 'auto' : 'fixed'};
+      overflow-y: hidden;
       ${!wrapLines ? 'display: block; overflow-x: auto;' : ''}
       background-color: ${theme.colors.hunkViewerBg};
     `,
   }
 }
 
-const UnifiedViewer: React.FC<UnifiedViewerProps> = ({ lines }) => {
+const UnifiedViewer: React.FC<UnifiedViewerProps> = ({ lines, wrapLines: initialWrapLines }) => {
   const { config } = useCodePanelConfig()
-  const wrapLines = config.wrapLines ?? true
+  const wrapLines = initialWrapLines ?? true
   const styles = useStyles(wrapLines)
 
   const tableRef = useRef<HTMLTableElement>(null)
@@ -65,7 +66,7 @@ const UnifiedViewer: React.FC<UnifiedViewerProps> = ({ lines }) => {
             showNumber={!!config.showLineNumbers}
             type={line.type}
             onAddButtonClick={() => console.log('Add comment clicked')}
-            wrapLines={config.wrapLines}
+            wrapLines={wrapLines}
             view="unified"
             stickyOffsets={offsets}
           />

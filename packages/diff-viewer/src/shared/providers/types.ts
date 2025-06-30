@@ -12,6 +12,8 @@ export interface DiffViewerConfigContextProps {
   codePanelConfig?: Omit<CodePanelConfig, 'theme'>
   /** The configuration for the file explorer */
   fileExplorerConfig?: Omit<FileExplorerConfig, 'theme'>
+  /** Where the configuration should be stored. "in-memory" keeps the previous behaviour (default) and "local" persists values in localStorage */
+  storage?: 'in-memory' | 'local'
 }
 
 export interface DiffViewerConfigContextState {

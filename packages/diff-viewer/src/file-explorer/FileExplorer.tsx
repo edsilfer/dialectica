@@ -1,5 +1,6 @@
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
+import { useDiffViewerConfig } from '../shared/providers/diff-viewer-context'
 import { ThemeContext } from '../shared/providers/theme-context'
 import FSNode from './components/FSNode'
 import { ExplorerBar } from './components/Toolbar'
@@ -33,18 +34,29 @@ const useStyles = () => {
 }
 
 export const FileExplorer: React.FC<FileExplorerProps> = (props) => {
-  let hasProvider = true
+  let hasSpecificProvider = true
   try {
     void useFileExplorerConfig()
   } catch {
-    hasProvider = false
+    hasSpecificProvider = false
+  }
+
+  let inheritedConfig
+  try {
+    const { fileExplorerConfig } = useDiffViewerConfig()
+    inheritedConfig = fileExplorerConfig
+  } catch {
+    inheritedConfig = undefined
   }
 
   const explorer = <FileExplorerInner {...props} />
-  return hasProvider ? (
-    explorer
-  ) : (
-    <FileExplorerConfigProvider>{explorer}</FileExplorerConfigProvider>
+
+  if (hasSpecificProvider) {
+    return explorer
+  }
+
+  return (
+    <FileExplorerConfigProvider config={inheritedConfig}>{explorer}</FileExplorerConfigProvider>
   )
 }
 

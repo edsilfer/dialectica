@@ -1,8 +1,9 @@
-import React, { useContext } from 'react'
 import { css } from '@emotion/react'
-import Copy from '../../../shared/components/icons/Copy'
-import { ThemeContext } from '../../../shared/providers/theme-context'
-import RichTooltip from '../../../shared/components/RichTooltip'
+import React, { useContext } from 'react'
+import Copy from '../../../../shared/components/icons/Copy'
+import RichTooltip from '../../../../shared/components/RichTooltip'
+import { ThemeContext } from '../../../../shared/providers/theme-context'
+import { CopyButtonProps } from './types'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -14,17 +15,6 @@ const useStyles = () => {
       color: ${theme.colors.textPrimary};
     `,
   }
-}
-
-interface CopyButtonProps {
-  /** The size of the copy icon */
-  size?: number
-  /** The tooltip to display when hovering over the copy icon */
-  tooltip?: string
-  /** The text to display when the copy is successful */
-  toastText?: string
-  /** The function to call when the copy icon is clicked */
-  onClick: (event: React.MouseEvent<SVGSVGElement>) => void
 }
 
 const CopyButton: React.FC<CopyButtonProps> = ({ onClick, size = 16, tooltip, toastText }) => {

@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState } from 'react'
-import { ThemeProvider } from '../../shared/providers/theme-context'
+import React, { createContext, useContext, useState, useEffect } from 'react'
+import { ThemeProvider, ThemeContext } from '../../shared/providers/theme-context'
 import { Themes } from '../../shared/themes'
 import { CodePanelConfig, CodePanelConfigContextProps, CodePanelConfigContextState } from './types'
 
@@ -22,13 +22,22 @@ export const CodePanelConfigProvider: React.FC<CodePanelConfigContextProps> = ({
 }) => {
   const [config, setConfig] = useState<CodePanelConfig>(initialConfig)
 
+  useEffect(() => setConfig(initialConfig), [initialConfig])
+
   const value = {
     config,
     setConfig,
   }
 
+  /*
+   * - Obtain the current theme from any ancestor ThemeContext
+   * - If no explicit theme is provided via the config, fall back to it
+   */
+  const inheritedTheme = React.useContext(ThemeContext) ?? Themes.light
+  const themeToUse = config.theme ?? inheritedTheme
+
   return (
-    <ThemeProvider theme={config.theme ?? Themes.light}>
+    <ThemeProvider theme={themeToUse}>
       <CodePanelConfigContext.Provider value={value}>{children}</CodePanelConfigContext.Provider>
     </ThemeProvider>
   )

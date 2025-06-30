@@ -23,6 +23,7 @@ const useStyles = (wrapLines: boolean) => {
       width: 50%;
       border-collapse: collapse;
       table-layout: ${wrapLines ? 'auto' : 'fixed'};
+      overflow-y: hidden;
       ${!wrapLines ? 'display: block; overflow-x: auto;' : ''}
     `,
   }
@@ -30,9 +31,9 @@ const useStyles = (wrapLines: boolean) => {
 
 const SIDES: Side[] = ['left', 'right']
 
-const SplitViewer: React.FC<SplitLineViewerProps> = ({ pairs }) => {
+const SplitViewer: React.FC<SplitLineViewerProps> = ({ pairs, wrapLines: initialWrapLines }) => {
   const { config } = useCodePanelConfig()
-  const wrapLines = config.wrapLines ?? true
+  const wrapLines = initialWrapLines ?? true
   const styles = useStyles(wrapLines)
   const registerRow = useRowHeightSync(pairs.length, wrapLines)
 

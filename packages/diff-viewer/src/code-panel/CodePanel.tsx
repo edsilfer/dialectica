@@ -4,6 +4,7 @@ import { ThemeContext } from '../shared/providers/theme-context'
 import FileViewer from './components/file-viewer/FileViewer'
 import { CodePanelConfigProvider, useCodePanelConfig } from './providers/code-panel-context'
 import type { CodePanelProps } from './types'
+import { useDiffViewerConfig } from '../shared/providers/diff-viewer-context'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -18,16 +19,29 @@ const useStyles = () => {
 }
 
 export const CodePanel: React.FC<CodePanelProps> = (props) => {
-  let hasProvider = true
+  let hasSpecificProvider = true
   try {
     void useCodePanelConfig()
   } catch {
-    hasProvider = false
+    hasSpecificProvider = false
+  }
+
+  let inheritedConfig
+  try {
+    const { codePanelConfig } = useDiffViewerConfig()
+    inheritedConfig = codePanelConfig
+  } catch {
+    inheritedConfig = undefined
   }
 
   const diffViewer = <CodePanelContent {...props} />
 
-  return hasProvider ? diffViewer : <CodePanelConfigProvider>{diffViewer}</CodePanelConfigProvider>
+  if (hasSpecificProvider) {
+    return diffViewer
+  }
+
+  // Otherwise create a provider, seeding it with any config we could inherit.
+  return <CodePanelConfigProvider config={inheritedConfig}>{diffViewer}</CodePanelConfigProvider>
 }
 
 const CodePanelContent: React.FC<CodePanelProps> = (props) => {

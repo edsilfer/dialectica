@@ -33,8 +33,6 @@ export interface CodePanelConfig {
   showLineNumbers?: boolean
   /** Whether to ignore whitespace in the diff. */
   ignoreWhitespace?: boolean
-  /** Whether to wrap lines in the diff. */
-  wrapLines?: boolean
   /** The maximum number of lines to display for a file. */
   maxFileLines?: number
 }

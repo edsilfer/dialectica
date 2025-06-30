@@ -1,18 +1,18 @@
 import { css } from '@emotion/react'
-import { Checkbox, Tooltip, Typography } from 'antd'
+import { Checkbox, Typography } from 'antd'
 import React, { useContext, useMemo, useState } from 'react'
 import FileActivitySummary from '../../../shared/components/activity-summary/FileActivitySummary'
-import WrapLines from '../../../shared/components/icons/WrapLines'
+import ExpandButton from '../../../shared/components/buttons/ExpandButton'
+import { detectLanguage } from '../../../shared/parsers/language-utils'
 import { ThemeContext } from '../../../shared/providers/theme-context'
 import { useCodePanelConfig } from '../../providers/code-panel-context'
 import type { LineWithHighlight } from '../line-viewer/types'
-import CopyButton from './CopyButton'
-import ExpandButton from './ExpandButton'
+import CopyButton from './buttons/CopyButton'
+import WrapLinesButton from './buttons/LineWrapButton'
+import { buildSplitHunkPairs, escapeHtml, highlightContent } from './split-utils'
 import SplitViewer from './SplitViewer'
 import { FileViewerProps, SplitLinePair } from './types'
 import UnifiedViewer from './UnifiedViewer'
-import { detectLanguage } from '../../../shared/parsers/language-utils'
-import { buildSplitHunkPairs, escapeHtml, highlightContent } from './split-utils'
 
 const { Text } = Typography
 
@@ -70,8 +70,6 @@ const useStyles = () => {
     wrapLines: (isActive: boolean) => css`
       color: ${isActive ? theme.colors.accentColor : theme.colors.textPrimary};
       cursor: pointer;
-      border: 1px solid ${isActive ? theme.colors.accentColor : theme.colors.textPrimary};
-      border-radius: ${theme.spacing.xs};
     `,
 
     viewedCheckbox: css`
@@ -88,9 +86,11 @@ const useStyles = () => {
 const FileViewer: React.FC<FileViewerProps> = ({ id, file }) => {
   const styles = useStyles()
   const { config } = useCodePanelConfig()
+
   const [collapsed, setCollapsed] = useState(false)
   const [viewed, setViewed] = useState(false)
-  const [wrapLines, setWrapLines] = useState<boolean>(config.wrapLines ?? true)
+  const [wrapLines, setWrapLines] = useState<boolean>(true)
+
   const language = useMemo(() => detectLanguage(file.newPath), [file.newPath])
   const filePath = useMemo(
     () => (file.oldPath === file.newPath ? file.newPath : `${file.oldPath} → ${file.newPath}`),
@@ -156,17 +156,13 @@ const FileViewer: React.FC<FileViewerProps> = ({ id, file }) => {
           tooltip="Copy file path"
           toastText="File path copied to clipboard"
         />
+        <WrapLinesButton
+          isWrapped={wrapLines}
+          onClick={() => setWrapLines((prev) => !prev)}
+          size={16}
+        />
 
         <div css={styles.rightContainer}>
-          <Tooltip title={wrapLines ? 'Disable line wrap' : 'Enable line wrap'}>
-            <WrapLines
-              css={styles.wrapLines(wrapLines)}
-              size={16}
-              onClick={() => setWrapLines((prev) => !prev)}
-              style={{ cursor: 'pointer' }}
-            />
-          </Tooltip>
-
           <Checkbox
             css={styles.viewedCheckbox}
             checked={viewed}
@@ -180,13 +176,13 @@ const FileViewer: React.FC<FileViewerProps> = ({ id, file }) => {
       <div css={styles.body}>
         {!collapsed && config.mode === 'split' && (
           <div css={styles.hunksContainer}>
-            <SplitViewer pairs={splitPairs} />
+            <SplitViewer pairs={splitPairs} wrapLines={wrapLines} />
           </div>
         )}
 
         {!collapsed && config.mode === 'unified' && (
           <div css={styles.hunksContainer}>
-            <UnifiedViewer lines={unifiedLines} />
+            <UnifiedViewer lines={unifiedLines} wrapLines={wrapLines} />
           </div>
         )}
       </div>

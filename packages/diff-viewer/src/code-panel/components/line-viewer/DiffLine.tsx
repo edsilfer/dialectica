@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import React, { useContext, forwardRef } from 'react'
-import AddButton from '../../../shared/components/AddButton'
+import AddButton from '../../../shared/components/buttons/AddButton'
 import { ThemeContext } from '../../../shared/providers/theme-context'
 import { DiffLineProps, DiffLineType } from './types'
 
@@ -79,7 +79,7 @@ const useStyles = (lineType: DiffLineType, wrapLines: boolean) => {
         text-align: center;
         font-family: ${theme.typography.codeFontFamily};
         padding: 0 ${theme.spacing.sm};
-        background-color: ${LINE_TYPE_TO_NUMBER_BG_COLOR[lineType]};
+        background-color: ${LINE_TYPE_TO_COLOR[lineType]};
         position: sticky;
         z-index: 3;
         left: ${left}px;

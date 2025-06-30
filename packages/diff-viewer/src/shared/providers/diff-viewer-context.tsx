@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState, useMemo } from 'react'
 import { DEFAULT_CODE_PANEL_CONFIG } from '../../code-panel/providers/code-panel-context'
 import { CodePanelConfig } from '../../code-panel/providers/types'
 import { DEFAULT_FILE_EXPLORER_CONFIG } from '../../file-explorer/provider/file-explorer-context'
@@ -18,11 +18,31 @@ export const DiffViewerConfigProvider: React.FC<DiffViewerConfigContextProps> = 
   theme: initialTheme,
   codePanelConfig: initialCodePanelConfig = DEFAULT_CODE_PANEL_CONFIG,
   fileExplorerConfig: initialFileExplorerConfig = DEFAULT_FILE_EXPLORER_CONFIG,
+  storage = 'in-memory',
 }) => {
-  const [theme, setTheme] = useState<ThemeTokens>(initialTheme)
-  const [codePanelConfig, setCodePanelConfig] = useState<CodePanelConfig>(initialCodePanelConfig)
-  const [fileExplorerConfig, setFileExplorerConfig] =
-    useState<FileExplorerConfig>(initialFileExplorerConfig)
+  const STORAGE_KEY = '__diff_viewer_config__'
+
+  // Hydrate from localStorage if requested
+  const storedConfig = useMemo(() => {
+    if (storage !== 'local' || typeof window === 'undefined') return null
+    try {
+      return JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null')
+    } catch {
+      return null
+    }
+  }, [storage]) as {
+    theme?: ThemeTokens
+    codePanelConfig?: CodePanelConfig
+    fileExplorerConfig?: FileExplorerConfig
+  } | null
+
+  const [theme, setTheme] = useState<ThemeTokens>(storedConfig?.theme ?? initialTheme)
+  const [codePanelConfig, setCodePanelConfig] = useState<CodePanelConfig>(
+    storedConfig?.codePanelConfig ?? initialCodePanelConfig,
+  )
+  const [fileExplorerConfig, setFileExplorerConfig] = useState<FileExplorerConfig>(
+    storedConfig?.fileExplorerConfig ?? initialFileExplorerConfig,
+  )
 
   const value = {
     codePanelConfig,
@@ -32,6 +52,21 @@ export const DiffViewerConfigProvider: React.FC<DiffViewerConfigContextProps> = 
     setFileExplorerConfig,
     setTheme,
   }
+
+  // Persist changes whenever any part of the configuration changes
+  useEffect(() => {
+    if (storage !== 'local' || typeof window === 'undefined') return
+    const serializable = {
+      theme,
+      codePanelConfig,
+      fileExplorerConfig,
+    }
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(serializable))
+    } catch {
+      // Ignore quota / serialization errors silently
+    }
+  }, [storage, theme, codePanelConfig, fileExplorerConfig])
 
   return (
     <ThemeProvider theme={theme ?? Themes.light}>

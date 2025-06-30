@@ -65,7 +65,6 @@ const AppHeader: React.FC = () => {
   const collapsePackages = fileExplorerConfig.collapsePackages ?? false
   const showIcons = fileExplorerConfig.showIcons ?? false
   const displayNodeDetails = fileExplorerConfig.displayNodeDetails ?? false
-  const wrapLines = codePanelConfig.wrapLines ?? false
 
   const setIsSplitView = (value: boolean) =>
     setCodePanelConfig((cfg) => ({ ...cfg, mode: value ? 'split' : 'unified' }))
@@ -75,8 +74,6 @@ const AppHeader: React.FC = () => {
     setFileExplorerConfig((cfg) => ({ ...cfg, showIcons: value }))
   const setDisplayNodeDetails = (value: boolean) =>
     setFileExplorerConfig((cfg) => ({ ...cfg, displayNodeDetails: value }))
-  const setWrapLines = (value: boolean) =>
-    setCodePanelConfig((cfg) => ({ ...cfg, wrapLines: value }))
 
   const styles = useStyles(theme)
 
@@ -113,8 +110,6 @@ const AppHeader: React.FC = () => {
           <Switch checked={showIcons} onChange={setShowIcons} size="small" />
           <Text css={styles.switchLabel}>Show Details</Text>
           <Switch checked={displayNodeDetails} onChange={setDisplayNodeDetails} size="small" />
-          <Text css={styles.switchLabel}>Wrap Lines</Text>
-          <Switch checked={wrapLines} onChange={setWrapLines} size="small" />
         </div>
       </div>
     </div>

@@ -6,7 +6,7 @@ import { DiffViewerConfigProvider } from '@diff-viewer'
 
 function Root() {
   return (
-    <DiffViewerConfigProvider theme={Themes.light}>
+    <DiffViewerConfigProvider theme={Themes.light} storage="local">
       <App />
     </DiffViewerConfigProvider>
   )

@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState } from 'react'
-import { ThemeProvider } from '../../shared/providers/theme-context'
+import React, { createContext, useContext, useEffect, useState } from 'react'
+import { ThemeContext, ThemeProvider } from '../../shared/providers/theme-context'
 import { Themes } from '../../shared/themes'
 import { FileExplorerConfig } from '../types'
 import { FileExplorerConfigContextProps, FileExplorerConfigState } from './types'
@@ -24,13 +24,22 @@ export const FileExplorerConfigProvider: React.FC<FileExplorerConfigContextProps
 }) => {
   const [config, setConfig] = useState<FileExplorerConfig>(initialConfig)
 
+  useEffect(() => setConfig(initialConfig), [initialConfig])
+
   const value = {
     config,
     setConfig,
   }
 
+  /*
+   * - Obtain the current theme from any ancestor ThemeContext
+   * - If no explicit theme is provided via the config, fall back to it
+   */
+  const inheritedTheme = React.useContext(ThemeContext) ?? Themes.light
+  const themeToUse = config.theme ?? inheritedTheme
+
   return (
-    <ThemeProvider theme={config.theme ?? Themes.light}>
+    <ThemeProvider theme={themeToUse}>
       <FileExplorerConfigContext.Provider value={value}>
         {children}
       </FileExplorerConfigContext.Provider>

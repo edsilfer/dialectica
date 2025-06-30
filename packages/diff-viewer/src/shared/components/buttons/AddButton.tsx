@@ -1,7 +1,8 @@
 import { PlusOutlined } from '@ant-design/icons'
-import { css, Interpolation, Theme } from '@emotion/react'
+import { css } from '@emotion/react'
 import React, { useContext } from 'react'
-import { ThemeContext } from '../providers/theme-context'
+import { ThemeContext } from '../../providers/theme-context'
+import { AddButtonProps } from './types'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -38,12 +39,7 @@ const useStyles = () => {
   }
 }
 
-const AddButton: React.FC<{
-  className?: string
-  // Kept to make typescript happy
-  css?: Interpolation<Theme>
-  onClick?: () => void
-}> = ({ className, css: _css, onClick }) => {
+const AddButton: React.FC<AddButtonProps> = ({ className, css: _css, onClick }) => {
   const styles = useStyles()
   return (
     <button css={styles.button} className={className} onClick={onClick}>

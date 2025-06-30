@@ -1,8 +1,9 @@
-import React, { useContext } from 'react'
 import { css } from '@emotion/react'
-import ChevronDown from '../../../shared/components/icons/ChevronDown'
-import { ThemeContext } from '../../../shared/providers/theme-context'
-import RichTooltip from '../../../shared/components/RichTooltip'
+import React, { useContext } from 'react'
+import { ThemeContext } from '../../providers/theme-context'
+import ChevronDown from '../icons/ChevronDown'
+import RichTooltip from '../RichTooltip'
+import { ExpandButtonProps } from './types'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -15,21 +16,6 @@ const useStyles = () => {
       cursor: pointer;
     `,
   }
-}
-
-interface ExpandButtonProps {
-  /** Whether the section is currently collapsed */
-  collapsed: boolean
-  /** The size of the chevron icon */
-  size?: number
-  /** Tooltip text to show when the section is collapsed (defaults to "Show file content") */
-  tooltipTextExpand?: string
-  /** Tooltip text to show when the section is expanded (defaults to "Hide file content") */
-  tooltipTextCollapse?: string
-
-  // Callbacks ____________________________________________
-  /** Optional click handler attached to the chevron element */
-  onClick?: (event: React.MouseEvent<SVGSVGElement>) => void
 }
 
 const ExpandButton: React.FC<ExpandButtonProps> = ({

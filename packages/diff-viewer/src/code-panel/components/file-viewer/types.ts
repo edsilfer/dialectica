@@ -11,11 +11,15 @@ export interface FileViewerProps {
 export interface UnifiedViewerProps {
   /** Flattened list of diff lines (already highlighted) */
   lines: LineWithHighlight[]
+  /** Whether to wrap long lines or enable horizontal scrolling (defaults to true). */
+  wrapLines?: boolean
 }
 
 export interface SplitLineViewerProps {
   /** Pre-built left/right line pairs ready for rendering */
   pairs: SplitLinePair[]
+  /** Whether to wrap long lines or enable horizontal scrolling (defaults to true). */
+  wrapLines?: boolean
 }
 
 /**

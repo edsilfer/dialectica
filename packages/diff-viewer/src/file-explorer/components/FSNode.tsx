@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import React, { useCallback, useContext, useMemo } from 'react'
-import ExpandButton from '../../code-panel/components/file-viewer/ExpandButton'
+import ExpandButton from '../../shared/components/buttons/ExpandButton'
 import RichTooltip from '../../shared/components/RichTooltip'
 import { ThemeContext } from '../../shared/providers/theme-context'
 import { highlightText, nodeComparator } from '../node-utils'
