@@ -1,4 +1,4 @@
-import { DisplayConfig, Hunk } from '../../types'
+import { DiffViewerConfig, Hunk } from '../../types'
 
 export type DiffLineType = 'add' | 'delete' | 'context' | 'hunk' | 'empty'
 
@@ -11,7 +11,7 @@ export interface HunkViewerProps {
   /** The hunk to display */
   hunk: Hunk
   /** Display configuration options */
-  config: DisplayConfig
+  config: DiffViewerConfig
   /** Detected language for syntax highlighting */
   language: string
 }
@@ -45,8 +45,6 @@ export interface SplitLinePair {
 export interface UnifiedViewerProps {
   /** Flattened list of diff lines (already highlighted) */
   lines: LineWithHighlight[]
-  /** Display options */
-  config: DisplayConfig
 }
 
 export interface DiffLineProps {
@@ -82,6 +80,4 @@ export interface DiffLineProps {
 export interface SplitLineViewerProps {
   /** Pre-built left/right line pairs ready for rendering */
   pairs: SplitLinePair[]
-  /** Display options */
-  config: DisplayConfig
 }

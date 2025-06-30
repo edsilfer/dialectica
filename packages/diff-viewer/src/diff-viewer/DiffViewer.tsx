@@ -1,9 +1,9 @@
 import { css } from '@emotion/react'
 import React, { useContext, useEffect } from 'react'
-import { DiffViewerThemeProvider, ThemeContext } from '../shared/providers/theme-provider'
-import { Themes } from '../shared/themes'
+import { ThemeContext } from '../shared/providers/theme-provider'
 import FileViewer from './components/file-viewer/FileViewer'
-import type { DisplayConfig as DiffViewerConfig, DiffViewerProps } from './types'
+import { DiffViewerConfigProvider, useDiffViewerConfig } from './providers/diff-viewer-context'
+import type { DiffViewerProps } from './types'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -17,31 +17,24 @@ const useStyles = () => {
   }
 }
 
-/** The default display configuration for the diff viewer. */
-const DEFAULT_DISPLAY_CONFIG: DiffViewerConfig = {
-  mode: 'unified',
-  highlightSyntax: false,
-  showLineNumbers: true,
-  ignoreWhitespace: false,
-  wrapLines: true,
-}
-
 export const DiffViewer: React.FC<DiffViewerProps> = (props) => {
-  return (
-    <DiffViewerThemeProvider theme={props.config?.theme || Themes.light}>
-      <Content
-        diff={props.diff}
-        scrollTo={props.scrollTo}
-        config={props.config}
-        css={props.css}
-        className={props.className}
-        onLineClick={props.onLineClick}
-      />
-    </DiffViewerThemeProvider>
+  let hasProvider = true
+  try {
+    void useDiffViewerConfig()
+  } catch {
+    hasProvider = false
+  }
+
+  const diffViewer = <DiffViewerContent {...props} />
+
+  return hasProvider ? (
+    diffViewer
+  ) : (
+    <DiffViewerConfigProvider>{diffViewer}</DiffViewerConfigProvider>
   )
 }
 
-const Content: React.FC<DiffViewerProps> = (props) => {
+const DiffViewerContent: React.FC<DiffViewerProps> = (props) => {
   const styles = useStyles()
 
   useEffect(() => {
@@ -60,7 +53,6 @@ const Content: React.FC<DiffViewerProps> = (props) => {
           key={file.newPath || file.oldPath}
           id={`file-diff-${file.newPath || file.oldPath}`}
           file={file}
-          config={props.config || DEFAULT_DISPLAY_CONFIG}
         />
       ))}
     </div>

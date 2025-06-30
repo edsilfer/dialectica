@@ -23,7 +23,7 @@ export type DiffViewerProps = {
   /** The file to scroll to when the diff is loaded. */
   scrollTo?: string | null
   /** Display configuration options. */
-  config?: DisplayConfig
+  config?: DiffViewerConfig
   /** Kept to make typescript happy, but not used by emotion */
   css?: Interpolation<Theme>
   /** The content of css will be hashed and passed here */
@@ -97,22 +97,3 @@ export interface DeleteLine extends BaseLine {
   type: 'delete'
 }
 
-export type DisplayFormat = 'unified' | 'split'
-
-/** Configuration options for how the diff should be displayed */
-export interface DisplayConfig {
-  /** The theme for the viewer */
-  theme?: ThemeTokens
-  /** The mode to display the diff in. */
-  mode: DisplayFormat
-  /** Whether to highlight the syntax of the diff. */
-  highlightSyntax?: boolean
-  /** Whether to show line numbers in the diff. */
-  showLineNumbers?: boolean
-  /** Whether to ignore whitespace in the diff. */
-  ignoreWhitespace?: boolean
-  /** Whether to wrap lines in the diff. */
-  wrapLines?: boolean
-  /** The maximum number of lines to display for a file. */
-  maxFileLines?: number
-}

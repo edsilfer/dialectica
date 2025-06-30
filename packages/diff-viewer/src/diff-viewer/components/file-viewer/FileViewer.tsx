@@ -5,7 +5,8 @@ import FileActivitySummary from '../../../shared/components/activity-summary/Fil
 import WrapLines from '../../../shared/components/icons/WrapLines'
 import { ThemeContext } from '../../../shared/providers/theme-provider'
 import { detectLanguage } from '../../parsers/language-utils'
-import type { DisplayConfig, FileDiff } from '../../types'
+import { useDiffViewerConfig } from '../../providers/diff-viewer-context'
+import type { FileDiff } from '../../types'
 import { buildSplitHunkPairs, escapeHtml, highlightContent } from '../line-viewer/line-utils'
 import SplitViewer from '../line-viewer/SplitViewer'
 import type { LineWithHighlight, SplitLinePair } from '../line-viewer/types'
@@ -89,12 +90,11 @@ interface FileViewerProps {
   id?: string
   /** The file diff object. */
   file: FileDiff
-  /** The display configuration options. */
-  config: DisplayConfig
 }
 
-const FileViewer: React.FC<FileViewerProps> = ({ id, file, config }) => {
+const FileViewer: React.FC<FileViewerProps> = ({ id, file }) => {
   const styles = useStyles()
+  const { config } = useDiffViewerConfig()
   const [collapsed, setCollapsed] = useState(false)
   const [viewed, setViewed] = useState(false)
   const [wrapLines, setWrapLines] = useState<boolean>(config.wrapLines ?? true)
@@ -104,9 +104,11 @@ const FileViewer: React.FC<FileViewerProps> = ({ id, file, config }) => {
     [file.oldPath, file.newPath],
   )
 
-  // Pre-compute flattened line arrays for both display modes so we can directly
-  // pass them to the corresponding viewer components. The expensive work is
-  // memoised and will only run when the hunks or the detected language change.
+  /*
+   * Pre-compute flattened line arrays for both display modes so we can directly
+   * pass them to the corresponding viewer components. The expensive work is
+   * memoised and will only run when the hunks or the detected language change.
+   */
   const unifiedLines = useMemo<LineWithHighlight[]>(() => {
     return file.hunks.flatMap((hunk) => {
       const headerLine: LineWithHighlight = {
@@ -131,14 +133,6 @@ const FileViewer: React.FC<FileViewerProps> = ({ id, file, config }) => {
   const splitPairs = useMemo<SplitLinePair[]>(
     () => file.hunks.flatMap((hunk) => buildSplitHunkPairs(hunk, language)),
     [file.hunks, language],
-  )
-
-  const viewerConfig = useMemo<DisplayConfig>(
-    () => ({
-      ...config,
-      wrapLines,
-    }),
-    [config, wrapLines],
   )
 
   const handleToggleCollapse = () => {
@@ -193,13 +187,13 @@ const FileViewer: React.FC<FileViewerProps> = ({ id, file, config }) => {
       <div css={styles.body}>
         {!collapsed && config.mode === 'split' && (
           <div css={styles.hunksContainer}>
-            <SplitViewer pairs={splitPairs} config={viewerConfig} />
+            <SplitViewer pairs={splitPairs} />
           </div>
         )}
 
         {!collapsed && config.mode === 'unified' && (
           <div css={styles.hunksContainer}>
-            <UnifiedViewer lines={unifiedLines} config={viewerConfig} />
+            <UnifiedViewer lines={unifiedLines} />
           </div>
         )}
       </div>

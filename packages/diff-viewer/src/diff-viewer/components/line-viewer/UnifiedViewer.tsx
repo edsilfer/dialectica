@@ -1,6 +1,7 @@
 import { css } from '@emotion/react'
 import React, { useContext, useLayoutEffect, useRef, useState } from 'react'
 import { ThemeContext } from '../../../shared/providers/theme-provider'
+import { useDiffViewerConfig } from '../../providers/diff-viewer-context'
 import DiffLine from './DiffLine'
 import { UnifiedViewerProps } from './types'
 
@@ -19,7 +20,8 @@ const useStyles = (wrapLines: boolean) => {
   }
 }
 
-const UnifiedViewer: React.FC<UnifiedViewerProps> = ({ lines, config }) => {
+const UnifiedViewer: React.FC<UnifiedViewerProps> = ({ lines }) => {
+  const { config } = useDiffViewerConfig()
   const wrapLines = config.wrapLines ?? true
   const styles = useStyles(wrapLines)
 

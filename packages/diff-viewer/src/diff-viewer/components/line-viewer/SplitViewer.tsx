@@ -1,6 +1,7 @@
 import { css } from '@emotion/react'
 import React, { useCallback, useContext, useLayoutEffect, useRef, useState } from 'react'
 import { ThemeContext } from '../../../shared/providers/theme-provider'
+import { useDiffViewerConfig } from '../../providers/diff-viewer-context'
 import DiffLine from './DiffLine'
 import useRowHeightSync from './hooks/use-row-height-sync'
 import { useSynchronizedScroll } from './hooks/use-synchronize-scroll'
@@ -28,7 +29,8 @@ const useStyles = (wrapLines: boolean) => {
 
 const SIDES: Side[] = ['left', 'right']
 
-const SplitViewer: React.FC<SplitLineViewerProps> = ({ pairs, config }) => {
+const SplitViewer: React.FC<SplitLineViewerProps> = ({ pairs }) => {
+  const { config } = useDiffViewerConfig()
   const wrapLines = config.wrapLines ?? true
   const styles = useStyles(wrapLines)
   const registerRow = useRowHeightSync(pairs.length, wrapLines)
