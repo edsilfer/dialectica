@@ -17,7 +17,7 @@ import { DiffViewerConfigContext } from '../../../main/providers/diff-viewer-con
 
 const { Text } = Typography
 
-const useStyles = () => {
+const useStyles = (collapsed: boolean) => {
   const theme = useContext(ThemeContext)
 
   return {
@@ -36,6 +36,7 @@ const useStyles = () => {
       border-bottom-left-radius: ${theme.spacing.xs};
       border-bottom-right-radius: ${theme.spacing.xs};
       overflow: hidden;
+      ${collapsed && 'display: none;'}
     `,
 
     header: css`
@@ -55,6 +56,11 @@ const useStyles = () => {
       position: sticky;
       top: 0;
       z-index: 5;
+      ${collapsed &&
+      `
+        border-bottom-left-radius: ${theme.spacing.xs};
+        border-bottom-right-radius: ${theme.spacing.xs};
+      `}
 
       .file-path {
         color: ${theme.colors.textPrimary};
@@ -86,12 +92,14 @@ const useStyles = () => {
 }
 
 const FileViewer: React.FC<FileViewerProps> = ({ id, file }) => {
-  const styles = useStyles()
+  const [collapsed, setCollapsed] = useState(false)
+
+  const styles = useStyles(collapsed)
+
   const { config } = useCodePanelConfig()
 
   const diffViewerConfig = useContext(DiffViewerConfigContext)
 
-  const [collapsed, setCollapsed] = useState(false)
   const [wrapLines, setWrapLines] = useState<boolean>(true)
 
   const language = useMemo(() => detectLanguage(file.newPath), [file.newPath])
