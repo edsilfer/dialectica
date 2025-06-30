@@ -48,6 +48,15 @@ export default function useRowHeightSync(pairCount: number, wrapLines?: boolean)
       if (!l || !r) continue
 
       const sync = () => {
+        /**
+         * Remove any previously applied fixed height so we can measure the row's
+         * natural height after layout changes (e.g. viewport resize that
+         * changes line wrapping). Then measure the new (natural) heights of
+         * both rows and apply the larger of the two to ensure they remain
+         * visually aligned. We need to do this to handle situations like screen resize
+         */
+        l.style.removeProperty('height')
+        r.style.removeProperty('height')
         const max = Math.max(l.getBoundingClientRect().height, r.getBoundingClientRect().height)
         l.style.height = `${max}px`
         r.style.height = `${max}px`

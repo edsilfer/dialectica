@@ -20,11 +20,16 @@ export function useResizablePanel(
   } = {},
 ) {
   const [width, setWidth] = useState(initialPercentage)
+  const [dragging, setDragging] = useState(false)
   const containerRef = useRef<HTMLDivElement | null>(null)
 
   const onMouseDown = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       e.preventDefault()
+
+      // Mark the beginning of a drag so consumers can adjust styling (e.g. disable transitions)
+      setDragging(true)
+
       const startX = e.clientX
       const startWidth = width
 
@@ -56,6 +61,8 @@ export function useResizablePanel(
           cancelAnimationFrame(animationFrameIdRef.current)
           animationFrameIdRef.current = null
         }
+
+        setDragging(false)
       }
 
       document.addEventListener('mousemove', handleMouseMove)
@@ -64,5 +71,5 @@ export function useResizablePanel(
     [width, min, max],
   )
 
-  return { width, containerRef, onMouseDown }
+  return { width, containerRef, onMouseDown, dragging }
 }

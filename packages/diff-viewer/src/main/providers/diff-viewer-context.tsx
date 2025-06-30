@@ -61,14 +61,17 @@ export const DiffViewerConfigProvider: React.FC<DiffViewerConfigContextProps> = 
 
   const [codePanelConfig, setCodePanelConfig] = useState<CodePanelConfig>(mergedCodePanelConfig)
   const [fileExplorerConfig, setFileExplorerConfig] = useState<FileExplorerConfig>(mergedFileExplorerConfig)
+  const [viewedFiles, setViewedFiles] = useState<string[]>([])
 
   const value = {
     codePanelConfig,
     fileExplorerConfig,
     theme,
+    viewedFiles,
     setCodePanelConfig,
     setFileExplorerConfig,
     setTheme,
+    setViewedFiles,
   }
 
   // Persist changes whenever any part of the configuration changes

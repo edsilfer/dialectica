@@ -26,8 +26,12 @@ const createStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) =>
     overflow: hidden;
     gap: ${theme.spacing.sm};
   `,
-  fileExplorerContainer: (explorerWidth: number) => css`
-    width: calc(${explorerWidth}% - ${theme.spacing.sm} / 2);
+  fileExplorerContainer: (explorerWidth: number, drawerOpen: boolean, dragging: boolean) => css`
+    /* Slide-in/out by animating width */
+    width: ${drawerOpen ? `calc(${explorerWidth}% - ${theme.spacing.sm} / 2)` : '0%'};
+    /* Disable the transition while the user is actively dragging to keep the panel in sync */
+    transition: ${dragging ? 'none' : 'width 0.3s ease-in-out'};
+    overflow: hidden;
   `,
   fileExplorer: css`
     height: 100%;
@@ -90,11 +94,11 @@ export const DiffViewer: React.FC<DiffViewerProps> = (props) => {
 const DiffViewerContent: React.FC<DiffViewerProps> = ({ diff }) => {
   const { theme, fileExplorerConfig, codePanelConfig } = useDiffViewerConfig()
 
+  const [drawerOpen, setDrawerOpen] = useState(true)
   // Styles are memoised so Emotion doesn't regenerate classes during drags.
   const styles = useMemo(() => createStyles(theme), [theme])
-
   const [scrollToFile, setScrollToFile] = useState<string | null>(null)
-  const { width: explorerWidth, containerRef, onMouseDown } = useResizablePanel()
+  const { width: explorerWidth, containerRef, onMouseDown, dragging } = useResizablePanel()
 
   // Stable callback so FileExplorer receives an unchanged prop between drags
   const handleFileClick = useCallback((file: { newPath: string; oldPath: string }) => {
@@ -123,15 +127,17 @@ const DiffViewerContent: React.FC<DiffViewerProps> = ({ diff }) => {
 
   return (
     <div css={styles.container}>
-      <Toolbar />
+      <Toolbar totalFiles={diff.files.length} drawerOpen={drawerOpen} onToggleDrawer={setDrawerOpen} />
       <div css={styles.content} ref={containerRef}>
         {/* File explorer panel */}
-        <div css={styles.fileExplorerContainer(explorerWidth)}>{fileExplorer}</div>
+        <div css={styles.fileExplorerContainer(explorerWidth, drawerOpen, dragging)}>{fileExplorer}</div>
 
         {/* Drag handle */}
-        <div css={[styles.resizerWrapper(explorerWidth)]} onMouseDown={onMouseDown}>
-          <HandleIcon size={14} />
-        </div>
+        {drawerOpen && (
+          <div css={[styles.resizerWrapper(explorerWidth)]} onMouseDown={onMouseDown}>
+            <HandleIcon size={14} />
+          </div>
+        )}
 
         {/* Diff viewer */}
         {codePanelElement}

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "vite",
-    "test": "vitest"
+    "test": "vitest --passWithNoTests"
   },
   "keywords": [],
   "author": "",
