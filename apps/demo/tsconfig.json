@@ -7,5 +7,10 @@
     "noEmit": true,
     "esModuleInterop": true
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    "../../packages/diff-viewer/src/main/hook/use-resizable-panel.test.tsx",
+    "../../packages/diff-viewer/src/main/hook/use-resizable-panel.tsx",
+    "../../packages/diff-viewer/src/shared/icons/HandleIcon.tsx"
+  ]
 }

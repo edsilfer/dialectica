@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
-import Copy from '../../../../shared/components/icons/Copy'
+import Copy from '../../../../shared/icons/Copy'
 import RichTooltip from '../../../../shared/components/RichTooltip'
 import { ThemeContext } from '../../../../shared/providers/theme-context'
 import { CopyButtonProps } from './types'
