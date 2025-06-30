@@ -14,14 +14,13 @@ const createStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) =>
     flex-direction: column;
     height: 100%;
     width: 100%;
+    gap: ${theme.spacing.sm};
     padding: ${theme.spacing.md};
-    padding-bottom: ${theme.spacing.xs};
     background-color: ${theme.colors.hunkViewerBg};
     overflow: hidden;
   `,
   content: css`
     flex: 1;
-    margin-top: ${theme.spacing.md};
     overflow: hidden;
   `,
   footer: css`

@@ -4,7 +4,7 @@ import { ThemeContext } from '../shared/providers/theme-context'
 import FileViewer from './components/file-viewer/FileViewer'
 import { CodePanelConfigProvider, useCodePanelConfig } from './providers/code-panel-context'
 import type { CodePanelProps } from './types'
-import { useDiffViewerConfig } from '../shared/providers/diff-viewer-context'
+import { useDiffViewerConfig } from '../main/providers/diff-viewer-context'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)

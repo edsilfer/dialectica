@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
 import type { FileDiff } from '../shared/parsers/types'
-import { DiffViewerConfigContext } from '../shared/providers/diff-viewer-context'
+import { DiffViewerConfigContext } from '../main/providers/diff-viewer-context'
 import { ThemeContext } from '../shared/providers/theme-context'
 import FSNode from './components/FSNode'
 import { ExplorerBar } from './components/Toolbar'

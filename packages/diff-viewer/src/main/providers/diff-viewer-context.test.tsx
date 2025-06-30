@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 
-import { Themes } from '../themes'
+import { Themes } from '../../shared/themes'
 import { DEFAULT_CODE_PANEL_CONFIG } from '../../code-panel/providers/code-panel-context'
 import { DEFAULT_FILE_EXPLORER_CONFIG } from '../../file-explorer/provider/file-explorer-context'
 import { DiffViewerConfigProvider, useDiffViewerConfig } from './diff-viewer-context'

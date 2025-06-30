@@ -1,11 +1,10 @@
-import React, { createContext, useContext, useEffect, useState, useMemo } from 'react'
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { DEFAULT_CODE_PANEL_CONFIG } from '../../code-panel/providers/code-panel-context'
 import { CodePanelConfig } from '../../code-panel/providers/types'
 import { DEFAULT_FILE_EXPLORER_CONFIG } from '../../file-explorer/provider/file-explorer-context'
 import { FileExplorerConfig } from '../../file-explorer/types'
-import { Themes } from '../themes'
-import { ThemeProvider } from './theme-context'
-import { ThemeTokens } from '../themes/types'
+import { ThemeProvider } from '../../shared/providers/theme-context'
+import { Themes, ThemeTokens } from '../../shared/themes'
 import { DiffViewerConfigContextProps, DiffViewerConfigContextState } from './types'
 
 /**

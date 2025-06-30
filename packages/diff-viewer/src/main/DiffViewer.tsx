@@ -3,16 +3,25 @@ import React, { useCallback, useMemo, useState } from 'react'
 import { CodePanel } from '../code-panel/CodePanel'
 import { FileExplorer } from '../file-explorer/FileExplorer'
 import HandleIcon from '../shared/icons/HandleIcon'
-import { DiffViewerConfigProvider, useDiffViewerConfig } from '../shared/providers/diff-viewer-context'
+import { DiffViewerConfigProvider, useDiffViewerConfig } from './providers/diff-viewer-context'
 import { Themes } from '../shared/themes'
 import { useResizablePanel } from './hook/use-resizable-panel'
 import { DiffViewerProps } from './types'
+import { Toolbar } from './components/Toolbar'
 
 const createStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) => ({
   container: css`
+    display: flex;
+    flex-direction: column;
+    gap: ${theme.spacing.sm};
+    height: 100%;
+    width: 100%;
+  `,
+  toolbar: css``,
+  content: css`
     position: relative;
     display: flex;
-    height: 100%;
+    flex: 1;
     width: 100%;
     overflow: hidden;
     gap: ${theme.spacing.sm};
@@ -113,17 +122,20 @@ const DiffViewerContent: React.FC<DiffViewerProps> = ({ diff }) => {
   )
 
   return (
-    <div css={styles.container} ref={containerRef}>
-      {/* File explorer panel */}
-      <div css={styles.fileExplorerContainer(explorerWidth)}>{fileExplorer}</div>
+    <div css={styles.container}>
+      <Toolbar />
+      <div css={styles.content} ref={containerRef}>
+        {/* File explorer panel */}
+        <div css={styles.fileExplorerContainer(explorerWidth)}>{fileExplorer}</div>
 
-      {/* Drag handle */}
-      <div css={[styles.resizerWrapper(explorerWidth)]} onMouseDown={onMouseDown}>
-        <HandleIcon size={14} />
+        {/* Drag handle */}
+        <div css={[styles.resizerWrapper(explorerWidth)]} onMouseDown={onMouseDown}>
+          <HandleIcon size={14} />
+        </div>
+
+        {/* Diff viewer */}
+        {codePanelElement}
       </div>
-
-      {/* Diff viewer */}
-      {codePanelElement}
     </div>
   )
 }
