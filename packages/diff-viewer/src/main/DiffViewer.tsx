@@ -10,24 +10,38 @@ import { DiffViewerProps } from './types'
 
 const createStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) => ({
   container: css`
+    position: relative;
     display: flex;
     height: 100%;
     width: 100%;
     overflow: hidden;
+    gap: ${theme.spacing.sm};
+  `,
+  fileExplorerContainer: (explorerWidth: number) => css`
+    width: calc(${explorerWidth}% - ${theme.spacing.sm} / 2);
   `,
   fileExplorer: css`
     height: 100%;
     overflow: auto;
   `,
-  resizer: css`
+  resizerWrapper: (explorerWidth: number) => css`
+    position: absolute;
+    top: 50%;
+    left: calc(${explorerWidth}% + ${theme.spacing.sm} / 2);
+    transform: translate(-50%, -50%);
+    width: ${theme.spacing.lg};
+    height: ${theme.spacing.lg};
+    border: 1px solid ${theme.colors.border};
+    border-radius: 50%;
+    background-color: ${theme.colors.backgroundContainer};
+    color: ${theme.colors.accent};
+    z-index: 10000;
     display: flex;
     align-items: center;
-    color: ${theme.colors.border};
-    padding: ${theme.spacing.xs};
     justify-content: center;
-    height: 100%;
-    cursor: col-resize;
+    cursor: default;
   `,
+  handleIcon: css``,
   diffViewer: css`
     flex: 1;
     border-radius: ${theme.spacing.xs};
@@ -79,7 +93,7 @@ const DiffViewerContent: React.FC<DiffViewerProps> = ({ diff }) => {
   }, [])
 
   // Memoised heavy children to prevent rerenders on width changes
-  const fileExplorerElement = useMemo(
+  const fileExplorer = useMemo(
     () => (
       <FileExplorer
         key={JSON.stringify(fileExplorerConfig)}
@@ -101,17 +115,11 @@ const DiffViewerContent: React.FC<DiffViewerProps> = ({ diff }) => {
   return (
     <div css={styles.container} ref={containerRef}>
       {/* File explorer panel */}
-      <div
-        css={css`
-          width: ${explorerWidth}%;
-        `}
-      >
-        {fileExplorerElement}
-      </div>
+      <div css={styles.fileExplorerContainer(explorerWidth)}>{fileExplorer}</div>
 
       {/* Drag handle */}
-      <div css={styles.resizer} onMouseDown={onMouseDown}>
-        <HandleIcon size={18} />
+      <div css={[styles.resizerWrapper(explorerWidth)]} onMouseDown={onMouseDown}>
+        <HandleIcon size={14} />
       </div>
 
       {/* Diff viewer */}
