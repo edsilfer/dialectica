@@ -11,6 +11,16 @@ const useStyles = () => {
     container: css`
       display: flex;
       align-items: center;
+      cursor: default;
+    `,
+    label: css`
+      margin-right: 4px;
+      font-size: ${theme.typography.regularFontSize}px;
+      color: ${theme.colors.textPrimary};
+    `,
+    squaresContainer: css`
+      display: flex;
+      align-items: center;
     `,
     square: (color: string) => css`
       width: 10px;
@@ -20,6 +30,10 @@ const useStyles = () => {
       /* Prevent double borders between adjacent squares by removing the left border from every square except the first */
       &:not(:first-of-type) {
         border-left: none;
+      }
+      /* Add spacing between the numeric label and the first square */
+      &:first-of-type {
+        margin-left: 4px;
       }
     `,
   }
@@ -76,13 +90,25 @@ const DiffActivitySummary: React.FC<DiffActivitySummaryProps> = ({
   }
 
   return (
-    <RichTooltip tooltipText={tooltipText}>
-      <div css={styles.container}>
-        {squares.map((type, index) => (
-          <div key={index} css={styles.square(getColor(type))} data-testid="diff-activity-square" />
-        ))}
-      </div>
-    </RichTooltip>
+    <div css={styles.container}>
+      <RichTooltip tooltipText="additions + deletions)">
+        <span css={styles.label} data-testid="diff-activity-total">
+          {total}
+        </span>
+      </RichTooltip>
+
+      <RichTooltip tooltipText={tooltipText}>
+        <div css={styles.squaresContainer}>
+          {squares.map((type, index) => (
+            <div
+              key={index}
+              css={styles.square(getColor(type))}
+              data-testid="diff-activity-square"
+            />
+          ))}
+        </div>
+      </RichTooltip>
+    </div>
   )
 }
 

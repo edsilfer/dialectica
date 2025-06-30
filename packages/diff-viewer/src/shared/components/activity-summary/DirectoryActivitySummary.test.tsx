@@ -31,4 +31,10 @@ describe('DirectoryActivitySummary', () => {
     const squares = screen.getAllByTestId('diff-activity-square')
     expect(squares).toHaveLength(5)
   })
+
+  it('displays the correct total number of changes across all files', () => {
+    render(<DirectoryActivitySummary files={MOCKED_FILES} />)
+    const total = screen.getByTestId('diff-activity-total')
+    expect(total).toHaveTextContent('9')
+  })
 })

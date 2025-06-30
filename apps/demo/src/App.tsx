@@ -3,8 +3,8 @@ import { css } from '@emotion/react'
 import { Tooltip } from 'antd'
 import { useMemo, useState, useCallback } from 'react'
 import { TEN_FILES_DIFF } from './__fixtures__/sample-diffs'
-import AppHeader from './components/AppHeader'
-import HandleIcon from './components/HandleIcon'
+import AppToolbar from './components/AppToolbar'
+import HandleIcon from './components/icons/HandleIcon'
 import { useResizablePanel } from './hooks/use-resizable-panel'
 
 // Extracted outside the component to keep reference stable
@@ -37,7 +37,7 @@ const createStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) =>
     align-items: center;
     justify-content: center;
     cursor: col-resize;
-    color: ${theme.colors.textPrimary};
+    color: ${theme.colors.border};
   `,
   diffViewer: css`
     flex: 1;
@@ -89,7 +89,7 @@ export default function App() {
 
   return (
     <div css={styles.container}>
-      <AppHeader />
+      <AppToolbar />
 
       <div css={styles.content} ref={containerRef}>
         {/* File explorer panel */}

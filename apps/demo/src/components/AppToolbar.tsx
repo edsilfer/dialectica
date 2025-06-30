@@ -1,7 +1,9 @@
-import { Themes, ThemeTokens, useDiffViewerConfig } from '@diff-viewer'
+import { SettingOutlined } from '@ant-design/icons'
+import { ThemeTokens, useDiffViewerConfig } from '@diff-viewer'
 import { css } from '@emotion/react'
-import { Select, Switch, Typography } from 'antd'
+import { Button, Typography } from 'antd'
 import React from 'react'
+import SettingsModal from './settings/SettingsModal'
 
 const { Title, Text } = Typography
 
@@ -18,11 +20,17 @@ const useStyles = (theme: ThemeTokens) => ({
     margin: 0 !important;
     color: ${theme.colors.textPrimary} !important;
   `,
-  configContainer: css`
+  settings: css`
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
     flex: 1;
+    gap: ${theme.spacing.sm};
+  `,
+  settingsButton: css`
+    display: flex;
+    align-items: center;
   `,
   themeSelect: css`
     width: 200px;
@@ -46,12 +54,33 @@ const useStyles = (theme: ThemeTokens) => ({
     gap: ${theme.spacing.sm};
     margin-top: ${theme.spacing.sm};
   `,
+  modalContent: css`
+    display: flex;
+    flex-direction: column;
+    gap: ${theme.spacing.md};
+    margin-top: ${theme.spacing.md};
+  `,
   switchLabel: css`
+    color: ${theme.colors.textPrimary} !important;
+  `,
+  sectionTitle: css`
+    color: ${theme.colors.textPrimary} !important;
+    margin-top: ${theme.spacing.sm};
+    margin-bottom: ${theme.spacing.xs};
+  `,
+  settingContainer: css`
+    display: flex;
+    align-items: center;
+    gap: ${theme.spacing.sm};
+  `,
+  input: css`
+    background-color: ${theme.colors.hunkViewerBg} !important;
     color: ${theme.colors.textPrimary} !important;
   `,
 })
 
-const AppHeader: React.FC = () => {
+const AppToolbar: React.FC = () => {
+  const [settingsOpen, setSettingsOpen] = React.useState(false)
   const {
     theme,
     setTheme,
@@ -88,32 +117,21 @@ const AppHeader: React.FC = () => {
         </Text>
       </div>
 
-      <div css={styles.configContainer}>
-        <Select
-          value={theme.name}
-          css={styles.themeSelect}
-          onChange={(value) => setTheme(Themes[value as keyof typeof Themes])}
-          options={[
-            { value: 'light', label: 'Light' },
-            { value: 'dark', label: 'Dark' },
-            { value: 'dracula', label: 'Dracula' },
-            { value: 'solarizedDark', label: 'Solarized Dark' },
-            { value: 'solarizedLight', label: 'Solarized Light' },
-          ]}
-        />
-        <div css={styles.switchContainer}>
-          <Text css={styles.switchLabel}>Split</Text>
-          <Switch checked={isSplitView} onChange={setIsSplitView} size="small" />
-          <Text css={styles.switchLabel}>Collapse Packages</Text>
-          <Switch checked={collapsePackages} onChange={setCollapsePackages} size="small" />
-          <Text css={styles.switchLabel}>Show Icons</Text>
-          <Switch checked={showIcons} onChange={setShowIcons} size="small" />
-          <Text css={styles.switchLabel}>Show Details</Text>
-          <Switch checked={displayNodeDetails} onChange={setDisplayNodeDetails} size="small" />
-        </div>
+      <div css={styles.settings}>
+        <Button
+          css={styles.settingsButton}
+          type="default"
+          icon={<SettingOutlined />}
+          onClick={() => setSettingsOpen(true)}
+          size="small"
+        >
+          Settings
+        </Button>
+
+        <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
       </div>
     </div>
   )
 }
 
-export default AppHeader
+export default AppToolbar

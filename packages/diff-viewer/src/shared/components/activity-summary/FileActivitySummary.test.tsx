@@ -37,4 +37,10 @@ describe('FileActivitySummary', () => {
     const squares = screen.getAllByTestId('diff-activity-square')
     expect(squares).toHaveLength(5)
   })
+
+  it('displays the correct total number of changes', () => {
+    render(<FileActivitySummary file={MOCKED_FILE_DIFF} />)
+    const total = screen.getByTestId('diff-activity-total')
+    expect(total).toHaveTextContent('3')
+  })
 })

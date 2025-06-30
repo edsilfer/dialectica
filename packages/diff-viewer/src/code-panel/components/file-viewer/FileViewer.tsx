@@ -40,8 +40,9 @@ const useStyles = () => {
     header: css`
       display: flex;
       flex-direction: row;
-      gap: ${theme.spacing.xs};
       align-items: center;
+      justify-content: center;
+      gap: ${theme.spacing.sm};
       padding: ${theme.spacing.sm};
       color: ${theme.colors.textPrimary};
       font-family: ${theme.typography.codeFontFamily};

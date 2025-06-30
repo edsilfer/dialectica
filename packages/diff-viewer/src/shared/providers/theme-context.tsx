@@ -18,9 +18,7 @@ export const ThemeProvider = ({ children, theme }: ThemeProps) => {
       colorTextPlaceholder: theme.colors.textPrimaryPlaceholder,
       colorBorder: theme.colors.border,
       colorBgBase: theme.colors.backgroundPrimary,
-
-      // We want all elevated elements to have the same background color
-      colorBgContainer: theme.colors.backgroundContainer,
+      colorBgContainer: theme.colors.backgroundPrimary,
       colorBgElevated: theme.colors.backgroundContainer,
 
       // Typography
