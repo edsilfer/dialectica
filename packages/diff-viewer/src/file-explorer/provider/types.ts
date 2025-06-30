@@ -2,7 +2,31 @@ import { ReactNode } from 'react'
 import { ParsedDiff } from '../../diff-viewer/types'
 import { DirectoryNode, FileExplorerConfig } from '../types'
 
-export interface FileExplorerContextState {
+export interface FileExplorerConfigContextProps {
+  /** The children of the file explorer config provider */
+  children: ReactNode
+  /** The configuration for the file explorer */
+  config?: FileExplorerConfig
+  /** Set the configuration for the file explorer */
+  setConfig?: React.Dispatch<React.SetStateAction<FileExplorerConfig>>
+}
+
+export interface FileExplorerConfigState {
+  /** The configuration for the file explorer */
+  config: FileExplorerConfig
+
+  /** Set the configuration for the file explorer */
+  setConfig: React.Dispatch<React.SetStateAction<FileExplorerConfig>>
+}
+
+export interface FSTreeContextProviderProps {
+  /** The children of the file explorer provider */
+  children: ReactNode
+  /** The parsed diff */
+  diff: ParsedDiff
+}
+
+export interface FSTreeContextState {
   /** The parsed diff */
   diff: ParsedDiff
   /** The configuration for the file explorer */
@@ -25,13 +49,4 @@ export interface FileExplorerContextState {
   setSelectedNode: React.Dispatch<React.SetStateAction<string | null>>
   /** Set the expanded directories in the file explorer */
   setExpandedDirs: React.Dispatch<React.SetStateAction<Set<string>>>
-}
-
-export interface FileExplorerProviderProps {
-  /** The children of the file explorer provider */
-  children: ReactNode
-  /** The parsed diff */
-  diff: ParsedDiff
-  /** The initial configuration for the file explorer */
-  config: FileExplorerConfig
 }

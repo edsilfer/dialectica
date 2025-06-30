@@ -3,9 +3,10 @@ import { describe, it, expect } from 'vitest'
 import { waitFor, act } from '@testing-library/react'
 import { buildTree, listDirPaths } from '../node-utils'
 import { filterFiles, listExpandedDirs } from './context-utils'
-import { FileExplorerProvider, useFileExplorerContext } from './file-explorer-context'
+import { FSTreeContextProvider, useFileExplorerContext } from './fstree-context'
 import { SAMPLE_FILE_DIFFS } from '../../__fixtures__/file-diffs'
 import { FileExplorerConfig } from '../types'
+import { FileExplorerConfigProvider } from './file-explorer-context'
 import { render } from '../../shared/test-utils/render'
 
 const DIFF = { files: SAMPLE_FILE_DIFFS }
@@ -29,13 +30,15 @@ const ContextSpy: React.FC<{
 const renderCtx = async (cfg: Partial<FileExplorerConfig> = {}) => {
   let latest: ReturnType<typeof useFileExplorerContext> | undefined
   render(
-    <FileExplorerProvider diff={DIFF} config={{ ...BASE_CFG, ...cfg }}>
-      <ContextSpy
-        cb={(c) => {
-          latest = c
-        }}
-      />
-    </FileExplorerProvider>,
+    <FileExplorerConfigProvider config={{ ...BASE_CFG, ...cfg }}>
+      <FSTreeContextProvider diff={DIFF}>
+        <ContextSpy
+          cb={(c) => {
+            latest = c
+          }}
+        />
+      </FSTreeContextProvider>
+    </FileExplorerConfigProvider>,
   )
   await waitFor(() => expect(latest).toBeDefined())
   return () => latest as ReturnType<typeof useFileExplorerContext>

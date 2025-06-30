@@ -6,8 +6,6 @@ import { Theme } from '@emotion/react'
 export interface FileExplorerProps {
   /** Parsed diff used to build the tree */
   diff: ParsedDiff
-  /** Configuration options for the file explorer */
-  config?: FileExplorerConfig
   /** Optional css-in-js style */
   css?: Interpolation<Theme>
   /** Optional class name */

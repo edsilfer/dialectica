@@ -1,77 +1,47 @@
-import React, { createContext, useContext, useState, useMemo, useEffect } from 'react'
-import { buildTree, listDirPaths } from '../node-utils'
-import { FileExplorerContextState, FileExplorerProviderProps } from './types'
-import { filterFiles, listExpandedDirs } from './context-utils'
+import React, { createContext, useContext, useState } from 'react'
+import { DiffViewerThemeProvider } from '../../shared/providers/theme-provider'
+import { Themes } from '../../shared/themes'
+import { FileExplorerConfig } from '../types'
+import { FileExplorerConfigContextProps, FileExplorerConfigState } from './types'
 
-export const FileExplorerContext = createContext<FileExplorerContextState | undefined>(undefined)
-
-export const FileExplorerProvider: React.FC<FileExplorerProviderProps> = ({
-  children,
-  diff,
-  config,
-}) => {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedNode, setSelectedNode] = useState<string | null>(null)
-
-  const filteredFiles = useMemo(
-    () => filterFiles(diff.files, searchQuery),
-    [diff.files, searchQuery],
-  )
-
-  // Builds the tree that every component reads
-  const tree = useMemo(
-    () => buildTree(filteredFiles, config.collapsePackages),
-    [filteredFiles, config.collapsePackages],
-  )
-
-  const [userExpandedDirs, setUserExpandedDirs] = useState<Set<string>>(() => {
-    if (!config.startExpanded) return new Set<string>()
-    const initialTree = buildTree(diff.files, config.collapsePackages)
-    return listDirPaths(initialTree)
-  })
-
-  useEffect(() => {
-    if (config.startExpanded) {
-      const initialTree = buildTree(diff.files, config.collapsePackages)
-      setUserExpandedDirs((prev) => {
-        const validPrev = [...prev].filter((dir) => listDirPaths(initialTree).has(dir))
-        return validPrev.length > 0 ? new Set(validPrev) : listDirPaths(initialTree)
-      })
-    } else {
-      setUserExpandedDirs((prev) => {
-        const initialTree = buildTree(diff.files, config.collapsePackages)
-        const validPrev = [...prev].filter((dir) => listDirPaths(initialTree).has(dir))
-        return new Set(validPrev)
-      })
-    }
-  }, [config.startExpanded, config.collapsePackages, diff.files])
-
-  const expandedDirs = useMemo(() => {
-    if (!searchQuery) return userExpandedDirs
-    const searchExpanded = listExpandedDirs(tree)
-    return new Set([...userExpandedDirs, ...searchExpanded])
-  }, [searchQuery, tree, userExpandedDirs])
-
-  const value = {
-    diff,
-    config,
-    searchQuery,
-    selectedNode,
-    expandedDirs,
-    setSearchQuery,
-    setSelectedNode,
-    setExpandedDirs: setUserExpandedDirs,
-    tree,
-    filteredFiles,
-  }
-
-  return <FileExplorerContext.Provider value={value}>{children}</FileExplorerContext.Provider>
+const DEFAULT_CONFIG: FileExplorerConfig = {
+  startExpanded: true,
+  nodeConnector: 'solid',
+  indentPx: 16,
+  collapsePackages: true,
+  showIcons: false,
+  displayNodeDetails: false,
 }
 
-export const useFileExplorerContext = () => {
-  const context = useContext(FileExplorerContext)
+/**
+ * Keeps the configuration context for the FileExplorer component.
+ */
+const FileExplorerConfigContext = createContext<FileExplorerConfigState | undefined>(undefined)
+
+export const FileExplorerConfigProvider: React.FC<FileExplorerConfigContextProps> = ({
+  children,
+  config: initialConfig = DEFAULT_CONFIG,
+}) => {
+  const [config, setConfig] = useState<FileExplorerConfig>(initialConfig)
+
+  const value = {
+    config,
+    setConfig,
+  }
+
+  return (
+    <DiffViewerThemeProvider theme={config.theme ?? Themes.light}>
+      <FileExplorerConfigContext.Provider value={value}>
+        {children}
+      </FileExplorerConfigContext.Provider>
+    </DiffViewerThemeProvider>
+  )
+}
+
+export const useFileExplorerConfig = (): FileExplorerConfigState => {
+  const context = useContext(FileExplorerConfigContext)
   if (!context) {
-    throw new Error('useFileExplorerContext must be used within a FileExplorerProvider')
+    throw new Error('useConfig must be used within a ConfigProvider')
   }
   return context
 }

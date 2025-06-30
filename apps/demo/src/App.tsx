@@ -1,12 +1,12 @@
 import { DiffParserAdapter, DiffViewer, FileExplorer, ThemeTokens } from '@diff-viewer'
 import { css } from '@emotion/react'
+import { Tooltip } from 'antd'
 import { useMemo, useState } from 'react'
 import { TEN_FILES_DIFF } from './__fixtures__/sample-diffs'
 import AppHeader from './components/AppHeader'
+import HandleIcon from './components/HandleIcon'
 import { useResizablePanel } from './hooks/use-resizable-panel'
 import { useDiffViewerState } from './providers/config-provider'
-import HandleIcon from './components/HandleIcon'
-import { Tooltip } from 'antd'
 
 const useStyles = (theme: ThemeTokens) => ({
   container: css`
@@ -47,8 +47,7 @@ const useStyles = (theme: ThemeTokens) => ({
 })
 
 export default function App() {
-  const { theme, isSplitView, collapsePackages, showIcons, displayNodeDetails, wrapLines } =
-    useDiffViewerState()
+  const { theme, isSplitView, wrapLines } = useDiffViewerState()
   const styles = useStyles(theme)
 
   const parsedDiff = useMemo(() => new DiffParserAdapter().parse(TEN_FILES_DIFF), [])
@@ -70,16 +69,6 @@ export default function App() {
             css={styles.fileExplorer}
             diff={parsedDiff}
             onFileClick={(file) => setScrollToFile(file.newPath || file.oldPath)}
-            config={{
-              theme,
-              startExpanded: true,
-              nodeConnector: 'dashed',
-              indentPx: 20,
-              collapsePackages,
-              showIcons,
-              displayNodeDetails,
-              roundedConnectors: true,
-            }}
           />
         </div>
 
