@@ -3,6 +3,7 @@ import React, { useContext, forwardRef } from 'react'
 import AddButton from '../../../shared/components/buttons/AddButton'
 import { ThemeContext } from '../../../shared/providers/theme-context'
 import { DiffLineProps, DiffLineType } from './types'
+import LoadMoreLines from '../../../shared/icons/LoadMoreLines'
 
 const useStyles = (lineType: DiffLineType, wrapLines: boolean) => {
   const theme = useContext(ThemeContext)
@@ -124,7 +125,13 @@ const DiffLine = forwardRef<HTMLTableRowElement, DiffLineProps>(function DiffLin
   return (
     <tr ref={ref} css={styles.container}>
       {!props.hideLeftNumber && (
-        <td css={styles.getNumberContainer(0)}>{props.leftNumber !== null ? <span>{props.leftNumber}</span> : null}</td>
+        <td css={styles.getNumberContainer(0)}>
+          {props.type === 'hunk' && (props.view === 'unified' || props.hideRightNumber) ? (
+            <LoadMoreLines size={24} direction="bi-directional" />
+          ) : props.leftNumber !== null ? (
+            <span>{props.leftNumber}</span>
+          ) : null}
+        </td>
       )}
 
       {!props.hideRightNumber && (

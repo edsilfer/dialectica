@@ -8,70 +8,173 @@ import { useCallback, useEffect, useRef } from 'react'
  *
  * @param pairCount - The number of pairs of lines to sync
  * @param wrapLines - Whether to wrap lines
+ * @param visible   - Whether the component is currently visible (skip operations if not)
  * @returns         - A function that registers a row for a given side and index
  */
-export default function useRowHeightSync(pairCount: number, wrapLines?: boolean) {
+export default function useRowHeightSync(pairCount: number, wrapLines?: boolean, visible = true) {
   const leftRows = useRef<(HTMLTableRowElement | null)[]>([])
   const rightRows = useRef<(HTMLTableRowElement | null)[]>([])
+  const containerRef = useRef<HTMLElement | null>(null)
+  const visibleRows = useRef<Set<number>>(new Set())
 
   // Stable registrar
   const registerRow = useCallback(
     (side: 'left' | 'right', index: number) => (el: HTMLTableRowElement | null) => {
       const bucket = side === 'left' ? leftRows.current : rightRows.current
       bucket[index] = el
+
+      // Set container ref from first row to monitor the parent
+      if (el && !containerRef.current) {
+        containerRef.current = el.closest('[data-diff-container]') || (el.offsetParent as HTMLElement)
+      }
     },
     [],
   )
 
-  useEffect(() => {
-    if (!pairCount) return
+  const syncVisibleRows = useCallback(() => {
+    if (!pairCount || !visible) return
 
-    // Guarantee length
-    leftRows.current.length = pairCount
-    rightRows.current.length = pairCount
+    requestAnimationFrame(() => {
+      // Only sync rows that are currently visible
+      visibleRows.current.forEach((i) => {
+        const l = leftRows.current[i]
+        const r = rightRows.current[i]
+        if (!l || !r) return
 
-    const observers: ResizeObserver[] = []
+        // Reset heights to measure natural height
+        l.style.removeProperty('height')
+        r.style.removeProperty('height')
 
-    /**
-     * Reset any inline height that might have been applied during a previous
-     * synchronization so that the natural height of each row (which may have
-     * changed after toggling line wrapping) can be measured accurately.
-     */
+        const lHeight = l.getBoundingClientRect().height
+        const rHeight = r.getBoundingClientRect().height
+        const maxHeight = Math.max(lHeight, rHeight)
+
+        if (Math.abs(lHeight - rHeight) > 1) {
+          // Only sync if there's a meaningful difference
+          l.style.height = `${maxHeight}px`
+          r.style.height = `${maxHeight}px`
+        }
+      })
+    })
+  }, [pairCount, visible])
+
+  const syncAllRows = useCallback(() => {
+    if (!pairCount || !visible) return
+
+    // Reset heights first
     for (let i = 0; i < pairCount; i += 1) {
       leftRows.current[i]?.style.removeProperty('height')
       rightRows.current[i]?.style.removeProperty('height')
     }
 
-    for (let i = 0; i < pairCount; i += 1) {
-      const l = leftRows.current[i]
-      const r = rightRows.current[i]
-      if (!l || !r) continue
+    // Batch height sync in a single pass
+    requestAnimationFrame(() => {
+      for (let i = 0; i < pairCount; i += 1) {
+        const l = leftRows.current[i]
+        const r = rightRows.current[i]
+        if (!l || !r) continue
 
-      const sync = () => {
-        /**
-         * Remove any previously applied fixed height so we can measure the row's
-         * natural height after layout changes (e.g. viewport resize that
-         * changes line wrapping). Then measure the new (natural) heights of
-         * both rows and apply the larger of the two to ensure they remain
-         * visually aligned. We need to do this to handle situations like screen resize
-         */
-        l.style.removeProperty('height')
-        r.style.removeProperty('height')
-        const max = Math.max(l.getBoundingClientRect().height, r.getBoundingClientRect().height)
-        l.style.height = `${max}px`
-        r.style.height = `${max}px`
+        const lHeight = l.getBoundingClientRect().height
+        const rHeight = r.getBoundingClientRect().height
+        const maxHeight = Math.max(lHeight, rHeight)
+
+        if (Math.abs(lHeight - rHeight) > 1) {
+          // Only sync if there's a meaningful difference
+          l.style.height = `${maxHeight}px`
+          r.style.height = `${maxHeight}px`
+        }
+      }
+    })
+  }, [pairCount, visible])
+
+  useEffect(() => {
+    if (!pairCount || !visible) return
+
+    // Guarantee length
+    leftRows.current.length = pairCount
+    rightRows.current.length = pairCount
+
+    // For large diffs, use intersection observer to only sync visible rows
+    const useIntersectionOptimization = pairCount > 100
+
+    if (useIntersectionOptimization) {
+      // Intersection observer to track visible rows
+      const intersectionObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const row = entry.target as HTMLTableRowElement
+            const index = Array.from(row.parentElement?.children || []).indexOf(row)
+
+            if (entry.isIntersecting) {
+              visibleRows.current.add(index)
+            } else {
+              visibleRows.current.delete(index)
+            }
+          })
+
+          // Sync only visible rows
+          syncVisibleRows()
+        },
+        {
+          root: containerRef.current,
+          rootMargin: '50px', // Preload rows slightly outside viewport
+          threshold: 0.1,
+        },
+      )
+
+      // Observe all rows
+      for (let i = 0; i < pairCount; i += 1) {
+        const l = leftRows.current[i]
+        if (l) intersectionObserver.observe(l)
       }
 
-      sync() // initial
+      // Container resize observer with debouncing
+      let timeoutId: NodeJS.Timeout | null = null
+      const debouncedSync = () => {
+        if (timeoutId) clearTimeout(timeoutId)
+        timeoutId = setTimeout(syncVisibleRows, 16) // ~60fps
+      }
 
-      const ro = new ResizeObserver(sync)
-      ro.observe(l)
-      ro.observe(r)
-      observers.push(ro)
+      let resizeObserver: ResizeObserver | null = null
+      if (containerRef.current) {
+        resizeObserver = new ResizeObserver(debouncedSync)
+        resizeObserver.observe(containerRef.current)
+      }
+
+      return () => {
+        intersectionObserver.disconnect()
+        resizeObserver?.disconnect()
+        if (timeoutId) clearTimeout(timeoutId)
+      }
+    } else {
+      // For smaller diffs, use the simpler approach
+      syncAllRows()
+
+      // Single ResizeObserver for the container
+      let observer: ResizeObserver | null = null
+      let timeoutId: NodeJS.Timeout | null = null
+
+      const debouncedSync = () => {
+        if (timeoutId) clearTimeout(timeoutId)
+        timeoutId = setTimeout(syncAllRows, 16) // ~60fps
+      }
+
+      if (containerRef.current) {
+        observer = new ResizeObserver(debouncedSync)
+        observer.observe(containerRef.current)
+      }
+
+      // Also listen for font load events which can affect text height
+      const handleFontLoad = () => debouncedSync()
+      document.fonts?.addEventListener('loadingdone', handleFontLoad)
+
+      return () => {
+        observer?.disconnect()
+        if (timeoutId) clearTimeout(timeoutId)
+        document.fonts?.removeEventListener('loadingdone', handleFontLoad)
+      }
     }
-
-    return () => observers.forEach((o) => o.disconnect())
-  }, [pairCount, wrapLines])
+  }, [pairCount, wrapLines, visible, syncAllRows, syncVisibleRows])
 
   return registerRow
 }

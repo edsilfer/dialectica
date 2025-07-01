@@ -88,11 +88,11 @@ const createThemeColors = (palette: ThemePalette): ColorTokens => {
   const CODE_ALPHA = 0.15
   const SIDEBAR_ALPHA = 0.25
 
-  const tint = (hex: string) => (isDarkPalette ? transparentize(hex, CODE_ALPHA) : lighten(hex, 45))
+  const tint = (hex: string) => (isDarkPalette ? transparentize(hex, CODE_ALPHA) : blend(hex, '#ffffff', 0.15))
 
   // Line-number columns must stay opaque for sticky scroll; we pre-blend
   const numberBg = (hex: string) =>
-    isDarkPalette ? blend(hex, palette.backgroundPrimary, CODE_ALPHA) : darken(lighten(hex, 45), 10)
+    isDarkPalette ? blend(hex, palette.backgroundPrimary, CODE_ALPHA) : blend(hex, '#ffffff', 0.25)
 
   return {
     // Common Tokens__________________________________________________________

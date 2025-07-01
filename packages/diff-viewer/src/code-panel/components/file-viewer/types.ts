@@ -13,6 +13,8 @@ export interface UnifiedViewerProps {
   lines: LineWithHighlight[]
   /** Whether to wrap long lines or enable horizontal scrolling (defaults to true). */
   wrapLines?: boolean
+  /** Whether the viewer is currently visible (for performance optimization) */
+  visible?: boolean
 }
 
 export interface SplitLineViewerProps {
@@ -20,6 +22,8 @@ export interface SplitLineViewerProps {
   pairs: SplitLinePair[]
   /** Whether to wrap long lines or enable horizontal scrolling (defaults to true). */
   wrapLines?: boolean
+  /** Whether the viewer is currently visible (for performance optimization) */
+  visible?: boolean
 }
 
 /**

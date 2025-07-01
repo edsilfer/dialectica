@@ -13,6 +13,7 @@ import { buildSplitHunkPairs, escapeHtml, highlightContent } from './split-utils
 import SplitViewer from './SplitViewer'
 import { FileViewerProps, SplitLinePair } from './types'
 import UnifiedViewer from './UnifiedViewer'
+import SplitViewer2 from './SplitViewer2'
 
 const { Text } = Typography
 
@@ -184,15 +185,15 @@ const FileViewer: React.FC<FileViewerProps> = ({ id, file }) => {
       </div>
 
       <div css={styles.body}>
-        {!collapsed && config.mode === 'split' && (
+        {config.mode === 'split' && (
           <div css={styles.hunksContainer}>
-            <SplitViewer pairs={splitPairs} wrapLines={wrapLines} />
+            <SplitViewer pairs={splitPairs} wrapLines={wrapLines} visible={!collapsed} />
           </div>
         )}
 
-        {!collapsed && config.mode === 'unified' && (
+        {config.mode === 'unified' && (
           <div css={styles.hunksContainer}>
-            <UnifiedViewer lines={unifiedLines} wrapLines={wrapLines} />
+            <UnifiedViewer lines={unifiedLines} wrapLines={wrapLines} visible={!collapsed} />
           </div>
         )}
       </div>

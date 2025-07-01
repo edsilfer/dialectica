@@ -31,11 +31,11 @@ const useStyles = (wrapLines: boolean) => {
 
 const SIDES: Side[] = ['left', 'right']
 
-const SplitViewer: React.FC<SplitLineViewerProps> = ({ pairs, wrapLines: initialWrapLines }) => {
+const SplitViewer: React.FC<SplitLineViewerProps> = ({ pairs, wrapLines: initialWrapLines, visible = true }) => {
   const { config } = useCodePanelConfig()
   const wrapLines = initialWrapLines ?? true
   const styles = useStyles(wrapLines)
-  const registerRow = useRowHeightSync(pairs.length, wrapLines)
+  const registerRow = useRowHeightSync(pairs.length, wrapLines, visible)
 
   const leftTableRef = useRef<HTMLTableElement>(null)
   const rightTableRef = useRef<HTMLTableElement>(null)
@@ -47,14 +47,15 @@ const SplitViewer: React.FC<SplitLineViewerProps> = ({ pairs, wrapLines: initial
 
   // Re-measure when the data changes (e.g. collapsed/expanded hunks).
   useLayoutEffect(() => {
+    if (!visible) return
     setPrefixOffsets({
       left: measurePrefixWidth(leftTableRef.current),
       right: measurePrefixWidth(rightTableRef.current),
     })
-  }, [pairs])
+  }, [pairs, visible])
 
   // Keep horizontal scrolling in sync between both tables.
-  useSynchronizedScroll(leftTableRef, rightTableRef)
+  // useSynchronizedScroll(leftTableRef, rightTableRef, visible)
 
   /** Renders one of the two side-by-side tables. */
   const renderTable = useCallback(
@@ -101,7 +102,11 @@ const SplitViewer: React.FC<SplitLineViewerProps> = ({ pairs, wrapLines: initial
     [pairs, prefixOffsets, registerRow, config.showLineNumbers, wrapLines, styles.table],
   )
 
-  return <div css={styles.container}>{SIDES.map(renderTable)}</div>
+  return (
+    <div css={styles.container} data-diff-container>
+      {SIDES.map(renderTable)}
+    </div>
+  )
 }
 
 export default SplitViewer

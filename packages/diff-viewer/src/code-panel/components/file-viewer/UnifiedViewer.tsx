@@ -21,7 +21,7 @@ const useStyles = (wrapLines: boolean) => {
   }
 }
 
-const UnifiedViewer: React.FC<UnifiedViewerProps> = ({ lines, wrapLines: initialWrapLines }) => {
+const UnifiedViewer: React.FC<UnifiedViewerProps> = ({ lines, wrapLines: initialWrapLines, visible = true }) => {
   const { config } = useCodePanelConfig()
   const wrapLines = initialWrapLines ?? true
   const styles = useStyles(wrapLines)
@@ -34,7 +34,7 @@ const UnifiedViewer: React.FC<UnifiedViewerProps> = ({ lines, wrapLines: initial
 
   // Measure column widths after first render
   useLayoutEffect(() => {
-    if (!tableRef.current) return
+    if (!visible || !tableRef.current) return
     const firstRow = tableRef.current.querySelector('tbody tr')
     if (!firstRow) return
     const cells = Array.from(firstRow.children) as HTMLElement[]
@@ -42,7 +42,7 @@ const UnifiedViewer: React.FC<UnifiedViewerProps> = ({ lines, wrapLines: initial
     const leftWidth = cells[0].getBoundingClientRect().width
     const rightWidth = cells[1].getBoundingClientRect().width
     setOffsets({ rightNumber: leftWidth, prefix: leftWidth + rightWidth })
-  }, [lines])
+  }, [lines, visible])
 
   return (
     <table css={styles.container} ref={tableRef}>

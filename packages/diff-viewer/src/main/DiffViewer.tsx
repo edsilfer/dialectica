@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import { Skeleton } from 'antd'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState, useTransition, useEffect } from 'react'
 import { CodePanel } from '../code-panel/CodePanel'
 import { FileExplorer } from '../file-explorer/FileExplorer'
 import HandleIcon from '../shared/icons/HandleIcon'
@@ -146,9 +146,67 @@ const DiffViewerContent: React.FC<DiffViewerProps> = ({
     setScrollToFile(file.newPath ?? file.oldPath)
   }, [])
 
+  /* ------------------------------------------------------------------
+   * Staged readiness flags so parts of the UI appear progressively:
+   *   1. Toolbar → once metadata is fetched (lightweight).
+   *   2. File-Explorer → heavy tree building is deferred in a transition.
+   *   3. Code-Panel → even heavier rendering also deferred in a transition.
+   *
+   * What is a "transition"?
+   * -----------------------
+   * In React 18, calling `startTransition` marks the enclosed state updates as
+   * "non-urgent".  React will keep displaying the current UI and schedule the
+   * updated UI at a lower priority.  While the work is *pending* (`isPending`
+   * flag), user-input and high-priority updates are not blocked, and we can keep
+   * showing lightweight placeholders (our skeletons).  When the background work
+   * finishes, React swaps in the new UI in a single paint, giving us a smooth
+   * progressive loading experience without jank.
+   * ------------------------------------------------------------------ */
+
+  // File-Explorer readiness
+  const [explorerReady, setExplorerReady] = useState(false)
+  const [isExplorerPending, startExplorerTransition] = useTransition()
+
+  useEffect(() => {
+    if (metadataLoading) {
+      setExplorerReady(false)
+      return
+    }
+
+    if (!explorerReady) {
+      startExplorerTransition(() => {
+        setExplorerReady(true)
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [metadataLoading])
+
+  // Code-Panel readiness
+  const [panelReady, setPanelReady] = useState(false)
+  const [isPanelPending, startPanelTransition] = useTransition()
+
+  useEffect(() => {
+    if (diffLoading) {
+      setPanelReady(false)
+      return
+    }
+
+    if (!panelReady) {
+      startPanelTransition(() => {
+        setPanelReady(true)
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [diffLoading])
+
+  // Derived loading states per section
+  const toolbarLoading = metadataLoading
+  const explorerLoading = metadataLoading || !explorerReady
+  const codePanelLoading = diffLoading || !panelReady
+
   // Render the FileExplorer or its skeleton depending on loading states.
   const fileExplorer = useMemo(() => {
-    if (metadataLoading || diffLoading) {
+    if (explorerLoading) {
       return <Skeleton active title={false} paragraph={{ rows: 3 }} style={{ height: '100%' }} />
     }
     return (
@@ -159,11 +217,11 @@ const DiffViewerContent: React.FC<DiffViewerProps> = ({
         css={styles.fileExplorer}
       />
     )
-  }, [metadataLoading, diffLoading, diff, handleFileClick, styles.fileExplorer, fileExplorerConfig])
+  }, [explorerLoading, diff, handleFileClick, styles.fileExplorer, fileExplorerConfig])
 
   // Render the CodePanel or its skeleton depending on diff loading state.
   const codePanelElement = useMemo(() => {
-    if (diffLoading) {
+    if (codePanelLoading) {
       return (
         <div css={styles.diffViewer}>
           <Skeleton active paragraph={{ rows: 4 }} style={{ height: '100%' }} />
@@ -173,7 +231,7 @@ const DiffViewerContent: React.FC<DiffViewerProps> = ({
     return (
       <CodePanel key={JSON.stringify(codePanelConfig)} diff={diff} scrollTo={scrollToFile} css={styles.diffViewer} />
     )
-  }, [diffLoading, diff, scrollToFile, styles.diffViewer, codePanelConfig])
+  }, [codePanelLoading, diff, scrollToFile, styles.diffViewer, codePanelConfig])
 
   const drawerContents: DrawerContent[] = useMemo(
     () => [
@@ -190,7 +248,7 @@ const DiffViewerContent: React.FC<DiffViewerProps> = ({
 
   return (
     <div css={styles.container}>
-      {metadataLoading ? (
+      {toolbarLoading ? (
         <div css={styles.toolbarSkeleton}>
           <Skeleton active title={false} paragraph={{ rows: 2, width: '60%' }} />
         </div>
@@ -210,7 +268,7 @@ const DiffViewerContent: React.FC<DiffViewerProps> = ({
         </div>
 
         {/* Drag handle */}
-        {!metadataLoading && !diffLoading && drawerOpen && (
+        {!explorerLoading && !codePanelLoading && drawerOpen && (
           <div css={[styles.resizerWrapper(explorerWidth)]} onMouseDown={onMouseDown}>
             <HandleIcon size={14} />
           </div>
