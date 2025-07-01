@@ -13,7 +13,6 @@ import { buildSplitHunkPairs, escapeHtml, highlightContent } from './split-utils
 import SplitViewer from './SplitViewer'
 import { FileViewerProps, SplitLinePair } from './types'
 import UnifiedViewer from './UnifiedViewer'
-import { DiffViewerConfigContext } from '../../../main/providers/diff-viewer-context'
 
 const { Text } = Typography
 
@@ -92,13 +91,14 @@ const useStyles = (collapsed: boolean) => {
 }
 
 const FileViewer: React.FC<FileViewerProps> = ({ id, file }) => {
-  const [collapsed, setCollapsed] = useState(false)
+  const { config, viewedFiles, collapsedFiles, setViewedFiles, setCollapsedFiles } = useCodePanelConfig()
 
+  const fileKey = file.newPath || file.oldPath
+
+  const collapsed = useMemo(() => {
+    return collapsedFiles.includes(fileKey)
+  }, [collapsedFiles, fileKey])
   const styles = useStyles(collapsed)
-
-  const { config } = useCodePanelConfig()
-
-  const diffViewerConfig = useContext(DiffViewerConfigContext)
 
   const [wrapLines, setWrapLines] = useState<boolean>(true)
 
@@ -108,10 +108,9 @@ const FileViewer: React.FC<FileViewerProps> = ({ id, file }) => {
     [file.oldPath, file.newPath],
   )
 
-  const fileKey = file.newPath || file.oldPath
   const viewed = useMemo(() => {
-    return diffViewerConfig ? diffViewerConfig.viewedFiles.includes(fileKey) : false
-  }, [diffViewerConfig, fileKey])
+    return viewedFiles.includes(fileKey)
+  }, [viewedFiles, fileKey])
 
   /*
    * Pre-compute flattened line arrays for both display modes so we can directly
@@ -145,7 +144,10 @@ const FileViewer: React.FC<FileViewerProps> = ({ id, file }) => {
   )
 
   const handleToggleCollapse = () => {
-    setCollapsed(!collapsed)
+    setCollapsedFiles((prev: string[]) => {
+      const isCollapsed = prev.includes(fileKey)
+      return isCollapsed ? prev.filter((p) => p !== fileKey) : [...prev, fileKey]
+    })
   }
 
   const handleCopyFilePath = () => {
@@ -155,12 +157,10 @@ const FileViewer: React.FC<FileViewerProps> = ({ id, file }) => {
   }
 
   const handleToggleViewed = (checked: boolean) => {
-    if (diffViewerConfig) {
-      diffViewerConfig.setViewedFiles((prev: string[]) => {
-        const next = checked ? Array.from(new Set([...prev, fileKey])) : prev.filter((p) => p !== fileKey)
-        return next
-      })
-    }
+    setViewedFiles((prev: string[]) => {
+      const next = checked ? Array.from(new Set([...prev, fileKey])) : prev.filter((p) => p !== fileKey)
+      return next
+    })
 
     if (!checked || !collapsed) {
       handleToggleCollapse()
@@ -176,17 +176,11 @@ const FileViewer: React.FC<FileViewerProps> = ({ id, file }) => {
         <CopyButton onClick={handleCopyFilePath} tooltip="Copy file path" toastText="File path copied to clipboard" />
         <WrapLinesButton isWrapped={wrapLines} onClick={() => setWrapLines((prev) => !prev)} size={16} />
 
-        {diffViewerConfig && (
-          <div css={styles.rightContainer}>
-            <Checkbox
-              css={styles.viewedCheckbox}
-              checked={viewed}
-              onChange={(e) => handleToggleViewed(e.target.checked)}
-            >
-              Viewed
-            </Checkbox>
-          </div>
-        )}
+        <div css={styles.rightContainer}>
+          <Checkbox css={styles.viewedCheckbox} checked={viewed} onChange={(e) => handleToggleViewed(e.target.checked)}>
+            Viewed
+          </Checkbox>
+        </div>
       </div>
 
       <div css={styles.body}>

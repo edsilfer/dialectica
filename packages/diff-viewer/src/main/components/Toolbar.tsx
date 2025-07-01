@@ -1,9 +1,9 @@
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import { css, keyframes } from '@emotion/react'
-import { Progress, Tooltip, Typography } from 'antd'
+import { Button, Progress, Space, Tooltip, Typography } from 'antd'
 import React, { useContext } from 'react'
+import { useCodePanelConfig } from '../../code-panel/providers/code-panel-context'
 import { ThemeContext } from '../../shared/providers/theme-context'
-import { useDiffViewerConfig } from '../providers/diff-viewer-context'
 import { ToolbarProps } from './types'
 
 const { Text } = Typography
@@ -37,8 +37,9 @@ const useStyles = () => {
   return {
     container: css`
       display: flex;
+      flex-direction: row;
       align-items: center;
-      padding: ${theme.spacing.sm};
+      padding: ${theme.spacing.xs};
       background-color: ${theme.colors.backgroundPrimary};
       border-top: 1px solid ${theme.colors.border};
       color: ${theme.colors.textPrimary};
@@ -59,12 +60,41 @@ const useStyles = () => {
       animation: ${slideInFromRight} 0.3s ease-in-out;
     `,
 
-    progressContainer: css`
-      margin-left: auto;
+    titleContainer: css`
       display: flex;
       flex-direction: column;
-      align-items: flex-end;
-      width: 150px; /* adjust as necessary */
+      margin-left: ${theme.spacing.md};
+      gap: ${theme.spacing.xs};
+    `,
+
+    titleText: css`
+      color: ${theme.colors.textPrimary};
+      font-size: ${theme.typography.regularFontSize}px;
+      font-weight: 600;
+      margin: 0; /* reset Typography margin */
+    `,
+
+    subtitleText: css`
+      color: ${theme.colors.textPrimary};
+      font-size: ${theme.typography.regularFontSizeSM}px;
+      opacity: 0.8;
+      margin: 0;
+    `,
+
+    rightCluster: css`
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      margin-left: auto;
+      align-items: center;
+      gap: ${theme.spacing.md};
+    `,
+
+    progressContainer: css`
+      display: flex;
+      flex-direction: column;
+      width: 110px;
+      align-items: center;
     `,
 
     progressText: css`
@@ -75,13 +105,29 @@ const useStyles = () => {
   }
 }
 
-export const Toolbar: React.FC<ToolbarProps> = ({ totalFiles, drawerOpen, onToggleDrawer }) => {
+export const Toolbar: React.FC<ToolbarProps> = ({ totalFiles, drawerOpen, onToggleDrawer, title, subtitle }) => {
   const styles = useStyles()
-  const { viewedFiles } = useDiffViewerConfig()
+  const { viewedFiles, allFileKeys, setCollapsedFiles, setViewedFiles } = useCodePanelConfig()
   const percent = totalFiles > 0 ? Math.round((viewedFiles.length / totalFiles) * 100) : 0
 
   const handleToggleDrawer = () => {
     onToggleDrawer(!drawerOpen)
+  }
+
+  const handleCollapseAll = () => {
+    setCollapsedFiles(allFileKeys)
+  }
+
+  const handleExpandAll = () => {
+    setCollapsedFiles([])
+  }
+
+  const handleMarkAllViewed = () => {
+    if (viewedFiles.length === allFileKeys.length) {
+      setViewedFiles([])
+    } else {
+      setViewedFiles(allFileKeys)
+    }
   }
 
   return (
@@ -94,9 +140,53 @@ export const Toolbar: React.FC<ToolbarProps> = ({ totalFiles, drawerOpen, onTogg
         )}
       </Tooltip>
 
-      <div css={styles.progressContainer}>
-        <Text css={styles.progressText}>{`${viewedFiles.length} / ${totalFiles} files viewed`}</Text>
-        <Progress percent={percent} size="small" showInfo={false} />
+      {(title || subtitle) && (
+        <div css={styles.titleContainer}>
+          {title &&
+            (typeof title === 'string' ? (
+              <Text css={styles.titleText} ellipsis={{ tooltip: title }}>
+                {title}
+              </Text>
+            ) : (
+              <>{title}</>
+            ))}
+
+          {subtitle &&
+            (typeof subtitle === 'string' ? (
+              <Text css={styles.subtitleText} ellipsis={{ tooltip: subtitle }}>
+                {subtitle}
+              </Text>
+            ) : (
+              <>{subtitle}</>
+            ))}
+        </div>
+      )}
+
+      <div css={styles.rightCluster}>
+        <Space.Compact>
+          <Tooltip title="Collapse all files">
+            <Button size="small" onClick={handleCollapseAll}>
+              Collapse
+            </Button>
+          </Tooltip>
+
+          <Tooltip title="Expand all files">
+            <Button size="small" onClick={handleExpandAll}>
+              Expand
+            </Button>
+          </Tooltip>
+
+          <Tooltip title="Mark all files as viewed">
+            <Button size="small" onClick={handleMarkAllViewed}>
+              {viewedFiles.length === allFileKeys.length ? 'Unview' : 'Viewed'}
+            </Button>
+          </Tooltip>
+        </Space.Compact>
+
+        <div css={styles.progressContainer}>
+          <Text css={styles.progressText}>{`${viewedFiles.length} / ${totalFiles} files viewed`}</Text>
+          <Progress percent={percent} size="small" showInfo={false} />
+        </div>
       </div>
     </div>
   )

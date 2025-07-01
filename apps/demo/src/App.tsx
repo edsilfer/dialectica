@@ -1,10 +1,13 @@
-import { DiffViewer, DiffParserAdapter, useDiffViewerConfig } from '@diff-viewer'
+import { DiffViewer, useDiffViewerConfig } from '@diff-viewer'
 import { css } from '@emotion/react'
-import { Typography } from 'antd'
-import { useMemo } from 'react'
-import { TEN_FILES_DIFF } from './__fixtures__/sample-diffs'
+import { Typography, Card } from 'antd'
+import React, { useMemo, useCallback, useState } from 'react'
 import AppToolbar from './components/AppToolbar'
 import PixelHeartIcon from './components/icons/PixelHeartIcon'
+import { ParsedPR } from './components/search-form/types'
+import useGetPrMetadata from './hooks/use-get-pr-metadata'
+import { PrHeader } from './components/pull-request'
+import useGetPrDiff from './hooks/use-get-pr-diff'
 
 const { Text } = Typography
 
@@ -35,18 +38,53 @@ const createStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) =>
 
 export default function App() {
   const { theme } = useDiffViewerConfig()
-
   // Memoize style object so Emotion doesn't recompute the classes on every drag frame
   const styles = useMemo(() => createStyles(theme), [theme])
+  const emptyDiff = useMemo<React.ComponentProps<typeof DiffViewer>['diff']>(() => ({ files: [] }), [])
+  const [selectedPr, setSelectedPr] = useState<ParsedPR | null>(null)
 
-  const parsedDiff = useMemo(() => new DiffParserAdapter().parse(TEN_FILES_DIFF), [])
+  const { data: prMetadata, loading: prMetaLoading } = useGetPrMetadata({
+    owner: selectedPr?.owner ?? '',
+    repo: selectedPr?.repo ?? '',
+    pullNumber: selectedPr?.prNumber ?? 0,
+    forceDelayMs: 1000,
+  })
+
+  const { data: prDiffData, loading: prDiffLoading } = useGetPrDiff({
+    owner: selectedPr?.owner ?? '',
+    repo: selectedPr?.repo ?? '',
+    pullNumber: selectedPr?.prNumber ?? 0,
+  })
+
+  const handleSearch = useCallback((pr: ParsedPR) => setSelectedPr(pr), [])
+
+  const prHeader = useMemo(() => {
+    if (!prMetadata) return undefined
+    return <PrHeader pr={prMetadata} headingLevel={4} />
+  }, [prMetadata])
+
+  // Determine which diff to render (fallback to sample diff when no PR is selected)
+  const displayedDiff: React.ComponentProps<typeof DiffViewer>['diff'] = prDiffData ?? emptyDiff
 
   return (
     <div css={styles.container}>
-      <AppToolbar />
+      <AppToolbar onSearch={handleSearch} />
 
       <div css={styles.content}>
-        <DiffViewer diff={parsedDiff} />
+        {selectedPr === null ? (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+            <Card>
+              <Text>Use the search bar above to load a GitHub Pull Request and explore its diff.</Text>
+            </Card>
+          </div>
+        ) : (
+          <DiffViewer
+            diff={displayedDiff}
+            title={prHeader}
+            isMetadataLoading={prMetaLoading}
+            isDiffLoading={prDiffLoading || !prDiffData}
+          />
+        )}
       </div>
 
       <div css={styles.footer}>

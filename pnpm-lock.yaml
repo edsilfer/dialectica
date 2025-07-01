@@ -58,9 +58,15 @@ importers:
       '@emotion/styled':
         specifier: ^11.14.0
         version: 11.14.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0)
+      '@types/lodash':
+        specifier: ^4.17.19
+        version: 4.17.19
       antd:
         specifier: ^5.26.2
         version: 5.26.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       react:
         specifier: ^19.1.0
         version: 19.1.0
@@ -1018,6 +1024,10 @@ packages:
   '@types/json-schema@7.0.15':
     resolution:
       { integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA== }
+
+  '@types/lodash@4.17.19':
+    resolution:
+      { integrity: sha512-NYqRyg/hIQrYPT9lbOeYc3kIRabJDn/k4qQHIXUpx88CBDww2fD15Sg5kbXlW86zm2XEW4g0QxkTI3/Kfkc7xQ== }
 
   '@types/node@20.19.1':
     resolution:
@@ -4167,6 +4177,8 @@ snapshots:
   '@types/estree@1.0.8': {}
 
   '@types/json-schema@7.0.15': {}
+
+  '@types/lodash@4.17.19': {}
 
   '@types/node@20.19.1':
     dependencies:

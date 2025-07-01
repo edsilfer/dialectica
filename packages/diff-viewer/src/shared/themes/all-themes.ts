@@ -56,6 +56,15 @@ const LEAD_THEME_COLORS = {
     textContainerPlaceholder: '#93a1a1',
     textPrimaryPlaceholder: '#93a1a1',
   },
+  vscodeDark: {
+    border: '#3c3c3c',
+    accent: '#007acc',
+    backgroundPrimary: '#1e1e1e',
+    backgroundContainer: '#252526',
+    textPrimary: '#d4d4d4',
+    textContainerPlaceholder: '#808080',
+    textPrimaryPlaceholder: '#808080',
+  },
 } as const
 
 type ThemeVariantKeys = Exclude<keyof typeof LEAD_THEME_COLORS, 'statusColors'>
@@ -156,6 +165,12 @@ export const Themes = {
   solarizedLight: {
     name: 'solarizedLight',
     colors: createThemeColors(LEAD_THEME_COLORS.solarizedLight),
+    spacing,
+    typography,
+  },
+  vscodeDark: {
+    name: 'vscodeDark',
+    colors: createThemeColors(LEAD_THEME_COLORS.vscodeDark),
     spacing,
     typography,
   },

@@ -46,6 +46,7 @@ export const CodePanel: React.FC<CodePanelProps> = (props) => {
 
 const CodePanelContent: React.FC<CodePanelProps> = (props) => {
   const styles = useStyles()
+  const { setAllFileKeys } = useCodePanelConfig()
 
   useEffect(() => {
     if (props.scrollTo) {
@@ -55,6 +56,11 @@ const CodePanelContent: React.FC<CodePanelProps> = (props) => {
       }
     }
   }, [props.scrollTo])
+
+  useEffect(() => {
+    const keys = props.diff.files.map((f) => f.newPath || f.oldPath)
+    setAllFileKeys(keys)
+  }, [props.diff.files, setAllFileKeys])
 
   return (
     <div css={[styles.container, props.css]} className={props.className}>

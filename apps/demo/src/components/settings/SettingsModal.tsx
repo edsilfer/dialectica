@@ -1,4 +1,4 @@
-import { Themes, ThemeTokens, useDiffViewerConfig } from '@diff-viewer'
+import { Themes, ThemeTokens, useCodePanelConfig, useDiffViewerConfig, useFileExplorerConfig } from '@diff-viewer'
 import { css } from '@emotion/react'
 import { Divider, Modal } from 'antd'
 import React from 'react'
@@ -14,8 +14,9 @@ const useStyles = (theme: ThemeTokens) => ({
 })
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
-  const { theme, setTheme, codePanelConfig, fileExplorerConfig, setCodePanelConfig, setFileExplorerConfig } =
-    useDiffViewerConfig()
+  const { theme, setTheme } = useDiffViewerConfig()
+  const { config: codePanelConfig, setConfig: setCodePanelConfig } = useCodePanelConfig()
+  const { config: fileExplorerConfig, setConfig: setFileExplorerConfig } = useFileExplorerConfig()
 
   const isSplitView = codePanelConfig.mode === 'split'
   const collapsePackages = fileExplorerConfig.collapsePackages ?? false
@@ -23,11 +24,16 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
   const displayNodeDetails = fileExplorerConfig.displayNodeDetails ?? false
 
   const setIsSplitView = (value: boolean) =>
-    setCodePanelConfig((cfg) => ({ ...cfg, mode: value ? 'split' : 'unified' }))
-  const setCollapsePackages = (value: boolean) => setFileExplorerConfig((cfg) => ({ ...cfg, collapsePackages: value }))
-  const setShowIcons = (value: boolean) => setFileExplorerConfig((cfg) => ({ ...cfg, showIcons: value }))
+    setCodePanelConfig((cfg: typeof codePanelConfig) => ({ ...cfg, mode: value ? 'split' : 'unified' }))
+
+  const setCollapsePackages = (value: boolean) =>
+    setFileExplorerConfig((cfg: typeof fileExplorerConfig) => ({ ...cfg, collapsePackages: value }))
+
+  const setShowIcons = (value: boolean) =>
+    setFileExplorerConfig((cfg: typeof fileExplorerConfig) => ({ ...cfg, showIcons: value }))
+
   const setDisplayNodeDetails = (value: boolean) =>
-    setFileExplorerConfig((cfg) => ({ ...cfg, displayNodeDetails: value }))
+    setFileExplorerConfig((cfg: typeof fileExplorerConfig) => ({ ...cfg, displayNodeDetails: value }))
 
   const styles = useStyles(theme)
 
@@ -50,6 +56,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
                 { value: 'dracula', label: 'Dracula' },
                 { value: 'solarizedDark', label: 'Solarized Dark' },
                 { value: 'solarizedLight', label: 'Solarized Light' },
+                { value: 'vscodeDark', label: 'VSCode Dark' },
               ],
             },
             {

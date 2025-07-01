@@ -23,8 +23,6 @@ export interface DiffViewerConfigContextState {
   fileExplorerConfig: FileExplorerConfig
   /** The currently selected theme tokens */
   theme: ThemeTokens
-  /** List of files that have been marked as viewed */
-  viewedFiles: string[]
 
   /** Set the configuration for the diff viewer */
   setCodePanelConfig: React.Dispatch<React.SetStateAction<CodePanelConfig>>
@@ -32,6 +30,4 @@ export interface DiffViewerConfigContextState {
   setFileExplorerConfig: React.Dispatch<React.SetStateAction<FileExplorerConfig>>
   /** Setter for the theme tokens */
   setTheme: React.Dispatch<React.SetStateAction<ThemeTokens>>
-  /** Setter for the list of viewed files */
-  setViewedFiles: React.Dispatch<React.SetStateAction<string[]>>
 }

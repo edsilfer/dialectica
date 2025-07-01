@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { ThemeContext, ThemeProvider } from '../../shared/providers/theme-context'
 import { Themes } from '../../shared/themes'
 import { FileExplorerConfig } from '../types'
@@ -21,10 +21,44 @@ export const FileExplorerConfigContext = createContext<FileExplorerConfigState |
 export const FileExplorerConfigProvider: React.FC<FileExplorerConfigContextProps> = ({
   children,
   config: initialConfig = DEFAULT_FILE_EXPLORER_CONFIG,
+  storage = 'in-memory',
 }) => {
-  const [config, setConfig] = useState<FileExplorerConfig>(initialConfig)
+  const STORAGE_KEY = '__file_explorer_config__'
 
-  useEffect(() => setConfig(initialConfig), [initialConfig])
+  // Hydrate configuration from localStorage when requested
+  const storedConfig = React.useMemo<FileExplorerConfig | null>(() => {
+    if (storage !== 'local' || typeof window === 'undefined') return null
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY)
+      if (!raw) return null
+      return JSON.parse(raw) as FileExplorerConfig
+    } catch {
+      return null
+    }
+  }, [storage])
+
+  const [config, setConfig] = useState<FileExplorerConfig>({ ...initialConfig, ...(storedConfig ?? {}) })
+
+  // Keep internal config in sync with incoming prop changes but avoid clobbering
+  // the initially hydrated (possibly persisted) state on the very first render.
+  const isFirstRender = useRef(true)
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+    setConfig(initialConfig)
+  }, [initialConfig])
+
+  // Persist configuration whenever it changes
+  useEffect(() => {
+    if (storage !== 'local' || typeof window === 'undefined') return
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(config))
+    } catch {
+      /* Ignore quota / serialization errors silently */
+    }
+  }, [storage, config])
 
   const value = {
     config,

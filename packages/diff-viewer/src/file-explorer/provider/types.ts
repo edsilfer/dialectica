@@ -1,5 +1,4 @@
-import React from 'react'
-import { ReactNode } from 'react'
+import React, { ReactNode } from 'react'
 import { ParsedDiff } from '../../shared/parsers/types'
 import { DirectoryNode, FileExplorerConfig } from '../types'
 
@@ -8,6 +7,9 @@ export interface FileExplorerConfigContextProps {
   children: ReactNode
   /** The configuration for the file explorer */
   config?: FileExplorerConfig
+  /** Where the configuration should be stored. "in-memory" keeps the previous behaviour (default) and "local" persists values in localStorage */
+  storage?: 'in-memory' | 'local'
+
   /** Set the configuration for the file explorer */
   setConfig?: React.Dispatch<React.SetStateAction<FileExplorerConfig>>
 }

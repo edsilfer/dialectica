@@ -6,6 +6,8 @@ export interface CodePanelConfigContextProps {
   children: ReactNode
   /** The configuration for the diff viewer*/
   config?: CodePanelConfig
+  /** Where the configuration should be stored. "in-memory" keeps the previous behaviour (default) and "local" persists values in localStorage */
+  storage?: 'in-memory' | 'local'
 
   /** Set the configuration for the diff viewer */
   setConfig?: React.Dispatch<React.SetStateAction<CodePanelConfig>>
@@ -14,7 +16,19 @@ export interface CodePanelConfigContextProps {
 export interface CodePanelConfigContextState {
   /** The configuration for the diff viewer */
   config: CodePanelConfig
+  /** List of files that have been marked as viewed */
+  viewedFiles: string[]
+  /** List of files that are currently collapsed */
+  collapsedFiles: string[]
+  /** List of all file keys (paths) currently present in the diff */
+  allFileKeys: string[]
 
+  /** Setter for the list of viewed files */
+  setViewedFiles: React.Dispatch<React.SetStateAction<string[]>>
+  /** Setter for the list of collapsed files */
+  setCollapsedFiles: React.Dispatch<React.SetStateAction<string[]>>
+  /** Setter for the list of all file keys */
+  setAllFileKeys: React.Dispatch<React.SetStateAction<string[]>>
   /** Set the configuration for the diff viewer */
   setConfig: React.Dispatch<React.SetStateAction<CodePanelConfig>>
 }

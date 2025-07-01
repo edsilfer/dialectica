@@ -2,17 +2,19 @@ import { SettingOutlined } from '@ant-design/icons'
 import { ThemeTokens, useDiffViewerConfig } from '@diff-viewer'
 import { css } from '@emotion/react'
 import { Button, Typography } from 'antd'
-import React from 'react'
+import React, { useState } from 'react'
+import SearchForm from './search-form/SearchForm'
 import SettingsModal from './settings/SettingsModal'
+import { ParsedPR } from './search-form/types'
 
 const { Title, Text } = Typography
 
 const useStyles = (theme: ThemeTokens) => ({
-  horizontal: css`
+  container: css`
     display: flex;
     flex-direction: row;
   `,
-  vertical: css`
+  titleContainer: css`
     display: flex;
     flex-direction: column;
   `,
@@ -24,25 +26,32 @@ const useStyles = (theme: ThemeTokens) => ({
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    align-items: center;
     flex: 1;
-    gap: ${theme.spacing.sm};
   `,
   settingsButton: css`
     display: flex;
     align-items: center;
+
+    /* Smooth rotation animation for the icon */
+    .anticon {
+      transition: transform 0.3s ease;
+    }
+
+    /* Rotate the cog when the button is hovered */
+    &:hover .anticon {
+      transform: rotate(90deg);
+    }
   `,
 })
 
-const AppToolbar: React.FC = () => {
-  const [settingsOpen, setSettingsOpen] = React.useState(false)
+const AppToolbar: React.FC<{ onSearch: (pr: ParsedPR) => void }> = ({ onSearch }) => {
   const { theme } = useDiffViewerConfig()
-
   const styles = useStyles(theme)
+  const [settingsOpen, setSettingsOpen] = useState(false)
 
   return (
-    <div css={styles.horizontal}>
-      <div css={styles.vertical}>
+    <div css={styles.container}>
+      <div css={styles.titleContainer}>
         <Title level={4} css={styles.headers}>
           Awesome Diff Viewer
         </Title>
@@ -52,12 +61,13 @@ const AppToolbar: React.FC = () => {
       </div>
 
       <div css={styles.settings}>
+        <SearchForm onSearch={onSearch} />
+
         <Button
           css={styles.settingsButton}
           type="default"
           icon={<SettingOutlined />}
           onClick={() => setSettingsOpen(true)}
-          size="small"
         >
           Settings
         </Button>
