@@ -2,6 +2,7 @@ import { Themes, ThemeTokens, useCodePanelConfig, useDiffViewerConfig, useFileEx
 import { css } from '@emotion/react'
 import { Divider, Modal } from 'antd'
 import React from 'react'
+import { useSettings } from '../../provider/setttings-provider'
 import SettingsSection from './Section'
 import { SettingsModalProps } from './types'
 
@@ -17,6 +18,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
   const { theme, setTheme } = useDiffViewerConfig()
   const { config: codePanelConfig, setConfig: setCodePanelConfig } = useCodePanelConfig()
   const { config: fileExplorerConfig, setConfig: setFileExplorerConfig } = useFileExplorerConfig()
+  const { githubPat, useMocks, setGithubPat, setUseMocks } = useSettings()
 
   const isSplitView = codePanelConfig.mode === 'split'
   const collapsePackages = fileExplorerConfig.collapsePackages ?? false
@@ -63,10 +65,17 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               type: 'input',
               label: 'GitHub API Token',
               description: 'Optional token for GitHub API requests.',
-              value: '',
+              value: githubPat,
               placeholder: '********',
               inputType: 'password',
-              onChange: (_: string) => {},
+              onChange: setGithubPat,
+            },
+            {
+              type: 'switch',
+              label: 'Use mock data',
+              description: 'Toggle between using mock data or real GitHub API calls.',
+              checked: useMocks,
+              onChange: setUseMocks,
             },
           ]}
         />

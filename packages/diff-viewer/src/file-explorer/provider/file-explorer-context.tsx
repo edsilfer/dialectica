@@ -47,8 +47,9 @@ export const FileExplorerConfigProvider: React.FC<FileExplorerConfigContextProps
       isFirstRender.current = false
       return
     }
-    setConfig(initialConfig)
-  }, [initialConfig])
+    // Merge new initialConfig with stored config, giving precedence to stored values
+    setConfig({ ...initialConfig, ...storedConfig })
+  }, [initialConfig, storedConfig])
 
   // Persist configuration whenever it changes
   useEffect(() => {

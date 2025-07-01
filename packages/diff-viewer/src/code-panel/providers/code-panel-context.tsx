@@ -61,8 +61,9 @@ export const CodePanelConfigProvider: React.FC<CodePanelConfigContextProps> = ({
       isFirstRender.current = false
       return
     }
-    setConfig(initialConfig)
-  }, [initialConfig])
+    // Merge new initialConfig with stored config, giving precedence to stored values
+    setConfig({ ...initialConfig, ...(storedState?.config ?? {}) })
+  }, [initialConfig, storedState])
 
   /*
    * Keep collapsedFiles in sync with viewedFiles:

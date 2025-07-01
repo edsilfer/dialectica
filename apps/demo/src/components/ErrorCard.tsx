@@ -1,7 +1,7 @@
+import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { useDiffViewerConfig } from '@diff-viewer'
 import { css } from '@emotion/react'
-import { Card, Typography } from 'antd'
-import { theme as antdTheme } from 'antd'
+import { theme as antdTheme, Card, Typography } from 'antd'
 import { ErrorCardProps } from './types'
 
 const { Title, Paragraph, Text } = Typography
@@ -17,13 +17,35 @@ const useStyles = () => {
       justify-content: center;
       height: 100%;
       width: 100%;
+
+      & .ant-card {
+        border: 1px solid ${theme.colors.border};
+        background-color: ${theme.colors.backgroundContainer};
+      }
     `,
-    card: css`
-      background-color: ${theme.colors.backgroundContainer};
-      border: 1px solid ${token.colorError};
+
+    vertical: css`
+      display: flex;
+      flex-direction: column;
+      gap: ${theme.spacing.sm};
     `,
-    title: css`
+
+    horizontal: css`
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: ${theme.spacing.sm};
+    `,
+
+    errorIcon: css`
+      font-size: 24px !important;
       color: ${token.colorError};
+      margin-top: ${theme.spacing.xs};
+    `,
+
+    title: css`
+      margin: 0 !important;
+      padding: 0 !important;
     `,
   }
 }
@@ -35,15 +57,20 @@ export default function ErrorCard({ error, title = 'Failed to load Pull Request'
 
   return (
     <div css={styles.wrapper}>
-      <Card css={styles.card} bordered>
-        <Title level={3} css={styles.title}>
-          {title}
-        </Title>
-        {descriptionContent && (
-          <Paragraph>
-            {typeof descriptionContent === 'string' ? <Text>{descriptionContent}</Text> : descriptionContent}
-          </Paragraph>
-        )}
+      <Card>
+        <div css={styles.horizontal}>
+          <ExclamationCircleOutlined css={styles.errorIcon} />
+          <div css={styles.vertical}>
+            <Title level={3} css={styles.title}>
+              {title}
+            </Title>
+            {descriptionContent && (
+              <Paragraph>
+                {typeof descriptionContent === 'string' ? <Text>{descriptionContent}</Text> : descriptionContent}
+              </Paragraph>
+            )}
+          </div>
+        </div>
       </Card>
     </div>
   )

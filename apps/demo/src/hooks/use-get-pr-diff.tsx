@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { DiffParserAdapter } from '@diff-viewer'
 import { buildHeaders, getGithubError, GITHUB_API_HOST } from './request-utils'
+import { FACEBOOK_REACT_33665_DIFF } from '../__fixtures__/diffs-fixtures'
+import { useSettings } from '../provider/setttings-provider'
 import type { UseGetPrDiffParams, UseGetPrDiffReturn } from './types'
 
 /**
@@ -9,56 +11,78 @@ import type { UseGetPrDiffParams, UseGetPrDiffReturn } from './types'
  * Basic usage:
  *   const { data, loading, error } = useGetPrDiff({ owner: 'facebook', repo: 'react', pullNumber: 1 })
  */
-export default function useGetPrDiff({ owner, repo, pullNumber, token }: UseGetPrDiffParams): UseGetPrDiffReturn {
+export default function useGetPrDiff({
+  owner,
+  repo,
+  pullNumber,
+  forceDelayMs = 0,
+}: UseGetPrDiffParams): UseGetPrDiffReturn {
   const [data, setData] = useState<UseGetPrDiffReturn['data']>()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error>()
+  const { githubPat, useMocks } = useSettings()
 
   // Keep the latest params in a ref so fetchData remains stable between renders.
-  const paramsRef = useRef<UseGetPrDiffParams>({ owner, repo, pullNumber, token })
-  paramsRef.current = { owner, repo, pullNumber, token }
+  const paramsRef = useRef<UseGetPrDiffParams>({ owner, repo, pullNumber, forceDelayMs })
+  paramsRef.current = { owner, repo, pullNumber, forceDelayMs }
 
-  const fetchData = useCallback(async (signal?: AbortSignal) => {
-    const { owner, repo, pullNumber, token } = paramsRef.current
-    if (!owner || !repo || !pullNumber) return
+  const fetchData = useCallback(
+    async (signal?: AbortSignal) => {
+      const { owner, repo, pullNumber, forceDelayMs } = paramsRef.current
+      if (!owner || !repo || !pullNumber) return
 
-    setLoading(true)
-    setError(undefined)
+      setLoading(true)
+      setError(undefined)
 
-    try {
-      const url = `${GITHUB_API_HOST}/repos/${owner}/${repo}/pulls/${pullNumber}`
-      const res = await fetch(url, {
-        headers: {
-          ...buildHeaders(token),
-          // Override the Accept header to request the unified diff format.
-          Accept: 'application/vnd.github.v3.diff',
-        },
-        signal,
-      })
+      try {
+        if (useMocks) {
+          // When in mock mode, use the Facebook diff from fixtures
+          const parsedDiff = new DiffParserAdapter().parse(FACEBOOK_REACT_33665_DIFF)
+          setData(parsedDiff)
+        } else {
+          const url = `${GITHUB_API_HOST}/repos/${owner}/${repo}/pulls/${pullNumber}`
 
-      if (!res.ok) {
-        throw new Error(`GitHub API error (${res.status}): ${await getGithubError(res)}`)
+          // Only pass token to buildHeaders if githubPat is not empty
+          const token = githubPat.trim() !== '' ? githubPat : undefined
+
+          const res = await fetch(url, {
+            headers: {
+              ...buildHeaders(token),
+              // Override the Accept header to request the unified diff format.
+              Accept: 'application/vnd.github.v3.diff',
+            },
+            signal,
+          })
+
+          if (!res.ok) {
+            throw new Error(`GitHub API error (${res.status}): ${await getGithubError(res)}`)
+          }
+
+          const diffText = await res.text()
+          const parsedDiff = new DiffParserAdapter().parse(diffText)
+          setData(parsedDiff)
+        }
+      } catch (err: unknown) {
+        // Ignore abort errors triggered by the AbortController
+        if (err instanceof DOMException && err.name === 'AbortError') {
+          return
+        }
+        setError(err as Error)
+      } finally {
+        if (forceDelayMs && forceDelayMs > 0) {
+          await new Promise((res) => setTimeout(res, forceDelayMs))
+        }
+        setLoading(false)
       }
-
-      const diffText = await res.text()
-      const parsedDiff = new DiffParserAdapter().parse(diffText)
-      setData(parsedDiff)
-    } catch (err: unknown) {
-      // Ignore abort errors triggered by the AbortController
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        return
-      }
-      setError(err as Error)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+    },
+    [githubPat, useMocks],
+  )
 
   useEffect(() => {
     const controller = new AbortController()
     void fetchData(controller.signal)
     return () => controller.abort()
-  }, [owner, repo, pullNumber, token, fetchData])
+  }, [owner, repo, pullNumber, forceDelayMs, fetchData])
 
   const refetch = useCallback(() => {
     const controller = new AbortController()

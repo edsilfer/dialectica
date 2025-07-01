@@ -2,6 +2,7 @@ import { CodePanelConfig, DiffViewerConfigProvider, FileExplorerConfig, Themes }
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
+import { SettingsProvider } from './provider/setttings-provider'
 
 const DEFAULT_FILE_EXPLORER_CONFIG: FileExplorerConfig = {
   startExpanded: true,
@@ -21,14 +22,16 @@ const DEFAULT_CODE_PANEL_CONFIG: CodePanelConfig = {
 
 function Root() {
   return (
-    <DiffViewerConfigProvider
-      theme={Themes.light}
-      fileExplorerConfig={DEFAULT_FILE_EXPLORER_CONFIG}
-      codePanelConfig={DEFAULT_CODE_PANEL_CONFIG}
-      storage="local"
-    >
-      <App />
-    </DiffViewerConfigProvider>
+    <SettingsProvider>
+      <DiffViewerConfigProvider
+        theme={Themes.light}
+        fileExplorerConfig={DEFAULT_FILE_EXPLORER_CONFIG}
+        codePanelConfig={DEFAULT_CODE_PANEL_CONFIG}
+        storage="local"
+      >
+        <App />
+      </DiffViewerConfigProvider>
+    </SettingsProvider>
   )
 }
 

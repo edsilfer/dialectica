@@ -48,8 +48,6 @@ export interface UseGetPrMetadataParams {
   repo: string
   /** Pull request number */
   pullNumber: number
-  /** Optional GitHub token. When provided the request will be authenticated and not rate-limited as harshly. */
-  token?: string
   /** Artificial delay in milliseconds to wait before resolving the request. Useful for demo/testing purposes. */
   forceDelayMs?: number
 }
@@ -72,8 +70,8 @@ export interface UseGetPrDiffParams {
   repo: string
   /** Pull request number */
   pullNumber: number
-  /** Optional GitHub token. When provided the request will be authenticated and not rate-limited as harshly. */
-  token?: string
+  /** Artificial delay in milliseconds to wait before resolving the request. Useful for demo/testing purposes. */
+  forceDelayMs?: number
 }
 
 export interface UseGetPrDiffReturn {
