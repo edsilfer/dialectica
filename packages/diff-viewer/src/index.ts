@@ -7,12 +7,13 @@
  */
 
 export * from './code-panel/CodePanel'
+export { CodePanelConfigProvider, useCodePanelConfig } from './code-panel/providers/code-panel-context'
 export type { CodePanelConfig } from './code-panel/providers/types'
-export type { FileExplorerConfig } from './file-explorer/types'
 export * from './file-explorer/FileExplorer'
+export { FileExplorerConfigProvider, useFileExplorerConfig } from './file-explorer/provider/file-explorer-context'
+export type { FileExplorerConfig } from './file-explorer/types'
+export * from './main/DiffViewer'
+export * from './main/providers/diff-viewer-context'
 export * from './shared/parsers/DiffParserAdapter'
 export * from './shared/themes'
-export * from './main/providers/diff-viewer-context'
-export * from './main/DiffViewer'
-export { useCodePanelConfig, CodePanelConfigProvider } from './code-panel/providers/code-panel-context'
-export { useFileExplorerConfig, FileExplorerConfigProvider } from './file-explorer/provider/file-explorer-context'
+export * from './utilities/pull-request'

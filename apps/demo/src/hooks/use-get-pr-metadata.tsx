@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { mapPullRequestMetadata } from './mappers'
 import { buildHeaders, getGithubError, GITHUB_API_HOST } from './request-utils'
-import type { PullRequestMetadata, UseGetPrMetadataParams, UseGetPrMetadataReturn } from './types'
+import type { UseGetPrMetadataParams, UseGetPrMetadataReturn } from './types'
+import { PullRequestMetadata } from '@diff-viewer/dist'
 
 /**
  * React hook that retrieves Pull Request metadata from GitHub's REST API.

@@ -16,18 +16,10 @@ export interface DiffViewerConfigContextProps {
   storage?: 'in-memory' | 'local'
 }
 
-export interface DiffViewerConfigContextState {
-  /** The configuration for the diff viewer */
-  codePanelConfig: CodePanelConfig
-  /** The configuration for the file explorer */
-  fileExplorerConfig: FileExplorerConfig
+export interface DiffViewerThemeContextState {
   /** The currently selected theme tokens */
   theme: ThemeTokens
 
-  /** Set the configuration for the diff viewer */
-  setCodePanelConfig: React.Dispatch<React.SetStateAction<CodePanelConfig>>
-  /** Set the configuration for the file explorer */
-  setFileExplorerConfig: React.Dispatch<React.SetStateAction<FileExplorerConfig>>
   /** Setter for the theme tokens */
   setTheme: React.Dispatch<React.SetStateAction<ThemeTokens>>
 }

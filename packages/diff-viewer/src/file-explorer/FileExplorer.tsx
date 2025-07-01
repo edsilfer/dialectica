@@ -1,13 +1,13 @@
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
+import { useDiffViewerConfig } from '../main/providers/diff-viewer-context'
 import type { FileDiff } from '../shared/parsers/types'
-import { DiffViewerConfigContext } from '../main/providers/diff-viewer-context'
 import { ThemeContext } from '../shared/providers/theme-context'
 import FSNode from './components/FSNode'
 import { ExplorerBar } from './components/Toolbar'
 import TreeSkeleton from './components/TreeSkeleton'
 import { listDirPaths, nodeComparator } from './node-utils'
-import { FileExplorerConfigContext, FileExplorerConfigProvider } from './provider/file-explorer-context'
+import { FileExplorerConfigProvider, useFileExplorerConfig } from './provider/file-explorer-context'
 import { FSTreeContextProvider, useFileExplorerContext } from './provider/fstree-context'
 import { FileExplorerProps } from './types'
 
@@ -35,18 +35,28 @@ const useStyles = () => {
 }
 
 export const FileExplorer: React.FC<FileExplorerProps> = (props) => {
-  const existingFileExplorerConfig = useContext(FileExplorerConfigContext)
+  let hasSpecificProvider = true
+  try {
+    void useFileExplorerConfig()
+  } catch {
+    hasSpecificProvider = false
+  }
 
-  // Try to inherit the configuration from an ancestor DiffViewerConfigProvider (if any)
-  const diffViewerConfig = useContext(DiffViewerConfigContext)
-  const inheritedConfig = diffViewerConfig?.fileExplorerConfig
+  let inheritedConfig
+  try {
+    const diffViewerConfig = useDiffViewerConfig()
+    inheritedConfig = diffViewerConfig.fileExplorerConfig
+  } catch {
+    inheritedConfig = undefined
+  }
 
   const explorer = <FileExplorerInner {...props} />
 
-  if (existingFileExplorerConfig) {
+  if (hasSpecificProvider) {
     return explorer
   }
 
+  // Otherwise create a provider, seeding it with any config we could inherit.
   return <FileExplorerConfigProvider config={inheritedConfig}>{explorer}</FileExplorerConfigProvider>
 }
 

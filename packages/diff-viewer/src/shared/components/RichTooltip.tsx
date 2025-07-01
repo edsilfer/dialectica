@@ -1,23 +1,8 @@
 import { Tooltip } from 'antd'
-import React, { useContext, useEffect, useRef, useState } from 'react'
-import { ThemeContext } from '../providers/theme-context'
+import React, { useEffect, useRef, useState } from 'react'
 import { RichTooltipProps } from './types'
 
-const useStyles = () => {
-  const theme = useContext(ThemeContext)
-
-  return {
-    tooltip: {
-      body: {
-        backgroundColor: theme.colors.backgroundContainer,
-        color: theme.colors.textPrimary,
-      },
-    },
-  }
-}
-
 const RichTooltip: React.FC<RichTooltipProps> = ({ tooltipText, toastText, toastTimeSeconds = 2, children }) => {
-  const styles = useStyles()
   const [isToastVisible, setIsToastVisible] = useState(false)
   const [tooltipTitle, setTooltipTitle] = useState(tooltipText)
   const timeoutRef = useRef<number>()
@@ -77,12 +62,7 @@ const RichTooltip: React.FC<RichTooltipProps> = ({ tooltipText, toastText, toast
 
   if (tooltipText || toastText) {
     return (
-      <Tooltip
-        title={tooltipTitle}
-        open={isToastVisible || undefined}
-        placement={isToastVisible ? 'bottom' : 'top'}
-        styles={styles.tooltip}
-      >
+      <Tooltip title={tooltipTitle} open={isToastVisible || undefined} placement={isToastVisible ? 'bottom' : 'top'}>
         {childWithClickHandler}
       </Tooltip>
     )

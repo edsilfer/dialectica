@@ -1,4 +1,3 @@
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import { css, keyframes } from '@emotion/react'
 import { Button, Progress, Space, Tooltip, Typography } from 'antd'
 import React, { useContext } from 'react'
@@ -40,6 +39,7 @@ const useStyles = () => {
       flex-direction: row;
       align-items: center;
       padding: ${theme.spacing.xs};
+      min-height: 2rem;
       background-color: ${theme.colors.backgroundPrimary};
       border-top: 1px solid ${theme.colors.border};
       color: ${theme.colors.textPrimary};
@@ -63,7 +63,6 @@ const useStyles = () => {
     titleContainer: css`
       display: flex;
       flex-direction: column;
-      margin-left: ${theme.spacing.md};
       gap: ${theme.spacing.xs};
     `,
 
@@ -105,14 +104,10 @@ const useStyles = () => {
   }
 }
 
-export const Toolbar: React.FC<ToolbarProps> = ({ totalFiles, drawerOpen, onToggleDrawer, title, subtitle }) => {
+export const Toolbar: React.FC<ToolbarProps> = ({ totalFiles, title, subtitle }) => {
   const styles = useStyles()
   const { viewedFiles, allFileKeys, setCollapsedFiles, setViewedFiles } = useCodePanelConfig()
   const percent = totalFiles > 0 ? Math.round((viewedFiles.length / totalFiles) * 100) : 0
-
-  const handleToggleDrawer = () => {
-    onToggleDrawer(!drawerOpen)
-  }
 
   const handleCollapseAll = () => {
     setCollapsedFiles(allFileKeys)
@@ -132,14 +127,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({ totalFiles, drawerOpen, onTogg
 
   return (
     <div css={styles.container}>
-      <Tooltip title={drawerOpen ? 'Close drawer' : 'Open drawer'}>
-        {drawerOpen ? (
-          <MenuFoldOutlined css={[styles.closeDrawer, styles.iconSlideInLeft]} onClick={handleToggleDrawer} />
-        ) : (
-          <MenuUnfoldOutlined css={[styles.closeDrawer, styles.iconSlideInRight]} onClick={handleToggleDrawer} />
-        )}
-      </Tooltip>
-
       {(title || subtitle) && (
         <div css={styles.titleContainer}>
           {title &&

@@ -1,10 +1,10 @@
-import { useDiffViewerConfig } from '@diff-viewer'
 import { css } from '@emotion/react'
 import { Avatar, Tag, Typography } from 'antd'
-import type { PullRequestMetadata } from '../../hooks/types'
-import type { PrHeaderProps, StatTagProps } from './types'
+import React from 'react'
+import { useDiffViewerConfig } from '../../main/providers/diff-viewer-context'
+import type { PullRequestMetadata, StatTagProps } from './types'
 
-const { Title, Text } = Typography
+const { Title, Text, Link } = Typography
 
 const useStyles = () => {
   const { theme } = useDiffViewerConfig()
@@ -62,7 +62,13 @@ function StatTag({ value, label, color }: StatTagProps) {
   )
 }
 
-export default function PrHeader({ pr, headingLevel = 4 }: PrHeaderProps) {
+/**
+ * A component that displays the header of a pull request.
+ *
+ * @param pr           - The pull request metadata.
+ * @returns A React component that displays the header of a pull request.
+ */
+export const PullRequestHeader: React.FC<{ pr: PullRequestMetadata }> = ({ pr }) => {
   const styles = useStyles()
   const stateTag = getStateTag(pr)
 
@@ -71,17 +77,18 @@ export default function PrHeader({ pr, headingLevel = 4 }: PrHeaderProps) {
       {/* Title and state */}
       <div css={styles.header}>
         {stateTag}
-        <Text type="secondary">#{pr.number}</Text>
-        <Title level={headingLevel}>{pr.title}</Title>
+        <Title level={4}>{pr.title}</Title>
       </div>
 
       {/* Author + sentence */}
       <div css={styles.subheader}>
         <Avatar src={pr.user.avatar_url} size={24} alt={pr.user.login} />
-        <Typography.Link href={pr.user.html_url} target="_blank" rel="noreferrer">
+        <Link href={pr.user.html_url} target="_blank" rel="noreferrer">
           {pr.user.login}
-        </Typography.Link>
-        <Text>opened this pull request to merge</Text>
+        </Link>
+        <Text>opened PR</Text>
+        <Text type="secondary">#{pr.number}</Text>
+        <Text>to merge</Text>
         <StatTag label="commits" value={pr.commits} color="blue" />
         <Text>with</Text>
         <StatTag label="files" value={pr.changed_files} color="geekblue" />

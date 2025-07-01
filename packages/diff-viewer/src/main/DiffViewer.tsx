@@ -9,8 +9,11 @@ import { Toolbar } from './components/Toolbar'
 import { useResizablePanel } from './hook/use-resizable-panel'
 import { DiffViewerConfigProvider, useDiffViewerConfig } from './providers/diff-viewer-context'
 import { DiffViewerProps } from './types'
+import { Drawer } from './components/Drawer'
+import DirectoryIcon from '../shared/icons/Directory'
+import type { DrawerContent } from './components/types'
 
-const getStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme'], loading: boolean) => ({
+const getStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) => ({
   container: css`
     display: flex;
     flex-direction: column;
@@ -25,13 +28,13 @@ const getStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme'], loadi
     flex: 1;
     width: 100%;
     overflow: hidden;
-    /* Increase the space between the two skeletons while loading */
-    gap: ${loading ? theme.spacing.md : theme.spacing.sm};
+    /* Consistent spacing between panels */
+    gap: ${theme.spacing.md};
   `,
 
-  fileExplorerContainer: (explorerWidth: number, drawerOpen: boolean, dragging: boolean) => css`
-    /* Slide-in/out by animating width */
-    width: ${drawerOpen ? `calc(${explorerWidth}% - ${theme.spacing.sm} / 2)` : '0%'};
+  drawerContainer: (explorerWidth: number, drawerOpen: boolean, dragging: boolean) => css`
+    /* Slide-in/out by animating width. When closed we still reserve icon rail width */
+    width: ${drawerOpen ? `calc(${explorerWidth}% - ${theme.spacing.sm} / 2)` : '2.25rem'};
     /* Disable the transition while the user is actively dragging to keep the panel in sync */
     transition: ${dragging ? 'none' : 'width 0.3s ease-in-out'};
     overflow: hidden;
@@ -77,6 +80,11 @@ const getStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme'], loadi
 
   /* Placeholder skeleton that mimics the Toolbar look & feel */
   toolbarSkeleton: css`
+    /* Match Toolbar container layout so the height stays consistent before/after load */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    min-height: 2rem; /* Same reserved space as real Toolbar */
     padding: ${theme.spacing.xs};
     background-color: ${theme.colors.backgroundPrimary};
     border-top: 1px solid ${theme.colors.border};
@@ -128,7 +136,7 @@ const DiffViewerContent: React.FC<DiffViewerProps> = ({
 
   const [drawerOpen, setDrawerOpen] = useState(true)
   // Styles are memoised so Emotion doesn't regenerate classes during drags.
-  const styles = useMemo(() => getStyles(theme, metadataLoading || diffLoading), [theme, metadataLoading, diffLoading])
+  const styles = useMemo(() => getStyles(theme), [theme])
 
   const [scrollToFile, setScrollToFile] = useState<string | null>(null)
   const { width: explorerWidth, containerRef, onMouseDown, dragging } = useResizablePanel()
@@ -167,25 +175,39 @@ const DiffViewerContent: React.FC<DiffViewerProps> = ({
     )
   }, [diffLoading, diff, scrollToFile, styles.diffViewer, codePanelConfig])
 
+  const drawerContents: DrawerContent[] = useMemo(
+    () => [
+      {
+        key: 'file-explorer',
+        title: 'File explorer',
+        icon: <DirectoryIcon />,
+        description: 'Browse changed files',
+        content: fileExplorer,
+      },
+    ],
+    [fileExplorer],
+  )
+
   return (
     <div css={styles.container}>
       {metadataLoading ? (
         <div css={styles.toolbarSkeleton}>
-          <Skeleton active title={false} paragraph={{ rows: 2 }} />
+          <Skeleton active title={false} paragraph={{ rows: 2, width: '60%' }} />
         </div>
       ) : (
-        <Toolbar
-          totalFiles={diff.files.length}
-          drawerOpen={drawerOpen}
-          onToggleDrawer={setDrawerOpen}
-          title={title}
-          subtitle={subtitle}
-        />
+        <Toolbar totalFiles={diff.files.length} title={title} subtitle={subtitle} />
       )}
 
       <div css={styles.content} ref={containerRef}>
-        {/* File explorer panel */}
-        <div css={styles.fileExplorerContainer(explorerWidth, drawerOpen, dragging)}>{fileExplorer}</div>
+        {/* Drawer panel */}
+        <div css={styles.drawerContainer(explorerWidth, drawerOpen, dragging)}>
+          <Drawer
+            contents={drawerContents}
+            state={drawerOpen ? 'open' : 'closed'}
+            default="file-explorer"
+            onStateChange={(state) => setDrawerOpen(state === 'open')}
+          />
+        </div>
 
         {/* Drag handle */}
         {!metadataLoading && !diffLoading && drawerOpen && (

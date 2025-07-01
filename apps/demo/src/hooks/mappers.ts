@@ -1,4 +1,5 @@
-import type { GitHubPullRequest, PullRequestMetadata } from './types'
+import { PullRequestMetadata } from '@diff-viewer/dist'
+import type { GitHubPullRequest } from './types'
 
 /**
  * @param pr - The raw payload returned by GitHub's `GET /repos/:owner/:repo/pulls/:number` endpoint.

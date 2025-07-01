@@ -1,19 +1,22 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { DEFAULT_CODE_PANEL_CONFIG, CodePanelConfigProvider } from '../../code-panel/providers/code-panel-context'
-import { CodePanelConfig } from '../../code-panel/providers/types'
+import {
+  CodePanelConfigProvider,
+  DEFAULT_CODE_PANEL_CONFIG,
+  useCodePanelConfig,
+} from '../../code-panel/providers/code-panel-context'
 import {
   DEFAULT_FILE_EXPLORER_CONFIG,
   FileExplorerConfigProvider,
+  useFileExplorerConfig,
 } from '../../file-explorer/provider/file-explorer-context'
-import { FileExplorerConfig } from '../../file-explorer/types'
 import { ThemeProvider } from '../../shared/providers/theme-context'
 import { Themes, ThemeTokens } from '../../shared/themes'
-import { DiffViewerConfigContextProps, DiffViewerConfigContextState } from './types'
+import { DiffViewerConfigContextProps, DiffViewerThemeContextState } from './types'
 
 /**
  * Keeps the configuration context for the DiffViewer component.
  */
-export const DiffViewerConfigContext = createContext<DiffViewerConfigContextState | undefined>(undefined)
+export const DiffViewerConfigContext = createContext<DiffViewerThemeContextState | undefined>(undefined)
 
 export const DiffViewerConfigProvider: React.FC<DiffViewerConfigContextProps> = ({
   children,
@@ -42,15 +45,8 @@ export const DiffViewerConfigProvider: React.FC<DiffViewerConfigContextProps> = 
 
   const [theme, setTheme] = useState<ThemeTokens>(storedConfig?.theme ?? initialTheme)
 
-  const [codePanelConfig, setCodePanelConfig] = useState<CodePanelConfig>(initialCodePanelConfig)
-  const [fileExplorerConfig, setFileExplorerConfig] = useState<FileExplorerConfig>(initialFileExplorerConfig)
-
-  const value = {
-    codePanelConfig,
-    fileExplorerConfig,
+  const value: DiffViewerThemeContextState = {
     theme,
-    setCodePanelConfig,
-    setFileExplorerConfig,
     setTheme,
   }
 
@@ -69,8 +65,8 @@ export const DiffViewerConfigProvider: React.FC<DiffViewerConfigContextProps> = 
   return (
     <ThemeProvider theme={theme ?? Themes.light}>
       <DiffViewerConfigContext.Provider value={value}>
-        <FileExplorerConfigProvider config={fileExplorerConfig} storage={storage}>
-          <CodePanelConfigProvider config={codePanelConfig} storage={storage}>
+        <FileExplorerConfigProvider config={initialFileExplorerConfig} storage={storage}>
+          <CodePanelConfigProvider config={initialCodePanelConfig} storage={storage}>
             {children}
           </CodePanelConfigProvider>
         </FileExplorerConfigProvider>
@@ -79,10 +75,40 @@ export const DiffViewerConfigProvider: React.FC<DiffViewerConfigContextProps> = 
   )
 }
 
-export const useDiffViewerConfig = (): DiffViewerConfigContextState => {
+export const useDiffViewerConfig = () => {
   const context = useContext(DiffViewerConfigContext)
   if (!context) {
     throw new Error('useDiffViewerConfig must be used within a ConfigProvider')
   }
-  return context
+
+  /*
+   * Attempt to read configs from the specialized providers. These calls will
+   * throw if the corresponding provider is missing – we guard against that so
+   * `useDiffViewerConfig` continues to work even when the hook is used outside
+   * of a CodePanel/FileExplorer provider (e.g. in fallback code paths).
+   */
+  let codePanelConfig, setCodePanelConfig, fileExplorerConfig, setFileExplorerConfig
+  try {
+    const codePanelCtx = useCodePanelConfig()
+    codePanelConfig = codePanelCtx.config
+    setCodePanelConfig = codePanelCtx.setConfig
+  } catch {
+    // noop – keep undefined so consumers can handle the absence
+  }
+
+  try {
+    const fileExplorerCtx = useFileExplorerConfig()
+    fileExplorerConfig = fileExplorerCtx.config
+    setFileExplorerConfig = fileExplorerCtx.setConfig
+  } catch {
+    // noop
+  }
+
+  return {
+    ...context,
+    codePanelConfig,
+    setCodePanelConfig,
+    fileExplorerConfig,
+    setFileExplorerConfig,
+  }
 }
