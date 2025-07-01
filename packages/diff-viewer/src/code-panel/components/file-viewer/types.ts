@@ -24,6 +24,8 @@ export interface SplitLineViewerProps {
   wrapLines?: boolean
   /** Whether the viewer is currently visible (for performance optimization) */
   visible?: boolean
+  /** Content key for caching row heights (optional) */
+  contentKey?: string
 }
 
 /**

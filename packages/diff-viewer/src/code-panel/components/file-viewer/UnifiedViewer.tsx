@@ -1,5 +1,5 @@
 import { css } from '@emotion/react'
-import React, { useContext, useLayoutEffect, useRef, useState } from 'react'
+import React, { useContext, useLayoutEffect, useRef, useState, useMemo } from 'react'
 import { ThemeContext } from '../../../shared/providers/theme-context'
 import { useCodePanelConfig } from '../../providers/code-panel-context'
 import DiffLine from '../line-viewer/DiffLine'
@@ -8,17 +8,20 @@ import { UnifiedViewerProps } from './types'
 const useStyles = (wrapLines: boolean) => {
   const theme = useContext(ThemeContext)
 
-  return {
-    container: css`
-      display: table;
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: ${wrapLines ? 'auto' : 'fixed'};
-      overflow-y: hidden;
-      ${!wrapLines ? 'display: block; overflow-x: auto;' : ''}
-      background-color: ${theme.colors.hunkViewerBg};
-    `,
-  }
+  return useMemo(
+    () => ({
+      container: css`
+        display: table;
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: ${wrapLines ? 'auto' : 'fixed'};
+        overflow-y: hidden;
+        ${!wrapLines ? 'display: block; overflow-x: auto;' : ''}
+        background-color: ${theme.colors.hunkViewerBg};
+      `,
+    }),
+    [theme, wrapLines],
+  )
 }
 
 const UnifiedViewer: React.FC<UnifiedViewerProps> = ({ lines, wrapLines: initialWrapLines, visible = true }) => {

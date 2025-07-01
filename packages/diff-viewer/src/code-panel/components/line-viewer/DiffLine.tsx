@@ -117,7 +117,7 @@ const useStyles = (lineType: DiffLineType, wrapLines: boolean) => {
   }
 }
 
-const DiffLine = forwardRef<HTMLTableRowElement, DiffLineProps>(function DiffLine(props, ref) {
+const RawDiffLine = forwardRef<HTMLTableRowElement, DiffLineProps>(function DiffLine(props, ref) {
   const styles = useStyles(props.type, props.wrapLines ?? true)
   const rightOffset = props.stickyOffsets?.rightNumber ?? 0
   const prefixOffset = props.stickyOffsets?.prefix ?? 0
@@ -155,4 +155,22 @@ const DiffLine = forwardRef<HTMLTableRowElement, DiffLineProps>(function DiffLin
   )
 })
 
-export default DiffLine
+const areEqual = (prev: DiffLineProps, next: DiffLineProps) => {
+  // A very cheap shallow comparison – the vast majority of props are
+  // primitives or stable references. If nothing changed, skip re-render.
+  return (
+    prev.content === next.content &&
+    prev.leftNumber === next.leftNumber &&
+    prev.rightNumber === next.rightNumber &&
+    prev.type === next.type &&
+    prev.wrapLines === next.wrapLines &&
+    prev.view === next.view &&
+    prev.showNumber === next.showNumber &&
+    prev.hideLeftNumber === next.hideLeftNumber &&
+    prev.hideRightNumber === next.hideRightNumber &&
+    prev.stickyOffsets?.prefix === next.stickyOffsets?.prefix &&
+    prev.stickyOffsets?.rightNumber === next.stickyOffsets?.rightNumber
+  )
+}
+
+export default React.memo(RawDiffLine, areEqual)

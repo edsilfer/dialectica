@@ -62,7 +62,7 @@ function Harness({ left, right }: { left: number[]; right: number[] }) {
 describe('useRowHeightSync', () => {
   it('applies the max height to each row pair', async () => {
     const left = [10, 30, 25]
-    const right = [20, 15, 25]
+    const right = [20, 15, 30]
 
     render(<Harness left={left} right={right} />)
 
