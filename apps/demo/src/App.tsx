@@ -78,7 +78,6 @@ export default function App() {
     owner: selectedPr?.owner ?? '',
     repo: selectedPr?.repo ?? '',
     pullNumber: selectedPr?.prNumber ?? 0,
-    forceDelayMs: 1000,
   })
 
   const {

@@ -84,3 +84,84 @@ export interface UseGetPrDiffReturn {
   /** Manually trigger a refetch */
   refetch: () => void
 }
+
+/**
+ * Represents a GitHub inline comment (pull request review comment).
+ */
+export interface GitHubInlineComment {
+  /** Unique identifier of the comment */
+  id: number
+  /** Node ID for GraphQL API compatibility */
+  node_id: string
+  /** URL to the comment via API */
+  url: string
+  /** The comment body/content */
+  body: string
+  /** File path where the comment was made */
+  path: string
+  /** Line number where the comment was made */
+  line?: number | null
+  /** Original line number (for outdated comments) */
+  original_line?: number | null
+  /** Start line for multi-line comments */
+  start_line?: number | null
+  /** Original start line for multi-line comments */
+  original_start_line?: number | null
+  /** Side of the diff ('LEFT' for deletion, 'RIGHT' for addition) */
+  side?: 'LEFT' | 'RIGHT'
+  /** Start side for multi-line comments */
+  start_side?: 'LEFT' | 'RIGHT' | null
+  /** Position in the diff */
+  position?: number | null
+  /** Original position in the diff */
+  original_position?: number | null
+  /** Commit SHA the comment is associated with */
+  commit_id: string
+  /** Original commit SHA */
+  original_commit_id: string
+  /** Comment author */
+  user: {
+    login: string
+    id: number
+    avatar_url: string
+    html_url: string
+  }
+  /** When the comment was created */
+  created_at: string
+  /** When the comment was last updated */
+  updated_at: string
+  /** HTML URL to view the comment */
+  html_url: string
+  /** Pull request URL */
+  pull_request_url: string
+  /** Author's association with the repository */
+  author_association: string
+  /** ID of the comment this is replying to */
+  in_reply_to_id?: number | null
+  /** Pull request review ID */
+  pull_request_review_id?: number | null
+  /** Subject type */
+  subject_type?: string
+}
+
+export interface UseListInlineCommentsParams {
+  /** Repository owner/organization. Example: "facebook" */
+  owner: string
+  /** Repository name. Example: "react" */
+  repo: string
+  /** Pull request number */
+  pullNumber: number
+  /** Artificial delay in milliseconds to wait before resolving the request. Useful for demo/testing purposes. */
+  forceDelayMs?: number
+}
+
+export interface UseListInlineCommentsReturn {
+  /** Array of inline comments for the PR. Undefined while loading for the first time or when an error occurs. */
+  data: GitHubInlineComment[] | undefined
+  /** True while an API call is in flight */
+  loading: boolean
+  /** Any error thrown by the request. Reset to undefined on subsequent successful fetches. */
+  error: Error | undefined
+  /** Manually trigger a refetch */
+  refetch: () => void
+}
