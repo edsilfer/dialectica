@@ -19,7 +19,7 @@ const getStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) => ({
   container: css`
     display: flex;
     flex-direction: column;
-    gap: ${theme.spacing.sm};
+    gap: ${theme.spacing.xs};
     height: 100%;
     width: 100%;
   `,
@@ -30,7 +30,7 @@ const getStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) => ({
     flex: 1;
     width: 100%;
     overflow: hidden;
-    gap: ${theme.spacing.md};
+    gap: ${theme.spacing.sm};
   `,
 
   drawerContainer: (explorerWidth: number, drawerOpen: boolean, dragging: boolean) => css`
