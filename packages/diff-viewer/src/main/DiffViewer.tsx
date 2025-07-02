@@ -5,8 +5,8 @@ import { FileExplorer } from '../file-explorer/FileExplorer'
 import DirectoryIcon from '../shared/icons/Directory'
 import HandleIcon from '../shared/icons/HandleIcon'
 import { Themes } from '../shared/themes'
+import { Toolbar as DefaultToolbar } from '../utilities/toolbar/DefaultToolbar'
 import { Drawer } from './components/drawer/Drawer'
-import { Toolbar } from './components/Toolbar'
 import { useResizablePanel } from './hook/use-resizable-panel'
 import { DiffViewerConfigProvider, useDiffViewerConfig } from './providers/diff-viewer-context'
 import { DiffViewerProps } from './types'
@@ -158,12 +158,7 @@ const DiffViewerContent: React.FC<DiffViewerProps> = (props) => {
 
   return (
     <div css={styles.container}>
-      <Toolbar
-        totalFiles={props.diff.files.length}
-        title={props.title}
-        subtitle={props.subtitle}
-        loading={!!(props.isMetadataLoading ?? false)}
-      />
+      {props.toolbar ? props.toolbar : <DefaultToolbar loading={!!(props.isMetadataLoading ?? false)} />}
 
       <div css={styles.content} ref={containerRef}>
         {(props.enableFileExplorer ?? true) && (

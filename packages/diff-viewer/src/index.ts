@@ -14,6 +14,8 @@ export { FileExplorerConfigProvider, useFileExplorerConfig } from './file-explor
 export type { FileExplorerConfig } from './file-explorer/types'
 export * from './main/DiffViewer'
 export * from './main/providers/diff-viewer-context'
+export type { CustomButton, ToolbarWidget, DefaultToolbarProps } from './utilities/toolbar/types'
+export { Toolbar as DefaultToolbar } from './utilities/toolbar/DefaultToolbar'
 export * from './shared/parsers/DiffParserAdapter'
 export * from './shared/themes'
 export * from './utilities/pull-request'

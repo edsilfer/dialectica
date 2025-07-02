@@ -1,4 +1,4 @@
-import { DiffViewer, PullRequestHeader, useDiffViewerConfig } from '@diff-viewer'
+import { DefaultToolbar, DiffViewer, PullRequestHeader, useDiffViewerConfig } from '@diff-viewer'
 import { css } from '@emotion/react'
 import { Typography } from 'antd'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -92,16 +92,16 @@ export default function App() {
 
   const handleSearch = useCallback((pr: ParsedPR) => setSelectedPr(pr), [])
 
-  // Aggregate any errors returned by metadata or diff hooks
   const error = prMetaError ?? prDiffError
-
-  const prHeader = useMemo(() => {
-    if (!prMetadata) return undefined
-    return <PullRequestHeader pr={prMetadata} />
-  }, [prMetadata])
-
-  // Determine which diff to render (fallback to sample diff when no PR is selected)
   const displayedDiff: React.ComponentProps<typeof DiffViewer>['diff'] = prDiffData ?? emptyDiff
+
+  if (error) {
+    return <ErrorCard error={error} />
+  }
+
+  const toolbar = (
+    <DefaultToolbar loading={prMetaLoading} header={prMetadata ? <PullRequestHeader pr={prMetadata} /> : undefined} />
+  )
 
   return (
     <div css={styles.container}>
@@ -118,7 +118,7 @@ export default function App() {
         ) : (
           <DiffViewer
             diff={displayedDiff}
-            title={prHeader}
+            toolbar={toolbar}
             isMetadataLoading={prMetaLoading}
             isDiffLoading={prDiffLoading || !prDiffData}
           />
