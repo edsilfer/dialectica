@@ -1,79 +1,133 @@
 import { css } from '@emotion/react'
-import React, { useContext, useLayoutEffect, useRef, useState, useMemo } from 'react'
+import React, { useCallback, useContext, useMemo } from 'react'
+import AddButton from '../../../shared/components/buttons/AddButton'
+import LoadMoreLines from '../../../shared/icons/LoadMoreLines'
 import { ThemeContext } from '../../../shared/providers/theme-context'
 import { useCodePanelConfig } from '../../providers/code-panel-context'
-import DiffLine from '../line-viewer/DiffLine'
-import { UnifiedViewerProps } from './types'
+import {
+  addButtonStyle,
+  COLUMN,
+  containerStyle,
+  getBgColor,
+  getNumberBgColor,
+  makeCellBase,
+  makePrefixCellBase,
+  makeSticky,
+  rowStyle,
+} from './style-utils'
+import { DiffLineType, UnifiedViewerProps } from './types'
 
 const useStyles = (wrapLines: boolean) => {
   const theme = useContext(ThemeContext)
+  const BG = getBgColor(theme)
+  const NUMBER_BG = getNumberBgColor(theme)
+  const cellBase = makeCellBase(theme)
 
   return useMemo(
     () => ({
-      container: css`
-        display: table;
+      container: containerStyle(theme),
+
+      table: css`
         width: 100%;
         border-collapse: collapse;
         table-layout: ${wrapLines ? 'auto' : 'fixed'};
-        overflow-y: hidden;
-        ${!wrapLines ? 'display: block; overflow-x: auto;' : ''}
-        background-color: ${theme.colors.hunkViewerBg};
       `,
+
+      row: rowStyle(theme),
+      addButton: addButtonStyle,
+
+      numberCell: (offset: number, type: DiffLineType) => [
+        cellBase,
+        makeSticky(offset),
+        css`
+          width: ${COLUMN.number}px;
+          text-align: center;
+          user-select: none;
+          background: ${NUMBER_BG[type]};
+        `,
+      ],
+
+      preffixWrapper: css`
+        position: relative;
+        height: 100%;
+      `,
+
+      prefixCell: (offset: number, type: DiffLineType) => makePrefixCellBase(theme, offset, BG[type]),
+
+      codeCell: (type: DiffLineType) => [
+        cellBase,
+        css`
+          white-space: ${wrapLines ? 'pre-wrap' : 'pre'};
+          background: ${BG[type]};
+        `,
+      ],
     }),
-    [theme, wrapLines],
+    [BG, NUMBER_BG, theme, wrapLines, cellBase],
   )
 }
 
-const UnifiedViewer: React.FC<UnifiedViewerProps> = ({ lines, wrapLines: initialWrapLines, visible = true }) => {
+const UnifiedViewer: React.FC<UnifiedViewerProps> = (props) => {
+  const { lines, wrapLines: initialWrapLines = true } = props
   const { config } = useCodePanelConfig()
-  const wrapLines = initialWrapLines ?? true
-  const styles = useStyles(wrapLines)
+  const styles = useStyles(initialWrapLines)
 
-  const tableRef = useRef<HTMLTableElement>(null)
-  const [offsets, setOffsets] = useState<{ rightNumber: number; prefix: number }>({
-    rightNumber: 0,
-    prefix: 0,
-  })
+  const rightNumberOffset = config.showLineNumbers ? COLUMN.number : 0
+  const prefixOffset = config.showLineNumbers ? COLUMN.number * 2 : 0
 
-  // Measure column widths after first render
-  useLayoutEffect(() => {
-    if (!visible || !tableRef.current) return
-    const firstRow = tableRef.current.querySelector('tbody tr')
-    if (!firstRow) return
-    const cells = Array.from(firstRow.children) as HTMLElement[]
-    if (cells.length < 3) return
-    const leftWidth = cells[0].getBoundingClientRect().width
-    const rightWidth = cells[1].getBoundingClientRect().width
-    setOffsets({ rightNumber: leftWidth, prefix: leftWidth + rightWidth })
-  }, [lines, visible])
+  const renderNumber = useCallback((no: number | null) => (no !== null ? <span>{no}</span> : null), [])
+
+  const renderPrefix = useCallback(
+    (type: DiffLineType, onAdd: () => void) => (
+      <div css={styles.preffixWrapper}>
+        {type !== 'hunk' && <AddButton css={styles.addButton} className="add-comment-btn" onClick={onAdd} />}
+        {type === 'add' && '+'}
+        {type === 'delete' && '-'}
+      </div>
+    ),
+    [styles.addButton, styles.preffixWrapper],
+  )
 
   return (
-    <table css={styles.container} ref={tableRef}>
-      {/*
-        React inserts whitespace text nodes for the literal spaces/newlines that
-        appear between elements inside <colgroup>, which is invalid HTML and
-        triggers a hydration error. By generating the <col> elements via a
-        JavaScript expression and keeping the closing tag tight to the
-        expression, no stray whitespace nodes are produced.
-      */}
-      <colgroup>{[<col key="left" />, <col key="right" />, <col key="prefix" />, <col key="code" />]}</colgroup>
-      <tbody>
-        {lines.map((line, i) => (
-          <DiffLine
-            key={i === 0 ? 'hunk-header' : `${line.type}-${i}`}
-            leftNumber={line.lineNumberOld}
-            rightNumber={line.lineNumberNew}
-            content={line.highlightedContent}
-            showNumber={!!config.showLineNumbers}
-            type={line.type}
-            onAddButtonClick={() => console.log('Add comment clicked')}
-            wrapLines={wrapLines}
-            view="unified"
-            stickyOffsets={offsets}
-          />
-        ))}
-      </tbody>
-    </table>
+    <div css={styles.container} data-diff-container>
+      <table css={styles.table}>
+        <colgroup>
+          {config.showLineNumbers && <col style={{ width: COLUMN.number }} />}
+          {config.showLineNumbers && <col style={{ width: COLUMN.number }} />}
+          <col style={{ width: COLUMN.prefix }} />
+          <col />
+        </colgroup>
+
+        <tbody>
+          {lines.map((line, idx) => {
+            return (
+              <tr key={idx === 0 ? 'hunk-header' : `${line.type}-${idx}`} css={styles.row}>
+                {config.showLineNumbers && (
+                  <td css={styles.numberCell(0, line.type)}>
+                    {line.type === 'hunk' ? (
+                      <LoadMoreLines size={24} direction="bi-directional" />
+                    ) : (
+                      renderNumber(line.lineNumberOld)
+                    )}
+                  </td>
+                )}
+
+                {config.showLineNumbers && (
+                  <td css={styles.numberCell(rightNumberOffset, line.type)}>{renderNumber(line.lineNumberNew)}</td>
+                )}
+
+                <td css={styles.prefixCell(prefixOffset, line.type)}>
+                  {renderPrefix(line.type, () => console.log('Add comment clicked'))}
+                </td>
+
+                <td css={styles.codeCell(line.type)}>
+                  <span dangerouslySetInnerHTML={{ __html: line.highlightedContent || '&nbsp;' }} />
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
   )
 }
 

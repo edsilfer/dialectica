@@ -6,13 +6,12 @@ import ExpandButton from '../../../shared/components/buttons/ExpandButton'
 import { detectLanguage } from '../../../shared/parsers/language-utils'
 import { ThemeContext } from '../../../shared/providers/theme-context'
 import { useCodePanelConfig } from '../../providers/code-panel-context'
-import type { LineWithHighlight } from '../line-viewer/types'
 import CopyButton from './buttons/CopyButton'
 import WrapLinesButton from './buttons/LineWrapButton'
 import { buildSplitHunkPairs, escapeHtml, highlightContent } from './split-utils'
-import SplitViewer from './SplitViewer'
-import { FileViewerProps, SplitLinePair } from './types'
+import { FileViewerProps, LineWithHighlight, SplitLinePair } from './types'
 import UnifiedViewer from './UnifiedViewer'
+import SplitViewer from './SplitViewer'
 
 const { Text } = Typography
 
@@ -174,14 +173,6 @@ const FileViewer: React.FC<FileViewerProps> = ({ id, file }) => {
 
   const viewed = useMemo(() => viewedFiles.includes(fileKey), [viewedFiles, fileKey])
 
-  // Generate a stable content key for caching based on file content
-  const contentKey = useMemo(() => {
-    const hunksContent = file.hunks
-      .map((hunk) => `${hunk.content}:${hunk.changes.map((change) => `${change.type}:${change.content}`).join('|')}`)
-      .join('@@')
-    return `${fileKey}:${language}:${hunksContent.length}:${hunksContent.slice(0, 100)}`
-  }, [file.hunks, fileKey, language])
-
   const isSplit = config.mode === 'split'
   const isUnified = config.mode === 'unified'
 
@@ -231,7 +222,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ id, file }) => {
         <FileActivitySummary file={file} />
         <Text className="file-path">{filePath}</Text>
         <CopyButton onClick={handleCopyFilePath} tooltip="Copy file path" toastText="File path copied to clipboard" />
-        <WrapLinesButton isWrapped={wrapLines} onClick={() => setWrapLines((prev) => !prev)} size={16} />
+        {isUnified && <WrapLinesButton isWrapped={wrapLines} onClick={() => setWrapLines((prev) => !prev)} size={16} />}
 
         <div css={styles.rightContainer}>
           <Checkbox css={styles.viewedCheckbox} checked={viewed} onChange={(e) => handleToggleViewed(e.target.checked)}>
@@ -242,9 +233,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ id, file }) => {
 
       <div css={collapsed ? styles.bodyCollapsed : styles.bodyExpanded}>
         <div css={styles.hunksContainer}>
-          {isSplit && (
-            <SplitViewer pairs={splitPairs} wrapLines={wrapLines} visible={!collapsed} contentKey={contentKey} />
-          )}
+          {isSplit && <SplitViewer pairs={splitPairs} />}
           {isUnified && <UnifiedViewer lines={unifiedLines} wrapLines={wrapLines} visible={!collapsed} />}
         </div>
       </div>

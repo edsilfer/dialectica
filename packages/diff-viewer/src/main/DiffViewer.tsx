@@ -71,8 +71,8 @@ const getStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) => ({
 })
 
 /**
- * Design Decision: React 18 transition-based deferred rendering for performance.
- * Heavy components are rendered after user interactions complete, keeping UI responsive.
+ * - Design Decision: React 18 transition-based deferred rendering for performance.
+ * - Heavy components are rendered after user interactions complete, keeping UI responsive.
  */
 const useDeferredReady = (isLoading: boolean): boolean => {
   const [ready, setReady] = useState(false)

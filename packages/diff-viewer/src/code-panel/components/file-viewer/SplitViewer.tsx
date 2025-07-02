@@ -1,137 +1,177 @@
 import { css } from '@emotion/react'
-import React, { useCallback, useContext, useLayoutEffect, useRef, useState, useMemo } from 'react'
+import React, { useCallback, useContext } from 'react'
+import AddButton from '../../../shared/components/buttons/AddButton'
 import { ThemeContext } from '../../../shared/providers/theme-context'
 import { useCodePanelConfig } from '../../providers/code-panel-context'
-import DiffLine from '../line-viewer/DiffLine'
-import useRowHeightSync from '../line-viewer/hooks/use-row-height-sync'
-import { useSynchronizedScroll } from '../line-viewer/hooks/use-synchronize-scroll'
-import { measurePrefixWidth } from '../line-viewer/lint-utils'
-import { Side } from '../line-viewer/types'
-import { SplitLineViewerProps } from './types'
+import { DiffLineType, SplitLinePair } from './types'
+import {
+  COLUMN,
+  getBgColor,
+  getNumberBgColor,
+  makeCellBase,
+  makePrefixCellBase,
+  makeSticky,
+  containerStyle,
+  rowStyle,
+  addButtonStyle,
+} from './style-utils'
 
-const useStyles = (wrapLines: boolean) => {
+const useStyles = () => {
   const theme = useContext(ThemeContext)
 
-  return useMemo(
-    () => ({
-      container: css`
-        display: flex;
-        flex-direction: row;
-        background-color: ${theme.colors.hunkViewerBg};
-      `,
+  const BG = getBgColor(theme)
+  const NUMBER_BG = getNumberBgColor(theme)
 
-      table: css`
-        width: 50%;
-        border-collapse: collapse;
-        table-layout: ${wrapLines ? 'auto' : 'fixed'};
-        overflow-y: hidden;
-        ${!wrapLines ? 'display: block; overflow-x: auto;' : ''}
+  const cellBase = makeCellBase(theme)
+  const sticky = makeSticky
+
+  return {
+    container: containerStyle(theme),
+    table: css`
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    `,
+    row: rowStyle(theme),
+
+    numberCell: (lineType: DiffLineType, offset: number, side: 'left' | 'right') => [
+      cellBase,
+      sticky(offset),
+      css`
+        width: ${COLUMN.number}px;
+        text-align: center;
+        user-select: none;
+        background: ${NUMBER_BG[lineType]};
+        ${side === 'right' && lineType !== 'hunk' ? `border-left: 1px solid ${theme.colors.border};` : ''};
       `,
-    }),
-    [theme, wrapLines],
-  )
+    ],
+
+    preffixWrapper: css`
+      position: relative;
+      height: 100%;
+    `,
+
+    prefixCell: (lineType: DiffLineType, offset: number) => makePrefixCellBase(theme, offset, BG[lineType]),
+
+    codeCell: (lineType: DiffLineType, wrapLines: boolean) => [
+      cellBase,
+      css`
+        white-space: ${wrapLines ? 'pre-wrap' : 'pre'};
+        background: ${BG[lineType]};
+      `,
+    ],
+
+    addButton: addButtonStyle,
+  }
 }
 
-const SIDES: Side[] = ['left', 'right']
-
-const SplitViewer: React.FC<SplitLineViewerProps> = ({
-  pairs,
-  wrapLines: initialWrapLines,
-  visible = true,
-  contentKey: propsContentKey,
-}) => {
+const SplitViewer: React.FC<{ pairs: SplitLinePair[] }> = ({ pairs }) => {
   const { config } = useCodePanelConfig()
-  const wrapLines = initialWrapLines ?? true
-  const styles = useStyles(wrapLines)
+  const styles = useStyles()
 
-  // Use provided content key or generate one as fallback
-  const contentKey = useMemo(() => {
-    if (propsContentKey) {
-      return `${propsContentKey}:wrap-${wrapLines}`
-    }
-
-    // Fallback: Create a hash of the content to identify identical data
-    const contentString = pairs
-      .map((pair) => {
-        const leftContent = pair.left ? `${pair.left.type}:${pair.left.content}` : 'empty'
-        const rightContent = pair.right ? `${pair.right.type}:${pair.right.content}` : 'empty'
-        return `${leftContent}|${rightContent}`
-      })
-      .join('@@')
-
-    return `split:${wrapLines}:${contentString.length}:${contentString.slice(0, 100)}`
-  }, [propsContentKey, pairs, wrapLines])
-
-  const registerRow = useRowHeightSync(pairs.length, wrapLines, visible, contentKey)
-
-  const leftTableRef = useRef<HTMLTableElement>(null)
-  const rightTableRef = useRef<HTMLTableElement>(null)
-
-  const [prefixOffsets, setPrefixOffsets] = useState<Record<Side, number>>({
-    left: 0,
-    right: 0,
-  })
-
-  // Re-measure when the data changes (e.g. collapsed/expanded hunks).
-  useLayoutEffect(() => {
-    if (!visible) return
-    setPrefixOffsets({
-      left: measurePrefixWidth(leftTableRef.current),
-      right: measurePrefixWidth(rightTableRef.current),
-    })
-  }, [pairs, visible])
-
-  // Keep horizontal scrolling in sync between both tables.
-  useSynchronizedScroll(leftTableRef, rightTableRef, visible)
-
-  /** Renders one of the two side-by-side tables. */
-  const renderTable = useCallback(
-    (side: Side) => {
-      const isLeft = side === 'left'
-
-      return (
-        <table key={side} css={styles.table} ref={isLeft ? leftTableRef : rightTableRef}>
-          <colgroup>
-            <col />
-            <col />
-            <col />
-          </colgroup>
-          <tbody>
-            {pairs.map((pair, i) => {
-              const line = isLeft ? pair.left : pair.right
-              const isHeader = pair.left?.type === 'hunk' || pair.right?.type === 'hunk'
-
-              return (
-                <DiffLine
-                  ref={registerRow(side, i)}
-                  key={`${side}-${i}`}
-                  leftNumber={isLeft && line ? line.lineNumberOld : null}
-                  rightNumber={!isLeft && line ? line.lineNumberNew : null}
-                  hideRightNumber={isLeft}
-                  hideLeftNumber={!isLeft}
-                  content={!isLeft && isHeader ? '' : line ? line.highlightedContent : ''}
-                  showNumber={!!config.showLineNumbers}
-                  type={line ? line.type : 'empty'}
-                  onAddButtonClick={() => console.log('Add comment clicked')}
-                  wrapLines={wrapLines}
-                  view="split"
-                  stickyOffsets={{
-                    rightNumber: 0,
-                    prefix: prefixOffsets[side],
-                  }}
-                />
-              )
-            })}
-          </tbody>
-        </table>
-      )
-    },
-    [pairs, prefixOffsets, registerRow, config.showLineNumbers, wrapLines, styles.table],
+  const renderNumber = useCallback(
+    (type: DiffLineType, no: number | null) => (no !== null ? <span>{no}</span> : null),
+    [],
   )
+
+  const renderPrefix = useCallback(
+    (type: DiffLineType, onAdd: () => void) => (
+      <div css={styles.preffixWrapper}>
+        {type !== 'hunk' && <AddButton css={styles.addButton} className="add-comment-btn" onClick={onAdd} />}
+        {type === 'add' && '+'}
+        {type === 'delete' && '-'}
+      </div>
+    ),
+    [styles.addButton, styles.preffixWrapper],
+  )
+
+  const isHunkHeader = (l: DiffLineType, r: DiffLineType) => l === 'hunk' || r === 'hunk'
 
   return (
     <div css={styles.container} data-diff-container>
-      {SIDES.map(renderTable)}
+      <table css={styles.table}>
+        <colgroup>
+          {config.showLineNumbers && <col style={{ width: COLUMN.number }} />}
+          <col style={{ width: COLUMN.prefix }} />
+          <col />
+          {config.showLineNumbers && <col style={{ width: COLUMN.number }} />}
+          <col style={{ width: COLUMN.prefix }} />
+          <col />
+        </colgroup>
+
+        <tbody>
+          {pairs.map(({ left, right }, idx) => {
+            const leftType = left?.type ?? 'empty'
+            const rightType = right?.type ?? 'empty'
+
+            const offset = {
+              leftNumber: 0,
+              leftPrefix: config.showLineNumbers ? COLUMN.number : 0,
+              rightNumber:
+                (config.showLineNumbers ? COLUMN.number : 0) +
+                COLUMN.prefix +
+                (config.showLineNumbers ? COLUMN.number : 0),
+              rightPrefix:
+                (config.showLineNumbers ? COLUMN.number : 0) +
+                COLUMN.prefix +
+                (config.showLineNumbers ? COLUMN.number : 0) +
+                COLUMN.prefix,
+            }
+
+            return (
+              <tr key={idx} css={styles.row}>
+                {/* LEFT SIDE */}
+                {config.showLineNumbers && (
+                  <td css={styles.numberCell(leftType, offset.leftNumber, 'left')} className="split-viewer-left-row">
+                    {renderNumber(leftType, left?.lineNumberOld ?? null)}
+                  </td>
+                )}
+
+                <td css={styles.prefixCell(leftType, offset.leftPrefix)} className="split-viewer-left-row">
+                  {left && renderPrefix(leftType, () => console.log('Add comment clicked (left)'))}
+                </td>
+
+                <td css={styles.codeCell(leftType, true)} className="split-viewer-left-row">
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: left?.highlightedContent ?? '&nbsp;',
+                    }}
+                  />
+                </td>
+
+                {/* RIGHT SIDE */}
+                {config.showLineNumbers && (
+                  <td
+                    css={styles.numberCell(rightType, offset.rightNumber, 'right')}
+                    className="split-viewer-right-row"
+                  >
+                    {renderNumber(rightType, right?.lineNumberNew ?? null)}
+                  </td>
+                )}
+
+                <td css={styles.prefixCell(rightType, offset.rightPrefix)} className="split-viewer-right-row">
+                  {right &&
+                    !isHunkHeader(leftType, rightType) &&
+                    renderPrefix(rightType, () => console.log('Add comment clicked (right)'))}
+                </td>
+
+                <td css={styles.codeCell(rightType, true)} className="split-viewer-right-row">
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        !isHunkHeader(leftType, rightType) && right
+                          ? right.highlightedContent
+                          : isHunkHeader(leftType, rightType)
+                            ? ''
+                            : '&nbsp;',
+                    }}
+                  />
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
     </div>
   )
 }

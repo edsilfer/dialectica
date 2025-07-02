@@ -1,5 +1,8 @@
 import { FileDiff } from '../../../shared/parsers/types'
-import { LineWithHighlight } from '../line-viewer/types'
+
+export type DiffLineType = 'add' | 'delete' | 'context' | 'hunk' | 'empty'
+
+export type Side = 'left' | 'right'
 
 export interface FileViewerProps {
   /** A unique identifier for the file viewer. */
@@ -17,17 +20,6 @@ export interface UnifiedViewerProps {
   visible?: boolean
 }
 
-export interface SplitLineViewerProps {
-  /** Pre-built left/right line pairs ready for rendering */
-  pairs: SplitLinePair[]
-  /** Whether to wrap long lines or enable horizontal scrolling (defaults to true). */
-  wrapLines?: boolean
-  /** Whether the viewer is currently visible (for performance optimization) */
-  visible?: boolean
-  /** Content key for caching row heights (optional) */
-  contentKey?: string
-}
-
 /**
  * Represents a single visual row in a split diff – the left and right halves.
  */
@@ -36,4 +28,20 @@ export interface SplitLinePair {
   left: LineWithHighlight | null
   /** The right side of the line pair */
   right: LineWithHighlight | null
+}
+
+/**
+ * Diff line augmented with a pre-computed syntax-highlighted HTML string.
+ */
+export interface LineWithHighlight {
+  /** The type of the line */
+  type: DiffLineType
+  /** The content of the line */
+  content: string
+  /** The highlighted content of the line */
+  highlightedContent: string
+  /** The line number of the left side of the hunk. If null, the line number is not shown. */
+  lineNumberOld: number | null
+  /** The line number of the right side of the hunk. If null, the line number is not shown. */
+  lineNumberNew: number | null
 }
