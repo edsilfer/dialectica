@@ -1,10 +1,11 @@
 import { css } from '@emotion/react'
+import { Skeleton } from 'antd'
 import React, { useContext, useEffect } from 'react'
+import { useDiffViewerConfig } from '../main/providers/diff-viewer-context'
 import { ThemeContext } from '../shared/providers/theme-context'
 import FileViewer from './components/file-viewer/FileViewer'
 import { CodePanelConfigProvider, useCodePanelConfig } from './providers/code-panel-context'
 import type { CodePanelProps } from './types'
-import { useDiffViewerConfig } from '../main/providers/diff-viewer-context'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -14,6 +15,11 @@ const useStyles = () => {
       display: flex;
       flex-direction: column;
       gap: ${theme.spacing.md};
+    `,
+    skeletonContainer: css`
+      flex: 1;
+      border-radius: ${theme.spacing.xs};
+      overflow: auto;
     `,
   }
 }
@@ -61,6 +67,15 @@ const CodePanelContent: React.FC<CodePanelProps> = (props) => {
     const keys = props.diff.files.map((f) => f.newPath || f.oldPath)
     setAllFileKeys(keys)
   }, [props.diff.files, setAllFileKeys])
+
+  // Show skeleton when loading
+  if (props.loading) {
+    return (
+      <div css={[styles.skeletonContainer, props.css]} className={props.className}>
+        <Skeleton active paragraph={{ rows: 4 }} />
+      </div>
+    )
+  }
 
   return (
     <div css={[styles.container, props.css]} className={props.className}>

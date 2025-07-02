@@ -3,6 +3,7 @@ import { FileExplorerConfig } from '../file-explorer/types'
 import { ParsedDiff } from '../shared/parsers/types'
 import { ThemeTokens } from '../shared/themes'
 import React from 'react'
+import { DrawerContent } from './components/drawer/types'
 
 export interface DiffViewerProps {
   /** The parsed diff to visualize. */
@@ -23,4 +24,8 @@ export interface DiffViewerProps {
   isMetadataLoading?: boolean
   /** Whether the diff (file content changes) is still loading. */
   isDiffLoading?: boolean
+  /** Whether to show the file explorer panel. Defaults to true. */
+  enableFileExplorer?: boolean
+  /** Additional drawer contents to be displayed alongside the built-in file explorer. */
+  additionalDrawerContents?: DrawerContent[]
 }

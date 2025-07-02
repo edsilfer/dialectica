@@ -1,11 +1,19 @@
 import { css, keyframes } from '@emotion/react'
-import { Button, Progress, Space, Tooltip, Typography } from 'antd'
+import { Button, Progress, Space, Tooltip, Typography, Skeleton } from 'antd'
 import React, { useContext } from 'react'
 import { useCodePanelConfig } from '../../code-panel/providers/code-panel-context'
 import { ThemeContext } from '../../shared/providers/theme-context'
 import { ToolbarProps } from './types'
 
 const { Text } = Typography
+
+// Constants for skeleton configuration
+const CONSTANTS = {
+  TOOLBAR_MIN_HEIGHT: '2rem',
+  SKELETON_ROWS: {
+    TOOLBAR: 2,
+  },
+} as const
 
 // Slide-in animations for the toolbar icons
 const slideInFromLeft = keyframes`
@@ -45,6 +53,17 @@ const useStyles = () => {
       color: ${theme.colors.textPrimary};
       font-family: ${theme.typography.regularFontFamily};
       font-size: ${theme.typography.regularFontSize}px;
+    `,
+
+    toolbarSkeleton: css`
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      min-height: ${CONSTANTS.TOOLBAR_MIN_HEIGHT};
+      padding: ${theme.spacing.xs};
+      background-color: ${theme.colors.backgroundPrimary};
+      border-top: 1px solid ${theme.colors.border};
+      width: 100%;
     `,
 
     closeDrawer: css`
@@ -104,10 +123,19 @@ const useStyles = () => {
   }
 }
 
-export const Toolbar: React.FC<ToolbarProps> = ({ totalFiles, title, subtitle }) => {
+export const Toolbar: React.FC<ToolbarProps> = ({ totalFiles, title, subtitle, loading = false }) => {
   const styles = useStyles()
   const { viewedFiles, allFileKeys, setCollapsedFiles, setViewedFiles } = useCodePanelConfig()
   const percent = totalFiles > 0 ? Math.round((viewedFiles.length / totalFiles) * 100) : 0
+
+  // Show skeleton when loading
+  if (loading) {
+    return (
+      <div css={styles.toolbarSkeleton}>
+        <Skeleton active title={false} paragraph={{ rows: CONSTANTS.SKELETON_ROWS.TOOLBAR, width: '60%' }} />
+      </div>
+    )
+  }
 
   const handleCollapseAll = () => {
     setCollapsedFiles(allFileKeys)
