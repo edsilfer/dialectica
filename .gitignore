@@ -1,3 +1,5 @@
+.tasks/
+
 # Node
 node_modules/
 .pnpm/
