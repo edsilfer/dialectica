@@ -1,4 +1,4 @@
-import type { DiffParserAdapter, PullRequestMetadata } from '@diff-viewer'
+import type { PullRequestMetadata } from '@diff-viewer'
 
 /**
  * Sub-set of the fields returned by GitHub's Pull-Request REST API that are
@@ -75,8 +75,8 @@ export interface UseGetPrDiffParams {
 }
 
 export interface UseGetPrDiffReturn {
-  /** Parsed diff as returned by `DiffParserAdapter#parse`. Undefined while loading for the first time or when an error occurs. */
-  data: ReturnType<DiffParserAdapter['parse']> | undefined
+  /** Raw diff text as returned by GitHub API. Undefined while loading for the first time or when an error occurs. */
+  data: string | undefined
   /** True while an API call is in flight. */
   loading: boolean
   /** Any error thrown by the request. Reset to undefined on subsequent successful fetches. */

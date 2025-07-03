@@ -109,12 +109,7 @@ export const DiffViewer: React.FC<DiffViewerProps> = (props) => {
   return hasProvider ? (
     viewer
   ) : (
-    <DiffViewerConfigProvider
-      theme={props.theme ?? Themes.light}
-      codePanelConfig={props.codePanelConfig}
-      fileExplorerConfig={props.fileExplorerConfig}
-      storage={props.storage}
-    >
+    <DiffViewerConfigProvider theme={Themes.light} storage="in-memory">
       {viewer}
     </DiffViewerConfigProvider>
   )
@@ -185,6 +180,8 @@ const DiffViewerContent: React.FC<DiffViewerProps> = (props) => {
           scrollTo={scrollToFile}
           loading={!!(props.isDiffLoading ?? false) || !panelReady}
           css={styles.diffViewer}
+          onLoadMoreLines={props.onLoadMoreLines}
+          maxLinesToFetch={props.maxLinesToFetch}
         />
       </div>
     </div>

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { renderToStaticMarkup } from 'react-dom/server'
 
 import { buildTree, highlightText, listDirPaths, listFilesIn, nodeComparator } from './node-utils'
-import { SAMPLE_FILE_DIFFS } from '../__fixtures__/file-diffs'
+import { SAMPLE_FILE_DIFFS } from '../__fixtures__/file-diff-fixtures'
 import { DirectoryNode, FileNode } from './types'
 
 /**

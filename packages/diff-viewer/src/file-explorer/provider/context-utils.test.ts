@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { DirectoryNode } from '../types'
 import { filterFiles, listExpandedDirs } from './context-utils'
-import { SAMPLE_FILE_DIFFS } from '../../__fixtures__/file-diffs'
-import { MOCKED_NODE_TREE } from '../../__fixtures__/nodes'
+import { SAMPLE_FILE_DIFFS } from '../../__fixtures__/file-diff-fixtures'
+import { MOCKED_NODE_TREE } from '../../__fixtures__/fstree-fixtures'
 
 describe('filterFiles', () => {
   it('should return all files when search query is empty', () => {

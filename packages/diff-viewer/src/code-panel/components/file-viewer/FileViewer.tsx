@@ -8,9 +8,9 @@ import { ThemeContext } from '../../../shared/providers/theme-context'
 import { CodePanelConfigContext, useFileState } from '../../providers/code-panel-context'
 import CopyButton from './buttons/CopyButton'
 import WrapLinesButton from './buttons/LineWrapButton'
-import { parseSplitLines, parseUnifiedLines } from './line-utils'
+import { SourceCodeViewModel } from '../source-code/models/SourceCodeViewModel'
 import SplitViewer from './SplitViewer'
-import { FileViewerProps, LinePair } from './types'
+import { FileViewerProps } from './types'
 import UnifiedViewer from './UnifiedViewer'
 
 const { Text } = Typography
@@ -100,9 +100,6 @@ const useStyles = () => {
   )
 }
 
-const buildSplitLines = (file: FileViewerProps['file'], language: string): LinePair[] =>
-  file.hunks.flatMap((hunk) => parseSplitLines(hunk, language))
-
 const FileViewer: React.FC<FileViewerProps> = (props) => {
   const styles = useStyles()
   const config = useContextSelector(CodePanelConfigContext, (ctx) => {
@@ -113,16 +110,12 @@ const FileViewer: React.FC<FileViewerProps> = (props) => {
 
   const [wrapLines, setWrapLines] = useState<boolean>(true)
 
-  const filePath =
-    props.file.oldPath === props.file.newPath ? props.file.newPath : `${props.file.oldPath} → ${props.file.newPath}`
-
-  const lines = useMemo<LinePair[]>(
-    () =>
-      config.mode === 'split' && !isCollapsed
-        ? buildSplitLines(props.file, props.file.language)
-        : parseUnifiedLines(props.file, props.file.language),
-    [config.mode, isCollapsed, props.file],
+  const sourceCode = useMemo<SourceCodeViewModel>(
+    () => new SourceCodeViewModel(props.file, config.mode),
+    [props.file, config.mode],
   )
+
+  const filePath = sourceCode.filePath()
 
   const handleCopyFilePath = useCallback(() => {
     navigator.clipboard.writeText(filePath).catch((error) => {
@@ -150,8 +143,22 @@ const FileViewer: React.FC<FileViewerProps> = (props) => {
 
       <div css={isCollapsed || isViewed ? styles.bodyCollapsed : styles.bodyExpanded}>
         <div css={styles.hunksContainer}>
-          {config.mode === 'split' && <SplitViewer lines={lines} />}
-          {config.mode === 'unified' && <UnifiedViewer lines={lines} wrapLines={wrapLines} visible={!isCollapsed} />}
+          {config.mode === 'split' && (
+            <SplitViewer
+              sourceCode={sourceCode}
+              onLoadMoreLines={props.onLoadMoreLines}
+              loadMoreLinesCount={props.loadMoreLinesCount}
+            />
+          )}
+          {config.mode === 'unified' && (
+            <UnifiedViewer
+              sourceCode={sourceCode}
+              wrapLines={wrapLines}
+              visible={!isCollapsed}
+              onLoadMoreLines={props.onLoadMoreLines}
+              loadMoreLinesCount={props.loadMoreLinesCount}
+            />
+          )}
         </div>
       </div>
     </div>

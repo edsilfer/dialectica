@@ -1,5 +1,6 @@
 import { Interpolation, Theme } from '@emotion/react'
 import { DiffLine, ParsedDiff } from '../shared/parsers/types'
+import { LoadMoreLinesHandler } from '../main/types'
 
 export type CodePanelProps = {
   /** The parsed diff to display. */
@@ -12,8 +13,12 @@ export type CodePanelProps = {
   css?: Interpolation<Theme>
   /** The content of css will be hashed and passed here */
   className?: string
+  /** Number of lines to request when user clicks "load more". Defaults to 5. */
+  maxLinesToFetch?: number
 
   // Callbacks ____________________________________________
   /** Callback for when a line is clicked. */
   onLineClick?: (line: DiffLine) => void
+  /** Called when the user requests to load (expand) more lines for a specific file. */
+  onLoadMoreLines?: LoadMoreLinesHandler
 }

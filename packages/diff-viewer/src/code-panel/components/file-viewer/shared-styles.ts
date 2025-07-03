@@ -1,6 +1,6 @@
 import { css, SerializedStyles } from '@emotion/react'
-import { DiffLineType } from './types'
 import { ThemeTokens } from '../../../shared/themes'
+import { DiffLineType } from './types'
 
 /**
  * Generates the full style map required by both `UnifiedViewer` and `SplitViewer`.
@@ -34,6 +34,7 @@ export const getViewerStyles = (theme: ThemeTokens) => {
     line-height: ${theme.typography.codeLineHeight}rem;
     font-family: ${theme.typography.codeFontFamily};
     font-size: ${theme.typography.codeFontSize}px;
+    padding: 0;
   `
 
   const numberCellBase = [
@@ -41,7 +42,6 @@ export const getViewerStyles = (theme: ThemeTokens) => {
     css`
       text-align: center;
       user-select: none;
-      padding: 0 ${theme.spacing.sm};
     `,
   ]
 
@@ -137,6 +137,11 @@ export const getViewerStyles = (theme: ThemeTokens) => {
     table-layout: fixed;
   `
 
+  const lineType = css`
+    display: inline-block;
+    width: 1ch;
+    text-align: center;
+  `
   const addButton = css`
     position: absolute;
     left: 0;
@@ -155,6 +160,7 @@ export const getViewerStyles = (theme: ThemeTokens) => {
     leftNumberCell,
     rightNumberCell,
     codeCell,
+    lineType,
     addButton,
   }
 }

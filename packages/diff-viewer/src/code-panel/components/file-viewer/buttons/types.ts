@@ -1,4 +1,6 @@
+import { SerializedStyles } from '@emotion/react'
 import React from 'react'
+import { HunkDirection } from '../../source-code/models/HunkHeaderViewModel'
 
 export interface WrapLinesButtonProps {
   /** Whether the lines are currently wrapped */
@@ -22,4 +24,17 @@ export interface CopyButtonProps {
   toastText?: string
   /** The function to call when the copy icon is clicked */
   onClick: (event: React.MouseEvent<SVGSVGElement>) => void
+}
+
+export interface LoadMoreButtonProps {
+  /** The direction of the load more arrows */
+  direction: HunkDirection
+  /** Optional custom styles to apply to the icons */
+  css?: SerializedStyles
+  /** The width of the icons */
+  width?: number
+  /** The height of the icons */
+  height?: number
+  /** The function to call when the load more button is clicked */
+  onClick?: (event: React.MouseEvent, direction: HunkDirection) => void
 }

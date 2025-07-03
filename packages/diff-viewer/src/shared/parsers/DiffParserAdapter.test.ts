@@ -7,7 +7,7 @@ import {
   RENAME_DIFF,
   MULTI_FILE_DIFF,
   MULTI_HUNK_DIFF,
-} from '../../__fixtures__/raw-diffs'
+} from '../../__fixtures__/raw-diffs-fixtures'
 import { ParsedDiff } from './types'
 
 describe('DiffParserAdapter', () => {

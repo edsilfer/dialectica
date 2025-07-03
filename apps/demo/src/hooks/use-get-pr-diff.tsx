@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { DiffParserAdapter } from '@diff-viewer'
 import { buildHeaders, getGithubError, GITHUB_API_HOST } from './request-utils'
 import { FACEBOOK_REACT_33665_DIFF } from '../__fixtures__/diffs-fixtures'
 import { useSettings } from '../provider/setttings-provider'
 import type { UseGetPrDiffParams, UseGetPrDiffReturn } from './types'
 
 /**
- * React hook that retrieves the diff of a GitHub Pull Request and parses it using DiffParserAdapter.
+ * React hook that retrieves the raw diff text of a GitHub Pull Request.
  *
  * Basic usage:
  *   const { data, loading, error } = useGetPrDiff({ owner: 'facebook', repo: 'react', pullNumber: 1 })
@@ -37,8 +36,7 @@ export default function useGetPrDiff({
       try {
         if (useMocks) {
           // When in mock mode, use the Facebook diff from fixtures
-          const parsedDiff = new DiffParserAdapter().parse(FACEBOOK_REACT_33665_DIFF)
-          setData(parsedDiff)
+          setData(FACEBOOK_REACT_33665_DIFF)
         } else {
           const url = `${GITHUB_API_HOST}/repos/${owner}/${repo}/pulls/${pullNumber}`
 
@@ -59,8 +57,7 @@ export default function useGetPrDiff({
           }
 
           const diffText = await res.text()
-          const parsedDiff = new DiffParserAdapter().parse(diffText)
-          setData(parsedDiff)
+          setData(diffText)
         }
       } catch (err: unknown) {
         // Ignore abort errors triggered by the AbortController

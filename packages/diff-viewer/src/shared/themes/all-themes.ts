@@ -116,12 +116,8 @@ const createThemeColors = (palette: ThemePalette): ColorTokens => {
     hunkViewerLineNumberRemovedBg: numberBg(STATUS.removed),
     hunkViewerLineContextBg: palette.backgroundPrimary,
     hunkViewerLineNumberContextBg: palette.backgroundPrimary,
-    hunkViewerLineHunkBg: isDarkPalette
-      ? numberBg(STATUS.hunk)
-      : blend(STATUS.hunk, palette.backgroundPrimary, CODE_ALPHA),
-    hunkViewerLineNumberHunkBg: isDarkPalette
-      ? numberBg(STATUS.hunk)
-      : blend(STATUS.hunk, palette.backgroundPrimary, CODE_ALPHA),
+    hunkViewerLineHunkBg: tint(STATUS.hunk),
+    hunkViewerLineNumberHunkBg: numberBg(STATUS.hunk),
     hunkViewerLineEmptyBg: isDarkPalette
       ? blend('#000000', palette.backgroundPrimary, 0.1)
       : lighten(palette.border, 15),

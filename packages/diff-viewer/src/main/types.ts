@@ -1,21 +1,21 @@
-import { CodePanelConfig } from '../code-panel/providers/types'
-import { FileExplorerConfig } from '../file-explorer/types'
-import { ParsedDiff } from '../shared/parsers/types'
-import { ThemeTokens } from '../shared/themes'
 import React from 'react'
+import { ParsedDiff } from '../shared/parsers/types'
 import { DrawerContent } from './components/drawer/types'
+
+export interface LineRequest {
+  /** The key/path of the file needing more lines */
+  fileKey: string
+  /** The starting line number to fetch (inclusive) */
+  startLine: number
+  /** The ending line number to fetch (inclusive) */
+  endLine: number
+}
+
+export type LoadMoreLinesHandler = (request: LineRequest) => Promise<Record<number, string>> | Record<number, string>
 
 export interface DiffViewerProps {
   /** The parsed diff to visualize. */
   diff: ParsedDiff
-  /** The theme to use for the diff viewer. */
-  theme?: ThemeTokens
-  /** The configuration for the code panel. */
-  codePanelConfig?: Omit<CodePanelConfig, 'theme'>
-  /** The configuration for the file explorer. */
-  fileExplorerConfig?: Omit<FileExplorerConfig, 'theme'>
-  /** The storage to use for the diff viewer. */
-  storage?: 'in-memory' | 'local'
   /** Whether the metadata (header information, file list, etc.) is still loading. */
   isMetadataLoading?: boolean
   /** Whether the diff (file content changes) is still loading. */
@@ -26,4 +26,9 @@ export interface DiffViewerProps {
   additionalDrawerContents?: DrawerContent[]
   /** Custom toolbar component. If not provided, defaults to the built-in toolbar. */
   toolbar?: React.ReactNode
+  /** Number of lines to request when user clicks "load more". Defaults to 5. */
+  maxLinesToFetch?: number
+
+  /** Called when the user requests to load (expand) more lines for a specific file. */
+  onLoadMoreLines?: LoadMoreLinesHandler
 }

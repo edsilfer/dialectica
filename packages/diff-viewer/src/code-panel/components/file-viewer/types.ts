@@ -1,4 +1,7 @@
 import { FileDiff } from '../../../shared/parsers/types'
+import { LoadMoreLinesHandler } from '../../../main/types'
+import { SourceCodeViewModel } from '../source-code/models/SourceCodeViewModel'
+import { HunkDirection } from '../source-code/models/HunkHeaderViewModel'
 
 export type DiffLineType = 'add' | 'delete' | 'context' | 'hunk' | 'empty'
 
@@ -9,15 +12,35 @@ export interface FileViewerProps {
   id?: string
   /** The file diff object. */
   file: FileDiff
+  /** Number of lines to request when user clicks "load more". Defaults to 5. */
+  loadMoreLinesCount?: number
+
+  /** Called when user requests to load (expand) more lines around a hunk. */
+  onLoadMoreLines?: LoadMoreLinesHandler
 }
 
 export interface UnifiedViewerProps {
-  /** Flattened list of diff lines (already highlighted) */
-  lines: LinePair[]
+  /** Source code view model containing the parsed lines and file information */
+  sourceCode: SourceCodeViewModel
   /** Whether to wrap long lines or enable horizontal scrolling (defaults to true). */
   wrapLines?: boolean
   /** Whether the viewer is currently visible (for performance optimization) */
   visible?: boolean
+  /** Number of lines to request when user clicks "load more". Defaults to 5. */
+  loadMoreLinesCount?: number
+
+  /** Called when user requests to load (expand) more lines around a hunk. */
+  onLoadMoreLines?: LoadMoreLinesHandler
+}
+
+export interface SplitViewerProps {
+  /** Source code view model containing the parsed lines and file information */
+  sourceCode: SourceCodeViewModel
+  /** Number of lines to request when user clicks "load more". Defaults to 5. */
+  loadMoreLinesCount?: number
+
+  /** Called when user requests to load (expand) more lines around a hunk. */
+  onLoadMoreLines?: LoadMoreLinesHandler
 }
 
 /**
@@ -34,7 +57,6 @@ export interface LinePair {
   highlightedContentLeft: string | null
   /** The line number of the left side of the hunk. If null, the line number is not shown. */
   lineNumberLeft: number | null
-
   /** Right-hand side information (modified file). */
   typeRight: DiffLineType | null
   /** The content of the line */
@@ -43,4 +65,6 @@ export interface LinePair {
   highlightedContentRight: string | null
   /** The line number of the right side of the hunk. If null, the line number is not shown. */
   lineNumberRight: number | null
+  /** Direction for LoadMoreLines component when this is a hunk header */
+  hunkDirection?: HunkDirection
 }

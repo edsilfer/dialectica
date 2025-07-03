@@ -1,14 +1,14 @@
 import React, { useContext, useMemo } from 'react'
 import { ThemeContext } from '../../../shared/providers/theme-context'
-import { getViewerStyles } from './style-utils'
-import { DiffLineType, LinePair } from './types'
+import LoadMoreButton from './buttons/LoadMoreButton'
+import { useLoadMoreLines } from './hooks/use-load-more-lines'
+import { getViewerStyles } from './shared-styles'
+import { DiffLineType, SplitViewerProps } from './types'
 
-const SplitViewer: React.FC<{ lines: LinePair[] }> = ({ lines }) => {
+const SplitViewer: React.FC<SplitViewerProps> = (props) => {
   const theme = useContext(ThemeContext)
   const styles = useMemo(() => getViewerStyles(theme), [theme])
-  // const [hovered, setHovered] = useState<{ row: number; side: Side } | null>(null)
-  // const handleMouseEnter = (row: number, side: Side) => () => setHovered({ row, side })
-  // const handleMouseLeave = () => setHovered(null)
+  const { lines, loadMore } = useLoadMoreLines(props.sourceCode, props.onLoadMoreLines)
 
   const preffix: Record<DiffLineType, string> = {
     add: '+',
@@ -31,36 +31,68 @@ const SplitViewer: React.FC<{ lines: LinePair[] }> = ({ lines }) => {
           {lines.map((line, idx) => {
             const leftType: DiffLineType = line.typeLeft ?? 'empty'
             const rightType: DiffLineType = line.typeRight ?? 'empty'
+            const isHunk = leftType === 'hunk' && rightType === 'hunk'
 
             return (
               <tr key={idx} css={styles.row}>
-                {/* LEFT SIDE */}
-                <td css={styles.leftNumberCell[leftType]} className="split-viewer-left-row">
-                  {line.lineNumberLeft}
-                </td>
+                {isHunk ? (
+                  <>
+                    {/* LEFT NUMBER CELL */}
+                    <td css={styles.leftNumberCell['hunk']} className="split-viewer-left-row">
+                      <LoadMoreButton
+                        direction={line.hunkDirection ?? 'out'}
+                        onClick={(_, direction) => void loadMore(line, direction)}
+                      />
+                    </td>
 
-                <td css={styles.codeCell[leftType]} className="split-viewer-left-row">
-                  <span>{preffix[leftType]}</span>
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: line.highlightedContentLeft ?? '&nbsp;',
-                    }}
-                  />
-                </td>
+                    {/* MERGED CODE CELL (spans remaining 3 columns) */}
+                    <td css={styles.codeCell['hunk']} colSpan={3}>
+                      <span css={styles.lineType}>{preffix['hunk']}</span>
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: line.highlightedContentLeft ?? line.highlightedContentRight ?? '&nbsp;',
+                        }}
+                      />
+                    </td>
+                  </>
+                ) : (
+                  <>
+                    {/* LEFT SIDE */}
+                    <td css={styles.leftNumberCell[leftType]} className="split-viewer-left-row">
+                      {leftType === 'hunk' ? (
+                        <LoadMoreButton
+                          direction={line.hunkDirection ?? 'out'}
+                          onClick={(_, direction) => void loadMore(line, direction)}
+                        />
+                      ) : (
+                        line.lineNumberLeft
+                      )}
+                    </td>
 
-                {/* RIGHT SIDE */}
-                <td css={styles.rightNumberCell[rightType]} className="split-viewer-right-row">
-                  {line.lineNumberRight}
-                </td>
+                    <td css={styles.codeCell[leftType]} className="split-viewer-left-row">
+                      <span css={styles.lineType}>{preffix[leftType]}</span>
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: line.highlightedContentLeft ?? '&nbsp;',
+                        }}
+                      />
+                    </td>
 
-                <td css={styles.codeCell[rightType]} className="split-viewer-right-row">
-                  <span>{preffix[rightType]}</span>
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: line.highlightedContentRight ?? '&nbsp;',
-                    }}
-                  />
-                </td>
+                    {/* RIGHT SIDE */}
+                    <td css={styles.rightNumberCell[rightType]} className="split-viewer-right-row">
+                      {line.lineNumberRight}
+                    </td>
+
+                    <td css={styles.codeCell[rightType]} className="split-viewer-right-row">
+                      <span css={styles.lineType}>{preffix[rightType]}</span>
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: line.highlightedContentRight ?? '&nbsp;',
+                        }}
+                      />
+                    </td>
+                  </>
+                )}
               </tr>
             )
           })}

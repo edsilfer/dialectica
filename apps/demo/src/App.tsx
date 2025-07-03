@@ -1,16 +1,22 @@
-import { DefaultToolbar, DiffViewer, PullRequestHeader, useDiffViewerConfig } from '@diff-viewer'
+import {
+  DefaultToolbar,
+  DiffParserAdapter,
+  DiffViewer,
+  LineRequest,
+  ParsedDiff,
+  PullRequestHeader,
+  useDiffViewerConfig,
+} from '@diff-viewer'
 import { css } from '@emotion/react'
-import { Typography } from 'antd'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import AppToolbar from './components/AppToolbar'
 import ErrorCard from './components/ErrorCard'
-import PixelHeartIcon from './components/icons/PixelHeartIcon'
+import Footer from './components/Footer'
 import InfoCard from './components/InfoCard'
 import { ParsedPR } from './components/search-form/types'
 import useGetPrDiff from './hooks/use-get-pr-diff'
 import useGetPrMetadata from './hooks/use-get-pr-metadata'
-
-const { Text } = Typography
+import { parseURL, setURL } from './utils'
 
 const createStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) => ({
   container: css`
@@ -27,111 +33,80 @@ const createStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) =>
     flex: 1;
     overflow: hidden;
   `,
-  footer: css`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    * {
-      font-size: 0.8rem !important;
-    }
-  `,
 })
 
 export default function App() {
   const { theme } = useDiffViewerConfig()
-  // Memoize style object so Emotion doesn't recompute the classes on every drag frame
   const styles = useMemo(() => createStyles(theme), [theme])
-  const emptyDiff = useMemo<React.ComponentProps<typeof DiffViewer>['diff']>(() => ({ files: [] }), [])
+  const emptyDiff = useMemo<ParsedDiff>(() => ({ files: [] }), [])
   const [selectedPr, setSelectedPr] = useState<ParsedPR | null>(null)
+  const parserRef = useRef(new DiffParserAdapter())
 
-  // Synchronize state with URL on initial load
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const owner = params.get('owner')
-    const repo = params.get('repo')
-    const pullStr = params.get('pull')
-    if (owner && repo && pullStr) {
-      const prNumber = Number(pullStr)
-      if (!Number.isNaN(prNumber)) {
-        setSelectedPr({ owner, repo, prNumber })
-      }
-    }
-  }, [])
-
-  // Push selected PR details to the URL
-  useEffect(() => {
-    if (selectedPr) {
-      const params = new URLSearchParams()
-      params.set('owner', selectedPr.owner)
-      params.set('repo', selectedPr.repo)
-      params.set('pull', String(selectedPr.prNumber))
-      const newUrl = `${window.location.pathname}?${params.toString()}`
-      window.history.pushState({}, '', newUrl)
-    }
-  }, [selectedPr])
-
-  const {
-    data: prMetadata,
-    loading: prMetaLoading,
-    error: prMetaError,
-  } = useGetPrMetadata({
-    owner: selectedPr?.owner ?? '',
-    repo: selectedPr?.repo ?? '',
-    pullNumber: selectedPr?.prNumber ?? 0,
-  })
-
-  const {
-    data: prDiffData,
-    loading: prDiffLoading,
-    error: prDiffError,
-  } = useGetPrDiff({
-    owner: selectedPr?.owner ?? '',
-    repo: selectedPr?.repo ?? '',
-    pullNumber: selectedPr?.prNumber ?? 0,
-  })
-
+  useEffect(() => setSelectedPr(parseURL()), [])
+  useEffect(() => setURL(selectedPr), [selectedPr])
   const handleSearch = useCallback((pr: ParsedPR) => setSelectedPr(pr), [])
 
-  const error = prMetaError ?? prDiffError
-  const displayedDiff: React.ComponentProps<typeof DiffViewer>['diff'] = prDiffData ?? emptyDiff
+  const prMetadata = useGetPrMetadata({
+    owner: selectedPr?.owner ?? '',
+    repo: selectedPr?.repo ?? '',
+    pullNumber: selectedPr?.prNumber ?? 0,
+  })
 
+  const prDiff = useGetPrDiff({
+    owner: selectedPr?.owner ?? '',
+    repo: selectedPr?.repo ?? '',
+    pullNumber: selectedPr?.prNumber ?? 0,
+  })
+
+  const displayedDiff = useMemo(() => {
+    if (!prDiff.data) return emptyDiff
+    return parserRef.current.parse(prDiff.data)
+  }, [prDiff.data, emptyDiff])
+
+  const loadMore = useCallback((request: LineRequest) => {
+    let lines: Record<number, string> = {}
+    console.log('request', request)
+    for (let i = request.startLine; i <= request.endLine; i++) {
+      lines[i] = `${i} - Dummy line`
+    }
+    return lines
+  }, [])
+
+  const error = prMetadata.error || prDiff.error || (!prMetadata.loading && !prMetadata.data)
   if (error) {
-    return <ErrorCard error={error} />
+    const errorMessage = prMetadata.error || prDiff.error || 'Unknown error'
+    const errorObj = typeof errorMessage === 'string' ? new Error(errorMessage) : errorMessage
+    return <ErrorCard error={errorObj} />
+  } else if ((!prMetadata.loading && !prMetadata.data) || selectedPr === null) {
+    return (
+      <InfoCard
+        title="Load a Pull Request"
+        description="Use the search bar above to load a GitHub Pull Request and explore its diff."
+      />
+    )
   }
-
-  const toolbar = (
-    <DefaultToolbar loading={prMetaLoading} header={prMetadata ? <PullRequestHeader pr={prMetadata} /> : undefined} />
-  )
 
   return (
     <div css={styles.container}>
       <AppToolbar onSearch={handleSearch} />
 
       <div css={styles.content}>
-        {selectedPr === null ? (
-          <InfoCard
-            title="Load a Pull Request"
-            description="Use the search bar above to load a GitHub Pull Request and explore its diff."
-          />
-        ) : error ? (
-          <ErrorCard error={error} />
-        ) : (
-          <DiffViewer
-            diff={displayedDiff}
-            toolbar={toolbar}
-            isMetadataLoading={prMetaLoading}
-            isDiffLoading={prDiffLoading || !prDiffData}
-          />
-        )}
+        <DiffViewer
+          diff={displayedDiff}
+          toolbar={
+            <DefaultToolbar
+              loading={prMetadata.loading}
+              header={prMetadata.data ? <PullRequestHeader pr={prMetadata.data} /> : undefined}
+            />
+          }
+          isMetadataLoading={prMetadata.loading}
+          isDiffLoading={prDiff.loading || !prDiff.data}
+          maxLinesToFetch={10}
+          onLoadMoreLines={loadMore}
+        />
       </div>
 
-      <div css={styles.footer}>
-        <Text>
-          Made with
-          <PixelHeartIcon size={14} />
-          by edsilfer
-        </Text>
-      </div>
+      <Footer />
     </div>
   )
 }
