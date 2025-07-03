@@ -56,44 +56,53 @@ const useStyles = () => {
 export const Toolbar: React.FC<DefaultToolbarProps> = (props) => {
   const { addDefaultButtons = true, additionalWidget: additionalComponents = [] } = props
   const styles = useStyles()
-  const { viewedFiles, allFileKeys, setCollapsedFiles, setViewedFiles } = useCodePanelConfig()
+  const { fileStateMap, allFileKeys, setViewed, setCollapsed } = useCodePanelConfig()
 
-  const builtInButtons: CustomButton[] = useMemo(
-    () => [
+  const viewedFilesCount = useMemo(
+    () => Array.from(fileStateMap.values()).filter((s) => s.isViewed).length,
+    [fileStateMap],
+  )
+
+  const builtInButtons: CustomButton[] = useMemo(() => {
+    const collapseAll = () => {
+      allFileKeys.forEach((key) => setCollapsed(key, true))
+    }
+
+    const expandAll = () => {
+      allFileKeys.forEach((key) => setCollapsed(key, false))
+    }
+
+    const toggleAllViewed = () => {
+      const markViewed = viewedFilesCount !== allFileKeys.length
+      allFileKeys.forEach((key) => setViewed(key, markViewed))
+    }
+
+    return [
       {
         key: 'collapse-all',
         label: 'Collapse',
         tooltipText: 'Collapse all files',
-        onClick: () => setCollapsedFiles(allFileKeys),
+        onClick: collapseAll,
         side: 'right',
       },
       {
         key: 'expand-all',
         label: 'Expand',
         tooltipText: 'Expand all files',
-        onClick: () => setCollapsedFiles([]),
+        onClick: expandAll,
         side: 'right',
       },
       {
         key: 'mark-all-viewed',
-        label: viewedFiles.length === allFileKeys.length ? 'Unview' : 'Viewed',
-        tooltipText: 'Mark all files as viewed',
-        onClick: () => {
-          if (viewedFiles.length === allFileKeys.length) {
-            setViewedFiles([])
-          } else {
-            setViewedFiles(allFileKeys)
-          }
-        },
+        label: viewedFilesCount === allFileKeys.length ? 'Unview' : 'Viewed',
+        tooltipText: 'Toggle viewed state for all files',
+        onClick: toggleAllViewed,
         side: 'right',
       },
-    ],
-    [viewedFiles.length, allFileKeys, setCollapsedFiles, setViewedFiles],
-  )
+    ]
+  }, [allFileKeys, viewedFilesCount, setViewed, setCollapsed])
 
   const allButtons = [...(props.customButtons || []), ...(addDefaultButtons ? builtInButtons : [])]
-
-  // Filter additional components by side
   const leftComponents = additionalComponents.filter((comp) => comp.side === 'left')
   const rightComponents = additionalComponents.filter((comp) => comp.side === 'right')
 
@@ -122,7 +131,7 @@ export const Toolbar: React.FC<DefaultToolbarProps> = (props) => {
       {/* Right cluster */}
       <div css={styles.rightCluster}>
         <ActionButtons buttons={allButtons} />
-        <ProgressIndicator current={viewedFiles.length} total={allFileKeys.length} suffix="files viewed" />
+        <ProgressIndicator current={viewedFilesCount} total={allFileKeys.length} suffix="files viewed" />
         {rightComponents.length > 0 && (
           <>
             {rightComponents.map(({ key, component }) => (

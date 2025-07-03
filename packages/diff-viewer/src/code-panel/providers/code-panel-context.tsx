@@ -1,122 +1,96 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
-import { ThemeProvider, ThemeContext } from '../../shared/providers/theme-context'
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { ThemeContext, ThemeProvider } from '../../shared/providers/theme-context'
+import { readStorageValue, writeStorageValue } from '../../shared/storage-utils'
 import { Themes } from '../../shared/themes'
-import { CodePanelConfig, CodePanelConfigContextProps, CodePanelConfigContextState } from './types'
+import {
+  CodePanelConfig,
+  CodePanelConfigContextProps,
+  CodePanelConfigContextState,
+  FileState,
+  PersistableState,
+} from './types'
+
+const STORAGE_KEY = '__code_panel_view_state__'
 
 export const DEFAULT_CODE_PANEL_CONFIG: CodePanelConfig = {
   mode: 'unified',
   highlightSyntax: false,
-  showLineNumbers: true,
   ignoreWhitespace: false,
 }
 
-/**
- * Keeps the configuration context for the DiffViewer component.
+/*
+ * Context holding both the persistent view preferences (viewed / collapsed
+ * files) and runtime setters required by the panel internals.
  */
 const CodePanelConfigContext = createContext<CodePanelConfigContextState | undefined>(undefined)
 
-export const CodePanelConfigProvider: React.FC<CodePanelConfigContextProps> = ({
-  children,
-  config: initialConfig = DEFAULT_CODE_PANEL_CONFIG,
-  storage = 'in-memory',
-}) => {
-  const STORAGE_KEY = '__code_panel_view_state__'
+export const CodePanelConfigProvider: React.FC<CodePanelConfigContextProps> = (props) => {
+  const { children, config: externalConfig = DEFAULT_CODE_PANEL_CONFIG, storage = 'in-memory' } = props
 
   /*
-   * Hydrate state from localStorage when requested. This includes the
-   * user-specific view state (viewed / collapsed files) **and** the most recent
-   * `config` overrides that were in effect when the user last interacted with
-   * the code panel. If no persisted data is available—or `storage` is
-   * "in-memory"—we fall back to the values coming from above (initialConfig).
+   * 1. Hydrate (optionally) persisted view state.
+   * 2. Prepare runtime setters.
    */
-  const storedState = React.useMemo<{
-    viewedFiles?: string[]
-    collapsedFiles?: string[]
-    config?: CodePanelConfig
-  } | null>(() => {
-    if (storage !== 'local' || typeof window === 'undefined') return null
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY)
-      if (!raw) return null
-      return JSON.parse(raw) as {
-        viewedFiles?: string[]
-        collapsedFiles?: string[]
-        config?: CodePanelConfig
-      }
-    } catch {
-      return null
-    }
+  const storedState = useMemo(() => {
+    if (storage !== 'local') return null
+    return readStorageValue<Partial<PersistableState>>(STORAGE_KEY)
   }, [storage])
 
-  const [config, setConfig] = useState<CodePanelConfig>({ ...initialConfig, ...(storedState?.config ?? {}) })
-  const [viewedFiles, setViewedFiles] = useState<string[]>(storedState?.viewedFiles ?? [])
-  const [collapsedFiles, setCollapsedFiles] = useState<string[]>(storedState?.collapsedFiles ?? [])
+  const [config, setConfig] = useState<CodePanelConfig>({
+    ...externalConfig,
+    ...(storedState?.config ?? {}),
+  })
+  const initialFileStateMap = useMemo(() => {
+    const record = storedState?.fileStates ?? {}
+    return new Map<string, FileState>(Object.entries(record))
+  }, [storedState])
+
+  const [fileStateMap, setFileStateMap] = useState<Map<string, FileState>>(initialFileStateMap)
   const [allFileKeys, setAllFileKeys] = useState<string[]>([])
 
-  // Keep internal config in sync with incoming prop changes but avoid clobbering
-  // the initially hydrated (possibly persisted) state on the very first render.
-  const isFirstRender = React.useRef(true)
+  useSyncExternalConfig(externalConfig, storedState, setConfig)
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false
-      return
-    }
-    // Merge new initialConfig with stored config, giving precedence to stored values
-    setConfig({ ...initialConfig, ...(storedState?.config ?? {}) })
-  }, [initialConfig, storedState])
+    if (storage !== 'local') return
+    writeStorageValue(STORAGE_KEY, { config, fileStates: Object.fromEntries(fileStateMap) })
+  }, [storage, config, fileStateMap])
 
-  /*
-   * Keep collapsedFiles in sync with viewedFiles:
-   * 1. Files marked as viewed should be collapsed.
-   * 2. Files unviewed should be expanded (removed from collapsed list).
-   */
-  useEffect(() => {
-    setCollapsedFiles((prev) => {
-      // Remove any entries no longer viewed
-      const stillValid = prev.filter((key) => viewedFiles.includes(key))
-      // Add newly viewed files that are not yet collapsed
-      const missing = viewedFiles.filter((key) => !stillValid.includes(key))
-      if (missing.length === 0 && stillValid.length === prev.length) return prev
-      return [...stillValid, ...missing]
+  const setViewed = React.useCallback((fileKey: string, isViewed: boolean) => {
+    setFileStateMap((prev) => {
+      const next = new Map(prev)
+      const prevState = next.get(fileKey) ?? { isCollapsed: false, isViewed: false }
+      next.set(fileKey, { ...prevState, isViewed })
+      return next
     })
-  }, [viewedFiles])
+  }, [])
 
-  // Persist view state whenever it changes
-  useEffect(() => {
-    if (storage !== 'local' || typeof window === 'undefined') return
-    const serialisable = {
-      viewedFiles,
-      collapsedFiles,
+  const setCollapsed = React.useCallback((fileKey: string, isCollapsed: boolean) => {
+    setFileStateMap((prev) => {
+      const next = new Map(prev)
+      const prevState = next.get(fileKey) ?? { isCollapsed: false, isViewed: false }
+      next.set(fileKey, { ...prevState, isCollapsed })
+      return next
+    })
+  }, [])
+
+  const contextValue = useMemo<CodePanelConfigContextState>(
+    () => ({
       config,
-    }
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(serialisable))
-    } catch {
-      /* Ignore quota / serialization errors silently */
-    }
-  }, [storage, viewedFiles, collapsedFiles, config])
+      fileStateMap,
+      allFileKeys,
+      setConfig,
+      setViewed,
+      setCollapsed,
+      setAllFileKeys,
+    }),
+    [config, fileStateMap, allFileKeys, setConfig, setViewed, setCollapsed, setAllFileKeys],
+  )
 
-  const value = {
-    config,
-    viewedFiles,
-    collapsedFiles,
-    allFileKeys,
-    setConfig,
-    setViewedFiles,
-    setCollapsedFiles,
-    setAllFileKeys,
-  }
-
-  /*
-   * - Obtain the current theme from any ancestor ThemeContext
-   * - If no explicit theme is provided via the config, fall back to it
-   */
-  const inheritedTheme = React.useContext(ThemeContext) ?? Themes.light
+  const inheritedTheme = useContext(ThemeContext) ?? Themes.light
   const themeToUse = config.theme ?? inheritedTheme
 
   return (
     <ThemeProvider theme={themeToUse}>
-      <CodePanelConfigContext.Provider value={value}>{children}</CodePanelConfigContext.Provider>
+      <CodePanelConfigContext.Provider value={contextValue}>{children}</CodePanelConfigContext.Provider>
     </ThemeProvider>
   )
 }
@@ -127,4 +101,20 @@ export const useCodePanelConfig = (): CodePanelConfigContextState => {
     throw new Error('useCodePanelConfig must be used within a ConfigProvider')
   }
   return context
+}
+
+function useSyncExternalConfig(
+  externalConfig: CodePanelConfig,
+  storedState: Partial<PersistableState> | null,
+  setConfig: React.Dispatch<React.SetStateAction<CodePanelConfig>>,
+) {
+  const isFirstRender = useRef(true)
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+    setConfig({ ...externalConfig, ...(storedState?.config ?? {}) })
+  }, [externalConfig, storedState, setConfig])
 }

@@ -5,9 +5,9 @@ import { LoadMoreLinesProps } from './types'
 const VIEWBOX = 24
 const DOT_RADIUS = 0.5
 const DOT_SPACING = 2
-const ARROW_GAP = 3
-const ARROW_LENGTH = 6
-const ARROW_WIDTH = 3
+const ARROW_GAP = 2
+const ARROW_LENGTH = 5
+const ARROW_WIDTH = 2
 
 type Direction = 'up' | 'down' | 'bi-directional'
 
@@ -42,12 +42,10 @@ const trianglePoints = (x: number, y: number, sign: -1 | 1): string =>
  */
 const LoadMoreLines = React.forwardRef<SVGSVGElement, LoadMoreLinesProps>(
   ({ size = 24, numDots = 5, direction = 'up', ...rest }, ref) => {
-    /* Dots ------------------------------------------------------ */
     const dotsY = getDotsY(direction)
     const dotX = (i: number) => 4 + i * (DOT_SPACING + DOT_RADIUS * 2)
     const midX = dotX(Math.floor(numDots / 2))
 
-    /* Arrow renderer ------------------------------------------- */
     const renderArrow = (sign: -1 | 1) => {
       const startY = dotsY + sign * ARROW_GAP
       const endY = startY + sign * ARROW_LENGTH
@@ -62,7 +60,6 @@ const LoadMoreLines = React.forwardRef<SVGSVGElement, LoadMoreLinesProps>(
       )
     }
 
-    /* Render ---------------------------------------------------- */
     return (
       <svg
         ref={ref}

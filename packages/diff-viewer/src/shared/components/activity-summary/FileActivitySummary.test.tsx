@@ -4,10 +4,11 @@ import { render, screen } from '../../test-utils/render'
 import { FileDiff } from '../../parsers/types'
 import FileActivitySummary from './FileActivitySummary'
 
-export const MOCKED_FILE_DIFF: FileDiff = {
+export const MOCKED_FILE_DIFF: FileDiff = new FileDiff({
   oldPath: 'foo.ts',
   newPath: 'foo.ts',
   isRenamed: false,
+  language: 'typescript',
   hunks: [
     {
       content: '@@ -1,3 +1,3 @@',
@@ -23,7 +24,7 @@ export const MOCKED_FILE_DIFF: FileDiff = {
       ],
     },
   ],
-}
+})
 
 describe('FileActivitySummary', () => {
   it('renders the correct number of squares when maxSquares is provided', () => {

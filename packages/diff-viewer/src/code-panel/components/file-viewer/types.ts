@@ -9,11 +9,19 @@ export interface FileViewerProps {
   id?: string
   /** The file diff object. */
   file: FileDiff
+  /** Whether the file is collapsed */
+  isCollapsed: boolean
+  /** Whether the file is marked as viewed */
+  isViewed: boolean
+  /** Callback to toggle the collapsed state */
+  toggleCollapsed: (collapsed: boolean) => void
+  /** Callback to toggle the viewed state */
+  toggleViewed: (checked: boolean) => void
 }
 
 export interface UnifiedViewerProps {
   /** Flattened list of diff lines (already highlighted) */
-  lines: LineWithHighlight[]
+  lines: LinePair[]
   /** Whether to wrap long lines or enable horizontal scrolling (defaults to true). */
   wrapLines?: boolean
   /** Whether the viewer is currently visible (for performance optimization) */
@@ -21,27 +29,26 @@ export interface UnifiedViewerProps {
 }
 
 /**
- * Represents a single visual row in a split diff – the left and right halves.
+ * - For the unified viewer only the "left" fields are populated
+ *   (the right side stays `null` so renderers can safely ignore it)
+ * - For the split viewer both the left and right sides may be populated.
  */
-export interface SplitLinePair {
-  /** The left side of the line pair */
-  left: LineWithHighlight | null
-  /** The right side of the line pair */
-  right: LineWithHighlight | null
-}
-
-/**
- * Diff line augmented with a pre-computed syntax-highlighted HTML string.
- */
-export interface LineWithHighlight {
-  /** The type of the line */
-  type: DiffLineType
+export interface LinePair {
+  /** Left-hand side information (original file). */
+  typeLeft: DiffLineType | null
   /** The content of the line */
-  content: string
+  contentLeft: string | null
   /** The highlighted content of the line */
-  highlightedContent: string
+  highlightedContentLeft: string | null
   /** The line number of the left side of the hunk. If null, the line number is not shown. */
-  lineNumberOld: number | null
+  lineNumberLeft: number | null
+
+  /** Right-hand side information (modified file). */
+  typeRight: DiffLineType | null
+  /** The content of the line */
+  contentRight: string | null
+  /** The highlighted content of the line */
+  highlightedContentRight: string | null
   /** The line number of the right side of the hunk. If null, the line number is not shown. */
-  lineNumberNew: number | null
+  lineNumberRight: number | null
 }

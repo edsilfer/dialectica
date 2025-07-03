@@ -1,17 +1,16 @@
 import { css } from '@emotion/react'
 import { Checkbox, Typography } from 'antd'
-import React, { useContext, useMemo, useState, useCallback } from 'react'
+import React, { useCallback, useContext, useMemo, useState } from 'react'
 import FileActivitySummary from '../../../shared/components/activity-summary/FileActivitySummary'
 import ExpandButton from '../../../shared/components/buttons/ExpandButton'
-import { detectLanguage } from '../../../shared/parsers/language-utils'
 import { ThemeContext } from '../../../shared/providers/theme-context'
 import { useCodePanelConfig } from '../../providers/code-panel-context'
 import CopyButton from './buttons/CopyButton'
 import WrapLinesButton from './buttons/LineWrapButton'
-import { buildSplitHunkPairs, escapeHtml, highlightContent } from './split-utils'
-import { FileViewerProps, LineWithHighlight, SplitLinePair } from './types'
-import UnifiedViewer from './UnifiedViewer'
+import { parseSplitLines, parseUnifiedLines } from './line-utils'
 import SplitViewer from './SplitViewer'
+import { FileViewerProps, LinePair } from './types'
+import UnifiedViewer from './UnifiedViewer'
 
 const { Text } = Typography
 
@@ -41,7 +40,7 @@ const useStyles = () => {
         display: none;
       `,
 
-      headerExpanded: css`
+      headerBase: css`
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -52,8 +51,6 @@ const useStyles = () => {
         font-family: ${theme.typography.codeFontFamily};
         border: 1px solid ${theme.colors.border};
         border-bottom: 1px solid ${theme.colors.border};
-        border-top-left-radius: ${theme.spacing.xs};
-        border-top-right-radius: ${theme.spacing.xs};
         background-color: ${theme.colors.fileViewerHeaderBg};
         position: sticky;
         top: 0;
@@ -64,29 +61,16 @@ const useStyles = () => {
         }
       `,
 
+      headerExpanded: css`
+        border-top-left-radius: ${theme.spacing.xs};
+        border-top-right-radius: ${theme.spacing.xs};
+      `,
+
       headerCollapsed: css`
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        gap: ${theme.spacing.sm};
-        padding: ${theme.spacing.sm};
-        color: ${theme.colors.textPrimary};
-        font-family: ${theme.typography.codeFontFamily};
-        border: 1px solid ${theme.colors.border};
-        border-bottom: 1px solid ${theme.colors.border};
         border-top-left-radius: ${theme.spacing.xs};
         border-top-right-radius: ${theme.spacing.xs};
         border-bottom-left-radius: ${theme.spacing.xs};
         border-bottom-right-radius: ${theme.spacing.xs};
-        background-color: ${theme.colors.fileViewerHeaderBg};
-        position: sticky;
-        top: 0;
-        z-index: 5;
-
-        .file-path {
-          color: ${theme.colors.textPrimary};
-        }
       `,
 
       rightContainer: css`
@@ -115,88 +99,25 @@ const useStyles = () => {
   )
 }
 
-/**
- * Utility to add or remove an item from a string list while preserving order uniqueness.
- * This is intentionally very small –‐ it avoids sprinkling the same
- * `includes/filter/concat` logic throughout the component.
- */
-const toggleItem = (list: string[], item: string, shouldAdd: boolean): string[] =>
-  shouldAdd ? Array.from(new Set([...list, item])) : list.filter((k) => k !== item)
+const buildSplitLines = (file: FileViewerProps['file'], language: string): LinePair[] =>
+  file.hunks.flatMap((hunk) => parseSplitLines(hunk, language))
 
-/** Build the formatted lines required by the unified viewer */
-const buildUnifiedLines = (file: FileViewerProps['file'], language: string): LineWithHighlight[] =>
-  file.hunks.flatMap((hunk) => {
-    const headerLine: LineWithHighlight = {
-      type: 'hunk',
-      content: escapeHtml(hunk.content),
-      highlightedContent: escapeHtml(hunk.content),
-      lineNumberOld: null,
-      lineNumberNew: null,
-    }
-
-    const contentLines: LineWithHighlight[] = hunk.changes
-      .filter((line) => line.content.trim() !== '')
-      .map((line) => ({
-        ...line,
-        highlightedContent: highlightContent(line.content, language),
-      })) as unknown as LineWithHighlight[]
-
-    return [headerLine, ...contentLines]
-  })
-
-/** Wrapper just to mirror the unified builder – keeps both calls symmetric */
-const buildSplitPairs = (file: FileViewerProps['file'], language: string): SplitLinePair[] =>
-  file.hunks.flatMap((hunk) => buildSplitHunkPairs(hunk, language))
-
-const FileViewer: React.FC<FileViewerProps> = ({ id, file }) => {
-  const { config, viewedFiles, collapsedFiles, setViewedFiles, setCollapsedFiles } = useCodePanelConfig()
-
-  const fileKey = file.newPath || file.oldPath
-
-  /** -------------------------------------------------------------------------------------------------
-   * Derived flags & memoised data
-   * --------------------------------------------------------------------------------------------- */
-
-  // Memoize collapsed state to avoid recalculating on every render
-  const collapsed = useMemo(() => collapsedFiles.includes(fileKey), [collapsedFiles, fileKey])
-
+const FileViewer: React.FC<FileViewerProps> = (props) => {
   const styles = useStyles()
+  const { config } = useCodePanelConfig()
 
   const [wrapLines, setWrapLines] = useState<boolean>(true)
 
-  const language = useMemo(() => detectLanguage(file.newPath), [file.newPath])
+  const filePath =
+    props.file.oldPath === props.file.newPath ? props.file.newPath : `${props.file.oldPath} → ${props.file.newPath}`
 
-  const filePath = useMemo(
-    () => (file.oldPath === file.newPath ? file.newPath : `${file.oldPath} → ${file.newPath}`),
-    [file.oldPath, file.newPath],
+  const lines = useMemo<LinePair[]>(
+    () =>
+      config.mode === 'split' && !props.isCollapsed
+        ? buildSplitLines(props.file, props.file.language)
+        : parseUnifiedLines(props.file, props.file.language),
+    [config.mode, props.isCollapsed, props.file],
   )
-
-  const viewed = useMemo(() => viewedFiles.includes(fileKey), [viewedFiles, fileKey])
-
-  const isSplit = config.mode === 'split'
-  const isUnified = config.mode === 'unified'
-
-  /**
-   * These computations can be expensive for large diffs, especially because we
-   * syntax-highlight every line. We therefore only compute *exactly* what the
-   * current panel mode needs AND only when not collapsed.
-   */
-  const unifiedLines = useMemo<LineWithHighlight[]>(
-    () => (isUnified && !collapsed ? buildUnifiedLines(file, language) : []),
-    [isUnified, collapsed, file, language],
-  )
-
-  const splitPairs = useMemo<SplitLinePair[]>(
-    () => (isSplit && !collapsed ? buildSplitPairs(file, language) : []),
-    [isSplit, collapsed, file, language],
-  )
-
-  const handleToggleCollapse = useCallback(() => {
-    setCollapsedFiles((prev) => {
-      const shouldAdd = !prev.includes(fileKey)
-      return toggleItem(prev, fileKey, shouldAdd)
-    })
-  }, [fileKey, setCollapsedFiles])
 
   const handleCopyFilePath = useCallback(() => {
     navigator.clipboard.writeText(filePath).catch((error) => {
@@ -204,37 +125,40 @@ const FileViewer: React.FC<FileViewerProps> = ({ id, file }) => {
     })
   }, [filePath])
 
-  const handleToggleViewed = useCallback(
-    (checked: boolean) => {
-      setViewedFiles((prev) => toggleItem(prev, fileKey, checked))
-
-      if (!checked || !collapsed) {
-        handleToggleCollapse()
-      }
-    },
-    [fileKey, collapsed, setViewedFiles, handleToggleCollapse],
-  )
+  console.log('rendering file viewer for:', props.file.key)
 
   return (
-    <div id={id}>
-      <div css={collapsed ? styles.headerCollapsed : styles.headerExpanded}>
-        <ExpandButton collapsed={collapsed} size={16} onClick={handleToggleCollapse} />
-        <FileActivitySummary file={file} />
+    <div id={props.id}>
+      <div css={[styles.headerBase, props.isCollapsed ? styles.headerCollapsed : styles.headerExpanded]}>
+        <ExpandButton
+          collapsed={props.isCollapsed}
+          size={16}
+          onClick={() => props.toggleCollapsed(!props.isCollapsed)}
+        />
+        <FileActivitySummary file={props.file} />
         <Text className="file-path">{filePath}</Text>
         <CopyButton onClick={handleCopyFilePath} tooltip="Copy file path" toastText="File path copied to clipboard" />
-        {isUnified && <WrapLinesButton isWrapped={wrapLines} onClick={() => setWrapLines((prev) => !prev)} size={16} />}
+        {config.mode === 'unified' && (
+          <WrapLinesButton isWrapped={wrapLines} onClick={() => setWrapLines((prev) => !prev)} size={16} />
+        )}
 
         <div css={styles.rightContainer}>
-          <Checkbox css={styles.viewedCheckbox} checked={viewed} onChange={(e) => handleToggleViewed(e.target.checked)}>
+          <Checkbox
+            css={styles.viewedCheckbox}
+            checked={props.isViewed}
+            onChange={(e) => props.toggleViewed(e.target.checked)}
+          >
             Viewed
           </Checkbox>
         </div>
       </div>
 
-      <div css={collapsed ? styles.bodyCollapsed : styles.bodyExpanded}>
+      <div css={props.isCollapsed ? styles.bodyCollapsed : styles.bodyExpanded}>
         <div css={styles.hunksContainer}>
-          {isSplit && <SplitViewer pairs={splitPairs} />}
-          {isUnified && <UnifiedViewer lines={unifiedLines} wrapLines={wrapLines} visible={!collapsed} />}
+          {config.mode === 'split' && <SplitViewer lines={lines} />}
+          {config.mode === 'unified' && (
+            <UnifiedViewer lines={lines} wrapLines={wrapLines} visible={!props.isCollapsed} />
+          )}
         </div>
       </div>
     </div>

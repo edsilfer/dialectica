@@ -15,7 +15,7 @@ export interface ParsedDiff {
 }
 
 // Represents the differences in a single file, including path changes and hunks.
-export interface FileDiff {
+export class FileDiff {
   /** The original path of the file before the diff. */
   oldPath: string
   /** The new path of the file after the diff. */
@@ -26,8 +26,33 @@ export interface FileDiff {
   isNew?: boolean
   /** Indicates if the file is deleted. */
   isDeleted?: boolean
+  /** The programming language of the file. */
+  language: string
   /** An array of hunks representing the changes in the file. */
   hunks: Hunk[]
+
+  constructor(properties: {
+    oldPath: string
+    newPath: string
+    isRenamed: boolean
+    isNew?: boolean
+    isDeleted?: boolean
+    language: string
+    hunks: Hunk[]
+  }) {
+    this.oldPath = properties.oldPath
+    this.newPath = properties.newPath
+    this.isRenamed = properties.isRenamed
+    this.isNew = properties.isNew
+    this.isDeleted = properties.isDeleted
+    this.language = properties.language
+    this.hunks = properties.hunks
+  }
+
+  // A consistent key for the file, preferring newPath over oldPath.
+  get key(): string {
+    return this.newPath || this.oldPath
+  }
 }
 
 // Represents a hunk of changes in a file, including the context and line changes.

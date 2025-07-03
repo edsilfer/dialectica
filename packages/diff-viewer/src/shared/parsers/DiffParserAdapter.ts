@@ -1,6 +1,7 @@
 import type { RawChunk, RawFile, RawLine } from 'diffparser'
 import diffparser from 'diffparser'
 import { DiffLine, FileDiff, Hunk, IDiffParser, ParsedDiff } from './types'
+import { detectLanguage } from './language-utils'
 
 /**
  * - diffparse library's convention is to use `/dev/null` as the path for new or deleted files
@@ -43,14 +44,15 @@ export class DiffParserAdapter implements IDiffParser {
         }
       })
 
-      return {
+      return new FileDiff({
         oldPath: file.from,
         newPath: file.to,
         isRenamed: file.from !== file.to,
         isNew: file.from === NULL_PATH,
         isDeleted: file.to === NULL_PATH,
+        language: detectLanguage(file.to !== NULL_PATH ? file.to : file.from),
         hunks,
-      }
+      })
     })
 
     return { files }

@@ -2,7 +2,8 @@ import { describe, it, expect, vi } from 'vitest'
 
 vi.mock('highlight.js/styles/github.css', () => ({}))
 
-import { escapeHtml, highlightContent, buildSplitHunkPairs } from './split-utils'
+import { parseSplitLines } from './line-utils'
+import { escapeHtml, highlightContent } from './highlight-utils'
 import { Hunk } from '../../../shared/parsers/types'
 
 const SAMPLE_HUNK: Hunk = {
@@ -64,41 +65,42 @@ describe('line-utils', () => {
 
   describe('buildSplitHunkPairs', () => {
     const language = 'javascript'
-    const pairs = buildSplitHunkPairs(SAMPLE_HUNK, language)
+    const rows = parseSplitLines(SAMPLE_HUNK, language)
 
     it('should prepend a header row', () => {
-      expect(pairs[0].left?.type).toBe('hunk')
-      expect(pairs[0].left?.content).toBe(SAMPLE_HUNK.content)
-      expect(pairs[0].right).toStrictEqual(pairs[0].left)
+      expect(rows[0].typeLeft).toBe('hunk')
+      expect(rows[0].contentLeft).toBe(SAMPLE_HUNK.content)
+      expect(rows[0].typeRight).toBe('hunk')
+      expect(rows[0].contentRight).toBe(SAMPLE_HUNK.content)
     })
 
     it('should duplicate context lines on both sides', () => {
       // The first context line is after the header, so index 1
-      const contextRow = pairs[1]
-      expect(contextRow.left?.type).toBe('context')
-      expect(contextRow.right?.type).toBe('context')
-      expect(contextRow.left?.content).toBe('function foo() {')
-      expect(contextRow.right?.content).toBe('function foo() {')
+      const contextRow = rows[1]
+      expect(contextRow.typeLeft).toBe('context')
+      expect(contextRow.typeRight).toBe('context')
+      expect(contextRow.contentLeft).toBe('function foo() {')
+      expect(contextRow.contentRight).toBe('function foo() {')
     })
 
     it('should pair deletions with subsequent additions', () => {
       // Row after the first context is the paired delete/add
-      const diffRow = pairs.find((r) => r.left?.type === 'delete' && r.right?.type === 'add')
+      const diffRow = rows.find((r) => r.typeLeft === 'delete' && r.typeRight === 'add')
       expect(diffRow).toBeDefined()
-      expect(diffRow!.left!.content.trim()).toBe('console.log("old")')
-      expect(diffRow!.right!.content.trim()).toBe('console.log("new")')
+      expect(diffRow!.contentLeft!.trim()).toBe('console.log("old")')
+      expect(diffRow!.contentRight!.trim()).toBe('console.log("new")')
     })
 
     it('should include trailing context lines duplicated', () => {
-      const lastRow = pairs[pairs.length - 1]
-      expect(lastRow.left?.type).toBe('context')
-      expect(lastRow.right?.type).toBe('context')
-      expect(lastRow.left?.content).toBe('}')
+      const lastRow = rows[rows.length - 1]
+      expect(lastRow.typeLeft).toBe('context')
+      expect(lastRow.typeRight).toBe('context')
+      expect(lastRow.contentLeft).toBe('}')
     })
 
     it('should have the expected total number of rows', () => {
       // Header + 3 visual rows (context, delete/add, context)
-      expect(pairs).toHaveLength(4)
+      expect(rows).toHaveLength(4)
     })
   })
 })

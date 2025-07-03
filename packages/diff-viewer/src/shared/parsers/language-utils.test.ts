@@ -31,11 +31,11 @@ describe('detectLanguage()', () => {
     expect(detectLanguage(filePath)).toBe(expected)
   })
 
-  it('throws an error for unknown extensions', () => {
-    expect(() => detectLanguage('unknown.xyz')).toThrow()
+  it('returns text for unknown extensions', () => {
+    expect(detectLanguage('unknown.xyz')).toBe('text')
   })
 
-  it('throws an error for files without an extension', () => {
-    expect(() => detectLanguage('LICENSE')).toThrow()
+  it('returns text for files without an extension', () => {
+    expect(detectLanguage('LICENSE')).toBe('text')
   })
 })

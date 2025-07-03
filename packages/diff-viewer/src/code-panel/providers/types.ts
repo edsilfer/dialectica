@@ -13,20 +13,30 @@ export interface CodePanelConfigContextProps {
   setConfig?: React.Dispatch<React.SetStateAction<CodePanelConfig>>
 }
 
+export interface FileState {
+  /** Whether the file is currently collapsed */
+  isCollapsed: boolean
+  /** Whether the file has been marked as viewed */
+  isViewed: boolean
+}
+
+export type PersistableState = {
+  fileStates: Record<string, FileState>
+  config: CodePanelConfig
+}
+
 export interface CodePanelConfigContextState {
   /** The configuration for the diff viewer */
   config: CodePanelConfig
-  /** List of files that have been marked as viewed */
-  viewedFiles: string[]
-  /** List of files that are currently collapsed */
-  collapsedFiles: string[]
+  /** Map holding per-file UI state (collapsed / viewed) */
+  fileStateMap: Map<string, FileState>
   /** List of all file keys (paths) currently present in the diff */
   allFileKeys: string[]
 
-  /** Setter for the list of viewed files */
-  setViewedFiles: React.Dispatch<React.SetStateAction<string[]>>
-  /** Setter for the list of collapsed files */
-  setCollapsedFiles: React.Dispatch<React.SetStateAction<string[]>>
+  /** Mark a file as viewed or unviewed */
+  setViewed: (fileKey: string, isViewed: boolean) => void
+  /** Collapse or expand a file */
+  setCollapsed: (fileKey: string, isCollapsed: boolean) => void
   /** Setter for the list of all file keys */
   setAllFileKeys: React.Dispatch<React.SetStateAction<string[]>>
   /** Set the configuration for the diff viewer */
@@ -43,8 +53,6 @@ export interface CodePanelConfig {
   mode: DisplayFormat
   /** Whether to highlight the syntax of the diff. */
   highlightSyntax?: boolean
-  /** Whether to show line numbers in the diff. */
-  showLineNumbers?: boolean
   /** Whether to ignore whitespace in the diff. */
   ignoreWhitespace?: boolean
   /** The maximum number of lines to display for a file. */

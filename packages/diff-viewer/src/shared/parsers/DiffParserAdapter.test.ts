@@ -25,6 +25,7 @@ describe('DiffParserAdapter', () => {
     expect(file.oldPath).toBe('foo.ts')
     expect(file.newPath).toBe('foo.ts')
     expect(file.isRenamed).toBe(false)
+    expect(file.language).toBe('typescript')
     expect(file.hunks).toHaveLength(1)
 
     const hunk = file.hunks[0]
@@ -61,6 +62,7 @@ describe('DiffParserAdapter', () => {
     expect(file.oldPath).toBe('example.js')
     expect(file.newPath).toBe('example.js')
     expect(file.isRenamed).toBe(false)
+    expect(file.language).toBe('javascript')
     expect(file.hunks).toHaveLength(1)
 
     const hunk = file.hunks[0]
@@ -119,6 +121,7 @@ describe('DiffParserAdapter', () => {
     expect(file.oldPath).toBe('old-name.js')
     expect(file.newPath).toBe('new-name.js')
     expect(file.isRenamed).toBe(true)
+    expect(file.language).toBe('javascript')
   })
 
   it('given multiple files in a single diff when parsed expect correct parsing', () => {
@@ -133,12 +136,14 @@ describe('DiffParserAdapter', () => {
 
     expect(file1.oldPath).toBe('file1.ts')
     expect(file1.newPath).toBe('file1.ts')
+    expect(file1.language).toBe('typescript')
     expect(file1.hunks).toHaveLength(1)
     expect(file1.hunks[0].changes).toHaveLength(2)
     expect(file1.hunks[0].changes.every((change) => change.type === 'add')).toBe(true)
 
     expect(file2.oldPath).toBe('file2.ts')
     expect(file2.newPath).toBe('file2.ts')
+    expect(file2.language).toBe('typescript')
     expect(file2.hunks).toHaveLength(1)
     expect(file2.hunks[0].changes).toHaveLength(2)
     expect(file2.hunks[0].changes[0].type).toBe('context')
@@ -171,5 +176,51 @@ describe('DiffParserAdapter', () => {
     expect(hunk2.changes[1].type).toBe('delete') // old return
     expect(hunk2.changes[2].type).toBe('add') // new return
     expect(hunk2.changes[3].type).toBe('context') // }
+  })
+
+  it('given files with different extensions when parsed expect correct language detection', () => {
+    // GIVEN - A multi-file diff with various extensions
+    const multiExtensionDiff = `
+diff --git a/script.py b/script.py
+index 1234567..abcdefg 100644
+--- a/script.py
++++ b/script.py
+@@ -1 +1,2 @@
++print("hello world")
+ 
+diff --git a/styles.css b/styles.css
+index 1234567..abcdefg 100644
+--- a/styles.css
++++ b/styles.css
+@@ -1 +1,2 @@
++body { margin: 0; }
+ 
+diff --git a/unknown.xyz b/unknown.xyz
+index 1234567..abcdefg 100644
+--- a/unknown.xyz
++++ b/unknown.xyz
+@@ -1 +1,2 @@
++some content
+ 
+diff --git a/README.md b/README.md
+index 1234567..abcdefg 100644
+--- a/README.md
++++ b/README.md
+@@ -1 +1,2 @@
++# Title
+`
+
+    // WHEN
+    const parsed: ParsedDiff = adapter.parse(multiExtensionDiff)
+
+    // EXPECT
+    expect(parsed.files).toHaveLength(4)
+
+    const [pythonFile, cssFile, unknownFile, markdownFile] = parsed.files
+
+    expect(pythonFile.language).toBe('python')
+    expect(cssFile.language).toBe('css')
+    expect(unknownFile.language).toBe('text') // default for unknown extensions
+    expect(markdownFile.language).toBe('markdown')
   })
 })

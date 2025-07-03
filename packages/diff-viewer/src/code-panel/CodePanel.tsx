@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import { Skeleton } from 'antd'
-import React, { useContext, useEffect } from 'react'
+import React, { useCallback, useContext, useEffect } from 'react'
 import { useDiffViewerConfig } from '../main/providers/diff-viewer-context'
 import { ThemeContext } from '../shared/providers/theme-context'
 import FileViewer from './components/file-viewer/FileViewer'
@@ -52,7 +52,7 @@ export const CodePanel: React.FC<CodePanelProps> = (props) => {
 
 const CodePanelContent: React.FC<CodePanelProps> = (props) => {
   const styles = useStyles()
-  const { setAllFileKeys } = useCodePanelConfig()
+  const { setAllFileKeys, fileStateMap, setCollapsed, setViewed } = useCodePanelConfig()
 
   useEffect(() => {
     if (props.scrollTo) {
@@ -68,6 +68,20 @@ const CodePanelContent: React.FC<CodePanelProps> = (props) => {
     setAllFileKeys(keys)
   }, [props.diff.files, setAllFileKeys])
 
+  const handleToggleCollapsed = useCallback(
+    (fileKey: string, collapsed: boolean) => {
+      setCollapsed(fileKey, collapsed)
+    },
+    [setCollapsed],
+  )
+
+  const handleToggleViewed = useCallback(
+    (fileKey: string, viewed: boolean) => {
+      setViewed(fileKey, viewed)
+    },
+    [setViewed],
+  )
+
   // Show skeleton when loading
   if (props.loading) {
     return (
@@ -80,7 +94,15 @@ const CodePanelContent: React.FC<CodePanelProps> = (props) => {
   return (
     <div css={[styles.container, props.css]} className={props.className}>
       {props.diff.files.map((file) => (
-        <FileViewer key={file.newPath || file.oldPath} id={`file-diff-${file.newPath || file.oldPath}`} file={file} />
+        <FileViewer
+          key={file.newPath || file.oldPath}
+          id={`file-diff-${file.newPath || file.oldPath}`}
+          file={file}
+          isCollapsed={fileStateMap.get(file.key)?.isCollapsed ?? false}
+          isViewed={fileStateMap.get(file.key)?.isViewed ?? false}
+          toggleCollapsed={(collapsed) => handleToggleCollapsed(file.key, collapsed)}
+          toggleViewed={(viewed) => handleToggleViewed(file.key, viewed)}
+        />
       ))}
     </div>
   )

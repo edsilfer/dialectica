@@ -40,15 +40,16 @@ const getExtension = (filePath: string): string => {
  * Detects the language of a file based on its extension.
  *
  * @param filePath - The path of the file to detect the language of.
- * @returns        - The language of the file.
+ * @returns        - The language of the file, or 'text' for unknown extensions.
  */
 export const detectLanguage = (filePath: string): string => {
   const extension = getExtension(filePath)
 
-  if (extension && languageMap[extension]) {
-    return languageMap[extension]
+  // Return default for files without extension
+  if (!extension) {
+    return 'text'
   }
 
-  // TODO: Implement content-based language detection
-  throw new Error('Language detection by content is not supported yet.')
+  // Return mapped language or default for unknown extensions
+  return languageMap[extension] || 'text'
 }
