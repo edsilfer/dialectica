@@ -33,6 +33,8 @@ export interface CodePanelConfigContextState {
   /** List of all file keys (paths) currently present in the diff */
   allFileKeys: string[]
 
+  /** Get the state of a file */
+  getFileState: (fileKey: string) => FileState | undefined
   /** Mark a file as viewed or unviewed */
   setViewed: (fileKey: string, isViewed: boolean) => void
   /** Collapse or expand a file */

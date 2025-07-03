@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import { Skeleton } from 'antd'
-import React, { useCallback, useContext, useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { useDiffViewerConfig } from '../main/providers/diff-viewer-context'
 import { ThemeContext } from '../shared/providers/theme-context'
 import FileViewer from './components/file-viewer/FileViewer'
@@ -52,7 +52,13 @@ export const CodePanel: React.FC<CodePanelProps> = (props) => {
 
 const CodePanelContent: React.FC<CodePanelProps> = (props) => {
   const styles = useStyles()
-  const { setAllFileKeys, fileStateMap, setCollapsed, setViewed } = useCodePanelConfig()
+  const { setAllFileKeys } = useCodePanelConfig()
+
+  // Populate allFileKeys when diff changes
+  useEffect(() => {
+    const fileKeys = props.diff.files.map((file) => file.key)
+    setAllFileKeys(fileKeys)
+  }, [props.diff.files, setAllFileKeys])
 
   useEffect(() => {
     if (props.scrollTo) {
@@ -62,25 +68,6 @@ const CodePanelContent: React.FC<CodePanelProps> = (props) => {
       }
     }
   }, [props.scrollTo])
-
-  useEffect(() => {
-    const keys = props.diff.files.map((f) => f.newPath || f.oldPath)
-    setAllFileKeys(keys)
-  }, [props.diff.files, setAllFileKeys])
-
-  const handleToggleCollapsed = useCallback(
-    (fileKey: string, collapsed: boolean) => {
-      setCollapsed(fileKey, collapsed)
-    },
-    [setCollapsed],
-  )
-
-  const handleToggleViewed = useCallback(
-    (fileKey: string, viewed: boolean) => {
-      setViewed(fileKey, viewed)
-    },
-    [setViewed],
-  )
 
   // Show skeleton when loading
   if (props.loading) {
@@ -94,15 +81,7 @@ const CodePanelContent: React.FC<CodePanelProps> = (props) => {
   return (
     <div css={[styles.container, props.css]} className={props.className}>
       {props.diff.files.map((file) => (
-        <FileViewer
-          key={file.newPath || file.oldPath}
-          id={`file-diff-${file.newPath || file.oldPath}`}
-          file={file}
-          isCollapsed={fileStateMap.get(file.key)?.isCollapsed ?? false}
-          isViewed={fileStateMap.get(file.key)?.isViewed ?? false}
-          toggleCollapsed={(collapsed) => handleToggleCollapsed(file.key, collapsed)}
-          toggleViewed={(viewed) => handleToggleViewed(file.key, viewed)}
-        />
+        <FileViewer key={file.newPath || file.oldPath} id={`file-diff-${file.newPath || file.oldPath}`} file={file} />
       ))}
     </div>
   )

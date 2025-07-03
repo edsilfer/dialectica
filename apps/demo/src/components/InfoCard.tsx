@@ -28,7 +28,7 @@ export default function InfoCard({ title, description }: InfoCardProps) {
 
   return (
     <div css={styles.wrapper}>
-      <Card css={styles.card} bordered={false}>
+      <Card css={styles.card} variant="outlined">
         <Title level={3}>{title}</Title>
         {description && (
           <Paragraph>{typeof description === 'string' ? <Text>{description}</Text> : description}</Paragraph>

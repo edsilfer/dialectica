@@ -49,6 +49,7 @@
     "@emotion/styled": "^11.14.0",
     "antd": "^5.26.2",
     "diffparser": "^2.0.1",
-    "highlight.js": "^11.11.1"
+    "highlight.js": "^11.11.1",
+    "use-context-selector": "^2.0.0"
   }
 }

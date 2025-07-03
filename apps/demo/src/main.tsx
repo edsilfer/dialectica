@@ -15,8 +15,6 @@ const DEFAULT_FILE_EXPLORER_CONFIG: FileExplorerConfig = {
 
 const DEFAULT_CODE_PANEL_CONFIG: CodePanelConfig = {
   mode: 'unified',
-  highlightSyntax: false,
-  showLineNumbers: true,
   ignoreWhitespace: false,
 }
 

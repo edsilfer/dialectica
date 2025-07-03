@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { createContext, useContextSelector } from 'use-context-selector'
 import { ThemeContext, ThemeProvider } from '../../shared/providers/theme-context'
 import { readStorageValue, writeStorageValue } from '../../shared/storage-utils'
 import { Themes } from '../../shared/themes'
@@ -18,19 +19,13 @@ export const DEFAULT_CODE_PANEL_CONFIG: CodePanelConfig = {
   ignoreWhitespace: false,
 }
 
-/*
- * Context holding both the persistent view preferences (viewed / collapsed
- * files) and runtime setters required by the panel internals.
- */
-const CodePanelConfigContext = createContext<CodePanelConfigContextState | undefined>(undefined)
+const DEFAULT_FILE_STATE: FileState = { isCollapsed: false, isViewed: false }
+
+export const CodePanelConfigContext = createContext<CodePanelConfigContextState | undefined>(undefined)
 
 export const CodePanelConfigProvider: React.FC<CodePanelConfigContextProps> = (props) => {
   const { children, config: externalConfig = DEFAULT_CODE_PANEL_CONFIG, storage = 'in-memory' } = props
 
-  /*
-   * 1. Hydrate (optionally) persisted view state.
-   * 2. Prepare runtime setters.
-   */
   const storedState = useMemo(() => {
     if (storage !== 'local') return null
     return readStorageValue<Partial<PersistableState>>(STORAGE_KEY)
@@ -40,6 +35,7 @@ export const CodePanelConfigProvider: React.FC<CodePanelConfigContextProps> = (p
     ...externalConfig,
     ...(storedState?.config ?? {}),
   })
+
   const initialFileStateMap = useMemo(() => {
     const record = storedState?.fileStates ?? {}
     return new Map<string, FileState>(Object.entries(record))
@@ -49,43 +45,47 @@ export const CodePanelConfigProvider: React.FC<CodePanelConfigContextProps> = (p
   const [allFileKeys, setAllFileKeys] = useState<string[]>([])
 
   useSyncExternalConfig(externalConfig, storedState, setConfig)
+
   useEffect(() => {
     if (storage !== 'local') return
     writeStorageValue(STORAGE_KEY, { config, fileStates: Object.fromEntries(fileStateMap) })
   }, [storage, config, fileStateMap])
 
-  const setViewed = React.useCallback((fileKey: string, isViewed: boolean) => {
+  const setViewed = useCallback((fileKey: string, isViewed: boolean) => {
     setFileStateMap((prev) => {
+      const prevState = prev.get(fileKey) ?? DEFAULT_FILE_STATE
+      if (prevState.isViewed === isViewed) return prev // bail-out
       const next = new Map(prev)
-      const prevState = next.get(fileKey) ?? { isCollapsed: false, isViewed: false }
       next.set(fileKey, { ...prevState, isViewed })
       return next
     })
   }, [])
 
-  const setCollapsed = React.useCallback((fileKey: string, isCollapsed: boolean) => {
+  const setCollapsed = useCallback((fileKey: string, isCollapsed: boolean) => {
     setFileStateMap((prev) => {
+      const prevState = prev.get(fileKey) ?? DEFAULT_FILE_STATE
+      if (prevState.isCollapsed === isCollapsed) return prev // bail-out
       const next = new Map(prev)
-      const prevState = next.get(fileKey) ?? { isCollapsed: false, isViewed: false }
       next.set(fileKey, { ...prevState, isCollapsed })
       return next
     })
   }, [])
 
-  const contextValue = useMemo<CodePanelConfigContextState>(
-    () => ({
+  const contextValue = useMemo<CodePanelConfigContextState>(() => {
+    const getFileState = (key: string) => fileStateMap.get(key)
+    return {
       config,
       fileStateMap,
       allFileKeys,
       setConfig,
+      setAllFileKeys,
       setViewed,
       setCollapsed,
-      setAllFileKeys,
-    }),
-    [config, fileStateMap, allFileKeys, setConfig, setViewed, setCollapsed, setAllFileKeys],
-  )
+      getFileState,
+    }
+  }, [config, allFileKeys, setConfig, setAllFileKeys, setViewed, setCollapsed, fileStateMap])
 
-  const inheritedTheme = useContext(ThemeContext) ?? Themes.light
+  const inheritedTheme = React.useContext(ThemeContext) ?? Themes.light
   const themeToUse = config.theme ?? inheritedTheme
 
   return (
@@ -95,13 +95,69 @@ export const CodePanelConfigProvider: React.FC<CodePanelConfigContextProps> = (p
   )
 }
 
+/**
+ * returns: the *full* context. Components that call this will re-render when
+ *          *any* part of the context changes.
+ */
 export const useCodePanelConfig = (): CodePanelConfigContextState => {
-  const context = useContext(CodePanelConfigContext)
-  if (!context) {
-    throw new Error('useCodePanelConfig must be used within a ConfigProvider')
+  const ctx = useContextSelector(CodePanelConfigContext, (c) => c)
+  if (!ctx) {
+    throw new Error('useCodePanelConfig must be used within a CodePanelConfigProvider')
   }
-  return context
+  return ctx
 }
+
+/**
+ * Fine-grained subscription for a single file. Re-renders **only** when the
+ *
+ * @param fileKey - the key of the file to get the state for
+ * @returns         the state of the file
+ */
+export const useFileState = (fileKey: string) => {
+  const isCollapsed = useContextSelector(CodePanelConfigContext, (ctx) => {
+    if (!ctx) throw new Error('useFileState must be used within a CodePanelConfigProvider')
+    return ctx.getFileState(fileKey)?.isCollapsed ?? false
+  })
+
+  const isViewed = useContextSelector(CodePanelConfigContext, (ctx) => {
+    if (!ctx) throw new Error('useFileState must be used within a CodePanelConfigProvider')
+    return ctx.getFileState(fileKey)?.isViewed ?? false
+  })
+
+  const setCollapsed = useContextSelector(CodePanelConfigContext, (ctx) => {
+    if (!ctx) throw new Error('useFileState must be used within a CodePanelConfigProvider')
+    return ctx.setCollapsed
+  })
+
+  const setViewed = useContextSelector(CodePanelConfigContext, (ctx) => {
+    if (!ctx) throw new Error('useFileState must be used within a CodePanelConfigProvider')
+    return ctx.setViewed
+  })
+
+  const toggleCollapsed = useCallback((collapsed: boolean) => setCollapsed(fileKey, collapsed), [fileKey, setCollapsed])
+  const toggleViewed = useCallback((viewed: boolean) => setViewed(fileKey, viewed), [fileKey, setViewed])
+
+  return {
+    isCollapsed,
+    isViewed,
+    toggleCollapsed,
+    toggleViewed,
+  }
+}
+
+/**
+ * Subscribe to configuration settings only
+ *
+ * @returns the top-level config and a setter for it
+ */
+export const useCodePanelSettings = () =>
+  useContextSelector(CodePanelConfigContext, (ctx) => {
+    if (!ctx) throw new Error('useCodePanelSettings must be used within a CodePanelConfigProvider')
+    return {
+      config: ctx.config,
+      setConfig: ctx.setConfig,
+    }
+  })
 
 function useSyncExternalConfig(
   externalConfig: CodePanelConfig,

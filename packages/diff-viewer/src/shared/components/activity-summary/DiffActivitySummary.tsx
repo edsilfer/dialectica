@@ -26,7 +26,7 @@ const useStyles = () => {
       width: 10px;
       height: 10px;
       background-color: ${color};
-      border: 1px solid ${theme.colors.border};
+      border: 1px solid ${theme.colors.backgroundPrimary};
       /* Prevent double borders between adjacent squares by removing the left border from every square except the first */
       &:not(:first-of-type) {
         border-left: none;

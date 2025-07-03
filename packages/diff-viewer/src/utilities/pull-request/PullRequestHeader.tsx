@@ -86,7 +86,7 @@ export const PullRequestHeader: React.FC<{ pr: PullRequestMetadata }> = ({ pr })
         <Link href={pr.user.html_url} target="_blank" rel="noreferrer">
           {pr.user.login}
         </Link>
-        <Text>opened PR</Text>
+        <Text>opened</Text>
         <Text type="secondary">#{pr.number}</Text>
         <Text>to merge</Text>
         <StatTag label="commits" value={pr.commits} color="blue" />

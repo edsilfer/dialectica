@@ -9,14 +9,6 @@ export interface FileViewerProps {
   id?: string
   /** The file diff object. */
   file: FileDiff
-  /** Whether the file is collapsed */
-  isCollapsed: boolean
-  /** Whether the file is marked as viewed */
-  isViewed: boolean
-  /** Callback to toggle the collapsed state */
-  toggleCollapsed: (collapsed: boolean) => void
-  /** Callback to toggle the viewed state */
-  toggleViewed: (checked: boolean) => void
 }
 
 export interface UnifiedViewerProps {
