@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { DiffLine } from '../../../../shared/parsers/types'
+import { DiffLine } from '../../../../shared/models/Line'
 import { DiffLineType } from '../../file-viewer/types'
 import { HunkDirection } from '../models/HunkHeaderViewModel'
 import { LinePairBuilder } from './commons'

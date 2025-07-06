@@ -1,7 +1,6 @@
 import { css } from '@emotion/react'
-import React, { useContext } from 'react'
+import React, { useContext, useRef } from 'react'
 import { useDiffViewerConfig } from '../main/providers/diff-viewer-context'
-import type { FileDiff } from '../shared/parsers/types'
 import { ThemeContext } from '../shared/providers/theme-context'
 import FSNode from './components/FSNode'
 import { ExplorerBar } from './components/Toolbar'
@@ -10,6 +9,7 @@ import { listDirPaths, nodeComparator } from './node-utils'
 import { FileExplorerConfigProvider, useFileExplorerConfig } from './provider/file-explorer-context'
 import { FSTreeContextProvider, useFileExplorerContext } from './provider/fstree-context'
 import { FileExplorerProps } from './types'
+import { File } from '../shared/models/File'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -78,13 +78,13 @@ const FileExplorerContent: React.FC<FileExplorerProps> = (props) => {
   const styles = useStyles()
   const { setSelectedNode, setExpandedDirs, tree } = useFileExplorerContext()
 
-  const containerRef = React.useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const handleDirectoryToggle = (path: string, expanded: boolean) => {
     props.onDirectoryToggle?.(path, expanded)
   }
 
-  const handleFileClick = (file: FileDiff) => {
+  const handleFileClick = (file: File) => {
     const filePath = file.newPath || file.oldPath
     setSelectedNode(filePath)
     props.onFileClick?.(file)

@@ -1,6 +1,5 @@
 import {
   DefaultToolbar,
-  DiffParserAdapter,
   DiffViewer,
   LineRequest,
   ParsedDiff,
@@ -8,7 +7,7 @@ import {
   useDiffViewerConfig,
 } from '@diff-viewer'
 import { css } from '@emotion/react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import AppToolbar from './components/AppToolbar'
 import ErrorCard from './components/ErrorCard'
 import Footer from './components/Footer'
@@ -38,9 +37,7 @@ const createStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) =>
 export default function App() {
   const { theme } = useDiffViewerConfig()
   const styles = useMemo(() => createStyles(theme), [theme])
-  const emptyDiff = useMemo<ParsedDiff>(() => ({ files: [] }), [])
   const [selectedPr, setSelectedPr] = useState<ParsedPR | null>(null)
-  const parserRef = useRef(new DiffParserAdapter())
 
   useEffect(() => setSelectedPr(parseURL()), [])
   useEffect(() => setURL(selectedPr), [selectedPr])
@@ -59,9 +56,14 @@ export default function App() {
   })
 
   const displayedDiff = useMemo(() => {
-    if (!prDiff.data) return emptyDiff
-    return parserRef.current.parse(prDiff.data)
-  }, [prDiff.data, emptyDiff])
+    if (!prDiff.data || prDiff.data.trim() === '') return undefined
+    try {
+      return ParsedDiff.build(prDiff.data)
+    } catch (error) {
+      console.error('Failed to parse diff:', error)
+      return undefined
+    }
+  }, [prDiff.data])
 
   const loadMore = useCallback((request: LineRequest) => {
     let lines: Record<number, string> = {}
@@ -72,7 +74,11 @@ export default function App() {
     return lines
   }, [])
 
-  const error = prMetadata.error || prDiff.error || (!prMetadata.loading && !prMetadata.data)
+  const error =
+    prMetadata.error ||
+    prDiff.error ||
+    (!prMetadata.loading && !prMetadata.data) ||
+    (!prDiff.loading && !displayedDiff && prDiff.data)
   if (error) {
     const errorMessage = prMetadata.error || prDiff.error || 'Unknown error'
     const errorObj = typeof errorMessage === 'string' ? new Error(errorMessage) : errorMessage
@@ -91,19 +97,23 @@ export default function App() {
       <AppToolbar onSearch={handleSearch} />
 
       <div css={styles.content}>
-        <DiffViewer
-          diff={displayedDiff}
-          toolbar={
-            <DefaultToolbar
-              loading={prMetadata.loading}
-              header={prMetadata.data ? <PullRequestHeader pr={prMetadata.data} /> : undefined}
-            />
-          }
-          isMetadataLoading={prMetadata.loading}
-          isDiffLoading={prDiff.loading || !prDiff.data}
-          maxLinesToFetch={10}
-          onLoadMoreLines={loadMore}
-        />
+        {displayedDiff ? (
+          <DiffViewer
+            diff={displayedDiff}
+            toolbar={
+              <DefaultToolbar
+                loading={prMetadata.loading}
+                header={prMetadata.data ? <PullRequestHeader pr={prMetadata.data} /> : undefined}
+              />
+            }
+            isMetadataLoading={prMetadata.loading}
+            isDiffLoading={prDiff.loading || !prDiff.data}
+            maxLinesToFetch={10}
+            onLoadMoreLines={loadMore}
+          />
+        ) : (
+          <InfoCard title="Loading Diff" description="Please wait while the diff is being loaded..." />
+        )}
       </div>
 
       <Footer />

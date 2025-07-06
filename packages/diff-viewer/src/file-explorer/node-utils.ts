@@ -1,6 +1,6 @@
 import React from 'react'
-import { FileDiff } from '../shared/parsers/types'
 import { DirectoryNode, FileNode, TreeNode } from './types'
+import { File } from '../shared/models/File'
 
 /**
  * Builds a directory tree from the list of files inside the diff.
@@ -9,7 +9,7 @@ import { DirectoryNode, FileNode, TreeNode } from './types'
  * @param collapsePackages - Whether to collapse single-child directories.
  * @returns     - The root directory node of the tree.
  */
-export function buildTree(files: FileDiff[], collapsePackages?: boolean): DirectoryNode {
+export function buildTree(files: File[], collapsePackages?: boolean): DirectoryNode {
   const root: DirectoryNode = {
     type: 'directory',
     name: '',
@@ -128,8 +128,8 @@ export const highlightText = (text: string, highlight: string): React.ReactNode 
  * @param dir - The directory node to start from.
  * @returns   - An array of all files within the directory.
  */
-export function listFilesIn(dir: DirectoryNode): FileDiff[] {
-  const files: FileDiff[] = []
+export function listFilesIn(dir: DirectoryNode): File[] {
+  const files: File[] = []
 
   for (const childNode of dir.children.values()) {
     if (childNode.type === 'file') {

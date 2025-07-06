@@ -1,13 +1,12 @@
 import { describe, expect, it, vi } from 'vitest'
 import { escapeHtml } from '../highlight-utils'
 import { HunkHeaderViewModel } from './HunkHeaderViewModel'
+import { File } from '../../../../shared/models/File'
+import { ParsedDiff } from '../../../../shared/models/ParsedDiff'
+import { REACT_FLIGHT_SERVER_DIFF } from '../../../../__fixtures__/raw-diffs-fixtures'
 
 // Mock the highlight.js import that's used in hunk-utils
 vi.mock('highlight.js/styles/github.css', () => ({}))
-
-import { REACT_FLIGHT_SERVER_DIFF } from '../../../../__fixtures__/raw-diffs-fixtures'
-import { DiffParserAdapter } from '../../../../shared/parsers/DiffParserAdapter'
-import { FileDiff } from '../../../../shared/parsers/types'
 
 describe('HunkHeaderViewModel', () => {
   describe('constructor and parsing', () => {
@@ -239,16 +238,13 @@ describe('HunkHeaderViewModel', () => {
 
     it('should correctly determine hunk directions for ReactFlightServer.js diff', () => {
       // Parse the diff
-      const adapter = new DiffParserAdapter()
-      const parsed = adapter.parse(REACT_FLIGHT_SERVER_DIFF)
-
-      // Get the ReactFlightServer.js file
-      const file = parsed.files.find((f: FileDiff) => f.newPath.includes('ReactFlightServer.js'))
+      const parsedDiff = ParsedDiff.build(REACT_FLIGHT_SERVER_DIFF)
+      const file = parsedDiff.files.find((f: File) => f.newPath.includes('ReactFlightServer.js'))
       expect(file).toBeDefined()
 
       if (!file) return // Type guard
 
-      expect(file.hunks).toHaveLength(2)
+      expect(file.hunks).toHaveLength(3)
 
       // Convert Hunk objects to HunkHeader objects
       const hunkHeaders = file.hunks.map((hunk) => new HunkHeaderViewModel(hunk.content, file.newPath))
@@ -263,10 +259,13 @@ describe('HunkHeaderViewModel', () => {
       })
 
       // The first hunk should have an "up" expander (hidden lines above),
-      // the second hunk should have an "in" expander (large hidden gap on
-      // both sides).
+      // the second hunk should have an "up" expander (large hidden gap above).
       expect(directions[0]).toBe('up')
-      expect(directions[1]).toBe('in')
+      expect(directions[1]).toBe('up')
+      // Add expectation for the third hunk if needed
+      if (directions.length > 2) {
+        expect(directions[2]).toBe('out')
+      }
     })
   })
 

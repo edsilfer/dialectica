@@ -1,13 +1,12 @@
 import { describe, it, expect } from 'vitest'
+import { ParsedDiff } from '../../../../shared/models/ParsedDiff'
 import { SourceCodeViewModel } from './SourceCodeViewModel'
-import { DiffParserAdapter } from '../../../../shared/parsers/DiffParserAdapter'
 import { REACT_FLIGHT_SERVER_DIFF, REACT_FLIGHT_CLIENT_DIFF } from '../../../../__fixtures__/raw-diffs-fixtures'
 
 describe('SourceCodeViewModel', () => {
   it('given diff with multiple hunks, when build view model, expect correct hunk states', () => {
     // GIVEN
-    const parser = new DiffParserAdapter()
-    const parsedDiff = parser.parse(REACT_FLIGHT_SERVER_DIFF)
+    const parsedDiff = ParsedDiff.build(REACT_FLIGHT_SERVER_DIFF)
     const fileDiff = parsedDiff.files[0]
 
     // WHEN
@@ -48,8 +47,7 @@ describe('SourceCodeViewModel', () => {
 
   it('given client diff with multiple hunks, when build view model, expect correct hunk states', () => {
     // GIVEN
-    const parser = new DiffParserAdapter()
-    const parsedDiff = parser.parse(REACT_FLIGHT_CLIENT_DIFF)
+    const parsedDiff = ParsedDiff.build(REACT_FLIGHT_CLIENT_DIFF)
     const fileDiff = parsedDiff.files[0]
 
     // WHEN

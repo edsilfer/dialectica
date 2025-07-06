@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { DiffParserAdapter } from './DiffParserAdapter'
+import { ParsedDiff } from '../models/ParsedDiff'
 import {
   SAMPLE_DIFF,
   DELETION_DIFF,
@@ -8,25 +8,22 @@ import {
   MULTI_FILE_DIFF,
   MULTI_HUNK_DIFF,
 } from '../../__fixtures__/raw-diffs-fixtures'
-import { ParsedDiff } from './types'
 
-describe('DiffParserAdapter', () => {
-  const adapter = new DiffParserAdapter()
-
+describe('ParsedDiff.build', () => {
   it('given a simple added file diff when parsed expect correct parsing', () => {
     // GIVEN
-    const parsed: ParsedDiff = adapter.parse(SAMPLE_DIFF)
+    const result = ParsedDiff.build(SAMPLE_DIFF)
 
     // WHEN
-    const file = parsed.files[0]
+    const file = result.files[0]
 
     // EXPECT
-    expect(parsed.files).toHaveLength(1)
+    expect(result.files).toHaveLength(1)
     expect(file.oldPath).toBe('foo.ts')
     expect(file.newPath).toBe('foo.ts')
     expect(file.isRenamed).toBe(false)
     expect(file.language).toBe('typescript')
-    expect(file.hunks).toHaveLength(1)
+    expect(file.hunks).toHaveLength(2)
 
     const hunk = file.hunks[0]
     expect(hunk.content).toBe('@@ -0,0 +1,3 @@')
@@ -52,18 +49,18 @@ describe('DiffParserAdapter', () => {
 
   it('given a file with deletions when parsed expect correct parsing', () => {
     // GIVEN
-    const parsed: ParsedDiff = adapter.parse(DELETION_DIFF)
+    const result = ParsedDiff.build(DELETION_DIFF)
 
     // WHEN
-    const file = parsed.files[0]
+    const file = result.files[0]
 
     // EXPECT
-    expect(parsed.files).toHaveLength(1)
+    expect(result.files).toHaveLength(1)
     expect(file.oldPath).toBe('example.js')
     expect(file.newPath).toBe('example.js')
     expect(file.isRenamed).toBe(false)
     expect(file.language).toBe('javascript')
-    expect(file.hunks).toHaveLength(1)
+    expect(file.hunks).toHaveLength(2)
 
     const hunk = file.hunks[0]
     expect(hunk.changes).toHaveLength(6)
@@ -89,14 +86,14 @@ describe('DiffParserAdapter', () => {
 
   it('given a file with mixed additions, deletions, and context when parsed expect correct parsing', () => {
     // GIVEN
-    const parsed: ParsedDiff = adapter.parse(MIXED_DIFF)
+    const result = ParsedDiff.build(MIXED_DIFF)
 
     // WHEN
-    const file = parsed.files[0]
+    const file = result.files[0]
 
     // EXPECT
-    expect(parsed.files).toHaveLength(1)
-    expect(file.hunks).toHaveLength(1)
+    expect(result.files).toHaveLength(1)
+    expect(file.hunks).toHaveLength(2)
     const hunk = file.hunks[0]
 
     // Check that we have context, deletions, and additions
@@ -111,13 +108,13 @@ describe('DiffParserAdapter', () => {
 
   it('given a renamed file when parsed expect correct parsing', () => {
     // GIVEN
-    const parsed: ParsedDiff = adapter.parse(RENAME_DIFF)
+    const result = ParsedDiff.build(RENAME_DIFF)
 
     // WHEN
-    const file = parsed.files[0]
+    const file = result.files[0]
 
     // EXPECT
-    expect(parsed.files).toHaveLength(1)
+    expect(result.files).toHaveLength(1)
     expect(file.oldPath).toBe('old-name.js')
     expect(file.newPath).toBe('new-name.js')
     expect(file.isRenamed).toBe(true)
@@ -126,25 +123,25 @@ describe('DiffParserAdapter', () => {
 
   it('given multiple files in a single diff when parsed expect correct parsing', () => {
     // GIVEN
-    const parsed: ParsedDiff = adapter.parse(MULTI_FILE_DIFF)
+    const result = ParsedDiff.build(MULTI_FILE_DIFF)
 
     // WHEN
-    const [file1, file2] = parsed.files
+    const [file1, file2] = result.files
 
     // EXPECT
-    expect(parsed.files).toHaveLength(2)
+    expect(result.files).toHaveLength(2)
 
     expect(file1.oldPath).toBe('file1.ts')
     expect(file1.newPath).toBe('file1.ts')
     expect(file1.language).toBe('typescript')
-    expect(file1.hunks).toHaveLength(1)
+    expect(file1.hunks).toHaveLength(2)
     expect(file1.hunks[0].changes).toHaveLength(2)
     expect(file1.hunks[0].changes.every((change) => change.type === 'add')).toBe(true)
 
     expect(file2.oldPath).toBe('file2.ts')
     expect(file2.newPath).toBe('file2.ts')
     expect(file2.language).toBe('typescript')
-    expect(file2.hunks).toHaveLength(1)
+    expect(file2.hunks).toHaveLength(2)
     expect(file2.hunks[0].changes).toHaveLength(2)
     expect(file2.hunks[0].changes[0].type).toBe('context')
     expect(file2.hunks[0].changes[1].type).toBe('add')
@@ -152,14 +149,14 @@ describe('DiffParserAdapter', () => {
 
   it('given a diff with multiple hunks when parsed expect correct parsing', () => {
     // GIVEN
-    const parsed: ParsedDiff = adapter.parse(MULTI_HUNK_DIFF)
+    const result = ParsedDiff.build(MULTI_HUNK_DIFF)
 
     // WHEN
-    const file = parsed.files[0]
+    const file = result.files[0]
 
     // EXPECT
-    expect(parsed.files).toHaveLength(1)
-    expect(file.hunks).toHaveLength(2)
+    expect(result.files).toHaveLength(1)
+    expect(file.hunks).toHaveLength(3)
 
     const [hunk1, hunk2] = file.hunks
 
@@ -211,12 +208,12 @@ index 1234567..abcdefg 100644
 `
 
     // WHEN
-    const parsed: ParsedDiff = adapter.parse(multiExtensionDiff)
+    const result = ParsedDiff.build(multiExtensionDiff)
 
     // EXPECT
-    expect(parsed.files).toHaveLength(4)
+    expect(result.files).toHaveLength(4)
 
-    const [pythonFile, cssFile, unknownFile, markdownFile] = parsed.files
+    const [pythonFile, cssFile, unknownFile, markdownFile] = result.files
 
     expect(pythonFile.language).toBe('python')
     expect(cssFile.language).toBe('css')

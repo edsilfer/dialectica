@@ -1,6 +1,6 @@
 import React from 'react'
-import { ParsedDiff } from '../shared/parsers/types'
 import { DrawerContent } from './components/drawer/types'
+import { ParsedDiff } from '../shared/models/ParsedDiff'
 
 export interface LineRequest {
   /** The key/path of the file needing more lines */

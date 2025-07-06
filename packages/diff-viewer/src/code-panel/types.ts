@@ -1,6 +1,7 @@
 import { Interpolation, Theme } from '@emotion/react'
-import { DiffLine, ParsedDiff } from '../shared/parsers/types'
 import { LoadMoreLinesHandler } from '../main/types'
+import { ParsedDiff } from '../shared/models/ParsedDiff'
+import { DiffLine } from '../shared/models/Line'
 
 export type CodePanelProps = {
   /** The parsed diff to display. */

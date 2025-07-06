@@ -1,6 +1,7 @@
 import { Interpolation, Theme } from '@emotion/react'
-import { FileDiff, ParsedDiff } from '../shared/parsers/types'
 import { ThemeTokens } from '../shared/themes'
+import { ParsedDiff } from '../shared/models/ParsedDiff'
+import { File } from '../shared/models/File'
 
 export interface FileExplorerProps {
   /** Parsed diff used to build the tree */
@@ -12,7 +13,7 @@ export interface FileExplorerProps {
 
   // Callbacks ____________________________________________
   /** Called when a file entry is clicked */
-  onFileClick?: (file: FileDiff) => void
+  onFileClick?: (file: File) => void
   /** Called when a directory entry is toggled */
   onDirectoryToggle?: (path: string, expanded: boolean) => void
 }
@@ -32,7 +33,7 @@ export interface FileNode {
   /** The name of the file. */
   name: string
   /** The file object. */
-  file: FileDiff
+  file: File
 }
 
 export type TreeNode = DirectoryNode | FileNode

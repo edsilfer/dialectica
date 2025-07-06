@@ -1,4 +1,4 @@
-import { FileDiff } from '../../../../shared/parsers/types'
+import { File } from '../../../../shared/models/File'
 import { LinePair } from '../../file-viewer/types'
 import { LinePairBuilder } from '../parser/commons'
 import { ParserFactory } from '../parser/parser-factory'
@@ -17,7 +17,7 @@ export type HunkState = {
 }
 
 export class SourceCodeViewModel {
-  private fileDiff: FileDiff
+  private fileDiff: File
   private displayType: DisplayType
   private _lines: LinePair[]
   private maxLinesToFetch: number
@@ -33,7 +33,7 @@ export class SourceCodeViewModel {
   private _hunkState: Map<LinePair, HunkState>
   private listeners = new Set<() => void>()
 
-  constructor(fileDiff: FileDiff, displayType: DisplayType, maxLinesToFetch: number = 10) {
+  constructor(fileDiff: File, displayType: DisplayType, maxLinesToFetch: number = 10) {
     this.fileDiff = fileDiff
     this.displayType = displayType
     this.maxLinesToFetch = maxLinesToFetch

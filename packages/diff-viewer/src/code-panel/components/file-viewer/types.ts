@@ -1,4 +1,4 @@
-import { FileDiff } from '../../../shared/parsers/types'
+import { File } from '../../../shared/models/File'
 import { LoadMoreLinesHandler } from '../../../main/types'
 import { SourceCodeViewModel } from '../source-code/models/SourceCodeViewModel'
 import { HunkDirection } from '../source-code/models/HunkHeaderViewModel'
@@ -11,7 +11,7 @@ export interface FileViewerProps {
   /** A unique identifier for the file viewer. */
   id?: string
   /** The file diff object. */
-  file: FileDiff
+  file: File
   /** Number of lines to request when user clicks "load more". Defaults to 5. */
   loadMoreLinesCount?: number
 

@@ -1,13 +1,14 @@
-import { FileDiff, Hunk } from '../shared/parsers/types'
+import { Hunk } from '../shared/models/Hunk'
+import { File } from '../shared/models/File'
 
 // Basic sample hunk with paired changes
-export const SAMPLE_HUNK: Hunk = {
-  content: '@@ -1,4 +1,4 @@',
-  oldStart: 1,
-  oldLines: 4,
-  newStart: 1,
-  newLines: 4,
-  changes: [
+export const SAMPLE_HUNK: Hunk = new Hunk(
+  '@@ -1,4 +1,4 @@',
+  1,
+  4,
+  1,
+  4,
+  [
     {
       type: 'context',
       content: 'function foo() {',
@@ -33,24 +34,26 @@ export const SAMPLE_HUNK: Hunk = {
       lineNumberNew: 3,
     },
   ],
-}
+  'test.js',
+)
 
-export const SAMPLE_FILE_DIFF: FileDiff = new FileDiff({
+export const SAMPLE_FILE_DIFF: File = new File({
   oldPath: 'test.js',
   newPath: 'test.js',
   isRenamed: false,
   language: 'javascript',
   hunks: [SAMPLE_HUNK],
+  rawContent: '@@ -1,4 +1,4 @@\nfunction foo() {\n-  console.log("old")\n+  console.log("new")\n}',
 })
 
 // Unpaired changes - delete only
-export const UNPAIRED_HUNK: Hunk = {
-  content: '@@ -1,3 +1,2 @@',
-  oldStart: 1,
-  oldLines: 3,
-  newStart: 1,
-  newLines: 2,
-  changes: [
+export const UNPAIRED_HUNK: Hunk = new Hunk(
+  '@@ -1,3 +1,2 @@',
+  1,
+  3,
+  1,
+  2,
+  [
     {
       type: 'context',
       content: 'function test() {',
@@ -70,24 +73,26 @@ export const UNPAIRED_HUNK: Hunk = {
       lineNumberNew: 2,
     },
   ],
-}
+  'test.js',
+)
 
-export const UNPAIRED_FILE: FileDiff = new FileDiff({
+export const UNPAIRED_FILE: File = new File({
   oldPath: 'test.js',
   newPath: 'test.js',
   isRenamed: false,
   language: 'javascript',
   hunks: [UNPAIRED_HUNK],
+  rawContent: '@@ -1,3 +1,2 @@\nfunction test() {\n-  return false\n}',
 })
 
 // Unpaired changes - add only
-export const ADD_ONLY_HUNK: Hunk = {
-  content: '@@ -1,2 +1,3 @@',
-  oldStart: 1,
-  oldLines: 2,
-  newStart: 1,
-  newLines: 3,
-  changes: [
+export const ADD_ONLY_HUNK: Hunk = new Hunk(
+  '@@ -1,2 +1,3 @@',
+  1,
+  2,
+  1,
+  3,
+  [
     {
       type: 'context',
       content: 'function test() {',
@@ -107,24 +112,26 @@ export const ADD_ONLY_HUNK: Hunk = {
       lineNumberNew: 3,
     },
   ],
-}
+  'test.js',
+)
 
-export const ADD_ONLY_FILE: FileDiff = new FileDiff({
+export const ADD_ONLY_FILE: File = new File({
   oldPath: 'test.js',
   newPath: 'test.js',
   isRenamed: false,
   language: 'javascript',
   hunks: [ADD_ONLY_HUNK],
+  rawContent: '@@ -1,2 +1,3 @@\nfunction test() {\n+  return true\n}',
 })
 
 // Multiple hunks
-export const SECOND_HUNK: Hunk = {
-  content: '@@ -10,3 +10,3 @@',
-  oldStart: 10,
-  oldLines: 3,
-  newStart: 10,
-  newLines: 3,
-  changes: [
+export const SECOND_HUNK: Hunk = new Hunk(
+  '@@ -10,3 +10,3 @@',
+  10,
+  3,
+  10,
+  3,
+  [
     {
       type: 'context',
       content: 'function bar() {',
@@ -150,41 +157,38 @@ export const SECOND_HUNK: Hunk = {
       lineNumberNew: 12,
     },
   ],
-}
+  'test.js',
+)
 
-export const MULTI_HUNK_FILE: FileDiff = new FileDiff({
+export const MULTI_HUNK_FILE: File = new File({
   oldPath: 'test.js',
   newPath: 'test.js',
   isRenamed: false,
   language: 'javascript',
   hunks: [SAMPLE_HUNK, SECOND_HUNK],
+  rawContent:
+    '@@ -1,4 +1,4 @@\nfunction foo() {\n-  console.log("old")\n+  console.log("new")\n}\n@@ -10,3 +10,3 @@\nfunction bar() {\n-  return false\n+  return true\n}',
 })
 
 // Edge cases
-export const EMPTY_HUNK: Hunk = {
-  content: '@@ -1,0 +1,0 @@',
-  oldStart: 1,
-  oldLines: 0,
-  newStart: 1,
-  newLines: 0,
-  changes: [],
-}
+export const EMPTY_HUNK: Hunk = new Hunk('@@ -1,0 +1,0 @@', 1, 0, 1, 0, [], 'empty.js')
 
-export const EMPTY_FILE: FileDiff = new FileDiff({
+export const EMPTY_FILE: File = new File({
   oldPath: 'empty.js',
   newPath: 'empty.js',
   isRenamed: false,
   language: 'javascript',
   hunks: [EMPTY_HUNK],
+  rawContent: '@@ -1,0 +1,0 @@',
 })
 
-export const CONTEXT_ONLY_HUNK: Hunk = {
-  content: '@@ -1,3 +1,3 @@',
-  oldStart: 1,
-  oldLines: 3,
-  newStart: 1,
-  newLines: 3,
-  changes: [
+export const CONTEXT_ONLY_HUNK: Hunk = new Hunk(
+  '@@ -1,3 +1,3 @@',
+  1,
+  3,
+  1,
+  3,
+  [
     {
       type: 'context',
       content: 'line 1',
@@ -204,23 +208,25 @@ export const CONTEXT_ONLY_HUNK: Hunk = {
       lineNumberNew: 3,
     },
   ],
-}
+  'context.js',
+)
 
-export const CONTEXT_FILE: FileDiff = new FileDiff({
+export const CONTEXT_FILE: File = new File({
   oldPath: 'context.js',
   newPath: 'context.js',
   isRenamed: false,
   language: 'javascript',
   hunks: [CONTEXT_ONLY_HUNK],
+  rawContent: '@@ -1,3 +1,3 @@\n line 1\n line 2\n line 3',
 })
 
-export const ADD_ONLY_EDGE_HUNK: Hunk = {
-  content: '@@ -0,0 +1,3 @@',
-  oldStart: 0,
-  oldLines: 0,
-  newStart: 1,
-  newLines: 3,
-  changes: [
+export const ADD_ONLY_EDGE_HUNK: Hunk = new Hunk(
+  '@@ -0,0 +1,3 @@',
+  0,
+  0,
+  1,
+  3,
+  [
     {
       type: 'add',
       content: 'new line 1',
@@ -240,23 +246,25 @@ export const ADD_ONLY_EDGE_HUNK: Hunk = {
       lineNumberNew: 3,
     },
   ],
-}
+  'add.js',
+)
 
-export const ADD_ONLY_EDGE_FILE: FileDiff = new FileDiff({
+export const ADD_ONLY_EDGE_FILE: File = new File({
   oldPath: 'add.js',
   newPath: 'add.js',
   isRenamed: false,
   language: 'javascript',
   hunks: [ADD_ONLY_EDGE_HUNK],
+  rawContent: '@@ -0,0 +1,3 @@\n+new line 1\n+new line 2\n+new line 3',
 })
 
-export const DELETE_ONLY_HUNK: Hunk = {
-  content: '@@ -1,3 +0,0 @@',
-  oldStart: 1,
-  oldLines: 3,
-  newStart: 0,
-  newLines: 0,
-  changes: [
+export const DELETE_ONLY_HUNK: Hunk = new Hunk(
+  '@@ -1,3 +0,0 @@',
+  1,
+  3,
+  0,
+  0,
+  [
     {
       type: 'delete',
       content: 'old line 1',
@@ -276,12 +284,14 @@ export const DELETE_ONLY_HUNK: Hunk = {
       lineNumberNew: null,
     },
   ],
-}
+  'delete.js',
+)
 
-export const DELETE_ONLY_FILE: FileDiff = new FileDiff({
+export const DELETE_ONLY_FILE: File = new File({
   oldPath: 'delete.js',
   newPath: 'delete.js',
   isRenamed: false,
   language: 'javascript',
   hunks: [DELETE_ONLY_HUNK],
+  rawContent: '@@ -1,3 +0,0 @@\n-old line 1\n-old line 2\n-old line 3',
 })

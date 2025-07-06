@@ -1,4 +1,6 @@
-import { DiffLine, FileDiff, Hunk } from '../../../../shared/parsers/types'
+import { DiffLine } from '../../../../shared/models/Line'
+import { Hunk } from '../../../../shared/models/Hunk'
+import { File as FileDiff } from '../../../../shared/models/File'
 import { DiffLineType, LinePair } from '../../file-viewer/types'
 import { HunkDirection } from '../models/HunkHeaderViewModel'
 import { highlightContent } from '../highlight-utils'
@@ -54,6 +56,11 @@ export abstract class CommonParser implements LineParser {
    * @returns           The list of paired rows
    */
   protected processHunk = (hunk: Hunk, hunkIndex: number, hunks: Hunk[], language: string): LinePair[] => {
+    // Synthetic tail hunk: render *only* the downward expander placeholder and exit early.
+    if (hunk.changes.length === 0) {
+      return [LinePairBuilder.placeholder('down')]
+    }
+
     const rows: LinePair[] = [HunkHeaderViewModel.build(hunk, hunkIndex, hunks).toLinePair()]
     hunk.changes.filter((c) => !!c.content.trim()).forEach((change) => this.processChange(change, rows, language))
 

@@ -1,4 +1,4 @@
-import { DiffLine } from '../../../../shared/parsers/types'
+import { DiffLine } from '../../../../shared/models/Line'
 import { LinePair } from '../../file-viewer/types'
 import { LinePairBuilder, CommonParser } from './commons'
 

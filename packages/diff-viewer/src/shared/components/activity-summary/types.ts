@@ -1,4 +1,4 @@
-import { FileDiff } from '../../parsers/types'
+import { File } from '../../models/File'
 
 export interface DiffActivitySummaryProps {
   /** The number of additions */
@@ -11,14 +11,14 @@ export interface DiffActivitySummaryProps {
 
 export interface DirectoryActivitySummaryProps {
   /** The file diff object */
-  files: FileDiff[]
+  files: File[]
   /** The maximum number of squares to display. Defaults to 10. */
   maxSquares?: number
 }
 
 export interface FileActivitySummaryProps {
   /** The file diff object */
-  file: FileDiff
+  file: File
   /** The maximum number of squares to display. Defaults to 10. */
   maxSquares?: number
 }

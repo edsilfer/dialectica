@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import { ParsedDiff } from '../../shared/parsers/types'
+import { ParsedDiff } from '../../shared/models/ParsedDiff'
 import { DirectoryNode, FileExplorerConfig } from '../types'
 
 export interface FileExplorerConfigContextProps {

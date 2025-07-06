@@ -1,4 +1,4 @@
-import { FileDiff } from '../shared/parsers/types'
+import { File } from '../shared/models/File'
 
 /**
  * A representative list of FileDiff objects covering the main diff scenarios
@@ -9,8 +9,8 @@ import { FileDiff } from '../shared/parsers/types'
  *  • file rename (isRenamed)
  *  • deeply nested paths (used to exercise directory collapsing)
  */
-export const SAMPLE_FILE_DIFFS: FileDiff[] = [
-  new FileDiff({
+export const SAMPLE_FILE_DIFFS: File[] = [
+  new File({
     oldPath: 'src/components/Button.tsx',
     newPath: 'src/components/Button.tsx',
     hunks: [],
@@ -18,8 +18,9 @@ export const SAMPLE_FILE_DIFFS: FileDiff[] = [
     isNew: false,
     isDeleted: false,
     language: 'typescript',
+    rawContent: '',
   }),
-  new FileDiff({
+  new File({
     oldPath: 'src/hooks/useFetch.ts',
     newPath: 'src/hooks/useFetch.ts',
     hunks: [],
@@ -27,8 +28,9 @@ export const SAMPLE_FILE_DIFFS: FileDiff[] = [
     isNew: false,
     isDeleted: false,
     language: 'typescript',
+    rawContent: '',
   }),
-  new FileDiff({
+  new File({
     oldPath: 'README.md',
     newPath: 'README.md',
     hunks: [],
@@ -36,9 +38,10 @@ export const SAMPLE_FILE_DIFFS: FileDiff[] = [
     isNew: false,
     isDeleted: false,
     language: 'markdown',
+    rawContent: '',
   }),
   // New file (added)
-  new FileDiff({
+  new File({
     oldPath: '/dev/null',
     newPath: 'src/utils/helpers.ts',
     hunks: [],
@@ -46,9 +49,10 @@ export const SAMPLE_FILE_DIFFS: FileDiff[] = [
     isNew: true,
     isDeleted: false,
     language: 'typescript',
+    rawContent: '',
   }),
   // Deleted file
-  new FileDiff({
+  new File({
     oldPath: 'src/legacy/api.js',
     newPath: '/dev/null',
     hunks: [],
@@ -56,9 +60,10 @@ export const SAMPLE_FILE_DIFFS: FileDiff[] = [
     isNew: false,
     isDeleted: true,
     language: 'javascript',
+    rawContent: '',
   }),
   // Deeply nested path to test collapse logic (single-child directories)
-  new FileDiff({
+  new File({
     oldPath: 'src/singlechild/inner/Icon.tsx',
     newPath: 'src/singlechild/inner/Icon.tsx',
     hunks: [],
@@ -66,9 +71,10 @@ export const SAMPLE_FILE_DIFFS: FileDiff[] = [
     isNew: false,
     isDeleted: false,
     language: 'typescript',
+    rawContent: '',
   }),
   // Rename scenario
-  new FileDiff({
+  new File({
     oldPath: 'src/oldName.tsx',
     newPath: 'src/newName.tsx',
     hunks: [],
@@ -76,5 +82,6 @@ export const SAMPLE_FILE_DIFFS: FileDiff[] = [
     isNew: false,
     isDeleted: false,
     language: 'typescript',
+    rawContent: '',
   }),
 ]
