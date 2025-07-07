@@ -1,14 +1,13 @@
 import React, { useContext, useMemo } from 'react'
 import { ThemeContext } from '../../../shared/providers/theme-context'
-import LoadMoreButton from './buttons/LoadMoreButton'
-import { useLoadMoreLines } from './hooks/use-load-more-lines'
+import { SplitViewerProps } from './types'
 import { getViewerStyles } from './shared-styles'
-import { DiffLineType, SplitViewerProps } from './types'
+import LoadMoreButton from './buttons/LoadMoreButton'
+import { DiffLineType } from '../../../shared/models/LineDiff'
 
 const SplitViewer: React.FC<SplitViewerProps> = (props) => {
   const theme = useContext(ThemeContext)
   const styles = useMemo(() => getViewerStyles(theme), [theme])
-  const { lines, loadMore } = useLoadMoreLines(props.sourceCode, props.onLoadMoreLines)
 
   const preffix: Record<DiffLineType, string> = {
     add: '+',
@@ -28,7 +27,7 @@ const SplitViewer: React.FC<SplitViewerProps> = (props) => {
           <col style={{ width: 'auto' }} />
         </colgroup>
         <tbody>
-          {lines.map((line, idx) => {
+          {props.lines.map((line, idx) => {
             const leftType: DiffLineType = line.typeLeft ?? 'empty'
             const rightType: DiffLineType = line.typeRight ?? 'empty'
             const isHunk = leftType === 'hunk' && rightType === 'hunk'
@@ -41,7 +40,9 @@ const SplitViewer: React.FC<SplitViewerProps> = (props) => {
                     <td css={styles.leftNumberCell['hunk']} className="split-viewer-left-row">
                       <LoadMoreButton
                         direction={line.hunkDirection ?? 'out'}
-                        onClick={(_, direction) => void loadMore(line, direction)}
+                        onClick={(_, direction) => {
+                          props.onLoadMoreLines?.(line, direction)
+                        }}
                       />
                     </td>
 
@@ -62,7 +63,9 @@ const SplitViewer: React.FC<SplitViewerProps> = (props) => {
                       {leftType === 'hunk' ? (
                         <LoadMoreButton
                           direction={line.hunkDirection ?? 'out'}
-                          onClick={(_, direction) => void loadMore(line, direction)}
+                          onClick={(_, direction) => {
+                            props.onLoadMoreLines?.(line, direction)
+                          }}
                         />
                       ) : (
                         line.lineNumberLeft

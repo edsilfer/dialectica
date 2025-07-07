@@ -1,4 +1,4 @@
-import { File } from '../../shared/models/File'
+import { FileDiff } from '../../shared/models/FileDiff'
 import { DirectoryNode } from '../types'
 
 /**
@@ -8,7 +8,7 @@ import { DirectoryNode } from '../types'
  * @param searchQuery - The search query to filter the files by.
  * @returns           - The filtered files.
  */
-export const filterFiles = (files: File[], searchQuery: string): File[] => {
+export const filterFiles = (files: FileDiff[], searchQuery: string): FileDiff[] => {
   if (!searchQuery) {
     return files
   }

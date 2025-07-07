@@ -1,8 +1,8 @@
 import { css } from '@emotion/react'
 import { Tooltip } from 'antd'
 import React, { useContext } from 'react'
-import LoadMoreLines from '../../../../shared/icons/LoadMoreLines'
 import { ThemeContext } from '../../../../shared/providers/theme-context'
+import LoadMoreLines from '../../../../shared/icons/LoadMoreLines'
 import { LoadMoreButtonProps } from './types'
 
 const useStyles = () => {

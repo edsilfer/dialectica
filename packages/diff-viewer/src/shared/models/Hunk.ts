@@ -1,48 +1,97 @@
-import { DiffLine } from './Line'
+import { LineDiff } from './LineDiff'
+import type { RawLine } from 'diffparser'
 
-// Represents the direction a hunk can be expanded
-export type ExpandDirection = 'up' | 'down' | 'in' | 'out'
+export type HunkRelation = 'adjacent' | 'start-of-file' | 'small-gap' | 'large-gap'
 
 // Represents a hunk of changes in a file, including the context and line changes.
 export class Hunk {
-  /** The content of the hunk, typically the @@ line in a diff. */
-  content: string // the @@ line
   /** The starting line number in the original file where the hunk begins. */
-  oldStart: number
+  public oldStart: number
   /** The number of lines in the original file affected by the hunk. */
-  oldLines: number
+  public oldLines: number
   /** The starting line number in the new file where the hunk begins. */
-  newStart: number
+  public newStart: number
   /** The number of lines in the new file affected by the hunk. */
-  newLines: number
+  public newLines: number
   /** An array of line changes within the hunk. */
-  changes: DiffLine[]
-  /** The direction this hunk can be expanded. */
-  expandDirection: ExpandDirection
+  private _changes: LineDiff[]
   /** The file path this hunk belongs to. */
-  filePath: string
+  public filePath: string
   /** The dynamically built header for this hunk. */
-  header: string
+  public get header(): string {
+    return this.buildHeader()
+  }
+
+  public get changes(): LineDiff[] {
+    return this._changes
+  }
 
   constructor(
-    content: string,
     oldStart: number,
     oldLines: number,
     newStart: number,
     newLines: number,
-    changes: DiffLine[],
+    changes: LineDiff[],
     filePath: string = '',
-    expandDirection: ExpandDirection = 'in',
   ) {
-    this.content = content
     this.oldStart = oldStart
     this.oldLines = oldLines
     this.newStart = newStart
     this.newLines = newLines
-    this.changes = changes
+    this._changes = changes
     this.filePath = filePath
-    this.expandDirection = expandDirection
-    this.header = this.buildHeader()
+  }
+
+  /**
+   * Adds new changes to the hunk.
+   *
+   * @param newChanges - The new changes to add
+   * @returns          - A new Hunk instance with the updated changes
+   */
+  addChanges(newChanges: LineDiff[]): Hunk {
+    const allChanges = [...this._changes, ...newChanges]
+
+    allChanges.sort((a, b) => {
+      const lineA = a.lineNumberOld ?? a.lineNumberNew ?? -1
+      const lineB = b.lineNumberOld ?? b.lineNumberNew ?? -1
+      return lineA - lineB
+    })
+
+    const firstChange = allChanges[0]
+    const lastChange = allChanges[allChanges.length - 1]
+
+    const oldStart = firstChange.lineNumberOld ?? this.oldStart
+    const newStart = firstChange.lineNumberNew ?? this.newStart
+
+    const lastOld = lastChange.lineNumberOld ?? oldStart
+    const lastNew = lastChange.lineNumberNew ?? newStart
+
+    const oldLines = lastOld - oldStart + 1
+    const newLines = lastNew - newStart + 1
+
+    return new Hunk(oldStart, oldLines, newStart, newLines, allChanges, this.filePath)
+  }
+
+  /**
+   * Computes the relation of this hunk to the previous hunk.
+   *
+   * @param prevHunk - The previous hunk
+   * @returns        - The relation of this hunk to the previous hunk
+   */
+  public getRelationTo(prevHunk?: Hunk): HunkRelation {
+    if (!prevHunk) {
+      return this.oldStart <= 1 ? 'adjacent' : 'start-of-file'
+    }
+
+    const gap = this.oldStart - (prevHunk.oldStart + prevHunk.oldLines)
+
+    if (gap <= 1) {
+      return 'adjacent'
+    }
+    if (gap <= 10) {
+      return 'small-gap'
+    }
+    return 'large-gap'
   }
 
   /**
@@ -50,14 +99,51 @@ export class Hunk {
    * @returns An array containing the header and all body lines (excluding existing @@ lines).
    */
   get contentLines(): string[] {
-    const body = this.changes.map((line) => line.content).filter((line) => !line.startsWith('@@'))
+    const body = this._changes.map((line) => line.content).filter((line) => !line.startsWith('@@'))
     return [this.header, ...body]
   }
 
-  private buildHeader(): string {
-    if (!this.changes.length) return '' // synthetic tail
+  /**
+   * Creates a new Hunk instance from a list of RawLine objects.
+   *
+   * @param rawLines - Array of RawLine objects representing the changes in this hunk
+   * @param filePath - The file path this hunk belongs to
+   * @returns        - A new Hunk instance
+   */
+  static build(rawLines: RawLine[], filePath: string = ''): Hunk {
+    if (!rawLines.length) {
+      throw new Error('Cannot build a hunk with no changes')
+    }
 
-    const firstLine = this.changes[0]
+    const changes: LineDiff[] = rawLines.map((line: RawLine) => LineDiff.build(line))
+    const firstOldLine = changes.find((line) => line.lineNumberOld !== null)?.lineNumberOld ?? 1
+    const firstNewLine = changes.find((line) => line.lineNumberNew !== null)?.lineNumberNew ?? 1
+
+    let oldLines = 0
+    let newLines = 0
+
+    for (const line of changes) {
+      switch (line.type) {
+        case 'context':
+          oldLines++
+          newLines++
+          break
+        case 'add':
+          newLines++
+          break
+        case 'delete':
+          oldLines++
+          break
+      }
+    }
+
+    return new Hunk(firstOldLine, oldLines, firstNewLine, newLines, changes, filePath)
+  }
+
+  private buildHeader(): string {
+    if (!this._changes.length) return '' // synthetic tail
+
+    const firstLine = this._changes[0]
     const firstText = firstLine.content
     const hasHeader = firstText.startsWith('@@')
 
@@ -70,8 +156,7 @@ export class Hunk {
       return ''
     }
 
-    const bodyCount = this.changes.map((line) => line.content).filter((line) => !line.startsWith('@@')).length
     const context = hasHeader ? (firstText.split('@@').pop()?.trim() ?? '') : firstText.trim()
-    return `@@ -${this.oldStart},${bodyCount} +${this.newStart},${bodyCount} @@ ${context}`
+    return `@@ -${this.oldStart},${this.oldLines} +${this.newStart},${this.newLines} @@ ${context}`
   }
 }

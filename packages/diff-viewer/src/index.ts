@@ -6,7 +6,7 @@
  * - Decouples the package's internal structure from its public interface.
  */
 
-export * from './code-panel/CodePanel'
+export * from './code-panel/FileList'
 export { CodePanelConfigProvider, useCodePanelConfig } from './code-panel/providers/code-panel-context'
 export type { CodePanelConfig } from './code-panel/providers/types'
 export * from './file-explorer/FileExplorer'

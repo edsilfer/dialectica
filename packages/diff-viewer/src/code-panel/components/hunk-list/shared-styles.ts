@@ -1,6 +1,6 @@
 import { css, SerializedStyles } from '@emotion/react'
 import { ThemeTokens } from '../../../shared/themes'
-import { DiffLineType } from './types'
+import { DiffLineType } from '../../../shared/models/LineDiff'
 
 /**
  * Generates the full style map required by both `UnifiedViewer` and `SplitViewer`.

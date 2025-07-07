@@ -1,14 +1,13 @@
-import { DiffLine } from '../../../../shared/models/Line'
-import { LinePair } from '../../file-viewer/types'
-import { LinePairBuilder, CommonParser } from './commons'
+import { LineDiff } from '../../../../shared/models/LineDiff'
+import { LinePair } from '../../hunk-list/models/LinePair'
+import { CommonParser } from './common-parser'
 
-/** Parser for converting FileDiff objects to LinePair arrays for split view rendering. */
-export class SplitParser extends CommonParser {
-  protected processChange = (change: DiffLine, rows: LinePair[], language: string): void => {
+export class SplitLineParser extends CommonParser {
+  protected processLine = (change: LineDiff, rows: LinePair[], language: string): void => {
     switch (change.type) {
       case 'context':
         rows.push(
-          LinePairBuilder.build(change, language, {
+          LinePair.build(change, language, {
             typeLeft: 'context',
             typeRight: 'context',
             contentLeft: change.content,
@@ -20,7 +19,7 @@ export class SplitParser extends CommonParser {
         break
       case 'delete':
         rows.push(
-          LinePairBuilder.build(change, language, {
+          LinePair.build(change, language, {
             typeLeft: 'delete',
             typeRight: 'empty',
             contentLeft: change.content,
@@ -33,7 +32,7 @@ export class SplitParser extends CommonParser {
         // no paired right-hand side we merge the two changes into a single visual row.
         const lastRow = rows.at(-1)
         if (lastRow?.typeLeft === 'delete' && lastRow.typeRight === 'empty') {
-          const addLine = LinePairBuilder.build(change, language, {
+          const addLine = LinePair.build(change, language, {
             typeLeft: 'empty',
             typeRight: 'add',
             contentRight: change.content,
@@ -45,7 +44,7 @@ export class SplitParser extends CommonParser {
           lastRow.lineNumberRight = addLine.lineNumberRight
         } else {
           rows.push(
-            LinePairBuilder.build(change, language, {
+            LinePair.build(change, language, {
               typeLeft: 'empty',
               typeRight: 'add',
               contentRight: change.content,
@@ -55,6 +54,28 @@ export class SplitParser extends CommonParser {
         }
         break
       }
+      case 'empty':
+        rows.push(
+          LinePair.build(change, language, {
+            typeLeft: 'empty',
+            typeRight: 'empty',
+            contentLeft: change.content,
+            contentRight: change.content,
+            lineNumberLeft: change.lineNumberOld,
+            lineNumberRight: change.lineNumberNew,
+          }),
+        )
+        break
+      case 'hunk':
+        rows.push(
+          LinePair.build(change, language, {
+            typeLeft: 'hunk',
+            typeRight: 'hunk',
+            contentLeft: change.content,
+            contentRight: change.content,
+          }),
+        )
+        break
     }
   }
 }

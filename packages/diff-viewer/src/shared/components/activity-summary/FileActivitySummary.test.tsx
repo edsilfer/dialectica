@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { render, screen } from '../../test-utils/render'
 
-import { File } from '../../models/File'
+import { FileDiff } from '../../models/FileDiff'
 import { Hunk } from '../../models/Hunk'
-import { DiffLine } from '../../models/Line'
+import { LineDiff } from '../../models/LineDiff'
 import FileActivitySummary from './FileActivitySummary'
 
 function createDiffLine(
@@ -11,28 +11,28 @@ function createDiffLine(
   type: 'context' | 'add' | 'delete',
   lineNumberOld: number | null = null,
   lineNumberNew: number | null = null,
-): DiffLine {
+): LineDiff {
   return {
     content,
     type,
     lineNumberOld,
     lineNumberNew,
-  } as DiffLine
+  } as LineDiff
 }
 
-const MOCKED_CHANGES: DiffLine[] = [
+const MOCKED_CHANGES: LineDiff[] = [
   createDiffLine('const a = 1;', 'context', 1, 1),
   createDiffLine('const b = 2;', 'delete', 2, null),
   createDiffLine('const b = 3;', 'add', null, 2),
   createDiffLine('const c = 4;', 'add', null, 3),
 ]
 
-export const MOCKED_FILE_DIFF: File = new File({
+export const MOCKED_FILE_DIFF: FileDiff = new FileDiff({
   oldPath: 'foo.ts',
   newPath: 'foo.ts',
   isRenamed: false,
   language: 'typescript',
-  hunks: [new Hunk('@@ -1,3 +1,3 @@', 1, 3, 1, 3, MOCKED_CHANGES, 'foo.ts')],
+  hunks: [new Hunk(1, 3, 1, 3, MOCKED_CHANGES, 'foo.ts')],
   rawContent: '@@ -1,3 +1,3 @@\nconst a = 1;\n-const b = 2;\n+const b = 3;\n+const c = 4;',
 })
 

@@ -66,10 +66,9 @@ export default function App() {
   }, [prDiff.data])
 
   const loadMore = useCallback((request: LineRequest) => {
-    let lines: Record<number, string> = {}
-    console.log('request', request)
+    const lines = new Map<number, string>()
     for (let i = request.startLine; i <= request.endLine; i++) {
-      lines[i] = `${i} - Dummy line`
+      lines.set(i, `${i} - Dummy line`)
     }
     return lines
   }, [])

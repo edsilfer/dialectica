@@ -1,9 +1,9 @@
 import React, { useContext, useMemo } from 'react'
 import { ThemeContext } from '../../../shared/providers/theme-context'
-import LoadMoreButton from './buttons/LoadMoreButton'
-import { useLoadMoreLines } from './hooks/use-load-more-lines'
 import { getViewerStyles } from './shared-styles'
-import { DiffLineType, UnifiedViewerProps } from './types'
+import { UnifiedViewerProps } from './types'
+import LoadMoreButton from './buttons/LoadMoreButton'
+import { DiffLineType } from '../../../shared/models/LineDiff'
 
 /** Map diff-symbols shown at the start of each code cell */
 const prefix: Record<DiffLineType, string> = {
@@ -17,7 +17,6 @@ const prefix: Record<DiffLineType, string> = {
 const UnifiedViewer: React.FC<UnifiedViewerProps> = (props) => {
   const theme = useContext(ThemeContext)
   const styles = useMemo(() => getViewerStyles(theme), [theme])
-  const { lines, loadMore } = useLoadMoreLines(props.sourceCode, props.onLoadMoreLines)
 
   return (
     <div css={styles.container} data-diff-container>
@@ -29,7 +28,7 @@ const UnifiedViewer: React.FC<UnifiedViewerProps> = (props) => {
         </colgroup>
 
         <tbody>
-          {lines.map((line, idx) => {
+          {props.lines.map((line, idx) => {
             const lineType: DiffLineType = line.typeLeft ?? 'empty'
             const isHunk = lineType === 'hunk'
 
@@ -41,7 +40,9 @@ const UnifiedViewer: React.FC<UnifiedViewerProps> = (props) => {
                     <td colSpan={2} css={styles.leftNumberCell[lineType]}>
                       <LoadMoreButton
                         direction={line.hunkDirection ?? 'out'}
-                        onClick={(_, direction) => void loadMore(line, direction)}
+                        onClick={(_, direction) => {
+                          props.onLoadMoreLines?.(line, direction)
+                        }}
                       />
                     </td>
 

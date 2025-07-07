@@ -1,9 +1,8 @@
 import { Hunk } from '../shared/models/Hunk'
-import { File } from '../shared/models/File'
+import { FileDiff } from '../shared/models/FileDiff'
 
 // Basic sample hunk with paired changes
 export const SAMPLE_HUNK: Hunk = new Hunk(
-  '@@ -1,4 +1,4 @@',
   1,
   4,
   1,
@@ -37,7 +36,7 @@ export const SAMPLE_HUNK: Hunk = new Hunk(
   'test.js',
 )
 
-export const SAMPLE_FILE_DIFF: File = new File({
+export const SAMPLE_FILE_DIFF: FileDiff = new FileDiff({
   oldPath: 'test.js',
   newPath: 'test.js',
   isRenamed: false,
@@ -48,7 +47,6 @@ export const SAMPLE_FILE_DIFF: File = new File({
 
 // Unpaired changes - delete only
 export const UNPAIRED_HUNK: Hunk = new Hunk(
-  '@@ -1,3 +1,2 @@',
   1,
   3,
   1,
@@ -76,7 +74,7 @@ export const UNPAIRED_HUNK: Hunk = new Hunk(
   'test.js',
 )
 
-export const UNPAIRED_FILE: File = new File({
+export const UNPAIRED_FILE: FileDiff = new FileDiff({
   oldPath: 'test.js',
   newPath: 'test.js',
   isRenamed: false,
@@ -87,7 +85,6 @@ export const UNPAIRED_FILE: File = new File({
 
 // Unpaired changes - add only
 export const ADD_ONLY_HUNK: Hunk = new Hunk(
-  '@@ -1,2 +1,3 @@',
   1,
   2,
   1,
@@ -115,7 +112,7 @@ export const ADD_ONLY_HUNK: Hunk = new Hunk(
   'test.js',
 )
 
-export const ADD_ONLY_FILE: File = new File({
+export const ADD_ONLY_FILE: FileDiff = new FileDiff({
   oldPath: 'test.js',
   newPath: 'test.js',
   isRenamed: false,
@@ -126,7 +123,6 @@ export const ADD_ONLY_FILE: File = new File({
 
 // Multiple hunks
 export const SECOND_HUNK: Hunk = new Hunk(
-  '@@ -10,3 +10,3 @@',
   10,
   3,
   10,
@@ -160,7 +156,7 @@ export const SECOND_HUNK: Hunk = new Hunk(
   'test.js',
 )
 
-export const MULTI_HUNK_FILE: File = new File({
+export const MULTI_HUNK_FILE: FileDiff = new FileDiff({
   oldPath: 'test.js',
   newPath: 'test.js',
   isRenamed: false,
@@ -171,9 +167,9 @@ export const MULTI_HUNK_FILE: File = new File({
 })
 
 // Edge cases
-export const EMPTY_HUNK: Hunk = new Hunk('@@ -1,0 +1,0 @@', 1, 0, 1, 0, [], 'empty.js')
+export const EMPTY_HUNK: Hunk = new Hunk(1, 0, 1, 0, [], 'empty.js')
 
-export const EMPTY_FILE: File = new File({
+export const EMPTY_FILE: FileDiff = new FileDiff({
   oldPath: 'empty.js',
   newPath: 'empty.js',
   isRenamed: false,
@@ -183,7 +179,6 @@ export const EMPTY_FILE: File = new File({
 })
 
 export const CONTEXT_ONLY_HUNK: Hunk = new Hunk(
-  '@@ -1,3 +1,3 @@',
   1,
   3,
   1,
@@ -211,7 +206,7 @@ export const CONTEXT_ONLY_HUNK: Hunk = new Hunk(
   'context.js',
 )
 
-export const CONTEXT_FILE: File = new File({
+export const CONTEXT_FILE: FileDiff = new FileDiff({
   oldPath: 'context.js',
   newPath: 'context.js',
   isRenamed: false,
@@ -221,7 +216,6 @@ export const CONTEXT_FILE: File = new File({
 })
 
 export const ADD_ONLY_EDGE_HUNK: Hunk = new Hunk(
-  '@@ -0,0 +1,3 @@',
   0,
   0,
   1,
@@ -249,7 +243,7 @@ export const ADD_ONLY_EDGE_HUNK: Hunk = new Hunk(
   'add.js',
 )
 
-export const ADD_ONLY_EDGE_FILE: File = new File({
+export const ADD_ONLY_EDGE_FILE: FileDiff = new FileDiff({
   oldPath: 'add.js',
   newPath: 'add.js',
   isRenamed: false,
@@ -259,7 +253,6 @@ export const ADD_ONLY_EDGE_FILE: File = new File({
 })
 
 export const DELETE_ONLY_HUNK: Hunk = new Hunk(
-  '@@ -1,3 +0,0 @@',
   1,
   3,
   0,
@@ -287,7 +280,7 @@ export const DELETE_ONLY_HUNK: Hunk = new Hunk(
   'delete.js',
 )
 
-export const DELETE_ONLY_FILE: File = new File({
+export const DELETE_ONLY_FILE: FileDiff = new FileDiff({
   oldPath: 'delete.js',
   newPath: 'delete.js',
   isRenamed: false,

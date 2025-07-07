@@ -9,7 +9,7 @@ import { listDirPaths, nodeComparator } from './node-utils'
 import { FileExplorerConfigProvider, useFileExplorerConfig } from './provider/file-explorer-context'
 import { FSTreeContextProvider, useFileExplorerContext } from './provider/fstree-context'
 import { FileExplorerProps } from './types'
-import { File } from '../shared/models/File'
+import { FileDiff } from '../shared/models/FileDiff'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -84,7 +84,7 @@ const FileExplorerContent: React.FC<FileExplorerProps> = (props) => {
     props.onDirectoryToggle?.(path, expanded)
   }
 
-  const handleFileClick = (file: File) => {
+  const handleFileClick = (file: FileDiff) => {
     const filePath = file.newPath || file.oldPath
     setSelectedNode(filePath)
     props.onFileClick?.(file)

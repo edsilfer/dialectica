@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import React, { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
-import { CodePanel } from '../code-panel/CodePanel'
+import { CodePanel } from '../code-panel/FileList'
 import { FileExplorer } from '../file-explorer/FileExplorer'
 import DirectoryIcon from '../shared/icons/Directory'
 import HandleIcon from '../shared/icons/HandleIcon'
@@ -118,7 +118,7 @@ export const DiffViewer: React.FC<DiffViewerProps> = (props) => {
 const DiffViewerContent: React.FC<DiffViewerProps> = (props) => {
   const { theme, fileExplorerConfig, codePanelConfig } = useDiffViewerConfig()
   const [drawerOpen, setDrawerOpen] = useState(true)
-  const [scrollToFile, setScrollToFile] = useState<string | null>(null)
+  const [scrollToFile, setScrollToFile] = useState<string | undefined>(undefined)
   const { width: explorerWidth, containerRef, onMouseDown, dragging } = useResizablePanel()
 
   const explorerReady = useDeferredReady(!!(props.isMetadataLoading ?? false))
@@ -176,9 +176,9 @@ const DiffViewerContent: React.FC<DiffViewerProps> = (props) => {
 
         <CodePanel
           key={JSON.stringify(codePanelConfig)}
-          diff={props.diff}
+          files={props.diff.files}
           scrollTo={scrollToFile}
-          loading={!!(props.isDiffLoading ?? false) || !panelReady}
+          isLoading={!!(props.isDiffLoading ?? false) || !panelReady}
           css={styles.diffViewer}
           onLoadMoreLines={props.onLoadMoreLines}
           maxLinesToFetch={props.maxLinesToFetch}

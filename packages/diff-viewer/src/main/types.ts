@@ -11,7 +11,7 @@ export interface LineRequest {
   endLine: number
 }
 
-export type LoadMoreLinesHandler = (request: LineRequest) => Promise<Record<number, string>> | Record<number, string>
+export type LoadMoreLinesHandler = (request: LineRequest) => Promise<Map<number, string>>
 
 export interface DiffViewerProps {
   /** The parsed diff to visualize. */

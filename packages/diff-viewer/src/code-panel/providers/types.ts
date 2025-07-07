@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react'
 import { ThemeTokens } from '../../shared/themes/types'
+import { DisplayType } from '../components/hunk-list/types'
 
 export interface CodePanelConfigContextProps {
   /** The children of the diff viewer config provider */
@@ -45,14 +46,12 @@ export interface CodePanelConfigContextState {
   setConfig: React.Dispatch<React.SetStateAction<CodePanelConfig>>
 }
 
-export type DisplayFormat = 'unified' | 'split'
-
 /** Configuration options for how the diff should be displayed */
 export interface CodePanelConfig {
   /** The theme for the viewer */
   theme?: ThemeTokens
   /** The mode to display the diff in. */
-  mode: DisplayFormat
+  mode: DisplayType
   /** Whether to highlight the syntax of the diff. */
   highlightSyntax?: boolean
   /** Whether to ignore whitespace in the diff. */

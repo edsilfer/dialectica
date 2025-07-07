@@ -1,6 +1,6 @@
 import { SerializedStyles } from '@emotion/react'
 import React from 'react'
-import { HunkDirection } from '../../source-code/models/HunkHeaderViewModel'
+import { HunkDirection } from '../types'
 
 export interface WrapLinesButtonProps {
   /** Whether the lines are currently wrapped */

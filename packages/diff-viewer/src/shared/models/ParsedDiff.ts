@@ -1,15 +1,15 @@
 import type { RawFile } from 'diffparser'
 import diffparser from 'diffparser'
-import { File } from './File'
+import { FileDiff } from './FileDiff'
 
 // Represents the parsed diff containing a list of file differences.
 export class ParsedDiff {
   /** The raw diff text that was parsed. */
   rawContent: string
   /** An array of file differences parsed from the diff text. */
-  files: File[]
+  files: FileDiff[]
 
-  constructor(rawContent: string, files: File[]) {
+  constructor(rawContent: string, files: FileDiff[]) {
     this.rawContent = rawContent
     this.files = files
   }
@@ -23,7 +23,7 @@ export class ParsedDiff {
   static build(rawContent: string): ParsedDiff {
     const raw = diffparser(rawContent)
     const files = raw.map((rawFile: RawFile) => {
-      return File.build(rawContent, rawFile)
+      return FileDiff.build(rawContent, rawFile)
     })
     return new ParsedDiff(rawContent, files)
   }
