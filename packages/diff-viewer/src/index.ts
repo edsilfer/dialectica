@@ -6,17 +6,20 @@
  * - Decouples the package's internal structure from its public interface.
  */
 
-export * from './code-panel/FileList'
-export { CodePanelConfigProvider, useCodePanelConfig } from './code-panel/providers/code-panel-context'
-export type { CodePanelConfig } from './code-panel/providers/types'
-export * from './file-explorer/FileExplorer'
-export { FileExplorerConfigProvider, useFileExplorerConfig } from './file-explorer/provider/file-explorer-context'
-export type { FileExplorerConfig } from './file-explorer/types'
-export * from './main/DiffViewer'
-export * from './main/providers/diff-viewer-context'
-export type { LineRequest, LoadMoreLinesHandler } from './main/types'
-export type { CustomButton, ToolbarWidget, DefaultToolbarProps } from './utilities/toolbar/types'
-export { Toolbar as DefaultToolbar } from './utilities/toolbar/DefaultToolbar'
-export { ParsedDiff } from './shared/models/ParsedDiff'
-export * from './shared/themes'
-export * from './utilities/pull-request'
+export * from './components/code-panel/FileList'
+export { CodePanelConfigProvider, useCodePanelConfig } from './components/code-panel/providers/code-panel-context'
+export type { CodePanelConfig } from './components/code-panel/providers/types'
+export * from './components/file-explorer/FileExplorer'
+export {
+  FileExplorerConfigProvider,
+  useFileExplorerConfig,
+} from './components/file-explorer/provider/file-explorer-context'
+export type { FileExplorerConfig } from './components/file-explorer/types'
+export * from './components/diff-viewer/DiffViewer'
+export * from './components/diff-viewer/providers/diff-viewer-context'
+export type { LineRequest, LoadMoreLinesHandler } from './components/diff-viewer/types'
+export { ParsedDiff } from './models/ParsedDiff'
+export * from './optional/pull-request'
+export { Toolbar as DefaultToolbar } from './optional/toolbar/DefaultToolbar'
+export type { CustomButton, DefaultToolbarProps, ToolbarWidget } from './optional/toolbar/types'
+export * from './themes'
