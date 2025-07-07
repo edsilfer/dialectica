@@ -1,4 +1,4 @@
-import type { PullRequestMetadata } from '@diff-viewer'
+import type { PullRequestMetadata, LineRequest } from '@diff-viewer'
 
 /**
  * Sub-set of the fields returned by GitHub's Pull-Request REST API that are
@@ -36,7 +36,7 @@ export interface GitHubPullRequest {
   /** The pull request HTML URL. */
   html_url?: string
   /** The pull request head ref. */
-  head?: { ref?: string }
+  head?: { ref?: string; sha?: string }
   /** The pull request base ref. */
   base?: { ref?: string }
 }
@@ -164,4 +164,32 @@ export interface UseListInlineCommentsReturn {
   error: Error | undefined
   /** Manually trigger a refetch */
   refetch: () => void
+}
+
+export interface UseLoadMoreLinesParams {
+  /* The owner of the repository */
+  owner: string
+  /* The name of the repository */
+  repo: string
+  /* The number of the pull request */
+  pullNumber: number
+  /* The path to the file to fetch */
+  filePath: string
+  /* The start line of the range */
+  startLine: number
+  /* The end line of the range */
+  endLine: number
+  /* The GitHub personal access token */
+  githubToken: string
+}
+
+export interface UseLoadMoreLinesReturn {
+  /** The lines of the file. */
+  data: Map<number, string>
+  /** True while an API call is in flight */
+  loading: boolean
+  /** Any error thrown by the request. Reset to undefined on subsequent successful fetches. */
+  error: Error | undefined
+  /** Function to fetch lines for a given file and line range */
+  fetchLines: (request: LineRequest) => Promise<Map<number, string>>
 }

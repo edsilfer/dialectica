@@ -56,7 +56,7 @@ const getStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) => ({
     border-radius: 50%;
     background-color: ${theme.colors.backgroundContainer};
     color: ${theme.colors.accent};
-    z-index: 10000;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;

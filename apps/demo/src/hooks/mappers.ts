@@ -1,4 +1,4 @@
-import { PullRequestMetadata } from '@diff-viewer/dist'
+import { PullRequestMetadata } from '@diff-viewer'
 import type { GitHubPullRequest } from './types'
 
 /**
@@ -25,5 +25,6 @@ export function mapPullRequestMetadata(pr: GitHubPullRequest): PullRequestMetada
     html_url: pr.html_url ?? '',
     head_ref: pr.head?.ref ?? '',
     base_ref: pr.base?.ref ?? '',
+    head_sha: pr.head?.sha ?? '',
   }
 }

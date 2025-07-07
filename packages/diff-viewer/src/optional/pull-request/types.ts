@@ -40,4 +40,6 @@ export interface PullRequestMetadata {
   head_ref: string
   /** Destination branch (base) where the PR will be merged */
   base_ref: string
+  /** SHA of the head commit */
+  head_sha: string
 }

@@ -1,4 +1,4 @@
-import { PullRequestMetadata } from '@diff-viewer/dist'
+import { PullRequestMetadata } from '@diff-viewer'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { FACEBOOK_REACT_33665_METADATA } from '../__fixtures__/metadata-fixtures'
 import { useSettings } from '../provider/setttings-provider'
