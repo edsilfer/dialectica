@@ -1,4 +1,4 @@
-import type { PullRequestMetadata, LineRequest } from '@diff-viewer'
+import type { PullRequestMetadata, LineRequest, LoadMoreLinesResult } from '@diff-viewer'
 
 /**
  * Sub-set of the fields returned by GitHub's Pull-Request REST API that are
@@ -38,7 +38,7 @@ export interface GitHubPullRequest {
   /** The pull request head ref. */
   head?: { ref?: string; sha?: string }
   /** The pull request base ref. */
-  base?: { ref?: string }
+  base?: { ref?: string; sha?: string }
 }
 
 export interface UseGetPrMetadataParams {
@@ -173,23 +173,21 @@ export interface UseLoadMoreLinesParams {
   repo: string
   /* The number of the pull request */
   pullNumber: number
-  /* The path to the file to fetch */
-  filePath: string
-  /* The start line of the range */
-  startLine: number
-  /* The end line of the range */
-  endLine: number
   /* The GitHub personal access token */
   githubToken: string
+  /* The base commit SHA (for old file version) */
+  baseSha: string
+  /* The head commit SHA (for new file version) */
+  headSha: string
 }
 
 export interface UseLoadMoreLinesReturn {
-  /** The lines of the file. */
-  data: Map<number, string>
+  /** The lines from both old and new file versions. */
+  data: { oldLines: Map<number, string>; newLines: Map<number, string> }
   /** True while an API call is in flight */
   loading: boolean
   /** Any error thrown by the request. Reset to undefined on subsequent successful fetches. */
   error: Error | undefined
   /** Function to fetch lines for a given file and line range */
-  fetchLines: (request: LineRequest) => Promise<Map<number, string>>
+  fetchLines: (request: LineRequest) => Promise<LoadMoreLinesResult>
 }

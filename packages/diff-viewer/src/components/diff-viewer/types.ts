@@ -2,16 +2,30 @@ import React from 'react'
 import { ParsedDiff } from '../../models/ParsedDiff'
 import { DrawerContent } from './drawer/types'
 
+export interface Range {
+  /* The start of the range, always smaller than end */
+  start: number
+  /* The end of the range, always larger than start */
+  end: number
+}
+
 export interface LineRequest {
   /** The key/path of the file needing more lines */
   fileKey: string
-  /** The starting line number to fetch (inclusive) */
-  startLine: number
-  /** The ending line number to fetch (inclusive) */
-  endLine: number
+  /** The range of lines to fetch from the left side (base/old file version) */
+  leftRange: Range
+  /** The range of lines to fetch from the right side (head/new file version) */
+  rightRange: Range
 }
 
-export type LoadMoreLinesHandler = (request: LineRequest) => Promise<Map<number, string>>
+export interface LoadMoreLinesResult {
+  /** Lines from the old file version (base/left side) */
+  leftLines: Map<number, string>
+  /** Lines from the new file version (head/right side) */
+  rightLines: Map<number, string>
+}
+
+export type LoadMoreLinesHandler = (request: LineRequest) => Promise<LoadMoreLinesResult>
 
 export interface DiffViewerProps {
   /** The parsed diff to visualize. */

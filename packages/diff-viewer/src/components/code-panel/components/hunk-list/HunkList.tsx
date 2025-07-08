@@ -63,17 +63,17 @@ const HunkList: React.FC<HunkListProps> = (props) => {
 
   const handleLoadMoreLines = useCallback(
     async (line: LinePair, direction: HunkDirection) => {
-      const [start, end] = hunkList.getLoadRange(line, direction)
-      const extraLines: Map<number, string> | undefined = await onLoadMoreLines?.({
+      const ranges = hunkList.getLoadRange(line, direction)
+      const result = await onLoadMoreLines?.({
         fileKey: file.key,
-        startLine: start,
-        endLine: end,
+        leftRange: ranges.leftRange,
+        rightRange: ranges.rightRange,
       })
 
-      if (extraLines) {
+      if (result) {
         dispatch({
           type: 'lines_loaded',
-          payload: { line, extraLines, direction },
+          payload: { line, result, direction },
         })
       }
     },

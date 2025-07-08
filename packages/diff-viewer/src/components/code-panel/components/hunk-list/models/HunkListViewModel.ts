@@ -1,6 +1,7 @@
 import { FileDiff } from '../../../../../models/FileDiff'
 import { Hunk, HunkRelation } from '../../../../../models/Hunk'
 import { LineDiff } from '../../../../../models/LineDiff'
+import { LoadMoreLinesResult } from '../../../../diff-viewer/types'
 import { LineParser, LineParserFactory } from '../parser/parser'
 import { DisplayType, HunkDirection } from '../types'
 import { LinePair } from './LinePair'
@@ -12,6 +13,13 @@ interface HunkInfo {
   curr: Hunk
   /* The last line number of the previous hunk, if any */
   prevHunkLastLine?: number
+}
+
+export interface RangePair {
+  /* The range of lines to load for the left file */
+  leftRange: Range
+  /* The range of lines to load for the right file */
+  rightRange: Range
 }
 
 export class HunkListViewModel {
@@ -45,17 +53,92 @@ export class HunkListViewModel {
    * Loads more context lines into the hunk.
    *
    * @param hunkLine  - The based line used to find the hunk to update
-   * @param lines     - The lines to load
+   * @param result    - The lines to load from both old and new file versions
    * @param direction - The direction of the hunk
    * @returns         - A new HunkListViewModel instance with the updated file diff
    */
-  public loadLines(hunkLine: LinePair, lines: Map<number, string>, direction: HunkDirection): HunkListViewModel {
-    const parsedLines = Array.from(lines.entries()).map(([l, c]) => new LineDiff(c, 'empty', +l, +l))
+  public loadLines(hunkLine: LinePair, result: LoadMoreLinesResult, direction: HunkDirection): HunkListViewModel {
+    const parsedLines = this.buildContextLines(result.leftLines, result.rightLines)
     const hunkInfo = this.hunkInfoCache.get(hunkLine)
     if (!hunkInfo) return this
-    const newFileDiff = this.fileDiff.withContext(parsedLines, hunkInfo, direction)
-    if (newFileDiff === this.fileDiff) return this
-    return new HunkListViewModel(newFileDiff, this.displayMode, this.maxLinesToFetch)
+    const rightFileDiff = this.fileDiff.withContext(parsedLines, hunkInfo, direction)
+    if (rightFileDiff === this.fileDiff) return this
+    return new HunkListViewModel(rightFileDiff, this.displayMode, this.maxLinesToFetch)
+  }
+
+  /**
+   * Builds context lines for both old and new line maps.
+   *
+   * @param leftLines  - Lines from the old file version
+   * @param rightLines - Lines from the new file version
+   * @returns          - Array of LineDiff objects representing context lines
+   */
+  private buildContextLines(leftLines: Map<number, string>, rightLines: Map<number, string>): LineDiff[] {
+    const contextLines: LineDiff[] = []
+    const allLeftLineNum = Array.from(leftLines.keys()).sort((a, b) => a - b)
+    const allRightLineNum = Array.from(rightLines.keys()).sort((a, b) => a - b)
+    // The content should be the same on both sides
+    const processedLines = new Set<string>()
+
+    for (const rightLineNum of allLeftLineNum) {
+      const leftContent = leftLines.get(rightLineNum) ?? ''
+      const matchingRightLineNum = this.searchRightLine(rightLineNum, rightLines, leftContent)
+
+      // The content should be identical (or very similar) for context lines. Use left line num as ref.
+      const lineDiff = new LineDiff(leftContent, 'empty', rightLineNum, matchingRightLineNum ?? rightLineNum)
+      contextLines.push(lineDiff)
+
+      // Mark as processed to avoid duplicates
+      if (matchingRightLineNum) {
+        processedLines.add(`new:${matchingRightLineNum}`)
+      }
+      processedLines.add(`old:${rightLineNum}`)
+    }
+
+    // Process remaining new lines that weren't matched with old lines
+    for (const rightLineNum of allRightLineNum) {
+      if (processedLines.has(`new:${rightLineNum}`)) continue
+      const newContent = rightLines.get(rightLineNum) ?? ''
+      // A line that exists in the right but not in the left. Can happen when files diverged significantly.
+      const lineDiff = new LineDiff(newContent, 'empty', null, rightLineNum)
+      contextLines.push(lineDiff)
+    }
+
+    // Sort by line number (prioritizing left)
+    contextLines.sort((a, b) => {
+      const aRef = a.lineNumberOld ?? a.lineNumberNew ?? 0
+      const bRef = b.lineNumberOld ?? b.lineNumberNew ?? 0
+      return aRef - bRef
+    })
+
+    return contextLines
+  }
+
+  /**
+   * Finds the corresponding new line number on the right based on the left line number.
+   *
+   * @param left        - The left file line number
+   * @param rightLines  - Map of new file lines
+   * @param leftContent - Content of the left line
+   * @returns           - The corresponding new line number, or null if not found
+   */
+  private searchRightLine(left: number, rightLines: Map<number, string>, leftContent: string): number | null {
+    // Search for the right line within a small range of the left line
+    const searchRange = 5
+
+    const matches = (line: number) => rightLines.has(line) && rightLines.get(line) === leftContent
+
+    if (matches(left)) return left
+
+    for (let offset = 1; offset <= searchRange; offset++) {
+      const lineAbove = left - offset
+      if (matches(lineAbove)) return lineAbove
+
+      const lineBelow = left + offset
+      if (matches(lineBelow)) return lineBelow
+    }
+
+    return null
   }
 
   /**
@@ -63,25 +146,73 @@ export class HunkListViewModel {
    *
    * @param baseLine  - The base line used to find the reference hunk
    * @param direction - Where the user wants to load more lines
-   * @returns         - The range of lines to load
+   * @returns         - The ranges of lines to load for both old and new files
    */
-  public getLoadRange(baseLine: LinePair, direction: HunkDirection): [number, number] {
-    const curr = baseLine.lineNumberLeft ?? baseLine.lineNumberRight ?? 0
-    const prevLine = curr - 1
-    const nextLine = curr + 1
+  public getLoadRange(baseLine: LinePair, direction: HunkDirection): RangePair {
+    const currOld = baseLine.lineNumberLeft ?? 0
+    const currNew = baseLine.lineNumberRight ?? 0
     const hunkInfo = this.hunkInfoCache.get(baseLine)
-    const prevHunkLastLine = hunkInfo?.prevHunkLastLine ?? 0
+    const prevHunk = hunkInfo?.prev
+
     switch (direction) {
-      case 'up':
-        return [Math.max(curr - this.maxLinesToFetch, 1), prevLine]
-      case 'down':
-        return [nextLine, nextLine + this.maxLinesToFetch]
-      case 'in_down':
-        return [prevHunkLastLine, prevHunkLastLine + this.maxLinesToFetch]
-      case 'in_up':
-        return [prevLine - this.maxLinesToFetch, prevLine]
-      case 'out':
-        return [prevHunkLastLine, curr - 1]
+      case 'up': {
+        const oldStart = Math.max(currOld - this.maxLinesToFetch, 1)
+        const oldEnd = Math.max(currOld - 1, 1)
+        const newStart = Math.max(currNew - this.maxLinesToFetch, 1)
+        const newEnd = Math.max(currNew - 1, 1)
+        return {
+          leftRange: { start: oldStart, end: oldEnd },
+          rightRange: { start: newStart, end: newEnd },
+        }
+      }
+
+      case 'down': {
+        const oldStart = currOld + 1
+        const oldEnd = currOld + this.maxLinesToFetch
+        const newStart = currNew + 1
+        const newEnd = currNew + this.maxLinesToFetch
+        return {
+          leftRange: { start: oldStart, end: oldEnd },
+          rightRange: { start: newStart, end: newEnd },
+        }
+      }
+
+      case 'in_down': {
+        const prevHunkLastOld = prevHunk ? prevHunk.oldStart + prevHunk.oldLines - 1 : 0
+        const prevHunkLastNew = prevHunk ? prevHunk.newStart + prevHunk.newLines - 1 : 0
+        const oldStart = prevHunkLastOld + 1
+        const oldEnd = Math.min(prevHunkLastOld + this.maxLinesToFetch, currOld - 1)
+        const newStart = prevHunkLastNew + 1
+        const newEnd = Math.min(prevHunkLastNew + this.maxLinesToFetch, currNew - 1)
+        return {
+          leftRange: { start: oldStart, end: Math.max(oldEnd, oldStart) },
+          rightRange: { start: newStart, end: Math.max(newEnd, newStart) },
+        }
+      }
+
+      case 'in_up': {
+        const oldStart = Math.max(currOld - this.maxLinesToFetch, 1)
+        const oldEnd = currOld - 1
+        const newStart = Math.max(currNew - this.maxLinesToFetch, 1)
+        const newEnd = currNew - 1
+        return {
+          leftRange: { start: oldStart, end: Math.max(oldEnd, oldStart) },
+          rightRange: { start: newStart, end: Math.max(newEnd, newStart) },
+        }
+      }
+
+      case 'out': {
+        const prevHunkLastOld = prevHunk ? prevHunk.oldStart + prevHunk.oldLines - 1 : 0
+        const prevHunkLastNew = prevHunk ? prevHunk.newStart + prevHunk.newLines - 1 : 0
+        const oldStart = prevHunkLastOld + 1
+        const oldEnd = currOld - 1
+        const newStart = prevHunkLastNew + 1
+        const newEnd = currNew - 1
+        return {
+          leftRange: { start: oldStart, end: Math.max(oldEnd, oldStart) },
+          rightRange: { start: newStart, end: Math.max(newEnd, newStart) },
+        }
+      }
       default:
         throw new Error(`Invalid direction: ${direction}`)
     }

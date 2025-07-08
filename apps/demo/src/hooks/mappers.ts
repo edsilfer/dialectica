@@ -26,5 +26,6 @@ export function mapPullRequestMetadata(pr: GitHubPullRequest): PullRequestMetada
     head_ref: pr.head?.ref ?? '',
     base_ref: pr.base?.ref ?? '',
     head_sha: pr.head?.sha ?? '',
+    base_sha: pr.base?.sha ?? '',
   }
 }

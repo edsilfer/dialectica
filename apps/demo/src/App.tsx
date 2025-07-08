@@ -63,6 +63,7 @@ export default function App() {
     repo: selectedPr?.repo ?? '',
     pullNumber: selectedPr?.prNumber ?? 0,
     githubToken: githubPat,
+    baseSha: prMetadata.data?.base_sha ?? '',
     headSha: prMetadata.data?.head_sha ?? '',
   })
 

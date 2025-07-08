@@ -42,4 +42,6 @@ export interface PullRequestMetadata {
   base_ref: string
   /** SHA of the head commit */
   head_sha: string
+  /** SHA of the base commit */
+  base_sha: string
 }

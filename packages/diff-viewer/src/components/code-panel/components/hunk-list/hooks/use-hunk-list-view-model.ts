@@ -1,5 +1,6 @@
 import { useEffect, useReducer } from 'react'
 import { FileDiff } from '../../../../../models/FileDiff'
+import { LoadMoreLinesResult } from '../../../../diff-viewer/types'
 import { HunkListViewModel } from '../models/HunkListViewModel'
 import { LinePair } from '../models/LinePair'
 import { HunkDirection } from '../types'
@@ -21,7 +22,7 @@ import { HunkListViewModelProps } from './types'
 type HunkListAction =
   | {
       type: 'lines_loaded'
-      payload: { line: LinePair; extraLines: Map<number, string>; direction: HunkDirection }
+      payload: { line: LinePair; result: LoadMoreLinesResult; direction: HunkDirection }
     }
   | {
       type: 'reset'
@@ -31,7 +32,7 @@ type HunkListAction =
 function hunkListReducer(state: HunkListViewModel, action: HunkListAction): HunkListViewModel {
   switch (action.type) {
     case 'lines_loaded':
-      return state.loadLines(action.payload.line, action.payload.extraLines, action.payload.direction)
+      return state.loadLines(action.payload.line, action.payload.result, action.payload.direction)
     case 'reset':
       return new HunkListViewModel(action.payload.file, action.payload.mode, action.payload.maxLinesToFetch ?? 10)
     default:
