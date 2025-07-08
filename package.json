@@ -10,8 +10,10 @@
     "demo": "pnpm --filter demo dev",
     "format": "prettier . --write",
     "test": "pnpm -r test",
-    "test:packages": "pnpm --filter './packages/**' test",
     "test:apps": "pnpm --filter './apps/**' test",
+    "coverage:apps": "pnpm --filter './apps/**' test --coverage",
+    "test:packages": "pnpm --filter './packages/**' test",
+    "coverage:packages": "pnpm --filter './packages/**' test --coverage",
     "lint": "pnpm dlx eslint . --ext .ts,.tsx",
     "lint:fix": "pnpm dlx eslint . --ext .ts,.tsx --fix && pnpm format"
   },
