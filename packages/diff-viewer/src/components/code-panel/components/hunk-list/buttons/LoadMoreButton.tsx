@@ -28,6 +28,7 @@ const useStyles = () => {
       &:hover {
         background: ${theme.colors.accent};
         color: white;
+        cursor: pointer;
       }
     `,
   }
@@ -43,7 +44,7 @@ const LoadMoreButton: React.FC<LoadMoreButtonProps> = (props) => {
 
   if (props.direction === 'up' || props.direction === 'down' || props.direction === 'out') {
     return (
-      <Tooltip title={tooltip(props.direction)} placement="right">
+      <Tooltip title={tooltip(props.direction)} placement="left">
         <div
           css={[styles.icon, props.css]}
           onClick={(e) => props.onClick?.(e, props.direction as 'up' | 'down' | 'out')}
@@ -61,13 +62,13 @@ const LoadMoreButton: React.FC<LoadMoreButtonProps> = (props) => {
 
   return (
     <div css={[styles.container, props.css]}>
-      <Tooltip title={tooltip('down')} placement="right">
+      <Tooltip title={tooltip('down')} placement="left">
         <div css={styles.icon} onClick={(e) => props.onClick?.(e, 'in_down')}>
           <LoadMoreLines css={[props.css]} width={props.width ?? 24} height={props.height ?? 16} direction={'down'} />
         </div>
       </Tooltip>
 
-      <Tooltip title={tooltip('up')} placement="right">
+      <Tooltip title={tooltip('up')} placement="left">
         <div css={styles.icon} onClick={(e) => props.onClick?.(e, 'in_up')}>
           <LoadMoreLines css={[props.css]} width={props.width ?? 24} height={props.height ?? 16} direction={'up'} />
         </div>
