@@ -183,7 +183,7 @@ export interface UseLoadMoreLinesParams {
 
 export interface UseLoadMoreLinesReturn {
   /** The lines from both old and new file versions. */
-  data: { oldLines: Map<number, string>; newLines: Map<number, string> }
+  data: { leftLines: Map<number, string>; rightLines: Map<number, string> }
   /** True while an API call is in flight */
   loading: boolean
   /** Any error thrown by the request. Reset to undefined on subsequent successful fetches. */

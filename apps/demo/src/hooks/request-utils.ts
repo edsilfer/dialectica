@@ -30,3 +30,21 @@ export async function getGithubError(res: Response): Promise<string> {
     return res.statusText
   }
 }
+
+/** Small helper – works in the browser and Node  */
+export const decodeBase64 = (b64: string) => {
+  try {
+    return atob(b64.replace(/\s/g, ''))
+  } catch {
+    // Handle Buffer for Node.js environments: use globalThis to access Buffer in a type-safe way
+    const globalObj = globalThis as typeof globalThis & {
+      Buffer?: {
+        from: (str: string, encoding: string) => { toString: (encoding: string) => string }
+      }
+    }
+    if (globalObj.Buffer) {
+      return globalObj.Buffer.from(b64, 'base64').toString('utf-8')
+    }
+    throw new Error('Base64 decoding failed and Buffer is not available')
+  }
+}

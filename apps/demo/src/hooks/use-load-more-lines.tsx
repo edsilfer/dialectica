@@ -1,7 +1,7 @@
 import { LineRequest, LoadMoreLinesResult } from '@diff-viewer'
 import { useCallback, useState } from 'react'
 import { useSettings } from '../provider/setttings-provider'
-import { buildHeaders, getGithubError, GITHUB_API_HOST } from './request-utils'
+import { buildHeaders, decodeBase64, getGithubError, GITHUB_API_HOST } from './request-utils'
 import type { UseLoadMoreLinesReturn } from './types'
 
 // Type definitions for GitHub API responses
@@ -25,28 +25,10 @@ export default function useLoadMoreLines(base: {
   // These three are still handy for spinners / toasts
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error | undefined>()
-  const [data, setData] = useState<{ oldLines: Map<number, string>; newLines: Map<number, string> }>({
-    oldLines: new Map(),
-    newLines: new Map(),
+  const [data, setData] = useState<{ leftLines: Map<number, string>; rightLines: Map<number, string> }>({
+    leftLines: new Map(),
+    rightLines: new Map(),
   })
-
-  /** Small helper – works in the browser and Node  */
-  const decodeBase64 = (b64: string) => {
-    try {
-      return atob(b64.replace(/\s/g, ''))
-    } catch {
-      // Handle Buffer for Node.js environments: use globalThis to access Buffer in a type-safe way
-      const globalObj = globalThis as typeof globalThis & {
-        Buffer?: {
-          from: (str: string, encoding: string) => { toString: (encoding: string) => string }
-        }
-      }
-      if (globalObj.Buffer) {
-        return globalObj.Buffer.from(b64, 'base64').toString('utf-8')
-      }
-      throw new Error('Base64 decoding failed and Buffer is not available')
-    }
-  }
 
   /**
    * Fetches file content for a specific SHA and path.
@@ -89,9 +71,10 @@ export default function useLoadMoreLines(base: {
   }, [])
 
   const fetchLines = useCallback(
-    async ({ fileKey, oldFileRange, newFileRange }: LineRequest): Promise<LoadMoreLinesResult> => {
+    async ({ fileKey, leftRange, rightRange }: LineRequest): Promise<LoadMoreLinesResult> => {
+      console.log('fetchLines', { fileKey, leftRange, rightRange })
       if (!base.owner || !base.repo || !base.pullNumber || !fileKey) {
-        return { oldLines: new Map(), newLines: new Map() }
+        return { leftLines: new Map(), rightLines: new Map() }
       }
 
       if (!base.baseSha || !base.headSha) {
@@ -103,18 +86,18 @@ export default function useLoadMoreLines(base: {
 
       try {
         if (useMocks) {
-          const oldLines = new Map<number, string>()
-          const newLines = new Map<number, string>()
+          const leftLines = new Map<number, string>()
+          const rightLines = new Map<number, string>()
 
-          for (let i = oldFileRange.startLine; i <= oldFileRange.endLine; i++) {
-            oldLines.set(i, `// mock old line ${i} of ${fileKey}`)
+          for (let i = leftRange.start; i <= leftRange.end; i++) {
+            leftLines.set(i, `// mock left line ${i} of ${fileKey}`)
           }
 
-          for (let i = newFileRange.startLine; i <= newFileRange.endLine; i++) {
-            newLines.set(i, `// mock new line ${i} of ${fileKey}`)
+          for (let i = rightRange.start; i <= rightRange.end; i++) {
+            rightLines.set(i, `// mock right line ${i} of ${fileKey}`)
           }
 
-          const result = { oldLines, newLines }
+          const result = { leftLines, rightLines }
           setData(result)
           return result
         }
@@ -127,13 +110,13 @@ export default function useLoadMoreLines(base: {
 
         // Handle old file content
         const oldContent = oldFileContent.status === 'fulfilled' ? oldFileContent.value : ''
-        const oldLines = extractLines(oldContent, oldFileRange.startLine, oldFileRange.endLine)
+        const leftLines = extractLines(oldContent, leftRange.start, leftRange.end)
 
         // Handle new file content
         const newContent = newFileContent.status === 'fulfilled' ? newFileContent.value : ''
-        const newLines = extractLines(newContent, newFileRange.startLine, newFileRange.endLine)
+        const rightLines = extractLines(newContent, rightRange.start, rightRange.end)
 
-        const result = { oldLines, newLines }
+        const result = { leftLines, rightLines }
         setData(result)
         return result
       } catch (err) {

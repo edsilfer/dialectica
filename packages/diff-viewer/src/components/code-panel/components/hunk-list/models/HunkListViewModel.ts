@@ -243,8 +243,7 @@ export class HunkListViewModel {
     const direction = this.toDirection(relation)
 
     if (direction) {
-      const hunkFirstLine = hunk.oldStart
-      const hunkHeaderPair = this.buildHunkHeader(hunkFirstLine, hunk, direction)
+      const hunkHeaderPair = this.buildHunkHeader(hunk, direction)
       const prevHunkLastLine = prevHunk ? prevHunk.oldStart + prevHunk.oldLines : undefined
       this.hunkInfoCache.set(hunkHeaderPair, { prev: prevHunk, curr: hunk, prevHunkLastLine })
       linePairs.push(hunkHeaderPair)
@@ -272,17 +271,22 @@ export class HunkListViewModel {
 
   // We add an extra empty hunk to hold the load more button.
   private buildFooterHunk(lastHunk: Hunk): LinePair {
-    const hunkLastLine = lastHunk.oldStart + lastHunk.oldLines - 1
-    const footerPair = this.buildHunkHeader(hunkLastLine, lastHunk, 'down')
-    this.hunkInfoCache.set(footerPair, { curr: lastHunk })
-    return footerPair
+    const hunkLineDiff = new LineDiff(lastHunk.header, 'hunk', null, null)
+    const hunkLinePair = this.parser.parse([hunkLineDiff])[0]
+    hunkLinePair.hunkDirection = 'down'
+    // Footer represents the line after the hunk ends
+    hunkLinePair.lineNumberLeft = lastHunk.oldStart + lastHunk.oldLines
+    hunkLinePair.lineNumberRight = lastHunk.newStart + lastHunk.newLines
+    this.hunkInfoCache.set(hunkLinePair, { curr: lastHunk })
+    return hunkLinePair
   }
 
-  private buildHunkHeader(number: number, hunk: Hunk, direction: HunkDirection): LinePair {
+  private buildHunkHeader(hunk: Hunk, direction: HunkDirection): LinePair {
     const hunkLineDiff = new LineDiff(hunk.header, 'hunk', null, null)
     const hunkLinePair = this.parser.parse([hunkLineDiff])[0]
     hunkLinePair.hunkDirection = direction
-    hunkLinePair.lineNumberLeft = number
+    hunkLinePair.lineNumberLeft = hunk.oldStart
+    hunkLinePair.lineNumberRight = hunk.newStart
     return hunkLinePair
   }
 }
