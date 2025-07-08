@@ -168,3 +168,69 @@ export function hexToRgb(hex: string): string {
 export function transparentize(hex: string, alpha = 0.15): string {
   return `rgba(${hexToRgb(hex)}, ${alpha})`
 }
+
+/**
+ * Calculates the relative luminance of a hex color using WCAG formula.
+ */
+function relativeLuminance(hex: string): number {
+  const toLinear = (c: number) => {
+    const srgb = c / 255
+    return srgb <= 0.03928 ? srgb / 12.92 : Math.pow((srgb + 0.055) / 1.055, 2.4)
+  }
+  const norm = normalizeHex(hex)
+  const r = toLinear(parseInt(norm.slice(0, 2), 16))
+  const g = toLinear(parseInt(norm.slice(2, 4), 16))
+  const b = toLinear(parseInt(norm.slice(4, 6), 16))
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+/**
+ * Calculates the contrast ratio between two colors using WCAG formula.
+ */
+function contrastRatio(a: string, b: string): number {
+  const L1 = relativeLuminance(a)
+  const L2 = relativeLuminance(b)
+  return (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05)
+}
+
+/**
+ * Ensures a foreground color has at least the minimum contrast ratio against a background.
+ * Returns a tweaked color (lightened or darkened) if needed to meet the contrast requirement.
+ *
+ * @param fg - The foreground color to check/adjust
+ * @param bg - The background color to check against
+ * @param minContrast - Minimum contrast ratio required (default: 3.0 for large text/graphics)
+ * @param stepPct - Percentage to adjust color by in each step (default: 5)
+ * @param maxSteps - Maximum number of adjustment steps (default: 20)
+ * @returns The adjusted color that meets the contrast requirement
+ */
+export function ensureContrast(fg: string, bg: string, minContrast = 3.0, stepPct = 5, maxSteps = 20): string {
+  if (contrastRatio(fg, bg) >= minContrast) return fg
+
+  let lighter = fg
+  let darker = fg
+  let lighterSteps = 0
+  let darkerSteps = 0
+
+  // Try lightening
+  for (; lighterSteps < maxSteps; lighterSteps++) {
+    lighter = lighten(lighter, stepPct)
+    if (contrastRatio(lighter, bg) >= minContrast) break
+  }
+
+  // Try darkening
+  for (; darkerSteps < maxSteps; darkerSteps++) {
+    darker = darken(darker, stepPct)
+    if (contrastRatio(darker, bg) >= minContrast) break
+  }
+
+  // Pick the closest that works, or the better of the two if neither hit the target
+  const okLight = contrastRatio(lighter, bg) >= minContrast
+  const okDark = contrastRatio(darker, bg) >= minContrast
+
+  if (okLight && okDark) return lighterSteps <= darkerSteps ? lighter : darker
+  if (okLight) return lighter
+  if (okDark) return darker
+  // Neither made it – return whichever is higher contrast
+  return contrastRatio(lighter, bg) > contrastRatio(darker, bg) ? lighter : darker
+}

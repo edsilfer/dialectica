@@ -15,7 +15,6 @@ const STORAGE_KEY = '__code_panel_view_state__'
 
 export const DEFAULT_CODE_PANEL_CONFIG: CodePanelConfig = {
   mode: 'unified',
-  highlightSyntax: false,
   ignoreWhitespace: false,
 }
 

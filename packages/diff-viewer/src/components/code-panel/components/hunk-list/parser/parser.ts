@@ -7,9 +7,10 @@ import { UnifiedLineParser } from './unified-parser'
 export interface LineParser {
   /**
    * @param lines - The array of LineDiff to parse
+   * @param language - The language to highlight the changes in
    * @returns       An array of LinePair objects representing the diff in a format suitable for UI rendering
    */
-  parse(lines: LineDiff[]): LinePair[]
+  parse(lines: LineDiff[], language: string): LinePair[]
 }
 
 /**

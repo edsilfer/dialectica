@@ -13,6 +13,8 @@ import { ThemeProvider } from '../../../themes/providers/theme-context'
 import { Themes, ThemeTokens } from '../../../themes'
 import { DiffViewerConfigContextProps, DiffViewerThemeContextState } from './types'
 
+const STORAGE_KEY = '__diff_viewer_config__'
+
 /**
  * Keeps the configuration context for the DiffViewer component.
  */
@@ -25,12 +27,8 @@ export const DiffViewerConfigProvider: React.FC<DiffViewerConfigContextProps> = 
   fileExplorerConfig: initialFileExplorerConfig = DEFAULT_FILE_EXPLORER_CONFIG,
   storage = 'in-memory',
 }) => {
-  const STORAGE_KEY = '__diff_viewer_config__'
-
   // Hydrate from localStorage if requested
-  const storedConfig = useMemo<{
-    theme?: ThemeTokens
-  } | null>(() => {
+  const storedConfig = useMemo<{ theme?: ThemeTokens } | null>(() => {
     if (storage !== 'local' || typeof window === 'undefined') return null
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY)

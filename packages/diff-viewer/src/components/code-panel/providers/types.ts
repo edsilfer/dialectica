@@ -52,8 +52,6 @@ export interface CodePanelConfig {
   theme?: ThemeTokens
   /** The mode to display the diff in. */
   mode: DisplayType
-  /** Whether to highlight the syntax of the diff. */
-  highlightSyntax?: boolean
   /** Whether to ignore whitespace in the diff. */
   ignoreWhitespace?: boolean
   /** The maximum number of lines to display for a file. */

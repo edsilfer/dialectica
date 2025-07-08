@@ -1,4 +1,4 @@
-import { blend, darken, lighten, transparentize } from './color-utils'
+import { blend, darken, lighten, transparentize, ensureContrast } from './color-utils'
 import { spacing, typography } from './common.js'
 import { ColorTokens } from './types'
 
@@ -94,6 +94,10 @@ const createThemeColors = (palette: ThemePalette): ColorTokens => {
   const numberBg = (hex: string) =>
     isDarkPalette ? blend(hex, palette.backgroundPrimary, CODE_ALPHA) : blend(hex, '#ffffff', 0.25)
 
+  // Helper for elements that need strong contrast (like file icons)
+  const contrastColor = (hex: string, background: string = palette.backgroundPrimary) =>
+    ensureContrast(hex, background, 3.0)
+
   return {
     // Common Tokens__________________________________________________________
     ...palette,
@@ -103,10 +107,14 @@ const createThemeColors = (palette: ThemePalette): ColorTokens => {
 
     // File Diff Viewer Tokens_______________________________________________
     fileViewerHeaderBg: isDarkPalette ? palette.backgroundContainer : palette.backgroundPrimary,
-    fileViewerAddedSquareBg: isDarkPalette ? tint(STATUS.added) : darken(STATUS.added, 10),
-    fileViewerDeletedSquareBg: isDarkPalette ? tint(STATUS.removed) : darken(STATUS.removed, 10),
-    fileViewerModifiedSquareBg: isDarkPalette ? tint(STATUS.modified) : darken(STATUS.modified, 10),
-    fileViwerNeutralSquareBg: isDarkPalette ? tint(STATUS.neutral) : darken(STATUS.neutral, 10),
+    fileViewerAddedSquareBg: isDarkPalette ? contrastColor(STATUS.added) : contrastColor(darken(STATUS.added, 10)),
+    fileViewerDeletedSquareBg: isDarkPalette
+      ? contrastColor(STATUS.removed)
+      : contrastColor(darken(STATUS.removed, 10)),
+    fileViewerModifiedSquareBg: isDarkPalette
+      ? contrastColor(STATUS.modified)
+      : contrastColor(darken(STATUS.modified, 10)),
+    fileViwerNeutralSquareBg: isDarkPalette ? contrastColor(STATUS.neutral) : contrastColor(darken(STATUS.neutral, 10)),
 
     // Hunk Diff Viewer Tokens_______________________________________________
     hunkViewerBg: palette.backgroundPrimary,
@@ -128,7 +136,9 @@ const createThemeColors = (palette: ThemePalette): ColorTokens => {
 
     // File Explorer Tokens___________________________________________________
     fileExplorerBg: palette.backgroundPrimary,
-    fileExplorerSelectedFileBg: isDarkPalette ? transparentize(STATUS.hunk, SIDEBAR_ALPHA) : lighten(STATUS.hunk, 55),
+    fileExplorerSelectedFileBg: isDarkPalette
+      ? ensureContrast(blend(STATUS.hunk, palette.backgroundPrimary, SIDEBAR_ALPHA), palette.backgroundPrimary, 2.0)
+      : ensureContrast(lighten(STATUS.hunk, 55), palette.backgroundPrimary, 2.0),
     fileExplorerlineConnectorBg: palette.border,
   }
 }

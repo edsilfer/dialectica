@@ -1,7 +1,7 @@
 import { FileDiff } from '../../../../../models/FileDiff'
 import { Hunk, HunkRelation } from '../../../../../models/Hunk'
 import { LineDiff } from '../../../../../models/LineDiff'
-import { LoadMoreLinesResult } from '../../../../diff-viewer/types'
+import { LoadMoreLinesResult, Range } from '../../../../diff-viewer/types'
 import { LineParser, LineParserFactory } from '../parser/parser'
 import { DisplayType, HunkDirection } from '../types'
 import { LinePair } from './LinePair'
@@ -249,7 +249,7 @@ export class HunkListViewModel {
       linePairs.push(hunkHeaderPair)
     }
 
-    const lineDiffs = this.parser.parse(hunk.changes)
+    const lineDiffs = this.parser.parse(hunk.changes, this.fileDiff.language)
     linePairs.push(...lineDiffs)
 
     return linePairs
@@ -272,7 +272,7 @@ export class HunkListViewModel {
   // We add an extra empty hunk to hold the load more button.
   private buildFooterHunk(lastHunk: Hunk): LinePair {
     const hunkLineDiff = new LineDiff(lastHunk.header, 'hunk', null, null)
-    const hunkLinePair = this.parser.parse([hunkLineDiff])[0]
+    const hunkLinePair = this.parser.parse([hunkLineDiff], this.fileDiff.language)[0]
     hunkLinePair.hunkDirection = 'down'
     // Footer represents the line after the hunk ends
     hunkLinePair.lineNumberLeft = lastHunk.oldStart + lastHunk.oldLines
@@ -283,7 +283,7 @@ export class HunkListViewModel {
 
   private buildHunkHeader(hunk: Hunk, direction: HunkDirection): LinePair {
     const hunkLineDiff = new LineDiff(hunk.header, 'hunk', null, null)
-    const hunkLinePair = this.parser.parse([hunkLineDiff])[0]
+    const hunkLinePair = this.parser.parse([hunkLineDiff], this.fileDiff.language)[0]
     hunkLinePair.hunkDirection = direction
     hunkLinePair.lineNumberLeft = hunk.oldStart
     hunkLinePair.lineNumberRight = hunk.newStart

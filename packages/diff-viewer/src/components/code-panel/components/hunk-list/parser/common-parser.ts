@@ -8,11 +8,11 @@ import { LineParser } from './parser'
  */
 export abstract class CommonParser implements LineParser {
   /** {@inheritDoc LineParser.parse} */
-  parse(lines: LineDiff[]): LinePair[] {
+  parse(lines: LineDiff[], language: string): LinePair[] {
     const linePairs: LinePair[] = []
 
     lines.forEach((line) => {
-      this.processLine(line, linePairs, '')
+      this.processLine(line, linePairs, language)
     })
 
     return linePairs

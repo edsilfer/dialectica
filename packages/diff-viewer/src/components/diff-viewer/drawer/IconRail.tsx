@@ -39,13 +39,13 @@ const useStyles = () => {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: ${theme.spacing.sm} 0;
-      gap: ${theme.spacing.sm};
+      gap: ${theme.spacing.md};
       background-color: ${theme.colors.backgroundPrimary};
     `,
 
     iconButton: (selected: boolean): ReturnType<typeof css> => css`
-      color: ${selected ? theme.colors.accent : theme.colors.textPrimary};
+      color: ${theme.colors.textPrimary};
+      padding: ${theme.spacing.xs};
       font-size: 1.25rem !important;
       cursor: pointer;
       transition: color 0.2s ease-in-out;
@@ -53,6 +53,13 @@ const useStyles = () => {
       align-items: center;
       justify-content: center;
       width: 100%;
+
+      ${selected &&
+      `
+        background-color: ${theme.colors.border}50;
+        border: 1px solid ${theme.colors.border};
+        border-radius: ${theme.spacing.sm};
+        `}
     `,
 
     iconSlideInLeft: css`
