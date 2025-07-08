@@ -18,13 +18,14 @@ const useStyles = () => {
       /* Smooth slide-in/out */
       transition: width 0.3s ease-in-out;
       gap: ${theme.spacing.sm};
+      overflow: hidden;
     `,
 
     /* Right-hand side – actual content */
     contentArea: css`
       flex: 1;
-      overflow: auto;
       background-color: ${theme.colors.backgroundPrimary};
+      overflow: hidden;
     `,
   }
 }

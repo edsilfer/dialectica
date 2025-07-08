@@ -18,7 +18,6 @@ const useStyles = () => {
     container: css`
       display: flex;
       flex-direction: column;
-      gap: ${theme.spacing.sm};
       background-color: ${theme.colors.fileExplorerBg};
       color: ${theme.colors.textPrimary};
       font-family: ${theme.typography.regularFontFamily};

@@ -72,15 +72,16 @@ Run from the root directory:
 
 ### Rendering Layer
 
+- [ ] P0 - Fix scrolling issue in the file explorer
+- [ ] P0 - Improve draggin performance
+- [ ] P0 - Add unit tests
 - [ ] P0 - Implement proper highlighting for partial changes in a line
 - [ ] P0 - Add support for ignoring whitespaces
 - [ ] P0 - Add support for rendering inline comments
-- [ ] P2 - (Optimization) support virtual rows
 - [ ] P2 - (Optimization) do not load very large diffs
 
 ## Future Considerations
 
-- Add support for expanding hunks with more context
 - Add support for blame and annotations
 
 ## License

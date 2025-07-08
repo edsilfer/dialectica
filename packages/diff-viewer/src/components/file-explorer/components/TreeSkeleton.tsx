@@ -50,8 +50,20 @@ function TreeSkeleton({ containerRef }: TreeSkeletonProps) {
      * visible while the user scrolls. Using the container's bounding-box height only
      * accounts for the visible viewport. Instead we rely on the `scrollHeight`/`scrollWidth`
      * values so the SVG is tall/wide enough to span the entire content area.
+     *
+     * However, `scrollHeight` is an integer whereas `getBoundingClientRect().height` may
+     * include sub-pixel values (e.g. 483.53 px). On Hi-DPI screens this can cause
+     * `scrollHeight` to be rounded **up** by up to one pixel, resulting in the SVG being
+     * slightly taller than its container and triggering an unnecessary scrollbar.
+     *
+     * To avoid that, we check if the difference is less than 1px. If so, we use the
+     * container's bounding-box height, which has sub-pixel precision. Otherwise,
+     * we use `scrollHeight` to ensure the SVG is tall enough to cover all content.
      */
-    setSize({ width: container.scrollWidth, height: container.scrollHeight })
+    const { scrollHeight, scrollWidth } = container
+    const containerHeight = parentRect.height
+    const height = scrollHeight - containerHeight < 1 ? containerHeight : scrollHeight
+    setSize({ width: scrollWidth, height })
   }, [containerRef, expandedDirs])
 
   const paths = connector === 'none' ? [] : getConnectorPaths(nodeMap, radius)
