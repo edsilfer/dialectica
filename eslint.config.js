@@ -88,4 +88,15 @@ export default [
       },
     },
   },
+
+  // Add Node.js globals for utility files that may need to access Node.js APIs
+  {
+    files: ['**/utils/**/*.{ts,tsx}', '**/test/**/*.{ts,tsx}'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+    },
+  },
 ]

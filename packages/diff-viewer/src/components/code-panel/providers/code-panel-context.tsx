@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createContext, useContextSelector } from 'use-context-selector'
 import { ThemeContext, ThemeProvider } from '../../../themes/providers/theme-context'
 import { readStorageValue, writeStorageValue } from '../../../utils/storage-utils'
-import { Themes } from '../../../themes/all-themes'
+import { Themes } from '../../../themes/themes'
 import {
   CodePanelConfig,
   CodePanelConfigContextProps,

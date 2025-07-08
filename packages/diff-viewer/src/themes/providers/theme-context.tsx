@@ -1,14 +1,13 @@
-import { Global, css } from '@emotion/react'
+import React, { Global, css } from '@emotion/react'
 import { ConfigProvider, theme as antdTheme } from 'antd'
 import type { ThemeConfig } from 'antd/es/config-provider/context'
 import { createContext } from 'react'
-import { Themes } from '../all-themes'
+import { Themes } from '../themes'
 import { ThemeTokens } from '../types'
-import { ThemeProps } from './types'
 
 export const ThemeContext = createContext<ThemeTokens>(Themes.light)
 
-export const ThemeProvider = ({ children, theme }: ThemeProps) => {
+export const ThemeProvider = ({ children, theme }: { children: React.ReactNode; theme: ThemeTokens }) => {
   const isDarkTheme = ['dark', 'dracula', 'solarizedDark', 'vscodeDark'].includes(theme.name)
   document.documentElement.setAttribute('data-hljs-theme', isDarkTheme ? 'dark' : 'light')
 

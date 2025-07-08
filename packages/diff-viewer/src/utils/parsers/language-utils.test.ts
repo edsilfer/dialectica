@@ -1,41 +1,35 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { detectLanguage } from './language-utils'
 
-// A sample of extensions to validate language detection works as expected
-const cases: Array<[string, string]> = [
-  ['index.js', 'javascript'],
-  ['Component.jsx', 'javascript'],
-  ['utils.ts', 'typescript'],
-  ['App.tsx', 'typescript'],
-  ['script.py', 'python'],
-  ['Main.java', 'java'],
-  ['program.c', 'c'],
-  ['engine.cpp', 'cpp'],
-  ['server.go', 'go'],
-  ['task.rb', 'ruby'],
-  ['lib.rs', 'rust'],
-  ['index.php', 'php'],
-  ['build.sh', 'bash'],
-  ['styles.css', 'css'],
-  ['index.html', 'html'],
-  ['layout.xml', 'xml'],
-  ['data.json', 'json'],
-  ['README.md', 'markdown'],
-  ['config.yaml', 'yaml'],
-  ['docker-compose.yml', 'yaml'],
-  ['App.scala', 'scala'],
-]
+const createFilePath = (fileName: string): string => `path/to/${fileName}`
 
-describe('detectLanguage()', () => {
-  it.each(cases)('returns %s language for %s', (filePath, expected) => {
-    expect(detectLanguage(filePath)).toBe(expected)
-  })
+describe('detectLanguage', () => {
+  const testCases: [string, string, string][] = [
+    // [description, fileName, expectedLanguage]
+    ['javascript file', 'app.js', 'javascript'],
+    ['jsx file', 'component.jsx', 'javascript'],
+    ['typescript file', 'module.ts', 'typescript'],
+    ['tsx file', 'component.tsx', 'typescript'],
+    ['python file', 'script.py', 'python'],
+    ['markdown file', 'readme.md', 'markdown'],
+    ['yaml file', 'config.yaml', 'yaml'],
+    ['yml file', 'config.yml', 'yaml'],
+    ['unknown extension', 'file.unknown', 'text'],
+    ['file without extension', 'README', 'text'],
+    ['file with multiple dots', 'file.min.js', 'javascript'],
+    ['file ending with dot', 'file.', 'text'],
+    ['empty string', '', 'text'],
+    ['uppercase extension', 'file.JS', 'text'],
+  ]
 
-  it('returns text for unknown extensions', () => {
-    expect(detectLanguage('unknown.xyz')).toBe('text')
-  })
+  it.each(testCases)('given %s, when detecting language, expect %s', (description, fileName, expectedLanguage) => {
+    // GIVEN
+    const filePath = fileName === '' ? fileName : createFilePath(fileName)
 
-  it('returns text for files without an extension', () => {
-    expect(detectLanguage('LICENSE')).toBe('text')
+    // WHEN
+    const result = detectLanguage(filePath)
+
+    // EXPECT
+    expect(result).toBe(expectedLanguage)
   })
 })

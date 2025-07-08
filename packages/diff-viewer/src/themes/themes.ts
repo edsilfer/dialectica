@@ -1,6 +1,23 @@
-import { blend, darken, lighten, transparentize, ensureContrast } from './color-utils'
-import { spacing, typography } from './common.js'
-import { ColorTokens } from './types'
+import { blend, darken, ensureContrast, lighten, transparentize } from '../utils/color-utils'
+import { ColorTokens, SpacingTokens, TypographyTokens } from './types'
+
+export const spacing: SpacingTokens = {
+  xxs: '0.125rem', // 2px
+  xs: '0.25rem', // 4px
+  sm: '0.5rem', // 8px
+  md: '1rem', // 16px
+  lg: '1.5rem', // 24px
+  xl: '2rem', // 32px
+}
+
+export const typography: TypographyTokens = {
+  regularFontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  regularFontSize: 13,
+  regularFontSizeSM: 11,
+  codeFontFamily: 'Menlo, Monaco, Consolas, "Courier New", monospace',
+  codeFontSize: 11,
+  codeLineHeight: 1.2,
+}
 
 const LEAD_THEME_COLORS = {
   statusColors: {
