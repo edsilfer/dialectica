@@ -33,10 +33,10 @@ const getStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) => ({
     gap: ${theme.spacing.sm};
   `,
 
-  drawerContainer: (explorerWidth: number, drawerOpen: boolean, dragging: boolean) => css`
-    width: ${drawerOpen ? `calc(${explorerWidth}% - ${theme.spacing.sm} / 2)` : DRAWER_CLOSED_WIDTH};
-    /** Design Decision: Disable transition during drag for smooth UX */
-    transition: ${dragging ? 'none' : `width ${TRANSITION_DURATION} ease-in-out`};
+  // Optimized: Use CSS custom properties for dynamic values to avoid style recalculation
+  drawerContainer: css`
+    width: var(--drawer-width);
+    transition: var(--drawer-transition);
     overflow: hidden;
   `,
 
@@ -45,10 +45,11 @@ const getStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) => ({
     overflow: auto;
   `,
 
-  resizerWrapper: (explorerWidth: number) => css`
+  // Optimized: Use CSS custom properties for dynamic positioning
+  resizerWrapper: css`
     position: absolute;
     top: 50%;
-    left: calc(${explorerWidth}% + ${theme.spacing.sm} / 2);
+    left: var(--resizer-left);
     transform: translate(-50%, -50%);
     width: ${theme.spacing.lg};
     height: ${theme.spacing.lg};
@@ -116,7 +117,7 @@ export const DiffViewer: React.FC<DiffViewerProps> = (props) => {
 }
 
 const DiffViewerContent: React.FC<DiffViewerProps> = (props) => {
-  const { theme, fileExplorerConfig, codePanelConfig } = useDiffViewerConfig()
+  const { theme } = useDiffViewerConfig()
   const [drawerOpen, setDrawerOpen] = useState(true)
   const [scrollToFile, setScrollToFile] = useState<string | undefined>(undefined)
   const { width: explorerWidth, containerRef, onMouseDown, dragging } = useResizablePanel()
@@ -125,6 +126,16 @@ const DiffViewerContent: React.FC<DiffViewerProps> = (props) => {
   const panelReady = useDeferredReady(!!(props.isDiffLoading ?? false))
   const styles = useMemo(() => getStyles(theme), [theme])
   const showResizeHandle = explorerReady && panelReady && drawerOpen
+
+  // Optimized: Memoize dynamic CSS custom properties
+  const dynamicStyles = useMemo(
+    () => ({
+      '--drawer-width': drawerOpen ? `calc(${explorerWidth}% - ${theme.spacing.sm} / 2)` : DRAWER_CLOSED_WIDTH,
+      '--drawer-transition': dragging ? 'none' : `width ${TRANSITION_DURATION} ease-in-out`,
+      '--resizer-left': `calc(${explorerWidth}% + ${theme.spacing.sm} / 2)`,
+    }),
+    [explorerWidth, drawerOpen, dragging, theme.spacing.sm],
+  )
 
   const handleFileClick = useCallback((file: { newPath: string; oldPath: string }) => {
     setScrollToFile(file.newPath ?? file.oldPath)
@@ -137,27 +148,42 @@ const DiffViewerContent: React.FC<DiffViewerProps> = (props) => {
         title: 'File explorer',
         icon: <DirectoryIcon />,
         description: 'Browse changed files',
-        content: (
-          <FileExplorer
-            key={JSON.stringify(fileExplorerConfig)}
-            diff={props.diff}
-            onFileClick={handleFileClick}
-            css={styles.fileExplorer}
-          />
-        ),
+        content: <FileExplorer diff={props.diff} onFileClick={handleFileClick} css={styles.fileExplorer} />,
       },
     ]
 
     return [...builtInContents, ...(props.additionalDrawerContents ?? [])]
-  }, [fileExplorerConfig, props.diff, props.additionalDrawerContents, handleFileClick, styles.fileExplorer])
+  }, [props.diff, props.additionalDrawerContents, handleFileClick, styles.fileExplorer])
+
+  const codePanel = useMemo(
+    () => (
+      <CodePanel
+        files={props.diff.files}
+        scrollTo={scrollToFile}
+        isLoading={!!(props.isDiffLoading ?? false) || !panelReady}
+        css={styles.diffViewer}
+        onLoadMoreLines={props.onLoadMoreLines}
+        maxLinesToFetch={props.maxLinesToFetch}
+      />
+    ),
+    [
+      props.diff.files,
+      scrollToFile,
+      props.isDiffLoading,
+      panelReady,
+      styles.diffViewer,
+      props.onLoadMoreLines,
+      props.maxLinesToFetch,
+    ],
+  )
 
   return (
     <div css={styles.container}>
       {props.toolbar ? props.toolbar : <DefaultToolbar loading={!!(props.isMetadataLoading ?? false)} />}
 
-      <div css={styles.content} ref={containerRef}>
+      <div css={styles.content} ref={containerRef} style={dynamicStyles as React.CSSProperties}>
         {(props.enableFileExplorer ?? true) && (
-          <div css={styles.drawerContainer(explorerWidth, drawerOpen, dragging)}>
+          <div css={styles.drawerContainer}>
             <Drawer
               contents={drawerContents}
               state={drawerOpen ? 'open' : 'closed'}
@@ -169,20 +195,12 @@ const DiffViewerContent: React.FC<DiffViewerProps> = (props) => {
         )}
 
         {(props.enableFileExplorer ?? true) && showResizeHandle && (
-          <div css={styles.resizerWrapper(explorerWidth)} onMouseDown={onMouseDown}>
+          <div css={styles.resizerWrapper} onMouseDown={onMouseDown}>
             <HandleIcon size={HANDLE_SIZE} />
           </div>
         )}
 
-        <CodePanel
-          key={JSON.stringify(codePanelConfig)}
-          files={props.diff.files}
-          scrollTo={scrollToFile}
-          isLoading={!!(props.isDiffLoading ?? false) || !panelReady}
-          css={styles.diffViewer}
-          onLoadMoreLines={props.onLoadMoreLines}
-          maxLinesToFetch={props.maxLinesToFetch}
-        />
+        {codePanel}
       </div>
     </div>
   )

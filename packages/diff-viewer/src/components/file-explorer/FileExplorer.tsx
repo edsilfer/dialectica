@@ -33,7 +33,8 @@ const useStyles = () => {
   }
 }
 
-export const FileExplorer: React.FC<FileExplorerProps> = (props) => {
+// Optimized: Memoize FileExplorer to prevent re-renders during resize operations
+export const FileExplorer = React.memo<FileExplorerProps>((props: FileExplorerProps) => {
   let hasSpecificProvider = true
   try {
     void useFileExplorerConfig()
@@ -57,60 +58,86 @@ export const FileExplorer: React.FC<FileExplorerProps> = (props) => {
 
   // Otherwise create a provider, seeding it with any config we could inherit.
   return <FileExplorerConfigProvider config={inheritedConfig}>{explorer}</FileExplorerConfigProvider>
-}
+})
+
+FileExplorer.displayName = 'FileExplorer'
 
 /**
  * Intermediate layer that ensures the configuration provider exists.
+ * Optimized: Memoized to prevent unnecessary re-renders
  */
-const FileExplorerInner: React.FC<FileExplorerProps> = (props) => {
-  return (
-    <FSTreeContextProvider diff={props.diff}>
-      <FileExplorerContent {...props} />
-    </FSTreeContextProvider>
-  )
-}
+const FileExplorerInner = React.memo<FileExplorerProps>(
+  ({ diff, onDirectoryToggle, onFileClick, css: customCss, className }: FileExplorerProps) => {
+    return (
+      <FSTreeContextProvider diff={diff}>
+        <FileExplorerContent
+          onDirectoryToggle={onDirectoryToggle}
+          onFileClick={onFileClick}
+          css={customCss}
+          className={className}
+        />
+      </FSTreeContextProvider>
+    )
+  },
+)
+
+FileExplorerInner.displayName = 'FileExplorerInner'
 
 /**
  * The actual file explorer content.
  */
-const FileExplorerContent: React.FC<FileExplorerProps> = (props) => {
-  const styles = useStyles()
-  const { setSelectedNode, setExpandedDirs, tree } = useFileExplorerContext()
+const FileExplorerContent = React.memo<Omit<FileExplorerProps, 'diff'>>(
+  ({ onDirectoryToggle, onFileClick, css: customCss, className }: Omit<FileExplorerProps, 'diff'>) => {
+    const styles = useStyles()
+    const { setSelectedNode, setExpandedDirs, tree } = useFileExplorerContext()
 
-  const containerRef = useRef<HTMLDivElement>(null)
+    const containerRef = useRef<HTMLDivElement>(null)
 
-  const handleDirectoryToggle = (path: string, expanded: boolean) => {
-    props.onDirectoryToggle?.(path, expanded)
-  }
+    const handleDirectoryToggle = React.useCallback(
+      (path: string, expanded: boolean) => {
+        onDirectoryToggle?.(path, expanded)
+      },
+      [onDirectoryToggle],
+    )
 
-  const handleFileClick = (file: FileDiff) => {
-    const filePath = file.newPath || file.oldPath
-    setSelectedNode(filePath)
-    props.onFileClick?.(file)
-  }
+    const handleFileClick = React.useCallback(
+      (file: FileDiff) => {
+        const filePath = file.newPath || file.oldPath
+        setSelectedNode(filePath)
+        onFileClick?.(file)
+      },
+      [onFileClick, setSelectedNode],
+    )
 
-  return (
-    <div css={[styles.container, props.css]} className={props.className}>
-      <ExplorerBar
-        onExpandAll={() => setExpandedDirs(listDirPaths(tree))}
-        onCollapseAll={() => setExpandedDirs(new Set<string>())}
-      />
+    const treeNodes = React.useMemo(() => {
+      return Array.from(tree.children.values())
+        .sort(nodeComparator)
+        .map((node) => (
+          <FSNode
+            key={node.name}
+            node={node}
+            level={0}
+            parentPath=""
+            onFileClick={handleFileClick}
+            onDirectoryToggle={handleDirectoryToggle}
+          />
+        ))
+    }, [tree.children, handleFileClick, handleDirectoryToggle])
 
-      <div css={styles.fsTreeContainer} ref={containerRef}>
-        <TreeSkeleton containerRef={containerRef} />
-        {Array.from(tree.children.values())
-          .sort(nodeComparator)
-          .map((node) => (
-            <FSNode
-              key={node.name}
-              node={node}
-              level={0}
-              parentPath=""
-              onFileClick={handleFileClick}
-              onDirectoryToggle={handleDirectoryToggle}
-            />
-          ))}
+    return (
+      <div css={[styles.container, customCss]} className={className}>
+        <ExplorerBar
+          onExpandAll={() => setExpandedDirs(listDirPaths(tree))}
+          onCollapseAll={() => setExpandedDirs(new Set<string>())}
+        />
+
+        <div css={styles.fsTreeContainer} ref={containerRef}>
+          <TreeSkeleton containerRef={containerRef} />
+          {treeNodes}
+        </div>
       </div>
-    </div>
-  )
-}
+    )
+  },
+)
+
+FileExplorerContent.displayName = 'FileExplorerContent'
