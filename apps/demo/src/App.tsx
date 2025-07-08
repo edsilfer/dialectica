@@ -18,6 +18,7 @@ import useGetPrMetadata from './hooks/use-get-pr-metadata'
 import useLoadMoreLines from './hooks/use-load-more-lines'
 import { useSettings } from './provider/setttings-provider'
 import { parseURL, setURL } from './utils'
+import { Alert } from 'antd'
 
 const createStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) => ({
   container: css`
@@ -38,7 +39,7 @@ const createStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) =>
 
 export default function App() {
   const { theme } = useDiffViewerConfig()
-  const { githubPat } = useSettings()
+  const { githubPat, useMocks } = useSettings()
   const styles = useMemo(() => createStyles(theme), [theme])
   const [selectedPr, setSelectedPr] = useState<ParsedPR | null>(null)
 
@@ -51,6 +52,15 @@ export default function App() {
     repo: selectedPr?.repo ?? '',
     pullNumber: selectedPr?.prNumber ?? 0,
   })
+
+  // Update browser tab title when PR metadata is loaded
+  useEffect(() => {
+    if (prMetadata.data?.title) {
+      document.title = `${prMetadata.data.title} - Diff Viewer Demo`
+    } else {
+      document.title = 'Diff Viewer Demo'
+    }
+  }, [prMetadata.data?.title])
 
   const prDiff = useGetPrDiff({
     owner: selectedPr?.owner ?? '',
@@ -129,6 +139,10 @@ export default function App() {
   return (
     <div css={styles.container}>
       <AppToolbar onSearch={handleSearch} />
+
+      {useMocks && (
+        <Alert message="All the data is mocked. You can change it in the settings." type="warning" showIcon closable />
+      )}
 
       <div css={styles.content}>{renderContent()}</div>
 
