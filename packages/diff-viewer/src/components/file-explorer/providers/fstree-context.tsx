@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useMemo, useEffect } from 'react'
-import { buildTree, listDirPaths } from '../node-utils'
+import { buildTree, listDirPaths } from '../../../utils/node-utils'
 import { FSTreeContextState, FSTreeContextProviderProps } from './types'
 import { filterFiles, listExpandedDirs } from './context-utils'
 import { useFileExplorerConfig } from './file-explorer-context'

@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest'
 
 import { Themes } from '../../../themes'
 import { DEFAULT_CODE_PANEL_CONFIG } from '../../code-panel/providers/code-panel-context'
-import { DEFAULT_FILE_EXPLORER_CONFIG } from '../../file-explorer/provider/file-explorer-context'
+import { DEFAULT_FILE_EXPLORER_CONFIG } from '../../file-explorer/providers/file-explorer-context'
 import { DiffViewerConfigProvider, useDiffViewerConfig } from './diff-viewer-context'
 
 function Consumer() {

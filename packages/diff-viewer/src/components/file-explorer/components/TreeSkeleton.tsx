@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import { useContext, useEffect, useState } from 'react'
 import { ThemeContext } from '../../../themes/providers/theme-context'
-import { useFileExplorerContext } from '../provider/fstree-context'
+import { useFileExplorerContext } from '../providers/fstree-context'
 import { buildNodeMap, getConnectorPaths } from './tree-utils'
 import { ConnectorStyle, Node, TreeSkeletonProps } from './types'
 

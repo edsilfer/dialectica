@@ -14,7 +14,7 @@ export * from './components/file-explorer/FileExplorer'
 export {
   FileExplorerConfigProvider,
   useFileExplorerConfig,
-} from './components/file-explorer/provider/file-explorer-context'
+} from './components/file-explorer/providers/file-explorer-context'
 export type { FileExplorerConfig } from './components/file-explorer/types'
 export * from './components/diff-viewer/DiffViewer'
 export * from './components/diff-viewer/providers/diff-viewer-context'

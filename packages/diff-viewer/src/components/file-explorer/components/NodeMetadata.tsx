@@ -3,7 +3,7 @@ import React, { useContext } from 'react'
 import DirectoryIcon from '../../ui/icons/Directory'
 import FileIcon from '../../ui/icons/File'
 import { ThemeContext } from '../../../themes/providers/theme-context'
-import { listFilesIn } from '../node-utils'
+import { listFilesIn } from '../../../utils/node-utils'
 import { DirectoryNode, FileNode } from '../types'
 import { NodeMetadataProps } from './types'
 

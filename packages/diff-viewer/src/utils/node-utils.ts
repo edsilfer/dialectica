@@ -1,6 +1,6 @@
 import React from 'react'
-import { DirectoryNode, FileNode, TreeNode } from './types'
-import { FileDiff } from '../../models/FileDiff'
+import { DirectoryNode, FileNode, TreeNode } from '../components/file-explorer/types'
+import { FileDiff } from '../models/FileDiff'
 
 /**
  * Builds a directory tree from the list of files inside the diff.

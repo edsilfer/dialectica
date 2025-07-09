@@ -8,7 +8,7 @@ import {
   DEFAULT_FILE_EXPLORER_CONFIG,
   FileExplorerConfigProvider,
   useFileExplorerConfig,
-} from '../../file-explorer/provider/file-explorer-context'
+} from '../../file-explorer/providers/file-explorer-context'
 import { ThemeProvider } from '../../../themes/providers/theme-context'
 import { Themes, ThemeTokens } from '../../../themes'
 import { DiffViewerConfigContextProps, DiffViewerThemeContextState } from './types'

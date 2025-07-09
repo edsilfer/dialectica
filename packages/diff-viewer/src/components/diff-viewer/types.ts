@@ -1,6 +1,6 @@
 import React from 'react'
 import { ParsedDiff } from '../../models/ParsedDiff'
-import { DrawerContent } from './drawer/types'
+import { DrawerContent } from './components/types'
 
 export interface Range {
   /* The start of the range, always smaller than end */
