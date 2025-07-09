@@ -1,13 +1,13 @@
 import { css } from '@emotion/react'
 import React, { useCallback, useContext, useMemo, useState } from 'react'
 import { useContextSelector } from 'use-context-selector'
-import { ThemeContext } from '../../../../themes/providers/theme-context'
-import { CodePanelConfigContext, useFileState } from '../../providers/code-panel-context'
-import { useHunkListViewModel } from './hooks/use-hunk-list-view-model'
-import HunkListHeader from './HunkListHeader'
-import { LinePair } from './models/LinePair'
-import SplitViewer from './SplitViewer'
+import { ThemeContext } from '../../../themes/providers/theme-context'
+import { CodePanelConfigContext, useFileState } from '../providers/code-panel-context'
 import { HunkDirection, HunkListProps } from './types'
+import { useHunkListViewModel } from '../hooks/use-hunk-list-view-model'
+import { DiffLineViewModel } from '../models/DiffLineViewModel'
+import HunkListHeader from './HunkListHeader'
+import SplitViewer from './SplitViewer'
 import UnifiedViewer from './UnifiedViewer'
 
 const useStyles = () => {
@@ -62,7 +62,7 @@ const HunkList: React.FC<HunkListProps> = (props) => {
   })
 
   const handleLoadMoreLines = useCallback(
-    async (line: LinePair, direction: HunkDirection) => {
+    async (line: DiffLineViewModel, direction: HunkDirection) => {
       const ranges = hunkList.getLoadRange(line, direction)
       const result = await onLoadMoreLines?.({
         fileKey: file.key,
@@ -99,7 +99,9 @@ const HunkList: React.FC<HunkListProps> = (props) => {
           {config.mode === 'split' && (
             <SplitViewer
               lines={hunkList.linePairs}
-              onLoadMoreLines={(line, direction) => void handleLoadMoreLines(line, direction)}
+              onLoadMoreLines={(line: DiffLineViewModel, direction: string) =>
+                void handleLoadMoreLines(line, direction)
+              }
               loadMoreLinesCount={maxLinesToFetch}
             />
           )}

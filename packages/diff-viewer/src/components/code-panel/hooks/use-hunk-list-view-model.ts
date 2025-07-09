@@ -1,10 +1,9 @@
 import { useEffect, useReducer } from 'react'
-import { FileDiff } from '../../../../../models/FileDiff'
-import { LoadMoreLinesResult } from '../../../../diff-viewer/types'
+import { FileDiff } from '../../../models/FileDiff'
+import { LoadMoreLinesResult } from '../../diff-viewer/types'
+import { HunkDirection } from '../components/types'
 import { HunkListViewModel } from '../models/HunkListViewModel'
-import { LinePair } from '../models/LinePair'
-import { HunkDirection } from '../types'
-import { HunkListViewModelProps } from './types'
+import { DiffLineViewModel } from '../models/DiffLineViewModel'
 
 /*
  * README
@@ -22,12 +21,21 @@ import { HunkListViewModelProps } from './types'
 type HunkListAction =
   | {
       type: 'lines_loaded'
-      payload: { line: LinePair; result: LoadMoreLinesResult; direction: HunkDirection }
+      payload: { line: DiffLineViewModel; result: LoadMoreLinesResult; direction: HunkDirection }
     }
   | {
       type: 'reset'
       payload: { file: FileDiff; mode: 'split' | 'unified'; maxLinesToFetch: number }
     }
+
+export interface HunkListViewModelProps {
+  /** The file to display */
+  file: FileDiff
+  /** The display mode */
+  mode: 'split' | 'unified'
+  /** The maximum number of lines to fetch */
+  maxLinesToFetch: number
+}
 
 function hunkListReducer(state: HunkListViewModel, action: HunkListAction): HunkListViewModel {
   switch (action.type) {

@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react'
 import { ThemeTokens } from '../../../themes'
-import { DisplayType } from '../components/hunk-list/types'
+import { DisplayType } from '../components/types'
 
 export interface CodePanelConfigContextProps {
   /** The children of the diff viewer config provider */

@@ -3,7 +3,7 @@ import type { RawFile, RawChunk } from 'diffparser'
 import { FileDiff } from './FileDiff'
 import { Hunk } from './Hunk'
 import { LineDiff } from './LineDiff'
-import type { HunkDirection } from '../components/code-panel/components/hunk-list/types'
+import type { HunkDirection } from '../components/code-panel/components/types'
 
 const createMockRawFile = (overrides: Partial<RawFile> = {}): RawFile => ({
   from: 'src/test.ts',

@@ -1,10 +1,10 @@
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
 import { WrapLinesButtonProps } from './types'
-import { ThemeContext } from '../../../../../themes/providers/theme-context'
-import WrappedLines from '../../../../ui/icons/WrapLines'
-import UnwrappedLines from '../../../../ui/icons/UnwrappedLine'
-import RichTooltip from '../../../../ui/RichTooltip'
+import { ThemeContext } from '../../../themes/providers/theme-context'
+import WrappedLines from '../icons/WrapLines'
+import UnwrappedLines from '../icons/UnwrappedLine'
+import RichTooltip from '../RichTooltip'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)

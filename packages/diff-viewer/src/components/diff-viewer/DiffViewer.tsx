@@ -7,7 +7,7 @@ import HandleIcon from '../ui/icons/HandleIcon'
 import { Themes } from '../../themes'
 import { Toolbar as DefaultToolbar } from '../../optional/toolbar/DefaultToolbar'
 import { Drawer } from './drawer/Drawer'
-import { useResizablePanel } from './hook/use-resizable-panel'
+import { useResizablePanel } from './hooks/use-resizable-panel'
 import { DiffViewerConfigProvider, useDiffViewerConfig } from './providers/diff-viewer-context'
 import { DiffViewerProps } from './types'
 

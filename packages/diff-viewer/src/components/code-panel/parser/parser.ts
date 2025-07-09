@@ -1,6 +1,6 @@
-import { LineDiff } from '../../../../../models/LineDiff'
-import { LinePair } from '../../hunk-list/models/LinePair'
-import { DisplayType } from '../types'
+import { LineDiff } from '../../../models/LineDiff'
+import { DiffLineViewModel } from '../models/DiffLineViewModel'
+import { DisplayType } from '../components/types'
 import { SplitLineParser } from './split-parser'
 import { UnifiedLineParser } from './unified-parser'
 
@@ -10,7 +10,7 @@ export interface LineParser {
    * @param language - The language to highlight the changes in
    * @returns       An array of LinePair objects representing the diff in a format suitable for UI rendering
    */
-  parse(lines: LineDiff[], language: string): LinePair[]
+  parse(lines: LineDiff[], language: string): DiffLineViewModel[]
 }
 
 /**

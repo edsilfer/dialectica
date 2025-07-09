@@ -1,10 +1,10 @@
-import { FileDiff } from '../../../../../models/FileDiff'
-import { Hunk, HunkRelation } from '../../../../../models/Hunk'
-import { LineDiff } from '../../../../../models/LineDiff'
-import { LoadMoreLinesResult, Range } from '../../../../diff-viewer/types'
+import { FileDiff } from '../../../models/FileDiff'
+import { Hunk, HunkRelation } from '../../../models/Hunk'
+import { LineDiff } from '../../../models/LineDiff'
+import { LoadMoreLinesResult, Range } from '../../diff-viewer/types'
 import { LineParser, LineParserFactory } from '../parser/parser'
-import { DisplayType, HunkDirection } from '../types'
-import { LinePair } from './LinePair'
+import { DisplayType, HunkDirection } from '../components/types'
+import { DiffLineViewModel } from './DiffLineViewModel'
 
 interface HunkInfo {
   /* The previous hunk, if any */
@@ -25,13 +25,13 @@ export interface RangePair {
 export class HunkListViewModel {
   private readonly fileDiff: FileDiff
   private hunks: Hunk[] = []
-  private hunkInfoCache = new Map<LinePair, HunkInfo>()
+  private hunkInfoCache = new Map<DiffLineViewModel, HunkInfo>()
   private readonly displayMode: DisplayType
   private readonly maxLinesToFetch: number
-  private _linePairs?: LinePair[]
+  private _linePairs?: DiffLineViewModel[]
   private readonly parser: LineParser
 
-  constructor(fileDiff: FileDiff, displayMode: DisplayType, maxLinesToFetch: number, linePairs?: LinePair[]) {
+  constructor(fileDiff: FileDiff, displayMode: DisplayType, maxLinesToFetch: number, linePairs?: DiffLineViewModel[]) {
     this.fileDiff = fileDiff
     this.hunks = fileDiff.hunks
     this.displayMode = displayMode
@@ -44,7 +44,7 @@ export class HunkListViewModel {
     return this.fileDiff.key
   }
 
-  get linePairs(): LinePair[] {
+  get linePairs(): DiffLineViewModel[] {
     if (!this._linePairs) this._linePairs = this.computeLinePairs()
     return this._linePairs
   }
@@ -57,7 +57,11 @@ export class HunkListViewModel {
    * @param direction - The direction of the hunk
    * @returns         - A new HunkListViewModel instance with the updated file diff
    */
-  public loadLines(hunkLine: LinePair, result: LoadMoreLinesResult, direction: HunkDirection): HunkListViewModel {
+  public loadLines(
+    hunkLine: DiffLineViewModel,
+    result: LoadMoreLinesResult,
+    direction: HunkDirection,
+  ): HunkListViewModel {
     const parsedLines = this.buildContextLines(result.leftLines, result.rightLines)
     const hunkInfo = this.hunkInfoCache.get(hunkLine)
     if (!hunkInfo) return this
@@ -148,7 +152,7 @@ export class HunkListViewModel {
    * @param direction - Where the user wants to load more lines
    * @returns         - The ranges of lines to load for both old and new files
    */
-  public getLoadRange(baseLine: LinePair, direction: HunkDirection): RangePair {
+  public getLoadRange(baseLine: DiffLineViewModel, direction: HunkDirection): RangePair {
     const currOld = baseLine.lineNumberLeft ?? 0
     const currNew = baseLine.lineNumberRight ?? 0
     const hunkInfo = this.hunkInfoCache.get(baseLine)
@@ -218,10 +222,10 @@ export class HunkListViewModel {
     }
   }
 
-  private computeLinePairs(): LinePair[] {
+  private computeLinePairs(): DiffLineViewModel[] {
     this.hunkInfoCache.clear()
 
-    const linePairs: LinePair[] = []
+    const linePairs: DiffLineViewModel[] = []
     let prevHunk: Hunk | undefined = undefined
 
     for (const hunk of this.hunks) {
@@ -237,8 +241,8 @@ export class HunkListViewModel {
     return linePairs
   }
 
-  private getHunkLinePairs(hunk: Hunk, prevHunk: Hunk | undefined): LinePair[] {
-    const linePairs: LinePair[] = []
+  private getHunkLinePairs(hunk: Hunk, prevHunk: Hunk | undefined): DiffLineViewModel[] {
+    const linePairs: DiffLineViewModel[] = []
     const relation = hunk.getRelationTo(prevHunk)
     const direction = this.toDirection(relation)
 
@@ -270,7 +274,7 @@ export class HunkListViewModel {
   }
 
   // We add an extra empty hunk to hold the load more button.
-  private buildFooterHunk(lastHunk: Hunk): LinePair {
+  private buildFooterHunk(lastHunk: Hunk): DiffLineViewModel {
     const hunkLineDiff = new LineDiff(lastHunk.header, 'hunk', null, null)
     const hunkLinePair = this.parser.parse([hunkLineDiff], this.fileDiff.language)[0]
     hunkLinePair.hunkDirection = 'down'
@@ -281,7 +285,7 @@ export class HunkListViewModel {
     return hunkLinePair
   }
 
-  private buildHunkHeader(hunk: Hunk, direction: HunkDirection): LinePair {
+  private buildHunkHeader(hunk: Hunk, direction: HunkDirection): DiffLineViewModel {
     const hunkLineDiff = new LineDiff(hunk.header, 'hunk', null, null)
     const hunkLinePair = this.parser.parse([hunkLineDiff], this.fileDiff.language)[0]
     hunkLinePair.hunkDirection = direction

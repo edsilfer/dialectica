@@ -1,9 +1,9 @@
 import React, { useContext, useMemo } from 'react'
-import { ThemeContext } from '../../../../themes/providers/theme-context'
+import { ThemeContext } from '../../../themes/providers/theme-context'
 import { getViewerStyles } from './shared-styles'
 import { UnifiedViewerProps } from './types'
-import LoadMoreButton from './buttons/LoadMoreButton'
-import { DiffLineType } from '../../../../models/LineDiff'
+import LoadMoreButton from '../../ui/buttons/LoadMoreButton'
+import { DiffLineType } from '../../../models/LineDiff'
 
 /** Map diff-symbols shown at the start of each code cell */
 const prefix: Record<DiffLineType, string> = {

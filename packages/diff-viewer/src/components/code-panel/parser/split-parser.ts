@@ -1,13 +1,13 @@
-import { LineDiff } from '../../../../../models/LineDiff'
-import { LinePair } from '../../hunk-list/models/LinePair'
+import { LineDiff } from '../../../models/LineDiff'
+import { DiffLineViewModel } from '../models/DiffLineViewModel'
 import { CommonParser } from './common-parser'
 
 export class SplitLineParser extends CommonParser {
-  protected processLine = (change: LineDiff, rows: LinePair[], language: string): void => {
+  protected processLine = (change: LineDiff, rows: DiffLineViewModel[], language: string): void => {
     switch (change.type) {
       case 'context':
         rows.push(
-          LinePair.build(change, language, {
+          DiffLineViewModel.build(change, language, {
             typeLeft: 'context',
             typeRight: 'context',
             contentLeft: change.content,
@@ -19,7 +19,7 @@ export class SplitLineParser extends CommonParser {
         break
       case 'delete':
         rows.push(
-          LinePair.build(change, language, {
+          DiffLineViewModel.build(change, language, {
             typeLeft: 'delete',
             typeRight: 'empty',
             contentLeft: change.content,
@@ -32,7 +32,7 @@ export class SplitLineParser extends CommonParser {
         // no paired right-hand side we merge the two changes into a single visual row.
         const lastRow = rows.at(-1)
         if (lastRow?.typeLeft === 'delete' && lastRow.typeRight === 'empty') {
-          const addLine = LinePair.build(change, language, {
+          const addLine = DiffLineViewModel.build(change, language, {
             typeLeft: 'empty',
             typeRight: 'add',
             contentRight: change.content,
@@ -44,7 +44,7 @@ export class SplitLineParser extends CommonParser {
           lastRow.lineNumberRight = addLine.lineNumberRight
         } else {
           rows.push(
-            LinePair.build(change, language, {
+            DiffLineViewModel.build(change, language, {
               typeLeft: 'empty',
               typeRight: 'add',
               contentRight: change.content,
@@ -56,7 +56,7 @@ export class SplitLineParser extends CommonParser {
       }
       case 'empty':
         rows.push(
-          LinePair.build(change, language, {
+          DiffLineViewModel.build(change, language, {
             typeLeft: 'empty',
             typeRight: 'empty',
             contentLeft: change.content,
@@ -68,7 +68,7 @@ export class SplitLineParser extends CommonParser {
         break
       case 'hunk':
         rows.push(
-          LinePair.build(change, language, {
+          DiffLineViewModel.build(change, language, {
             typeLeft: 'hunk',
             typeRight: 'hunk',
             contentLeft: change.content,

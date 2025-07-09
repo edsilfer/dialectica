@@ -1,9 +1,9 @@
 import React, { useContext, useMemo } from 'react'
-import { ThemeContext } from '../../../../themes/providers/theme-context'
+import { ThemeContext } from '../../../themes/providers/theme-context'
 import { SplitViewerProps } from './types'
 import { getViewerStyles } from './shared-styles'
-import LoadMoreButton from './buttons/LoadMoreButton'
-import { DiffLineType } from '../../../../models/LineDiff'
+import LoadMoreButton from '../../ui/buttons/LoadMoreButton'
+import { DiffLineType } from '../../../models/LineDiff'
 
 const SplitViewer: React.FC<SplitViewerProps> = (props) => {
   const theme = useContext(ThemeContext)

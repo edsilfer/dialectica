@@ -1,5 +1,5 @@
-import { LineDiff } from '../../../../../models/LineDiff'
-import { LinePair } from '../../hunk-list/models/LinePair'
+import { LineDiff } from '../../../models/LineDiff'
+import { DiffLineViewModel } from '../models/DiffLineViewModel'
 import { LineParser } from './parser'
 
 /**
@@ -8,8 +8,8 @@ import { LineParser } from './parser'
  */
 export abstract class CommonParser implements LineParser {
   /** {@inheritDoc LineParser.parse} */
-  parse(lines: LineDiff[], language: string): LinePair[] {
-    const linePairs: LinePair[] = []
+  parse(lines: LineDiff[], language: string): DiffLineViewModel[] {
+    const linePairs: DiffLineViewModel[] = []
 
     lines.forEach((line) => {
       this.processLine(line, linePairs, language)
@@ -23,5 +23,5 @@ export abstract class CommonParser implements LineParser {
    * @param rows     - The list of rows to process
    * @param language - The language to highlight the changes in
    */
-  protected abstract processLine(change: LineDiff, rows: LinePair[], language: string): void
+  protected abstract processLine(change: LineDiff, rows: DiffLineViewModel[], language: string): void
 }

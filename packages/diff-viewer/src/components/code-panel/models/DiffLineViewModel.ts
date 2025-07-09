@@ -1,13 +1,13 @@
-import { DiffLineType, LineDiff } from '../../../../../models/LineDiff'
-import { highlightContent } from '../../utils/highlight-utils'
-import { HunkDirection } from '../types'
+import { DiffLineType, LineDiff } from '../../../models/LineDiff'
+import { highlightContent } from '../../../utils/highlight-utils'
+import { HunkDirection } from '../components/types'
 
 /**
  * - For the unified viewer only the "left" fields are populated
  *   (the right side stays `null` so renderers can safely ignore it)
  * - For the split viewer both the left and right sides may be populated.
  */
-export class LinePair {
+export class DiffLineViewModel {
   /** Left-hand side information (original file). */
   typeLeft: DiffLineType | null
   /** The content of the line */
@@ -59,15 +59,15 @@ export class LinePair {
   static build(
     change: LineDiff,
     language: string,
-    input: Partial<LinePair> & {
+    input: Partial<DiffLineViewModel> & {
       typeLeft: DiffLineType | null
       typeRight: DiffLineType | null
     },
-  ): LinePair {
+  ): DiffLineViewModel {
     const highlighted = highlightContent(change.content, language)
-    const empty = LinePair.EMPTY
+    const empty = DiffLineViewModel.EMPTY
 
-    return new LinePair(
+    return new DiffLineViewModel(
       input.typeLeft,
       input.contentLeft ?? empty.contentLeft,
       input.highlightedContentLeft ?? (input.contentLeft ? highlighted : null),
@@ -86,14 +86,14 @@ export class LinePair {
    * @param content - The content of the hunk header
    * @returns         A hunk header LinePair
    */
-  static buildHunkLine(content: string): LinePair {
-    return new LinePair('hunk', content, content, null, 'hunk', content, content, null, undefined)
+  static buildHunkLine(content: string): DiffLineViewModel {
+    return new DiffLineViewModel('hunk', content, content, null, 'hunk', content, content, null, undefined)
   }
 
   /**
    * Creates an empty LinePair with all null values
    */
-  private static get EMPTY(): LinePair {
-    return new LinePair(null, null, null, null, null, null, null, null, undefined)
+  private static get EMPTY(): DiffLineViewModel {
+    return new DiffLineViewModel(null, null, null, null, null, null, null, null, undefined)
   }
 }

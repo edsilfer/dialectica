@@ -1,11 +1,12 @@
-import { css } from '@emotion/react'
+import { css, Interpolation, Theme } from '@emotion/react'
 import { Skeleton } from 'antd'
 import React, { useContext, useEffect } from 'react'
-import { useDiffViewerConfig } from '../diff-viewer/providers/diff-viewer-context'
+import { FileDiff } from '../../models/FileDiff'
 import { ThemeContext } from '../../themes/providers/theme-context'
-import HunkList from './components/hunk-list/HunkList'
+import { useDiffViewerConfig } from '../diff-viewer/providers/diff-viewer-context'
+import { LoadMoreLinesHandler } from '../diff-viewer/types'
+import HunkList from './components/HunkList'
 import { CodePanelConfigProvider, useCodePanelConfig } from './providers/code-panel-context'
-import type { FileListProps } from './types'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -22,6 +23,24 @@ const useStyles = () => {
       overflow: auto;
     `,
   }
+}
+
+export type FileListProps = {
+  /** The files to display. */
+  files: FileDiff[]
+  /** The file to scroll to when the diff is loaded. */
+  scrollTo?: string
+  /** Whether the code panel is in a loading state. */
+  isLoading?: boolean
+  /** Kept to make typescript happy, but not used by emotion */
+  css?: Interpolation<Theme>
+  /** The content of css will be hashed and passed here */
+  className?: string
+  /** Number of lines to request when user clicks "load more". Defaults to 5. */
+  maxLinesToFetch?: number
+
+  /** Called when the user requests to load (expand) more lines for a specific file. */
+  onLoadMoreLines?: LoadMoreLinesHandler
 }
 
 export const CodePanel: React.FC<FileListProps> = (props) => {

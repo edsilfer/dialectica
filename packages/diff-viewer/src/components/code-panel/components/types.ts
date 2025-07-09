@@ -1,6 +1,6 @@
-import { LoadMoreLinesHandler } from '../../../diff-viewer/types'
-import { FileDiff } from '../../../../models/FileDiff'
-import { LinePair } from './models/LinePair'
+import { LoadMoreLinesHandler } from '../../diff-viewer/types'
+import { FileDiff } from '../../../models/FileDiff'
+import { DiffLineViewModel } from '../models/DiffLineViewModel'
 
 export type DiffLineType = 'add' | 'delete' | 'context' | 'hunk' | 'empty'
 export type DisplayType = 'split' | 'unified'
@@ -43,7 +43,7 @@ export interface HunkListHeaderProps {
 
 export interface UnifiedViewerProps {
   /** Lines to display */
-  lines: LinePair[]
+  lines: DiffLineViewModel[]
   /** Whether to wrap long lines or enable horizontal scrolling (defaults to true). */
   wrapLines?: boolean
   /** Whether the viewer is currently visible (for performance optimization) */
@@ -52,15 +52,15 @@ export interface UnifiedViewerProps {
   loadMoreLinesCount?: number
 
   /** Called when user requests to load (expand) more lines around a hunk. */
-  onLoadMoreLines?: (line: LinePair, direction: HunkDirection) => void
+  onLoadMoreLines?: (line: DiffLineViewModel, direction: HunkDirection) => void
 }
 
 export interface SplitViewerProps {
   /** Lines to display */
-  lines: LinePair[]
+  lines: DiffLineViewModel[]
   /** Number of lines to request when user clicks "load more". Defaults to 5. */
   loadMoreLinesCount?: number
 
   /** Called when user requests to load (expand) more lines around a hunk. */
-  onLoadMoreLines?: (line: LinePair, direction: HunkDirection) => void
+  onLoadMoreLines?: (line: DiffLineViewModel, direction: HunkDirection) => void
 }
