@@ -13,6 +13,7 @@ const UnwrapLines = React.forwardRef<SVGSVGElement, { size?: number } & React.SV
       strokeLinecap="round"
       strokeLinejoin="round"
       {...props}
+      data-testid="unwrap-lines-icon"
     >
       {/* Top unbroken line */}
       <line x1="4" y1="5" x2="20" y2="5" />

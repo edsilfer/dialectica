@@ -13,6 +13,7 @@ const WrappedLines = React.forwardRef<SVGSVGElement, { size?: number } & React.S
       strokeLinecap="round"
       strokeLinejoin="round"
       {...props}
+      data-testid="wrap-lines-icon"
     >
       {/* Top unbroken line */}
       <line x1="4" y1="5" x2="20" y2="5" />

@@ -72,11 +72,13 @@ Run from the root directory:
 
 ### Rendering Layer
 
-- [ ] P0 - Add unit tests
-- [ ] P0 - Implement proper highlighting for partial changes in a line
-- [ ] P0 - Add support for ignoring whitespaces
-- [ ] P0 - Add support for rendering inline comments
-- [ ] P2 - (Optimization) do not load very large diffs
+- [ ] P0 - Add unit tests (doing)
+- [ ] P0 - Fix bug in collapsed / viewed file
+- [ ] P0 - Add support for overlays
+- [ ] P2 - Add max lines to display a diff
+- [ ] P2 - Add max files to display
+- [ ] P3 - Implement proper highlighting for partial changes in a line
+- [ ] P3 - Add support for ignoring whitespaces
 
 ## Future Considerations
 
