@@ -1,4 +1,9 @@
 import '@testing-library/jest-dom/vitest'
+import { setupGlobalTestMocks, setupBeforeEach } from './src/utils/test/setup'
+
+// Run global setup before all tests
+setupGlobalTestMocks()
+setupBeforeEach()
 
 // Mock SVG getBBox method for tooltip positioning in tests
 Object.defineProperty(SVGElement.prototype, 'getBBox', {

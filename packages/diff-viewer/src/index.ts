@@ -5,7 +5,7 @@
  * - Simplifies imports, providing a single entry point for consumers.
  * - Decouples the package's internal structure from its public interface.
  */
-import './styles/highlight-themes.css'
+import './themes/styles/highlight-themes.css'
 
 export * from './components/code-panel/FileList'
 export { CodePanelConfigProvider, useCodePanelConfig } from './components/code-panel/providers/code-panel-context'

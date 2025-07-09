@@ -87,9 +87,15 @@ export const buildNodeMap = (rows: NodeListOf<Element>, parentRect: DOMRect): Ma
  * @returns          - The node.
  */
 const toNode = (el: Element, parentRect: DOMRect): Node | null => {
-  const level = Number(el.getAttribute('data-node-level'))
+  const levelAttr = el.getAttribute('data-node-level')
   const path = el.getAttribute('data-node-path')
-  if (isNaN(level) || !path) return null
+
+  // Check if level attribute exists and is a valid number
+  if (!levelAttr || !path) return null
+
+  const level = Number(levelAttr)
+  if (isNaN(level)) return null
+
   const rect = el.getBoundingClientRect()
   return {
     cx: rect.left - parentRect.left,

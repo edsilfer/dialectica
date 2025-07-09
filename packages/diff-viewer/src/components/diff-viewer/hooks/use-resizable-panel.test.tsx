@@ -1,7 +1,11 @@
 import React from 'react'
 import { render, fireEvent, screen } from '@testing-library/react'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-
+import { describe, it, vi, beforeEach } from 'vitest'
+import {
+  createPropsFactory,
+  mockElementProperty,
+  expectElementToHaveTextContent,
+} from '../../../utils/test/generic-test-utils'
 import { useResizablePanel } from './use-resizable-panel'
 
 /*
@@ -15,7 +19,22 @@ vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => {
 })
 vi.stubGlobal('cancelAnimationFrame', () => {})
 
-function Harness({ initial = 25, min = 15, max = 60 }: { initial?: number; min?: number; max?: number }) {
+// ====================
+// TEST UTILITIES
+// ====================
+interface HarnessProps {
+  initial?: number
+  min?: number
+  max?: number
+}
+
+const createHarnessProps = createPropsFactory<HarnessProps>({
+  initial: 25,
+  min: 15,
+  max: 60,
+})
+
+function Harness({ initial = 25, min = 15, max = 60 }: HarnessProps) {
   const { width, containerRef, onMouseDown } = useResizablePanel(initial, {
     min,
     max,
@@ -31,76 +50,151 @@ function Harness({ initial = 25, min = 15, max = 60 }: { initial?: number; min?:
   )
 }
 
+const setupContainerMock = (clientWidth: number): HTMLElement => {
+  const container = screen.getByTestId('container')
+  mockElementProperty(container, 'clientWidth', clientWidth)
+  return container
+}
+
+const performDragOperation = (startX: number, endX: number): void => {
+  const handle = screen.getByTestId('handle')
+
+  fireEvent.mouseDown(handle, { clientX: startX })
+  fireEvent.mouseMove(document, { clientX: endX })
+  fireEvent.mouseUp(document)
+}
+
+const expectWidthToBe = (expectedWidth: string): void => {
+  expectElementToHaveTextContent('width', expectedWidth)
+}
+
+// ====================
+// TEST CASES
+// ====================
 describe('useResizablePanel', () => {
   beforeEach(() => {
     // Reset all mocks/spies between tests to avoid cross-test pollution
     vi.clearAllMocks()
   })
 
-  it('returns the initial width', () => {
-    render(<Harness initial={30} />)
-    expect(screen.getByTestId('width').textContent).toBe('30')
-  })
+  describe('initial state', () => {
+    it('given default initial value, when rendered, expect default width displayed', () => {
+      // GIVEN
+      const props = createHarnessProps()
 
-  it('updates the width based on mouse movement', () => {
-    render(<Harness />)
+      // WHEN
+      render(<Harness {...props} />)
 
-    const container = screen.getByTestId('container')
-    // Pretend that the container is 200px wide so that 50px mouse movement
-    // corresponds to 25% (i.e. 50 / 200 * 100)
-    Object.defineProperty(container, 'clientWidth', {
-      configurable: true,
-      get: () => 200,
+      // EXPECT
+      expectWidthToBe('25')
     })
 
-    const handle = screen.getByTestId('handle')
+    it('given custom initial value, when rendered, expect custom width displayed', () => {
+      // GIVEN
+      const props = createHarnessProps({ initial: 30 })
 
-    // User presses the mouse on the handle at x = 0 …
-    fireEvent.mouseDown(handle, { clientX: 0 })
-    // … drags it to x = 50 …
-    fireEvent.mouseMove(document, { clientX: 50 })
-    // … and releases it.
-    fireEvent.mouseUp(document)
+      // WHEN
+      render(<Harness {...props} />)
 
-    // Width starts at 25 and the drag adds 25 percentage points → 50
-    expect(screen.getByTestId('width').textContent).toBe('50')
+      // EXPECT
+      expectWidthToBe('30')
+    })
   })
 
-  it('does not allow the width to exceed the configured maximum', () => {
-    render(<Harness />)
+  describe('mouse drag interactions', () => {
+    it('given normal drag operation, when dragged, expect width to update correctly', () => {
+      // GIVEN
+      const props = createHarnessProps()
+      render(<Harness {...props} />)
+      setupContainerMock(200) // 200px wide container
 
-    const container = screen.getByTestId('container')
-    Object.defineProperty(container, 'clientWidth', {
-      configurable: true,
-      get: () => 200,
+      // WHEN - Drag from x=0 to x=50 (25% of 200px = 25 percentage points)
+      performDragOperation(0, 50)
+
+      // EXPECT - Width starts at 25 and adds 25 percentage points → 50
+      expectWidthToBe('50')
     })
 
-    const handle = screen.getByTestId('handle')
+    it('given drag beyond maximum, when dragged, expect width clamped to maximum', () => {
+      // GIVEN
+      const props = createHarnessProps({ max: 60 })
+      render(<Harness {...props} />)
+      setupContainerMock(200)
 
-    fireEvent.mouseDown(handle, { clientX: 0 })
-    // Move the mouse far enough to exceed the max (e.g. +300px ⇒ +150%)
-    fireEvent.mouseMove(document, { clientX: 300 })
-    fireEvent.mouseUp(document)
+      // WHEN - Move the mouse far enough to exceed the max (e.g. +300px ⇒ +150%)
+      performDragOperation(0, 300)
 
-    expect(screen.getByTestId('width').textContent).toBe('60') // max
+      // EXPECT - Should be clamped to maximum
+      expectWidthToBe('60')
+    })
+
+    it('given drag below minimum, when dragged, expect width clamped to minimum', () => {
+      // GIVEN
+      const props = createHarnessProps({ min: 15 })
+      render(<Harness {...props} />)
+      setupContainerMock(200)
+
+      // WHEN - Drag far to the left (negative delta)
+      performDragOperation(100, -200)
+
+      // EXPECT - Should be clamped to minimum
+      expectWidthToBe('15')
+    })
   })
 
-  it('does not allow the width to fall below the configured minimum', () => {
-    render(<Harness />)
+  describe('edge cases', () => {
+    it('given very small container, when dragged, expect proportional scaling', () => {
+      // GIVEN
+      const props = createHarnessProps()
+      render(<Harness {...props} />)
+      setupContainerMock(100) // Small container
 
-    const container = screen.getByTestId('container')
-    Object.defineProperty(container, 'clientWidth', {
-      configurable: true,
-      get: () => 200,
+      // WHEN - 25px movement in 100px container = 25%
+      performDragOperation(0, 25)
+
+      // EXPECT - 25 (initial) + 25 (drag) = 50
+      expectWidthToBe('50')
     })
 
-    const handle = screen.getByTestId('handle')
+    it('given large container, when dragged, expect proportional scaling', () => {
+      // GIVEN
+      const props = createHarnessProps()
+      render(<Harness {...props} />)
+      setupContainerMock(400) // Large container
 
-    fireEvent.mouseDown(handle, { clientX: 100 })
-    // Drag far to the left (negative delta)
-    fireEvent.mouseMove(document, { clientX: -200 })
-    fireEvent.mouseUp(document)
+      // WHEN - 100px movement in 400px container = 25%
+      performDragOperation(0, 100)
 
-    expect(screen.getByTestId('width').textContent).toBe('15') // min
+      // EXPECT - 25 (initial) + 25 (drag) = 50
+      expectWidthToBe('50')
+    })
+  })
+
+  describe('boundary conditions', () => {
+    it('given width at maximum, when dragged further, expect no change beyond max', () => {
+      // GIVEN
+      const props = createHarnessProps({ initial: 60, max: 60 })
+      render(<Harness {...props} />)
+      setupContainerMock(200)
+
+      // WHEN - Try to drag beyond current maximum
+      performDragOperation(0, 100)
+
+      // EXPECT - Should remain at maximum
+      expectWidthToBe('60')
+    })
+
+    it('given width at minimum, when dragged lower, expect no change below min', () => {
+      // GIVEN
+      const props = createHarnessProps({ initial: 15, min: 15 })
+      render(<Harness {...props} />)
+      setupContainerMock(200)
+
+      // WHEN - Try to drag below current minimum
+      performDragOperation(0, -100)
+
+      // EXPECT - Should remain at minimum
+      expectWidthToBe('15')
+    })
   })
 })

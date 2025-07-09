@@ -1,16 +1,71 @@
 import { fireEvent, screen } from '@testing-library/react'
+import type React from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import {
-  COPY_BUTTON_RENDERING_TEST_CASES,
-  createCopyButtonProps,
   expectClickEventToBePassed,
   expectClickHandlerToBeCalled,
-  expectSvgIcon,
-  expectToastToAppear,
   expectTooltipToAppear,
 } from '../../../utils/test/components/ui/buttons/test-utils'
+import { createPropsFactory } from '../../../utils/test/generic-test-utils'
 import { render } from '../../../utils/test/render'
 import CopyButton from './CopyButton'
+import type { CopyButtonProps } from './types'
+
+// ====================
+// LOCAL UTILITIES
+// ====================
+
+const createCopyButtonProps = createPropsFactory<CopyButtonProps>({
+  onClick: vi.fn<(event: React.MouseEvent<SVGSVGElement>) => void>(),
+})
+
+const COPY_BUTTON_RENDERING_TEST_CASES: Array<{
+  description: string
+  props: Partial<CopyButtonProps>
+  expectTooltip: boolean
+}> = [
+  {
+    description: 'basic copy button without tooltip',
+    props: {},
+    expectTooltip: false,
+  },
+  {
+    description: 'copy button with tooltip only',
+    props: { tooltip: 'Copy to clipboard' },
+    expectTooltip: true,
+  },
+  {
+    description: 'copy button with toastText only',
+    props: { toastText: 'Copied!' },
+    expectTooltip: true,
+  },
+  {
+    description: 'copy button with both tooltip and toastText',
+    props: { tooltip: 'Copy to clipboard', toastText: 'Copied!' },
+    expectTooltip: true,
+  },
+]
+
+const expectSvgIcon = (container: HTMLElement, expectedSize = '16'): SVGSVGElement | null => {
+  const icon = container.querySelector('svg')
+  expect(icon).toBeInTheDocument()
+  if (icon) {
+    expect(icon).toHaveAttribute('width', expectedSize)
+    expect(icon).toHaveAttribute('height', expectedSize)
+  }
+  return icon
+}
+
+const expectToastToAppear = async (
+  screen: typeof import('@testing-library/react').screen,
+  toastText: string,
+): Promise<void> => {
+  expect(await screen.findByText(toastText)).toBeInTheDocument()
+}
+
+// ====================
+// TEST CASES
+// ====================
 
 describe('CopyButton', () => {
   describe('rendering scenarios', () => {
@@ -26,7 +81,7 @@ describe('CopyButton', () => {
         const copyIcon = expectSvgIcon(container)
 
         if (expectTooltip) {
-          expect(copyIcon?.closest('[aria-describedby]')).toBeInTheDocument()
+          expect(copyIcon?.closest('[data-testid="tooltip-wrapper"]')).toBeInTheDocument()
         }
       })
     })

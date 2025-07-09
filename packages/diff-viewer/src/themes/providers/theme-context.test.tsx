@@ -1,11 +1,12 @@
+import React from 'react'
 import { render } from '@testing-library/react'
-import type React from 'react'
-import { useContext } from 'react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { createAntdMocks } from '../../utils/test/antd-utils'
+import { renderWithContext } from '../../utils/test/context-test-utils'
+import { createPropsFactory, expectElementToBeInTheDocument } from '../../utils/test/generic-test-utils'
 import { Themes } from '../themes'
 import type { ThemeTokens } from '../types'
-import { ThemeContext, ThemeProvider } from './theme-context'
+import { ThemeContext, ThemeProvider, useTheme } from './theme-context'
 
 // MOCKS
 const mockSetAttribute = vi.fn()
@@ -25,20 +26,13 @@ vi.mock('@emotion/react', () => ({
 vi.mock('antd', () => createAntdMocks())
 
 // UTILS
-const TestConsumer = ({ onRender }: { onRender: (theme: ThemeTokens) => void }) => {
-  const theme = useContext(ThemeContext)
-  onRender(theme)
-  return null
-}
+const createThemeProviderProps = createPropsFactory<{ theme: ThemeTokens; children: React.ReactNode }>({
+  theme: Themes.light,
+  children: null,
+})
 
 const renderWithTheme = (theme: ThemeTokens) => {
-  const onRender = vi.fn()
-  render(
-    <ThemeProvider theme={theme}>
-      <TestConsumer onRender={onRender} />
-    </ThemeProvider>,
-  )
-  return onRender
+  return renderWithContext(ThemeProvider, useTheme, { theme, children: null })
 }
 
 beforeEach(() => {
@@ -51,7 +45,14 @@ describe('ThemeContext', () => {
     const onRender = vi.fn()
 
     // WHEN
-    render(<TestConsumer onRender={onRender} />)
+    render(
+      <ThemeContext.Consumer>
+        {(theme) => {
+          onRender(theme)
+          return null
+        }}
+      </ThemeContext.Consumer>,
+    )
 
     // EXPECT
     expect(onRender).toHaveBeenCalledWith(Themes.light)
@@ -79,9 +80,9 @@ describe('ThemeProvider', () => {
 
   test.each(themeTestCases)(
     'given $description, when rendered, expect $expectedHljsTheme hljs data attribute set',
-    ({ theme, expectedHljsTheme }) => {
+    async ({ theme, expectedHljsTheme }) => {
       // WHEN
-      renderWithTheme(theme)
+      await renderWithTheme(theme)
 
       // EXPECT
       expect(mockSetAttribute).toHaveBeenCalledWith('data-hljs-theme', expectedHljsTheme)
@@ -95,12 +96,12 @@ describe('ThemeProvider', () => {
 
   test.each(contextTestCases)(
     'given $description, when rendered, expect theme provided to children via context',
-    ({ theme }) => {
+    async ({ theme }) => {
       // WHEN
-      const onRender = renderWithTheme(theme)
+      const getTheme = await renderWithTheme(theme)
 
       // EXPECT
-      expect(onRender).toHaveBeenCalledWith(theme)
+      expect(getTheme()).toEqual(theme)
     },
   )
 
@@ -108,15 +109,15 @@ describe('ThemeProvider', () => {
     // GIVEN
     const testId = 'test-child'
     const TestChild = () => <div data-testid={testId}>Test Child</div>
+    const props = createThemeProviderProps({
+      theme: Themes.light,
+      children: <TestChild />,
+    })
 
     // WHEN
-    const { getByTestId } = render(
-      <ThemeProvider theme={Themes.light}>
-        <TestChild />
-      </ThemeProvider>,
-    )
+    render(<ThemeProvider {...props} />)
 
     // EXPECT
-    expect(getByTestId(testId)).toBeInTheDocument()
+    expectElementToBeInTheDocument(testId)
   })
 })

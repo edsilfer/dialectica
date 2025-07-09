@@ -109,7 +109,7 @@ describe('ProgressIndicator', () => {
 
       // EXPECT
       expect(screen.getByText(expectedText)).toBeInTheDocument()
-      expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', expectedPercent)
+      expect(screen.getByTestId('progress-bar')).toHaveAttribute('data-percent', expectedPercent)
     })
   })
 
@@ -122,9 +122,9 @@ describe('ProgressIndicator', () => {
     render(<ProgressIndicator {...props} />)
 
     // EXPECT
-    const progressBar = screen.getByRole('progressbar')
-    expect(progressBar).toHaveAttribute('aria-valuenow', '50')
-    expect(progressBar).toHaveClass('ant-progress-small')
+    const progressBar = screen.getByTestId('progress-bar')
+    expect(progressBar).toHaveAttribute('data-percent', '50')
+    expect(progressBar).toHaveAttribute('data-size', 'small')
   })
 
   // Test defensive programming features
@@ -151,13 +151,11 @@ describe('ProgressIndicator', () => {
 
       edgeCases.forEach(({ current, total, expected }) => {
         const props = createProgressProps(current, total, 'items')
-        const { container } = render(<ProgressIndicator {...props} />)
+        const { unmount } = render(<ProgressIndicator {...props} />)
 
         expect(screen.getByText(expected.text)).toBeInTheDocument()
-        expect(container.querySelector('[role="progressbar"]')).toHaveAttribute(
-          'aria-valuenow',
-          expected.percent.toString(),
-        )
+        expect(screen.getByTestId('progress-bar')).toHaveAttribute('data-percent', expected.percent.toString())
+        unmount()
       })
     })
 

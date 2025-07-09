@@ -1,39 +1,27 @@
 import React from 'react'
 import { vi } from 'vitest'
+import type { CodePanelConfigContextState } from '../../components/code-panel/providers/types'
 import type { CustomButton, ToolbarWidget } from '../../optional/toolbar/types'
 
-/* ==============================
- * PUBLIC API - MOCK CREATORS
- * ============================== */
-
 export const createAntdMocks = () => ({
-  Progress: createProgressMock(),
-  Typography: createTypographyMocks(),
-  Tag: createTagMock(),
-  Avatar: createAvatarMock(),
-  Skeleton: createSkeletonMock(),
-  Button: createButtonMock(),
-  Space: createSpaceMocks(),
-  Tooltip: createTooltipMock(),
-  ConfigProvider: createConfigProviderMock(),
-  theme: createThemeMock(),
+  Progress: _mockProgress(),
+  Typography: _mockTypography(),
+  Tag: _mockTag(),
+  Avatar: _mockAvatar(),
+  Skeleton: _mockSkeleton(),
+  Button: _mockButton(),
+  Input: _mockInput(),
+  Space: _mockSpace(),
+  Tooltip: _mockTooltip(),
+  ConfigProvider: _mockConfigProvider(),
+  theme: _mockTheme(),
 })
-
-export const createEnvUtilsMock = () => ({
-  isProduction: () => false,
-})
-
-export const createToolbarComponentMocks = () => ({
-  ActionButtons: createActionButtonsMock(),
-  ProgressIndicator: createProgressIndicatorMock(),
-})
-
-/* ==============================
- * PUBLIC API - FACTORY FUNCTIONS
- * ============================== */
 
 /**
  * Creates a mock CustomButton with default values and optional overrides
+ *
+ * @param overrides - Optional overrides for the default values
+ * @returns           A mock CustomButton with default values and optional overrides
  */
 export const createCustomButton = (overrides: Partial<CustomButton> = {}): CustomButton => {
   const defaults: CustomButton = {
@@ -49,6 +37,9 @@ export const createCustomButton = (overrides: Partial<CustomButton> = {}): Custo
 
 /**
  * Creates a mock ToolbarWidget with default values and optional overrides
+ *
+ * @param overrides - Optional overrides for the default values
+ * @returns           A mock ToolbarWidget with default values and optional overrides
  */
 export const createToolbarWidget = (overrides: Partial<ToolbarWidget> = {}): ToolbarWidget => {
   const defaults: ToolbarWidget = {
@@ -61,10 +52,15 @@ export const createToolbarWidget = (overrides: Partial<ToolbarWidget> = {}): Too
 }
 
 /**
- * Creates a mock code panel configuration
+ * Creates a mock code panel configuration with default values and optional overrides
+ *
+ * @param overrides - Optional overrides for the default values
+ * @returns           A mock code panel configuration with default values and optional overrides
  */
-export const createMockCodePanelConfig = (overrides = {}) => {
-  const defaults = {
+export const createMockCodePanelConfig = (
+  overrides: Partial<CodePanelConfigContextState> = {},
+): CodePanelConfigContextState => {
+  const defaults: CodePanelConfigContextState = {
     config: { mode: 'unified' as const, ignoreWhitespace: false },
     fileStateMap: new Map(),
     allFileKeys: [],
@@ -79,9 +75,12 @@ export const createMockCodePanelConfig = (overrides = {}) => {
 }
 
 /**
- * Creates a matrix of test buttons for different sides
+ * Creates a test set of buttons for both left and right sides
+ * Useful for testing layouts that handle multiple buttons
+ *
+ * @returns A matrix of test buttons for both left and right sides
  */
-export const createButtonMatrix = () => [
+export const createButtonMatrix = (): CustomButton[] => [
   createCustomButton({ key: 'left-1', label: 'Left 1', side: 'left' }),
   createCustomButton({ key: 'left-2', label: 'Left 2', side: 'left' }),
   createCustomButton({ key: 'right-1', label: 'Right 1', side: 'right' }),
@@ -89,7 +88,12 @@ export const createButtonMatrix = () => [
 ]
 
 /**
- * Creates progress component props
+ * Creates props for progress components with current/total pattern
+ *
+ * @param current - The current value
+ * @param total - The total value
+ * @param suffix - Optional suffix for the progress bar
+ * @returns       A progress component props with current/total pattern
  */
 export const createProgressProps = (current: number, total: number, suffix?: string) => ({
   current,
@@ -97,71 +101,57 @@ export const createProgressProps = (current: number, total: number, suffix?: str
   suffix,
 })
 
-/* ==============================
- * PUBLIC API - SETUP FUNCTIONS
- * ============================== */
-
+/**
+ * Sets up the Ant Design mocks
+ */
 export const setupAntdMocks = () => {
   vi.mock('antd', () => createAntdMocks())
 }
 
-export const setupEnvMocks = () => {
-  vi.mock('../../utils/env-utils', () => createEnvUtilsMock())
-}
+/* ====================== */
+/* PRIVATE IMPLEMENTATION */
+/* ====================== */
 
-export const setupToolbarMocks = () => {
-  const mocks = createToolbarComponentMocks()
+const _createTestElement = (type: string, props?: Record<string, unknown>, children?: React.ReactNode) =>
+  React.createElement(type, props, children)
 
-  vi.mock('./ActionButtons', () => ({
-    ActionButtons: mocks.ActionButtons,
-  }))
-
-  vi.mock('./ProgressIndicator', () => ({
-    ProgressIndicator: mocks.ProgressIndicator,
-  }))
-}
-
-/* ==============================
- * PRIVATE IMPLEMENTATION - COMPONENT MOCKS
- * ============================== */
-
-const createProgressMock = () => (props: { percent: number; size: string; showInfo: boolean }) =>
-  createTestElement('div', {
+const _mockProgress = () => (props: { percent: number; size: string; showInfo: boolean }) =>
+  _createTestElement('div', {
     'data-testid': 'progress-bar',
     'data-percent': props.percent,
     'data-size': props.size,
     'data-show-info': props.showInfo,
   })
 
-const createTypographyMocks = () => ({
+const _mockTypography = () => ({
   Text: (props: { children: React.ReactNode; [key: string]: unknown }) => {
     const { children, ...restProps } = props
-    return createTestElement('span', { 'data-testid': 'progress-text', ...restProps }, children)
+    return _createTestElement('span', { 'data-testid': 'progress-text', ...restProps }, children)
   },
 
   Title: (props: { children: React.ReactNode; level?: number; [key: string]: unknown }) => {
     const { children, level = 1, ...restProps } = props
-    return createTestElement(`h${level}`, { 'data-testid': 'typography-title', ...restProps }, children)
+    return _createTestElement(`h${level}`, { 'data-testid': 'typography-title', ...restProps }, children)
   },
 
   Link: (props: { children: React.ReactNode; href?: string; [key: string]: unknown }) => {
     const { children, href, ...restProps } = props
-    return createTestElement('a', { href, 'data-testid': 'typography-link', ...restProps }, children)
+    return _createTestElement('a', { href, 'data-testid': 'typography-link', ...restProps }, children)
   },
 })
 
-const createTagMock = () => (props: { children: React.ReactNode; color?: string; [key: string]: unknown }) => {
+const _mockTag = () => (props: { children: React.ReactNode; color?: string; [key: string]: unknown }) => {
   const { children, color, ...restProps } = props
-  return createTestElement('span', { 'data-testid': 'tag', 'data-color': color, ...restProps }, children)
+  return _createTestElement('span', { 'data-testid': 'tag', 'data-color': color, ...restProps }, children)
 }
 
-const createAvatarMock = () => (props: { src?: string; size?: number; alt?: string; [key: string]: unknown }) => {
+const _mockAvatar = () => (props: { src?: string; size?: number; alt?: string; [key: string]: unknown }) => {
   const { src, size, alt, ...restProps } = props
-  return createTestElement('img', { src, width: size, height: size, alt, 'data-testid': 'avatar', ...restProps })
+  return _createTestElement('img', { src, width: size, height: size, alt, 'data-testid': 'avatar', ...restProps })
 }
 
-const createSkeletonMock = () => (props: { active: boolean; title: boolean; paragraph: { rows: number } }) =>
-  createTestElement(
+const _mockSkeleton = () => (props: { active: boolean; title: boolean; paragraph: { rows: number } }) =>
+  _createTestElement(
     'div',
     {
       'data-testid': 'skeleton',
@@ -172,74 +162,137 @@ const createSkeletonMock = () => (props: { active: boolean; title: boolean; para
     'Loading...',
   )
 
-const createButtonMock =
-  () => (props: { children: React.ReactNode; onClick?: () => void; size?: string; [key: string]: unknown }) => {
-    const { children, onClick, size, ...restProps } = props
-    return createTestElement('button', { onClick, 'data-size': size, ...restProps }, children)
+const _mockButton =
+  () =>
+  (props: {
+    children: React.ReactNode
+    onClick?: () => void
+    size?: string
+    type?: string
+    [key: string]: unknown
+  }) => {
+    const { children, onClick, size, type, ...restProps } = props
+
+    // Generate Ant Design-like CSS classes
+    const classes = ['ant-btn']
+    if (type) classes.push(`ant-btn-${type}`)
+    if (size === 'small') classes.push('ant-btn-sm')
+    if (size === 'large') classes.push('ant-btn-lg')
+
+    return _createTestElement(
+      'button',
+      {
+        onClick,
+        className: classes.join(' '),
+        'data-size': size,
+        'data-type': type,
+        ...restProps,
+      },
+      children,
+    )
   }
 
-const createSpaceMocks = () => ({
+const _mockInput = () => {
+  const InputComponent = (props: {
+    value?: string
+    onChange?: (e: { target: { value: string } }) => void
+    placeholder?: string
+    [key: string]: unknown
+  }) => {
+    const { value, onChange, placeholder, ...restProps } = props
+    return _createTestElement('input', {
+      type: 'text',
+      value,
+      onChange,
+      placeholder,
+      'data-testid': 'input',
+      ...restProps,
+    })
+  }
+
+  const SearchComponent = (props: {
+    value?: string
+    onChange?: (e: { target: { value: string } }) => void
+    placeholder?: string
+    allowClear?: boolean
+    [key: string]: unknown
+  }) => {
+    const { value, onChange, placeholder, allowClear, ...restProps } = props
+
+    return _createTestElement('div', { 'data-testid': 'search-wrapper' }, [
+      _createTestElement('input', {
+        key: 'search-input',
+        type: 'text',
+        value,
+        onChange,
+        placeholder,
+        'data-testid': 'search-input',
+        ...restProps,
+      }),
+      allowClear &&
+        _createTestElement(
+          'button',
+          {
+            key: 'clear-button',
+            'aria-label': 'Clear',
+            'data-testid': 'clear-button',
+            onClick: () => onChange?.({ target: { value: '' } }),
+          },
+          '×',
+        ),
+    ])
+  }
+
+  InputComponent.Search = SearchComponent
+  return InputComponent
+}
+
+const _mockSpace = () => ({
   Compact: (props: { children: React.ReactNode }) =>
-    createTestElement('div', { 'data-testid': 'space-compact' }, props.children),
+    _createTestElement('div', { 'data-testid': 'space-compact' }, props.children),
 })
 
-const createTooltipMock = () => {
+const _mockTooltip = () => {
   return (props: { children: React.ReactNode; title?: React.ReactNode; open?: boolean; placement?: string }) => {
-    const [showTooltip, setShowTooltip] = React.useState(false)
-    const shouldShowTooltip = showTooltip || props.open
+    const [isHovered, setIsHovered] = React.useState(false)
+    const isVisible = isHovered || props.open
 
-    return createTestElement(
+    // Mimic antd's DOM structure and visibility classes
+    const tooltipClasses = `ant-tooltip ${isVisible ? '' : 'ant-tooltip-hidden'}`.trim()
+
+    return _createTestElement(
       'div',
       {
         'data-testid': 'tooltip-wrapper',
-        'data-placement': props.placement,
-        'data-open': props.open,
-        onMouseEnter: () => setShowTooltip(true),
-        onMouseLeave: () => setShowTooltip(false),
+        onMouseEnter: () => setIsHovered(true),
+        onMouseLeave: () => setIsHovered(false),
       },
       [
         props.children,
-        shouldShowTooltip &&
-          props.title &&
-          createTestElement(
+        _createTestElement(
+          'div',
+          {
+            key: 'tooltip',
+            className: tooltipClasses,
+            'data-testid': 'tooltip-container',
+          },
+          _createTestElement(
             'div',
             {
-              key: 'tooltip-content',
+              className: 'ant-tooltip-inner',
               'data-testid': 'tooltip-content',
             },
             props.title,
           ),
+        ),
       ],
     )
   }
 }
 
-const createConfigProviderMock = () => (props: { children: React.ReactNode }) => props.children
+const _mockConfigProvider = () => (props: { children: React.ReactNode }) => props.children
 
-const createThemeMock = () => ({
+const _mockTheme = () => ({
   darkAlgorithm: 'dark-algorithm',
   defaultAlgorithm: 'default-algorithm',
 })
-
-const createActionButtonsMock = () => (props: { buttons: CustomButton[] }) =>
-  createTestElement(
-    'div',
-    { 'data-testid': 'action-buttons' },
-    props.buttons.map((button) =>
-      createTestElement(
-        'button',
-        {
-          key: button.key,
-          onClick: button.onClick,
-          'data-testid': `action-button-${button.key}`,
-        },
-        button.label,
-      ),
-    ),
-  )
-
-const createProgressIndicatorMock = () => (props: { current: number; total: number; suffix: string }) =>
-  createTestElement('div', { 'data-testid': 'progress-indicator' }, `${props.current} / ${props.total} ${props.suffix}`)
-
-const createTestElement = (type: string, props?: Record<string, unknown>, children?: React.ReactNode) =>
-  React.createElement(type, props, children)

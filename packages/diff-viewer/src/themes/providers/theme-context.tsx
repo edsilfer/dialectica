@@ -1,4 +1,5 @@
-import React, { Global, css } from '@emotion/react'
+import { Global, css } from '@emotion/react'
+import React, { useContext } from 'react'
 import { ConfigProvider, theme as antdTheme } from 'antd'
 import type { ThemeConfig } from 'antd/es/config-provider/context'
 import { createContext } from 'react'
@@ -64,4 +65,12 @@ export const ThemeProvider = ({ children, theme }: { children: React.ReactNode; 
       <ConfigProvider theme={antdThemeConfig}>{children}</ConfigProvider>
     </ThemeContext.Provider>
   )
+}
+
+export const useTheme = (): ThemeTokens => {
+  const context = useContext(ThemeContext)
+  if (context === undefined) {
+    throw new Error('useTheme must be used within a ThemeProvider')
+  }
+  return context
 }

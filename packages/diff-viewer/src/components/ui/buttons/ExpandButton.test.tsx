@@ -1,11 +1,20 @@
 import { fireEvent, screen } from '@testing-library/react'
+import type React from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import { createAntdMocks } from '../../../utils/test/antd-utils'
+import {
+  expectClickEventToBePassed,
+  expectClickHandlerToBeCalled,
+  expectTooltipToAppear,
+} from '../../../utils/test/components/ui/buttons/test-utils'
+import { createPropsFactory } from '../../../utils/test/generic-test-utils'
 import { render } from '../../../utils/test/render'
 import ExpandButton from './ExpandButton'
 import type { ExpandButtonProps } from './types'
 
+// ====================
 // MOCKS
+// ====================
 vi.mock('antd', () => createAntdMocks())
 
 vi.mock('../icons/ChevronDown', () => ({
@@ -16,43 +25,52 @@ vi.mock('../icons/ChevronDown', () => ({
   ),
 }))
 
-// TEST UTILITIES
-const createExpandButtonProps = (overrides: Partial<ExpandButtonProps> = {}): ExpandButtonProps => ({
+// ====================
+// LOCAL UTILITIES
+// ====================
+const createExpandButtonProps = createPropsFactory<ExpandButtonProps>({
   collapsed: false,
-  onClick: vi.fn(),
-  ...overrides,
+  onClick: vi.fn<(event: React.MouseEvent<SVGSVGElement>) => void>(),
 })
 
+const EXPAND_BUTTON_TEST_CASES: Array<{
+  description: string
+  props: Partial<ExpandButtonProps>
+  expectedTooltip: string
+  expectedTestId: string
+}> = [
+  {
+    description: 'collapsed state with default tooltip',
+    props: { collapsed: true },
+    expectedTooltip: 'Show file content',
+    expectedTestId: 'chevron-down',
+  },
+  {
+    description: 'expanded state with default tooltip',
+    props: { collapsed: false },
+    expectedTooltip: 'Hide file content',
+    expectedTestId: 'chevron-down',
+  },
+  {
+    description: 'collapsed state with custom tooltip',
+    props: { collapsed: true, tooltipTextExpand: 'Expand content' },
+    expectedTooltip: 'Expand content',
+    expectedTestId: 'chevron-down',
+  },
+  {
+    description: 'expanded state with custom tooltip',
+    props: { collapsed: false, tooltipTextCollapse: 'Collapse content' },
+    expectedTooltip: 'Collapse content',
+    expectedTestId: 'chevron-down',
+  },
+]
+
+// ====================
+// TEST CASES
+// ====================
 describe('ExpandButton', () => {
   describe('rendering scenarios', () => {
-    const testCases: Array<{
-      description: string
-      props: Partial<ExpandButtonProps>
-      expectedTooltip: string
-    }> = [
-      {
-        description: 'collapsed state with default props',
-        props: { collapsed: true },
-        expectedTooltip: 'Show file content',
-      },
-      {
-        description: 'expanded state with default props',
-        props: { collapsed: false },
-        expectedTooltip: 'Hide file content',
-      },
-      {
-        description: 'collapsed state with custom tooltip',
-        props: { collapsed: true, tooltipTextExpand: 'Expand content' },
-        expectedTooltip: 'Expand content',
-      },
-      {
-        description: 'expanded state with custom tooltip',
-        props: { collapsed: false, tooltipTextCollapse: 'Collapse content' },
-        expectedTooltip: 'Collapse content',
-      },
-    ]
-
-    testCases.forEach(({ description, props, expectedTooltip }) => {
+    EXPAND_BUTTON_TEST_CASES.forEach(({ description, props, expectedTooltip, expectedTestId }) => {
       it(`given ${description}, when rendered, expect correct state`, async () => {
         // GIVEN
         const buttonProps = createExpandButtonProps(props)
@@ -61,14 +79,14 @@ describe('ExpandButton', () => {
         render(<ExpandButton {...buttonProps} />)
 
         // EXPECT - Chevron is visible and has expand-button class
-        const chevron = screen.getByTestId('chevron-down')
+        const chevron = screen.getByTestId(expectedTestId)
         expect(chevron).toBeInTheDocument()
         expect(chevron).toHaveClass('expand-button')
 
         // Verify tooltip appears on hover
         const tooltipWrapper = screen.getByTestId('tooltip-wrapper')
         fireEvent.mouseEnter(tooltipWrapper)
-        expect(await screen.findByText(expectedTooltip)).toBeInTheDocument()
+        await expectTooltipToAppear(screen, expectedTooltip)
       })
     })
   })
@@ -112,8 +130,8 @@ describe('ExpandButton', () => {
       fireEvent.click(screen.getByTestId('chevron-down'))
 
       // EXPECT
-      expect(mockOnClick).toHaveBeenCalledOnce()
-      expect(mockOnClick).toHaveBeenCalledWith(expect.any(Object))
+      expectClickHandlerToBeCalled(mockOnClick, 1)
+      expectClickEventToBePassed(mockOnClick)
     })
 
     it('given onClick handler, when clicked multiple times, expect handler called each time', () => {
@@ -129,7 +147,7 @@ describe('ExpandButton', () => {
       fireEvent.click(chevron)
 
       // EXPECT
-      expect(mockOnClick).toHaveBeenCalledTimes(3)
+      expectClickHandlerToBeCalled(mockOnClick, 3)
     })
 
     it('given no onClick handler, when clicked, expect no error', () => {
@@ -172,7 +190,7 @@ describe('ExpandButton', () => {
           // WHEN - Initial state
           const tooltipWrapper = screen.getByTestId('tooltip-wrapper')
           fireEvent.mouseEnter(tooltipWrapper)
-          expect(await screen.findByText(expectedInitialTooltip)).toBeInTheDocument()
+          await expectTooltipToAppear(screen, expectedInitialTooltip)
 
           fireEvent.mouseLeave(tooltipWrapper)
 
@@ -181,7 +199,7 @@ describe('ExpandButton', () => {
           fireEvent.mouseEnter(tooltipWrapper)
 
           // EXPECT
-          expect(await screen.findByText(expectedNewTooltip)).toBeInTheDocument()
+          await expectTooltipToAppear(screen, expectedNewTooltip)
         })
       },
     )
@@ -198,13 +216,12 @@ describe('ExpandButton', () => {
         tooltipTextCollapse: customCollapseText,
       })
 
-      // WHEN - Collapsed state
       const { rerender } = render(<ExpandButton {...props} />)
+
+      // WHEN - Collapsed state
       const tooltipWrapper = screen.getByTestId('tooltip-wrapper')
       fireEvent.mouseEnter(tooltipWrapper)
-
-      // EXPECT - Custom expand tooltip
-      expect(await screen.findByText(customExpandText)).toBeInTheDocument()
+      await expectTooltipToAppear(screen, customExpandText)
 
       fireEvent.mouseLeave(tooltipWrapper)
 
@@ -212,87 +229,8 @@ describe('ExpandButton', () => {
       rerender(<ExpandButton {...props} collapsed={false} />)
       fireEvent.mouseEnter(tooltipWrapper)
 
-      // EXPECT - Custom collapse tooltip
-      expect(await screen.findByText(customCollapseText)).toBeInTheDocument()
-    })
-
-    it('given partial custom tooltip texts, when rendered, expect custom and default tooltips', async () => {
-      // GIVEN
-      const customExpandText = 'Custom expand only'
-      const props = createExpandButtonProps({
-        collapsed: true,
-        tooltipTextExpand: customExpandText,
-      })
-
-      // WHEN - Collapsed state with custom expand text
-      const { rerender } = render(<ExpandButton {...props} />)
-      const tooltipWrapper = screen.getByTestId('tooltip-wrapper')
-      fireEvent.mouseEnter(tooltipWrapper)
-
-      // EXPECT - Custom expand tooltip
-      expect(await screen.findByText(customExpandText)).toBeInTheDocument()
-
-      fireEvent.mouseLeave(tooltipWrapper)
-
-      // WHEN - Expanded state with default collapse text
-      rerender(<ExpandButton {...props} collapsed={false} />)
-      fireEvent.mouseEnter(tooltipWrapper)
-
-      // EXPECT - Default collapse tooltip
-      expect(await screen.findByText('Hide file content')).toBeInTheDocument()
-    })
-  })
-
-  describe('visual styling behavior', () => {
-    it('given collapsed state, when rendered, expect expand-button class applied', () => {
-      // GIVEN
-      const props = createExpandButtonProps({ collapsed: true })
-
-      // WHEN
-      render(<ExpandButton {...props} />)
-
       // EXPECT
-      const chevron = screen.getByTestId('chevron-down')
-      expect(chevron).toHaveClass('expand-button')
-    })
-
-    it('given expanded state, when rendered, expect expand-button class applied', () => {
-      // GIVEN
-      const props = createExpandButtonProps({ collapsed: false })
-
-      // WHEN
-      render(<ExpandButton {...props} />)
-
-      // EXPECT
-      const chevron = screen.getByTestId('chevron-down')
-      expect(chevron).toHaveClass('expand-button')
-    })
-  })
-
-  describe('tooltip wrapping', () => {
-    it('given button with tooltip, when rendered, expect tooltip wrapper present', () => {
-      // GIVEN
-      const props = createExpandButtonProps()
-
-      // WHEN
-      render(<ExpandButton {...props} />)
-
-      // EXPECT
-      expect(screen.getByTestId('tooltip-wrapper')).toBeInTheDocument()
-    })
-
-    it('given button without tooltips, when rendered, expect tooltip wrapper still present', () => {
-      // GIVEN
-      const props = createExpandButtonProps({
-        tooltipTextExpand: undefined,
-        tooltipTextCollapse: undefined,
-      })
-
-      // WHEN
-      render(<ExpandButton {...props} />)
-
-      // EXPECT
-      expect(screen.getByTestId('tooltip-wrapper')).toBeInTheDocument()
+      await expectTooltipToAppear(screen, customCollapseText)
     })
   })
 })

@@ -1,34 +1,30 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { useCodePanelConfig } from '../..'
-import {
-  createAntdMocks,
-  createCustomButton,
-  createMockCodePanelConfig,
-  createToolbarComponentMocks,
-  createToolbarWidget,
-} from '../../utils/test/antd-utils'
+import { createCustomButton, createMockCodePanelConfig, createToolbarWidget } from '../../utils/test/antd-utils'
 import { Toolbar } from './DefaultToolbar'
+import type { CustomButton } from './types'
 
 // MOCKS
-vi.mock('../..', () => ({
-  useCodePanelConfig: vi.fn(),
-}))
-
 vi.mock('./ActionButtons', () => ({
-  ActionButtons: createToolbarComponentMocks().ActionButtons,
+  ActionButtons: (props: { buttons: CustomButton[] }) => (
+    <div data-testid="action-buttons">
+      {props.buttons.map((button) => (
+        <button key={button.key} onClick={button.onClick} data-testid={`action-button-${button.key}`}>
+          {button.label}
+        </button>
+      ))}
+    </div>
+  ),
 }))
 
 vi.mock('./ProgressIndicator', () => ({
-  ProgressIndicator: createToolbarComponentMocks().ProgressIndicator,
+  ProgressIndicator: (props: { current: number; total: number; suffix: string }) => (
+    <div data-testid="progress-indicator">
+      {props.current} / {props.total} {props.suffix}
+    </div>
+  ),
 }))
-
-vi.mock('antd', () => createAntdMocks())
-
-beforeEach(() => {
-  vi.clearAllMocks()
-  vi.mocked(useCodePanelConfig).mockReturnValue(createMockCodePanelConfig())
-})
 
 type ButtonActionTestCase = {
   /** The name of the test case */

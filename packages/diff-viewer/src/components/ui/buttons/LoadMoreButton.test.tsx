@@ -1,11 +1,19 @@
 import { fireEvent, screen } from '@testing-library/react'
+import type React from 'react'
 import { describe, expect, it, vi } from 'vitest'
+import {
+  expectClickHandlerToBeCalled,
+  expectTooltipToAppear,
+} from '../../../utils/test/components/ui/buttons/test-utils'
+import { createPropsFactory } from '../../../utils/test/generic-test-utils'
 import { render } from '../../../utils/test/render'
+import type { HunkDirection } from '../../code-panel/components/types'
 import LoadMoreButton from './LoadMoreButton'
 import type { LoadMoreButtonProps } from './types'
-import type { HunkDirection } from '../../code-panel/components/types'
 
-// MOCK
+// ====================
+// MOCKS
+// ====================
 vi.mock('../icons/LoadMoreLines', () => ({
   default: ({ direction, width, height }: { direction: string; width: number; height: number }) => (
     <div data-testid="load-more-icon" data-direction={direction} data-width={width} data-height={height}>
@@ -14,40 +22,135 @@ vi.mock('../icons/LoadMoreLines', () => ({
   ),
 }))
 
-const createLoadMoreButtonProps = (overrides: Partial<LoadMoreButtonProps> = {}): LoadMoreButtonProps => ({
-  direction: 'up',
-  ...overrides,
+// ====================
+// LOCAL UTILITIES
+// ====================
+const createLoadMoreButtonProps = createPropsFactory<LoadMoreButtonProps>({
+  direction: 'up' as const,
+  onClick: vi.fn<(event: React.MouseEvent, direction: HunkDirection) => void>(),
 })
 
+const LOAD_MORE_BUTTON_TEST_CASES: Array<{
+  description: string
+  props: Partial<LoadMoreButtonProps>
+  expectedTooltip: string
+  expectedIconCount: number
+  expectedDirections: string[]
+}> = [
+  {
+    description: 'up direction',
+    props: { direction: 'up' },
+    expectedTooltip: 'Expand up',
+    expectedIconCount: 1,
+    expectedDirections: ['up'],
+  },
+  {
+    description: 'down direction',
+    props: { direction: 'down' },
+    expectedTooltip: 'Expand down',
+    expectedIconCount: 1,
+    expectedDirections: ['down'],
+  },
+  {
+    description: 'out direction',
+    props: { direction: 'out' },
+    expectedTooltip: 'Expand up all',
+    expectedIconCount: 1,
+    expectedDirections: ['out'],
+  },
+  {
+    description: 'in direction - multiple icons',
+    props: { direction: 'in' },
+    expectedTooltip: 'Multiple tooltips',
+    expectedIconCount: 2,
+    expectedDirections: ['down', 'up'],
+  },
+  {
+    description: 'in_up direction - multiple icons',
+    props: { direction: 'in_up' },
+    expectedTooltip: 'Multiple tooltips',
+    expectedIconCount: 2,
+    expectedDirections: ['down', 'up'],
+  },
+  {
+    description: 'in_down direction - multiple icons',
+    props: { direction: 'in_down' },
+    expectedTooltip: 'Multiple tooltips',
+    expectedIconCount: 2,
+    expectedDirections: ['down', 'up'],
+  },
+]
+
+// ====================
+// TEST CASES
+// ====================
 describe('LoadMoreButton', () => {
-  describe('single direction rendering', () => {
+  describe('rendering scenarios', () => {
+    LOAD_MORE_BUTTON_TEST_CASES.forEach(({ description, props, expectedIconCount, expectedDirections }) => {
+      if (expectedIconCount === 1) {
+        // Single direction cases
+        it(`given ${description}, when rendered, expect single icon with correct properties`, async () => {
+          // GIVEN
+          const buttonProps = createLoadMoreButtonProps(props)
+
+          // WHEN
+          render(<LoadMoreButton {...buttonProps} />)
+
+          // EXPECT
+          const icons = screen.getAllByTestId('load-more-icon')
+          expect(icons).toHaveLength(expectedIconCount)
+          expect(icons[0]).toHaveAttribute('data-direction', expectedDirections[0])
+
+          // Test tooltip based on direction
+          const expectedTooltip =
+            props.direction === 'up'
+              ? 'Expand up'
+              : props.direction === 'down'
+                ? 'Expand down'
+                : props.direction === 'out'
+                  ? 'Expand up all'
+                  : 'Unknown'
+
+          fireEvent.mouseOver(icons[0].parentElement!)
+          await expectTooltipToAppear(screen, expectedTooltip)
+        })
+      } else {
+        // Multi-direction cases
+        it(`given ${description}, when rendered, expect multiple icons with correct tooltips`, async () => {
+          // GIVEN
+          const buttonProps = createLoadMoreButtonProps(props)
+
+          // WHEN
+          render(<LoadMoreButton {...buttonProps} />)
+
+          // EXPECT
+          const icons = screen.getAllByTestId('load-more-icon')
+          expect(icons).toHaveLength(expectedIconCount)
+
+          expect(icons[0]).toHaveAttribute('data-direction', expectedDirections[0])
+          expect(icons[1]).toHaveAttribute('data-direction', expectedDirections[1])
+
+          fireEvent.mouseOver(icons[0].parentElement!)
+          await expectTooltipToAppear(screen, 'Expand down')
+
+          fireEvent.mouseOver(icons[1].parentElement!)
+          await expectTooltipToAppear(screen, 'Expand up')
+        })
+      }
+    })
+  })
+
+  describe('click interactions', () => {
     const singleDirectionCases: Array<{
       direction: HunkDirection
-      expectedTooltip: string
       expectedClickDirection: HunkDirection
     }> = [
-      { direction: 'up', expectedTooltip: 'Expand up', expectedClickDirection: 'up' },
-      { direction: 'down', expectedTooltip: 'Expand down', expectedClickDirection: 'down' },
-      { direction: 'out', expectedTooltip: 'Expand up all', expectedClickDirection: 'out' },
+      { direction: 'up', expectedClickDirection: 'up' },
+      { direction: 'down', expectedClickDirection: 'down' },
+      { direction: 'out', expectedClickDirection: 'out' },
     ]
 
-    singleDirectionCases.forEach(({ direction, expectedTooltip, expectedClickDirection }) => {
-      it(`given direction ${direction}, when rendered, expect single icon with correct tooltip`, async () => {
-        // GIVEN
-        const props = createLoadMoreButtonProps({ direction })
-
-        // WHEN
-        render(<LoadMoreButton {...props} />)
-
-        // EXPECT
-        const icon = screen.getByTestId('load-more-icon')
-        expect(icon).toBeInTheDocument()
-        expect(icon).toHaveAttribute('data-direction', direction)
-
-        fireEvent.mouseOver(icon.parentElement!)
-        expect(await screen.findByText(expectedTooltip)).toBeInTheDocument()
-      })
-
+    singleDirectionCases.forEach(({ direction, expectedClickDirection }) => {
       it(`given direction ${direction}, when clicked, expect onClick called with correct direction`, () => {
         // GIVEN
         const mockOnClick = vi.fn()
@@ -58,37 +161,14 @@ describe('LoadMoreButton', () => {
         fireEvent.click(screen.getByTestId('load-more-icon').parentElement!)
 
         // EXPECT
-        expect(mockOnClick).toHaveBeenCalledOnce()
+        expectClickHandlerToBeCalled(mockOnClick, 1)
         expect(mockOnClick).toHaveBeenCalledWith(expect.any(Object), expectedClickDirection)
       })
     })
-  })
 
-  describe('multi-direction rendering', () => {
     const multiDirectionCases: HunkDirection[] = ['in', 'in_up', 'in_down']
 
     multiDirectionCases.forEach((direction) => {
-      it(`given direction ${direction}, when rendered, expect two icons with correct tooltips`, async () => {
-        // GIVEN
-        const props = createLoadMoreButtonProps({ direction })
-
-        // WHEN
-        render(<LoadMoreButton {...props} />)
-
-        // EXPECT
-        const icons = screen.getAllByTestId('load-more-icon')
-        expect(icons).toHaveLength(2)
-
-        expect(icons[0]).toHaveAttribute('data-direction', 'down')
-        expect(icons[1]).toHaveAttribute('data-direction', 'up')
-
-        fireEvent.mouseOver(icons[0].parentElement!)
-        expect(await screen.findByText('Expand down')).toBeInTheDocument()
-
-        fireEvent.mouseOver(icons[1].parentElement!)
-        expect(await screen.findByText('Expand up')).toBeInTheDocument()
-      })
-
       it(`given direction ${direction}, when icons clicked, expect onClick called with in_down and in_up`, () => {
         // GIVEN
         const mockOnClick = vi.fn()
@@ -102,7 +182,7 @@ describe('LoadMoreButton', () => {
         fireEvent.click(icons[1].parentElement!)
 
         // EXPECT
-        expect(mockOnClick).toHaveBeenCalledTimes(2)
+        expectClickHandlerToBeCalled(mockOnClick, 2)
         expect(mockOnClick).toHaveBeenNthCalledWith(1, expect.any(Object), 'in_down')
         expect(mockOnClick).toHaveBeenNthCalledWith(2, expect.any(Object), 'in_up')
       })
@@ -155,7 +235,7 @@ describe('LoadMoreButton', () => {
   describe('event handling', () => {
     it('given no onClick handler, when clicked, expect no errors', () => {
       // GIVEN
-      const props = createLoadMoreButtonProps({ direction: 'up' })
+      const props = createLoadMoreButtonProps({ direction: 'up', onClick: undefined })
 
       // WHEN
       render(<LoadMoreButton {...props} />)
@@ -176,6 +256,7 @@ describe('LoadMoreButton', () => {
       fireEvent.click(screen.getByTestId('load-more-icon').parentElement!)
 
       // EXPECT
+      expectClickHandlerToBeCalled(mockOnClick, 1)
       expect(mockOnClick).toHaveBeenCalledWith(expect.objectContaining({ type: 'click' }), 'out')
     })
   })
@@ -191,8 +272,7 @@ describe('LoadMoreButton', () => {
 
       // EXPECT
       fireEvent.mouseOver(icon.parentElement!)
-      const tooltip = await screen.findByText('Expand up')
-      expect(tooltip).toBeInTheDocument()
+      await expectTooltipToAppear(screen, 'Expand up')
     })
 
     it('given multi-direction, when rendered, expect both tooltips to be accessible', async () => {
@@ -205,10 +285,10 @@ describe('LoadMoreButton', () => {
 
       // EXPECT
       fireEvent.mouseOver(icons[0].parentElement!)
-      expect(await screen.findByText('Expand down')).toBeInTheDocument()
+      await expectTooltipToAppear(screen, 'Expand down')
 
       fireEvent.mouseOver(icons[1].parentElement!)
-      expect(await screen.findByText('Expand up')).toBeInTheDocument()
+      await expectTooltipToAppear(screen, 'Expand up')
     })
   })
 })

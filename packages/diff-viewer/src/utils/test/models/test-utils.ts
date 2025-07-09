@@ -1,13 +1,15 @@
-import type { RawFile, RawChunk } from 'diffparser'
+import type { RawChunk, RawFile } from 'diffparser'
 import { FileDiff } from '../../../models/FileDiff'
 import { Hunk } from '../../../models/Hunk'
-import { LineDiff } from '../../../models/LineDiff'
 import type { DiffLineType } from '../../../models/LineDiff'
+import { LineDiff } from '../../../models/LineDiff'
 
-// ====================
-// RAW DATA FACTORIES
-// ====================
-
+/**
+ * Creates a mock RawFile with default values and optional overrides
+ *
+ * @param overrides - Optional overrides for the default values
+ * @returns           A mock RawFile with default values and optional overrides
+ */
 export const createRawFile = (overrides: Partial<RawFile> = {}): RawFile => ({
   from: 'src/test.ts',
   to: 'src/test.ts',
@@ -17,6 +19,12 @@ export const createRawFile = (overrides: Partial<RawFile> = {}): RawFile => ({
   ...overrides,
 })
 
+/**
+ * Creates a mock RawChunk with default values and optional overrides
+ *
+ * @param overrides - Optional overrides for the default values
+ * @returns           A mock RawChunk with default values and optional overrides
+ */
 export const createRawChunk = (overrides: Partial<RawChunk> = {}): RawChunk => ({
   content: '@@ -1,3 +1,3 @@',
   changes: [
@@ -32,6 +40,15 @@ export const createRawChunk = (overrides: Partial<RawChunk> = {}): RawChunk => (
   ...overrides,
 })
 
+/**
+ * Creates a mock RawLine with default values and optional overrides
+ *
+ * @param content - The content of the line
+ * @param type    - The type of the line
+ * @param oldLine - The old line number
+ * @param newLine - The new line number
+ * @returns           A mock RawLine with default values and optional overrides
+ */
 export const createRawLine = (content: string, type: 'add' | 'del' | 'normal', oldLine?: number, newLine?: number) => ({
   content,
   type,
@@ -39,10 +56,15 @@ export const createRawLine = (content: string, type: 'add' | 'del' | 'normal', o
   newLine,
 })
 
-// ====================
-// MODEL FACTORIES
-// ====================
-
+/**
+ * Creates a mock LineDiff with default values and optional overrides
+ *
+ * @param content - The content of the line
+ * @param type    - The type of the line
+ * @param oldLine - The old line number
+ * @param newLine - The new line number
+ * @returns           A mock LineDiff with default values and optional overrides
+ */
 export const createLineDiff = (
   content: string,
   type: 'context' | 'add' | 'delete' | 'empty' | 'hunk',
@@ -56,6 +78,12 @@ export const createLineDiff = (
     lineNumberNew,
   }) as LineDiff
 
+/**
+ * Creates a mock LineDiff with default values and optional overrides
+ *
+ * @param overrides - Optional overrides for the default values
+ * @returns           A mock LineDiff with default values and optional overrides
+ */
 export const createMockLineDiff = (overrides: Partial<LineDiff> = {}): LineDiff => ({
   content: 'test line',
   type: 'context',
@@ -64,6 +92,12 @@ export const createMockLineDiff = (overrides: Partial<LineDiff> = {}): LineDiff 
   ...overrides,
 })
 
+/**
+ * Creates a mock Hunk with default values and optional overrides
+ *
+ * @param overrides - Optional overrides for the default values
+ * @returns           A mock Hunk with default values and optional overrides
+ */
 export const createMockHunk = (
   overrides: Partial<{
     oldStart: number
@@ -83,6 +117,12 @@ export const createMockHunk = (
     overrides.filePath ?? 'test.ts',
   )
 
+/**
+ * Creates a mock FileDiff with default values and optional overrides
+ *
+ * @param overrides - Optional overrides for the default values
+ * @returns           A mock FileDiff with default values and optional overrides
+ */
 export const createMockFileDiff = (
   overrides: Partial<{
     oldPath: string
@@ -120,32 +160,31 @@ export const createMockFileDiff = (
   return new FileDiff(defaultProps)
 }
 
-// ====================
-// COMMON TEST DATA
-// ====================
-
+// Sample data with different line types
 export const SIMPLE_CHANGES: LineDiff[] = [
   createLineDiff('+added line', 'add', null, 1),
   createLineDiff(' unchanged line', 'context', 2, 2),
 ]
 
+// Sample data with header changes
 export const HEADER_CHANGES: LineDiff[] = [
   createLineDiff('@@ -58,11 +58,10 @@ import type {', 'context', 58, 58),
   createLineDiff('   FulfilledThenable,', 'context', 59, 59),
   createLineDiff('   RejectedThenable,', 'context', 60, 60),
 ]
 
+// Sample data with only header changes
 export const HEADER_ONLY_CHANGES: LineDiff[] = [createLineDiff('@@ -100,2 +100,2 @@ lone header', 'context', 100, 100)]
 
+// Sample data with shuffled changes
 export const SHUFFLED_CHANGES: LineDiff[] = [
   createLineDiff(' line 2', 'context', 2, 2),
   createLineDiff(' line 1', 'context', 1, 1),
 ]
 
-// ====================
-// TYPE TEST CASES
-// ====================
-
+/**
+ * Test cases for different line types
+ */
 export const LINE_TYPE_TEST_CASES: Array<{
   description: string
   rawType: 'add' | 'del' | 'normal'
@@ -168,6 +207,9 @@ export const LINE_TYPE_TEST_CASES: Array<{
   },
 ]
 
+/**
+ * Test cases for different content processing scenarios
+ */
 export const CONTENT_PROCESSING_TEST_CASES: Array<{
   description: string
   rawContent: string

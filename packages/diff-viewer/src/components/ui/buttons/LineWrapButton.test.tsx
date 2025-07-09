@@ -1,86 +1,70 @@
 import { fireEvent, screen } from '@testing-library/react'
+import type React from 'react'
 import { describe, expect, it, vi } from 'vitest'
+import {
+  expectClickEventToBePassed,
+  expectClickHandlerToBeCalled,
+  expectTooltipToAppear,
+} from '../../../utils/test/components/ui/buttons/test-utils'
+import { createPropsFactory } from '../../../utils/test/generic-test-utils'
 import { render } from '../../../utils/test/render'
 import LineWrapButton from './LineWrapButton'
 import type { WrapLinesButtonProps } from './types'
 
-// UTILS
-const createProps = (overrides: Partial<WrapLinesButtonProps> = {}): WrapLinesButtonProps => ({
+// ====================
+// LOCAL UTILITIES
+// ====================
+const createWrapLinesButtonProps = createPropsFactory<WrapLinesButtonProps>({
   isWrapped: false,
-  onClick: vi.fn(),
-  ...overrides,
+  onClick: vi.fn<(event: React.MouseEvent<SVGSVGElement>) => void>(),
 })
 
-describe('LineWrapButton', () => {
-  describe('icon rendering scenarios', () => {
-    const testCases: Array<{
-      description: string
-      isWrapped: boolean
-      expectedTestId: string
-    }> = [
-      {
-        description: 'unwrapped state',
-        isWrapped: false,
-        expectedTestId: 'unwrap-lines-icon',
-      },
-      {
-        description: 'wrapped state',
-        isWrapped: true,
-        expectedTestId: 'wrap-lines-icon',
-      },
-    ]
+const WRAP_LINES_BUTTON_TEST_CASES: Array<{
+  description: string
+  props: Partial<WrapLinesButtonProps>
+  expectedTooltip: string
+  expectedTestId: string
+}> = [
+  {
+    description: 'unwrapped state with default tooltip',
+    props: { isWrapped: false },
+    expectedTooltip: 'Wrap lines',
+    expectedTestId: 'unwrap-lines-icon',
+  },
+  {
+    description: 'wrapped state with default tooltip',
+    props: { isWrapped: true },
+    expectedTooltip: 'Unwrap lines',
+    expectedTestId: 'wrap-lines-icon',
+  },
+]
 
-    testCases.forEach(({ description, isWrapped, expectedTestId }) => {
-      it(`given ${description}, when rendered, expect correct icon displayed`, () => {
+// ====================
+// TEST CASES
+// ====================
+describe('LineWrapButton', () => {
+  describe('rendering scenarios', () => {
+    WRAP_LINES_BUTTON_TEST_CASES.forEach(({ description, props, expectedTooltip, expectedTestId }) => {
+      it(`given ${description}, when rendered, expect correct icon and tooltip`, async () => {
         // GIVEN
-        const props = createProps({ isWrapped })
+        const buttonProps = createWrapLinesButtonProps(props)
 
         // WHEN
-        render(<LineWrapButton {...props} />)
+        render(<LineWrapButton {...buttonProps} />)
 
-        // EXPECT
+        // EXPECT - Correct icon is displayed
         const icon = screen.getByTestId(expectedTestId)
         expect(icon).toBeInTheDocument()
-      })
-    })
-  })
 
-  describe('tooltip text scenarios', () => {
-    const testCases: Array<{
-      description: string
-      isWrapped: boolean
-      expectedTooltip: string
-    }> = [
-      {
-        description: 'unwrapped state',
-        isWrapped: false,
-        expectedTooltip: 'Wrap lines',
-      },
-      {
-        description: 'wrapped state',
-        isWrapped: true,
-        expectedTooltip: 'Unwrap lines',
-      },
-    ]
-
-    testCases.forEach(({ description, isWrapped, expectedTooltip }) => {
-      it(`given ${description}, when hovered, expect correct tooltip text`, async () => {
-        // GIVEN
-        const props = createProps({ isWrapped })
-
-        // WHEN
-        render(<LineWrapButton {...props} />)
-        const icon = screen.getByTestId(isWrapped ? 'wrap-lines-icon' : 'unwrap-lines-icon')
+        // EXPECT - Correct tooltip appears on hover
         fireEvent.mouseOver(icon)
-
-        // EXPECT
-        expect(await screen.findByText(expectedTooltip)).toBeInTheDocument()
+        await expectTooltipToAppear(screen, expectedTooltip)
       })
     })
   })
 
-  describe('size prop scenarios', () => {
-    const testCases: Array<{
+  describe('size configuration scenarios', () => {
+    const sizeCases: Array<{
       description: string
       size: number | undefined
       expectedSize: number
@@ -102,10 +86,10 @@ describe('LineWrapButton', () => {
       },
     ]
 
-    testCases.forEach(({ description, size, expectedSize }) => {
+    sizeCases.forEach(({ description, size, expectedSize }) => {
       it(`given ${description}, when rendered, expect icon has correct size`, () => {
         // GIVEN
-        const props = createProps({ size })
+        const props = createWrapLinesButtonProps({ size })
 
         // WHEN
         render(<LineWrapButton {...props} />)
@@ -122,7 +106,7 @@ describe('LineWrapButton', () => {
     it('given unwrapped state, when clicked, expect onClick called with event', () => {
       // GIVEN
       const mockOnClick = vi.fn()
-      const props = createProps({ isWrapped: false, onClick: mockOnClick })
+      const props = createWrapLinesButtonProps({ isWrapped: false, onClick: mockOnClick })
 
       // WHEN
       render(<LineWrapButton {...props} />)
@@ -130,14 +114,14 @@ describe('LineWrapButton', () => {
       fireEvent.click(icon)
 
       // EXPECT
-      expect(mockOnClick).toHaveBeenCalledOnce()
-      expect(mockOnClick).toHaveBeenCalledWith(expect.any(Object))
+      expectClickHandlerToBeCalled(mockOnClick, 1)
+      expectClickEventToBePassed(mockOnClick)
     })
 
     it('given wrapped state, when clicked, expect onClick called with event', () => {
       // GIVEN
       const mockOnClick = vi.fn()
-      const props = createProps({ isWrapped: true, onClick: mockOnClick })
+      const props = createWrapLinesButtonProps({ isWrapped: true, onClick: mockOnClick })
 
       // WHEN
       render(<LineWrapButton {...props} />)
@@ -145,14 +129,14 @@ describe('LineWrapButton', () => {
       fireEvent.click(icon)
 
       // EXPECT
-      expect(mockOnClick).toHaveBeenCalledOnce()
-      expect(mockOnClick).toHaveBeenCalledWith(expect.any(Object))
+      expectClickHandlerToBeCalled(mockOnClick, 1)
+      expectClickEventToBePassed(mockOnClick)
     })
 
     it('given multiple clicks, when clicked repeatedly, expect onClick called multiple times', () => {
       // GIVEN
       const mockOnClick = vi.fn()
-      const props = createProps({ onClick: mockOnClick })
+      const props = createWrapLinesButtonProps({ onClick: mockOnClick })
 
       // WHEN
       render(<LineWrapButton {...props} />)
@@ -162,14 +146,49 @@ describe('LineWrapButton', () => {
       fireEvent.click(icon)
 
       // EXPECT
-      expect(mockOnClick).toHaveBeenCalledTimes(3)
+      expectClickHandlerToBeCalled(mockOnClick, 3)
+    })
+
+    it('given no onClick handler, when clicked, expect no error', () => {
+      // GIVEN
+      const props = createWrapLinesButtonProps({ onClick: undefined })
+
+      // WHEN
+      render(<LineWrapButton {...props} />)
+
+      // EXPECT
+      expect(() => fireEvent.click(screen.getByTestId('unwrap-lines-icon'))).not.toThrow()
+    })
+  })
+
+  describe('state transitions', () => {
+    it('given state changes from unwrapped to wrapped, when rerendered, expect correct icon and tooltip updates', async () => {
+      // GIVEN
+      const props = createWrapLinesButtonProps({ isWrapped: false })
+      const { rerender } = render(<LineWrapButton {...props} />)
+
+      // WHEN - Initial unwrapped state
+      let icon = screen.getByTestId('unwrap-lines-icon')
+      expect(icon).toBeInTheDocument()
+      fireEvent.mouseOver(icon)
+      await expectTooltipToAppear(screen, 'Wrap lines')
+
+      // WHEN - Change to wrapped state
+      fireEvent.mouseOut(icon)
+      rerender(<LineWrapButton {...props} isWrapped={true} />)
+
+      // EXPECT - Wrapped state
+      icon = screen.getByTestId('wrap-lines-icon')
+      expect(icon).toBeInTheDocument()
+      fireEvent.mouseOver(icon)
+      await expectTooltipToAppear(screen, 'Unwrap lines')
     })
   })
 
   describe('styling scenarios', () => {
     it('given component rendered, when inspected, expect theme colors applied', () => {
       // GIVEN
-      const props = createProps()
+      const props = createWrapLinesButtonProps()
 
       // WHEN
       render(<LineWrapButton {...props} />)

@@ -1,6 +1,6 @@
 import { act, waitFor } from '@testing-library/react'
-import React, { useEffect } from 'react'
-import { describe, expect, it } from 'vitest'
+import React from 'react'
+import { describe, expect, it, vi } from 'vitest'
 import { buildTree, listDirPaths } from '../../../utils/node-utils'
 import { SAMPLE_FILE_DIFFS } from '../../../utils/test/__fixtures__/file-diff-fixtures'
 import { render } from '../../../utils/test/render'
@@ -8,8 +8,10 @@ import { FileExplorerConfig } from '../types'
 import { filterFiles, listExpandedDirs } from './context-utils'
 import { FileExplorerConfigProvider } from './file-explorer-context'
 import { FSTreeContextProvider, useFileExplorerContext } from './fstree-context'
+import { renderWithContext } from '../../../utils/test/context-test-utils'
+import { ParsedDiff } from '../../../models/ParsedDiff'
 
-const DIFF = { files: SAMPLE_FILE_DIFFS }
+const DIFF: ParsedDiff = { files: SAMPLE_FILE_DIFFS, rawContent: '' }
 
 const BASE_CFG: FileExplorerConfig = {
   indentPx: 16,
@@ -17,31 +19,17 @@ const BASE_CFG: FileExplorerConfig = {
   startExpanded: false,
 }
 
-const ContextSpy: React.FC<{
-  cb: (ctx: ReturnType<typeof useFileExplorerContext>) => void
-}> = ({ cb }) => {
-  const ctx = useFileExplorerContext()
-  useEffect(() => {
-    cb(ctx)
-  }, [ctx, cb])
-  return null
-}
+const TestWrapper: React.FC<{ children?: React.ReactNode; config: Partial<FileExplorerConfig> }> = ({
+  children,
+  config,
+}) => (
+  <FileExplorerConfigProvider config={{ ...BASE_CFG, ...config }}>
+    <FSTreeContextProvider diff={DIFF}>{children}</FSTreeContextProvider>
+  </FileExplorerConfigProvider>
+)
 
-const renderCtx = async (cfg: Partial<FileExplorerConfig> = {}) => {
-  let latest: ReturnType<typeof useFileExplorerContext> | undefined
-  render(
-    <FileExplorerConfigProvider config={{ ...BASE_CFG, ...cfg }}>
-      <FSTreeContextProvider diff={DIFF}>
-        <ContextSpy
-          cb={(c) => {
-            latest = c
-          }}
-        />
-      </FSTreeContextProvider>
-    </FileExplorerConfigProvider>,
-  )
-  await waitFor(() => expect(latest).toBeDefined())
-  return () => latest as ReturnType<typeof useFileExplorerContext>
+const renderCtx = (config: Partial<FileExplorerConfig> = {}) => {
+  return renderWithContext(TestWrapper, useFileExplorerContext, { config, children: null })
 }
 
 describe('FileExplorerProvider', () => {
@@ -58,7 +46,9 @@ describe('FileExplorerProvider', () => {
     const getCtx = await renderCtx()
     act(() => getCtx().setSearchQuery('Button'))
 
-    await waitFor(() => getCtx().expandedDirs.size > 0)
+    await waitFor(() => {
+      expect(getCtx().expandedDirs.size > 0).toBe(true)
+    })
 
     const expectedDirs = listExpandedDirs(buildTree(filterFiles(SAMPLE_FILE_DIFFS, 'Button')))
     expect(getCtx().expandedDirs).toEqual(expectedDirs)
@@ -70,6 +60,9 @@ describe('FileExplorerProvider', () => {
       useFileExplorerContext()
       return null
     }
+    // Suppress console.error for this test because we expect a throw
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => ({}))
     expect(() => render(<Consumer />)).toThrow(/useFileExplorerContext/)
+    consoleErrorSpy.mockRestore()
   })
 })

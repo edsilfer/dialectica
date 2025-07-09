@@ -1,13 +1,11 @@
 import { fireEvent, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
+import type React from 'react'
+import type { AddButtonProps } from './types'
+import { createPropsFactory } from '../../../utils/test/generic-test-utils'
 import {
-  BASIC_RENDERING_TEST_CASES,
-  createAddButtonProps,
-  expectButtonToBeAccessible,
-  expectButtonToBeFocusable,
   expectClickEventToBePassed,
   expectClickHandlerToBeCalled,
-  expectIconToBePresent,
 } from '../../../utils/test/components/ui/buttons/test-utils'
 import { render } from '../../../utils/test/render'
 import AddButton from './AddButton'
@@ -15,6 +13,56 @@ import AddButton from './AddButton'
 vi.mock('@ant-design/icons', () => ({
   PlusOutlined: () => <span data-testid="plus-icon">+</span>,
 }))
+
+// ====================
+// LOCAL UTILITIES
+// ====================
+
+const createAddButtonProps = createPropsFactory<AddButtonProps>({
+  onClick: vi.fn<(event: React.MouseEvent<HTMLButtonElement>) => void>(),
+})
+
+const BASIC_RENDERING_TEST_CASES: Array<{ description: string; props: Partial<AddButtonProps> }> = [
+  {
+    description: 'no props provided',
+    props: {},
+  },
+  {
+    description: 'className provided',
+    props: { className: 'custom-class' },
+  },
+  {
+    description: 'onClick handler provided',
+    props: { onClick: vi.fn<(event: React.MouseEvent<HTMLButtonElement>) => void>() },
+  },
+  {
+    description: 'all props provided',
+    props: {
+      className: 'custom-class',
+      onClick: vi.fn<(event: React.MouseEvent<HTMLButtonElement>) => void>(),
+    },
+  },
+]
+
+const expectButtonToBeAccessible = (button: HTMLElement): void => {
+  expect(button).toBeInTheDocument()
+  expect(button.tagName).toBe('BUTTON')
+}
+
+const expectButtonToBeFocusable = (button: HTMLElement): void => {
+  button.focus()
+  expect(button).toHaveFocus()
+}
+
+const expectIconToBePresent = (container: HTMLElement, testId: string): Element | null => {
+  const icon = container.querySelector(`[data-testid="${testId}"]`)
+  expect(icon).toBeInTheDocument()
+  return icon
+}
+
+// ====================
+// TEST CASES
+// ====================
 
 describe('AddButton', () => {
   describe('basic rendering scenarios', () => {

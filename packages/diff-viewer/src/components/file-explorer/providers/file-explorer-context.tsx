@@ -4,6 +4,7 @@ import { Themes } from '../../../themes'
 import { FileExplorerConfig } from '../types'
 import { FileExplorerConfigContextProps, FileExplorerConfigState } from './types'
 
+const STORAGE_KEY = '__file_explorer_config__'
 export const DEFAULT_FILE_EXPLORER_CONFIG: FileExplorerConfig = {
   startExpanded: true,
   nodeConnector: 'solid',
@@ -23,8 +24,6 @@ export const FileExplorerConfigProvider: React.FC<FileExplorerConfigContextProps
   config: initialConfig = DEFAULT_FILE_EXPLORER_CONFIG,
   storage = 'in-memory',
 }) => {
-  const STORAGE_KEY = '__file_explorer_config__'
-
   // Hydrate configuration from localStorage when requested
   const storedConfig = React.useMemo<FileExplorerConfig | null>(() => {
     if (storage !== 'local' || typeof window === 'undefined') return null
