@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { SAMPLE_FILE_DIFFS } from '../../../test/__fixtures__/file-diff-fixtures'
-import { MOCKED_NODE_TREE } from '../../../test/__fixtures__/fstree-fixtures'
+import { SAMPLE_FILE_DIFFS } from '../../../utils/test/__fixtures__/file-diff-fixtures'
+import { MOCKED_NODE_TREE } from '../../../utils/test/__fixtures__/fstree-fixtures'
 import { DirectoryNode } from '../types'
 import { filterFiles, listExpandedDirs } from './context-utils'
 

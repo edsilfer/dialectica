@@ -2,6 +2,7 @@ import { render } from '@testing-library/react'
 import type React from 'react'
 import { useContext } from 'react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { createAntdMocks } from '../../utils/test/antd-utils'
 import { Themes } from '../themes'
 import type { ThemeTokens } from '../types'
 import { ThemeContext, ThemeProvider } from './theme-context'
@@ -21,13 +22,7 @@ vi.mock('@emotion/react', () => ({
   css: vi.fn(() => 'mocked-css'),
 }))
 
-vi.mock('antd', () => ({
-  ConfigProvider: ({ children }: { children: React.ReactNode }) => children,
-  theme: {
-    darkAlgorithm: 'dark-algorithm',
-    defaultAlgorithm: 'default-algorithm',
-  },
-}))
+vi.mock('antd', () => createAntdMocks())
 
 // UTILS
 const TestConsumer = ({ onRender }: { onRender: (theme: ThemeTokens) => void }) => {

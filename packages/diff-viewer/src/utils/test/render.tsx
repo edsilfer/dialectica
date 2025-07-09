@@ -1,7 +1,7 @@
 import { render as rtlRender } from '@testing-library/react'
-import { ThemeProvider } from '../themes/providers/theme-context'
-import { Themes } from '../themes/themes'
 import React from 'react'
+import { ThemeProvider } from '../../themes/providers/theme-context'
+import { Themes } from '../../themes/themes'
 
 // Wrapper component used to provide the default light theme in tests
 const WrapperComponent = ({ children }: { children?: unknown }) => (

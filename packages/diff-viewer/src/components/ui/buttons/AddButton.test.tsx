@@ -1,6 +1,15 @@
 import { fireEvent, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-import { render } from '../../../test/render'
+import {
+  BASIC_RENDERING_TEST_CASES,
+  createAddButtonProps,
+  expectButtonToBeAccessible,
+  expectButtonToBeFocusable,
+  expectClickEventToBePassed,
+  expectClickHandlerToBeCalled,
+  expectIconToBePresent,
+} from '../../../utils/test/components/ui/buttons/test-utils'
+import { render } from '../../../utils/test/render'
 import AddButton from './AddButton'
 
 vi.mock('@ant-design/icons', () => ({
@@ -9,26 +18,7 @@ vi.mock('@ant-design/icons', () => ({
 
 describe('AddButton', () => {
   describe('basic rendering scenarios', () => {
-    const testCases = [
-      {
-        description: 'no props provided',
-        props: {},
-      },
-      {
-        description: 'className provided',
-        props: { className: 'custom-class' },
-      },
-      {
-        description: 'onClick handler provided',
-        props: { onClick: vi.fn() },
-      },
-      {
-        description: 'all props provided',
-        props: { className: 'custom-class', onClick: vi.fn() },
-      },
-    ]
-
-    testCases.forEach(({ description, props }) => {
+    BASIC_RENDERING_TEST_CASES.forEach(({ description, props }) => {
       it(`given ${description}, when rendered, expect button to display correctly`, () => {
         // WHEN
         render(<AddButton {...props} />)
@@ -66,29 +56,27 @@ describe('AddButton', () => {
     it('given onClick handler, when button clicked, expect handler to be called', () => {
       // GIVEN
       const mockOnClick = vi.fn()
+      const props = createAddButtonProps({ onClick: mockOnClick })
 
       // WHEN
-      render(<AddButton onClick={mockOnClick} />)
+      render(<AddButton {...props} />)
       fireEvent.click(screen.getByRole('button'))
 
       // EXPECT
-      expect(mockOnClick).toHaveBeenCalledOnce()
+      expectClickHandlerToBeCalled(mockOnClick, 1)
     })
 
     it('given onClick handler, when button clicked, expect click event to be passed', () => {
       // GIVEN
       const mockOnClick = vi.fn()
+      const props = createAddButtonProps({ onClick: mockOnClick })
 
       // WHEN
-      render(<AddButton onClick={mockOnClick} />)
+      render(<AddButton {...props} />)
       fireEvent.click(screen.getByRole('button'))
 
       // EXPECT
-      expect(mockOnClick).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: 'click',
-        }),
-      )
+      expectClickEventToBePassed(mockOnClick)
     })
 
     it('given no onClick handler, when button clicked, expect no error', () => {
@@ -102,15 +90,16 @@ describe('AddButton', () => {
     it('given onClick handler, when button clicked multiple times, expect handler called each time', () => {
       // GIVEN
       const mockOnClick = vi.fn()
+      const props = createAddButtonProps({ onClick: mockOnClick })
 
       // WHEN
-      render(<AddButton onClick={mockOnClick} />)
+      render(<AddButton {...props} />)
       fireEvent.click(screen.getByRole('button'))
       fireEvent.click(screen.getByRole('button'))
       fireEvent.click(screen.getByRole('button'))
 
       // EXPECT
-      expect(mockOnClick).toHaveBeenCalledTimes(3)
+      expectClickHandlerToBeCalled(mockOnClick, 3)
     })
   })
 
@@ -121,28 +110,26 @@ describe('AddButton', () => {
 
       // EXPECT
       const button = screen.getByRole('button')
-      expect(button).toBeInTheDocument()
-      expect(button.tagName).toBe('BUTTON')
+      expectButtonToBeAccessible(button)
     })
 
     it('given rendered component, when focused, expect button to be focusable', () => {
       // WHEN
       render(<AddButton />)
       const button = screen.getByRole('button')
-      button.focus()
 
       // EXPECT
-      expect(button).toHaveFocus()
+      expectButtonToBeFocusable(button)
     })
   })
 
   describe('icon rendering', () => {
     it('given rendered component, when queried, expect plus icon to be present', () => {
       // WHEN
-      render(<AddButton />)
+      const { container } = render(<AddButton />)
 
       // EXPECT
-      expect(screen.getByTestId('plus-icon')).toBeInTheDocument()
+      expectIconToBePresent(container, 'plus-icon')
     })
   })
 })

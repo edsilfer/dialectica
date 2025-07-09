@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-import { createButtonMatrix, createMockButton } from '../../test/antd-utils'
-import { render } from '../../test/render'
+import { createButtonMatrix, createCustomButton } from '../../utils/test/antd-utils'
+import { render } from '../../utils/test/render'
 import { ActionButtons } from './ActionButtons'
 import type { CustomButton } from './types'
 
@@ -25,16 +25,16 @@ describe('ActionButtons', () => {
       {
         description: 'only left buttons',
         buttons: [
-          createMockButton({ key: 'left-1', label: 'Left 1', side: 'left' }),
-          createMockButton({ key: 'left-2', label: 'Left 2', side: 'left' }),
+          createCustomButton({ key: 'left-1', label: 'Left 1', side: 'left' }),
+          createCustomButton({ key: 'left-2', label: 'Left 2', side: 'left' }),
         ],
         expectedButtonNames: ['Left 1', 'Left 2'],
       },
       {
         description: 'only right buttons',
         buttons: [
-          createMockButton({ key: 'right-1', label: 'Right 1', side: 'right' }),
-          createMockButton({ key: 'right-2', label: 'Right 2', side: 'right' }),
+          createCustomButton({ key: 'right-1', label: 'Right 1', side: 'right' }),
+          createCustomButton({ key: 'right-2', label: 'Right 2', side: 'right' }),
         ],
         expectedButtonNames: ['Right 1', 'Right 2'],
       },
@@ -65,7 +65,7 @@ describe('ActionButtons', () => {
   describe('button interactions', () => {
     it('given buttons with tooltips, when hovered, expect tooltips to appear', async () => {
       // GIVEN
-      const button = createMockButton({
+      const button = createCustomButton({
         key: 'tooltip-button',
         label: 'Test Button',
         tooltipText: 'Test tooltip text',
@@ -82,7 +82,7 @@ describe('ActionButtons', () => {
     it('given button with onClick, when clicked, expect onClick to be called', () => {
       // GIVEN
       const mockOnClick = vi.fn()
-      const button = createMockButton({
+      const button = createCustomButton({
         key: 'clickable-button',
         label: 'Clickable Button',
         onClick: mockOnClick,
@@ -101,8 +101,8 @@ describe('ActionButtons', () => {
       const mockOnClick1 = vi.fn()
       const mockOnClick2 = vi.fn()
       const buttons = [
-        createMockButton({ key: 'button-1', label: 'Button 1', onClick: mockOnClick1 }),
-        createMockButton({ key: 'button-2', label: 'Button 2', onClick: mockOnClick2 }),
+        createCustomButton({ key: 'button-1', label: 'Button 1', onClick: mockOnClick1 }),
+        createCustomButton({ key: 'button-2', label: 'Button 2', onClick: mockOnClick2 }),
       ]
 
       // WHEN

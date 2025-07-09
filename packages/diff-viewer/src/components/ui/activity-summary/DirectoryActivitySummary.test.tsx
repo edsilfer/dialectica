@@ -1,6 +1,5 @@
-import React from 'react'
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '../../../test/render'
+import { describe, expect, it } from 'vitest'
+import { render, screen } from '../../../utils/test/render'
 import DirectoryActivitySummary from './DirectoryActivitySummary'
 
 import { MOCKED_FILE_DIFF } from './FileActivitySummary.test'

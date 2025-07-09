@@ -1,45 +1,20 @@
 import { fireEvent, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-import { render } from '../../../test/render'
+import {
+  COPY_BUTTON_RENDERING_TEST_CASES,
+  createCopyButtonProps,
+  expectClickEventToBePassed,
+  expectClickHandlerToBeCalled,
+  expectSvgIcon,
+  expectToastToAppear,
+  expectTooltipToAppear,
+} from '../../../utils/test/components/ui/buttons/test-utils'
+import { render } from '../../../utils/test/render'
 import CopyButton from './CopyButton'
-import type { CopyButtonProps } from './types'
-
-// Test utilities
-const createCopyButtonProps = (overrides: Partial<CopyButtonProps> = {}): CopyButtonProps => ({
-  onClick: vi.fn(),
-  ...overrides,
-})
 
 describe('CopyButton', () => {
   describe('rendering scenarios', () => {
-    const testCases: Array<{
-      description: string
-      props: Partial<CopyButtonProps>
-      expectTooltip: boolean
-    }> = [
-      {
-        description: 'basic copy button without tooltip',
-        props: {},
-        expectTooltip: false,
-      },
-      {
-        description: 'copy button with tooltip only',
-        props: { tooltip: 'Copy to clipboard' },
-        expectTooltip: true,
-      },
-      {
-        description: 'copy button with toastText only',
-        props: { toastText: 'Copied!' },
-        expectTooltip: true,
-      },
-      {
-        description: 'copy button with both tooltip and toastText',
-        props: { tooltip: 'Copy to clipboard', toastText: 'Copied!' },
-        expectTooltip: true,
-      },
-    ]
-
-    testCases.forEach(({ description, props, expectTooltip }) => {
+    COPY_BUTTON_RENDERING_TEST_CASES.forEach(({ description, props, expectTooltip }) => {
       it(`given ${description}, when rendered, expect correct structure`, () => {
         // GIVEN
         const buttonProps = createCopyButtonProps(props)
@@ -48,8 +23,7 @@ describe('CopyButton', () => {
         const { container } = render(<CopyButton {...buttonProps} />)
 
         // EXPECT
-        const copyIcon = container.querySelector('svg')
-        expect(copyIcon).toBeInTheDocument()
+        const copyIcon = expectSvgIcon(container)
 
         if (expectTooltip) {
           expect(copyIcon?.closest('[aria-describedby]')).toBeInTheDocument()
@@ -67,9 +41,7 @@ describe('CopyButton', () => {
       const { container } = render(<CopyButton {...props} />)
 
       // EXPECT
-      const copyIcon = container.querySelector('svg')
-      expect(copyIcon).toHaveAttribute('width', '16')
-      expect(copyIcon).toHaveAttribute('height', '16')
+      expectSvgIcon(container, '16')
     })
 
     it('given custom size prop, when rendered, expect custom size applied', () => {
@@ -80,9 +52,7 @@ describe('CopyButton', () => {
       const { container } = render(<CopyButton {...props} />)
 
       // EXPECT
-      const copyIcon = container.querySelector('svg')
-      expect(copyIcon).toHaveAttribute('width', '24')
-      expect(copyIcon).toHaveAttribute('height', '24')
+      expectSvgIcon(container, '24')
     })
   })
 
@@ -98,8 +68,8 @@ describe('CopyButton', () => {
       fireEvent.click(copyIcon)
 
       // EXPECT
-      expect(mockOnClick).toHaveBeenCalledOnce()
-      expect(mockOnClick).toHaveBeenCalledWith(expect.any(Object))
+      expectClickHandlerToBeCalled(mockOnClick, 1)
+      expectClickEventToBePassed(mockOnClick)
     })
 
     it('given copy button with tooltip, when clicked, expect onClick called', () => {
@@ -116,8 +86,8 @@ describe('CopyButton', () => {
       fireEvent.click(copyIcon)
 
       // EXPECT
-      expect(mockOnClick).toHaveBeenCalledOnce()
-      expect(mockOnClick).toHaveBeenCalledWith(expect.any(Object))
+      expectClickHandlerToBeCalled(mockOnClick, 1)
+      expectClickEventToBePassed(mockOnClick)
     })
   })
 
@@ -132,7 +102,7 @@ describe('CopyButton', () => {
       fireEvent.mouseOver(copyIcon)
 
       // EXPECT
-      expect(await screen.findByText('Copy to clipboard')).toBeInTheDocument()
+      await expectTooltipToAppear(screen, 'Copy to clipboard')
     })
 
     it('given copy button with toastText, when clicked, expect toast to appear', async () => {
@@ -145,7 +115,7 @@ describe('CopyButton', () => {
       fireEvent.click(copyIcon)
 
       // EXPECT
-      expect(await screen.findByText('Copied!')).toBeInTheDocument()
+      await expectToastToAppear(screen, 'Copied!')
     })
 
     it('given copy button with both tooltip and toastText, when hovered then clicked, expect both to work', async () => {
@@ -161,13 +131,13 @@ describe('CopyButton', () => {
 
       // Hover to show tooltip
       fireEvent.mouseOver(copyIcon)
-      expect(await screen.findByText('Copy to clipboard')).toBeInTheDocument()
+      await expectTooltipToAppear(screen, 'Copy to clipboard')
 
       // Click to show toast
       fireEvent.click(copyIcon)
 
       // EXPECT
-      expect(await screen.findByText('Copied!')).toBeInTheDocument()
+      await expectToastToAppear(screen, 'Copied!')
     })
   })
 })

@@ -1,6 +1,6 @@
 import { fireEvent, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-import { render } from '../../../test/render'
+import { render } from '../../../utils/test/render'
 import LoadMoreButton from './LoadMoreButton'
 import type { LoadMoreButtonProps } from './types'
 import type { HunkDirection } from '../../code-panel/components/types'

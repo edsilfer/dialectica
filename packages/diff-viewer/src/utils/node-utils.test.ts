@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 
 import { buildTree, highlightText, listDirPaths, listFilesIn, nodeComparator } from './node-utils'
 import { DirectoryNode, FileNode } from '../components/file-explorer/types'
-import { SAMPLE_FILE_DIFFS } from '../test/__fixtures__/file-diff-fixtures'
+import { SAMPLE_FILE_DIFFS } from '../utils/test/__fixtures__/file-diff-fixtures'
 
 /**
  * Convenience helper that builds a fresh tree before every assertion

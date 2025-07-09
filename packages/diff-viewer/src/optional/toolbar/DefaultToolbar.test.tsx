@@ -7,7 +7,7 @@ import {
   createMockCodePanelConfig,
   createToolbarComponentMocks,
   createToolbarWidget,
-} from '../../test/antd-utils'
+} from '../../utils/test/antd-utils'
 import { Toolbar } from './DefaultToolbar'
 
 // MOCKS

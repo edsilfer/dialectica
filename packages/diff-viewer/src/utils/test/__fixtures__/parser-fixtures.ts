@@ -1,5 +1,5 @@
-import { FileDiff } from '../../models/FileDiff'
-import { Hunk } from '../../models/Hunk'
+import { FileDiff } from '../../../models/FileDiff'
+import { Hunk } from '../../../models/Hunk'
 
 // Basic sample hunk with paired changes
 export const SAMPLE_HUNK: Hunk = new Hunk(

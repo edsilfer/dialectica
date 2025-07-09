@@ -1,15 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { LineDiff } from './LineDiff'
 import type { DiffLineType } from './LineDiff'
-
-function createRawLine(content: string, type: 'add' | 'del' | 'normal', oldLine?: number, newLine?: number) {
-  return {
-    content,
-    type,
-    oldLine,
-    newLine,
-  }
-}
+import { createRawLine, LINE_TYPE_TEST_CASES, CONTENT_PROCESSING_TEST_CASES } from '../utils/test/models/test-utils'
 
 describe('LineDiff – constructor', () => {
   const testCases: Array<{
@@ -83,29 +75,7 @@ describe('LineDiff – constructor', () => {
 
 describe('LineDiff – build method', () => {
   describe('line type conversion', () => {
-    const typeTestCases: Array<{
-      description: string
-      rawType: 'add' | 'del' | 'normal'
-      expectedType: DiffLineType
-    }> = [
-      {
-        description: 'add type',
-        rawType: 'add',
-        expectedType: 'add',
-      },
-      {
-        description: 'del type',
-        rawType: 'del',
-        expectedType: 'delete',
-      },
-      {
-        description: 'normal type',
-        rawType: 'normal',
-        expectedType: 'context',
-      },
-    ]
-
-    typeTestCases.forEach(({ description, rawType, expectedType }) => {
+    LINE_TYPE_TEST_CASES.forEach(({ description, rawType, expectedType }) => {
       it(`given ${description}, when built, expect correct type mapping`, () => {
         // GIVEN
         const rawLine = createRawLine(`${rawType[0]}test content`, rawType, 5, 5)
@@ -120,39 +90,7 @@ describe('LineDiff – build method', () => {
   })
 
   describe('content processing', () => {
-    const contentTestCases: Array<{
-      description: string
-      rawContent: string
-      expectedContent: string
-    }> = [
-      {
-        description: 'addition prefix',
-        rawContent: '+console.log("added")',
-        expectedContent: 'console.log("added")',
-      },
-      {
-        description: 'deletion prefix',
-        rawContent: '-console.log("deleted")',
-        expectedContent: 'console.log("deleted")',
-      },
-      {
-        description: 'context prefix',
-        rawContent: ' console.log("context")',
-        expectedContent: 'console.log("context")',
-      },
-      {
-        description: 'empty content with prefix',
-        rawContent: ' ',
-        expectedContent: '',
-      },
-      {
-        description: 'multiple spaces prefix',
-        rawContent: '   spaced content',
-        expectedContent: '  spaced content',
-      },
-    ]
-
-    contentTestCases.forEach(({ description, rawContent, expectedContent }) => {
+    CONTENT_PROCESSING_TEST_CASES.forEach(({ description, rawContent, expectedContent }) => {
       it(`given ${description}, when built, expect prefix stripped`, () => {
         // GIVEN
         const rawLine = createRawLine(rawContent, 'normal', 1, 1)

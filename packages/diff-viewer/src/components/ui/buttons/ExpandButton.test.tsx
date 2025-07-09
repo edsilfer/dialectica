@@ -1,55 +1,12 @@
 import { fireEvent, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-import React from 'react'
-import { render } from '../../../test/render'
+import { createAntdMocks } from '../../../utils/test/antd-utils'
+import { render } from '../../../utils/test/render'
 import ExpandButton from './ExpandButton'
 import type { ExpandButtonProps } from './types'
 
 // MOCKS
-vi.mock('antd', () => ({
-  Tooltip: ({
-    children,
-    title,
-    open,
-    placement,
-  }: {
-    children: React.ReactNode
-    title?: React.ReactNode
-    open?: boolean
-    placement?: string
-  }) => {
-    const [showTooltip, setShowTooltip] = React.useState(false)
-
-    return React.createElement(
-      'div',
-      {
-        'data-testid': 'tooltip-wrapper',
-        'data-placement': placement,
-        'data-open': open,
-        onMouseEnter: () => setShowTooltip(true),
-        onMouseLeave: () => setShowTooltip(false),
-      },
-      [
-        children,
-        (showTooltip || open) &&
-          title &&
-          React.createElement(
-            'div',
-            {
-              key: 'tooltip-content',
-              'data-testid': 'tooltip-content',
-            },
-            title,
-          ),
-      ],
-    )
-  },
-  ConfigProvider: ({ children }: { children: React.ReactNode }) => children,
-  theme: {
-    darkAlgorithm: 'dark-algorithm',
-    defaultAlgorithm: 'default-algorithm',
-  },
-}))
+vi.mock('antd', () => createAntdMocks())
 
 vi.mock('../icons/ChevronDown', () => ({
   default: ({ size, onClick, className }: { size: number; onClick: () => void; className: string }) => (
@@ -103,7 +60,7 @@ describe('ExpandButton', () => {
         // WHEN
         render(<ExpandButton {...buttonProps} />)
 
-        // EXPECT
+        // EXPECT - Chevron is visible and has expand-button class
         const chevron = screen.getByTestId('chevron-down')
         expect(chevron).toBeInTheDocument()
         expect(chevron).toHaveClass('expand-button')

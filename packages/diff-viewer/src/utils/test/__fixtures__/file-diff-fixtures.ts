@@ -1,4 +1,4 @@
-import { FileDiff } from '../../models/FileDiff'
+import { FileDiff } from '../../../models/FileDiff'
 
 /**
  * A representative list of FileDiff objects covering the main diff scenarios

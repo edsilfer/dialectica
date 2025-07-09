@@ -1,59 +1,36 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { RawFile } from 'diffparser'
 import diffparser from 'diffparser'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  DELETION_DIFF,
+  MIXED_DIFF,
+  MULTI_FILE_DIFF,
+  RENAME_DIFF,
+  SAMPLE_DIFF,
+} from '../utils/test/__fixtures__/raw-diffs-fixtures'
 import { FileDiff } from './FileDiff'
 import { ParsedDiff } from './ParsedDiff'
-import {
-  SAMPLE_DIFF,
-  DELETION_DIFF,
-  MULTI_FILE_DIFF,
-  MIXED_DIFF,
-  RENAME_DIFF,
-} from '../test/__fixtures__/raw-diffs-fixtures'
 
 // MOCKS
 vi.mock('diffparser', () => ({
   default: vi.fn(),
 }))
 
-vi.mock('./FileDiff', () => ({
-  FileDiff: {
-    build: vi.fn(),
-  },
-}))
+// Import test utilities for creating mock instances
+import { createMockFileDiff, createRawFile } from '../utils/test/models/test-utils'
 
-const createMockRawFile = (from: string, to: string): RawFile => ({
-  from,
-  to,
-  chunks: [],
-  deletions: 0,
-  additions: 0,
-})
-
-const createMockFileDiff = (oldPath: string, newPath: string): FileDiff =>
-  ({
-    oldPath,
-    newPath,
-    isRenamed: oldPath !== newPath,
-    isNew: oldPath === '/dev/null',
-    isDeleted: newPath === '/dev/null',
-    language: 'typescript',
-    hunks: [],
-    rawContent: 'mock-content',
-    key: newPath || oldPath,
-    withContext: vi.fn().mockReturnThis(),
-  }) as unknown as FileDiff
-
-beforeEach(() => {
-  vi.clearAllMocks()
-})
+const createMockRawFile = (from: string, to: string): RawFile => createRawFile({ from, to })
 
 describe('ParsedDiff', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   describe('Constructor', () => {
     it('given valid parameters, when creating instance, expect properties set correctly', () => {
       // GIVEN
       const rawContent = 'mock-diff-content'
-      const files = [createMockFileDiff('old.ts', 'new.ts')]
+      const files = [createMockFileDiff({ oldPath: 'old.ts', newPath: 'new.ts' })]
 
       // WHEN
       const parsedDiff = new ParsedDiff(rawContent, files)
@@ -81,11 +58,9 @@ describe('ParsedDiff', () => {
     it('given simple addition diff, when building, expect single file parsed', () => {
       // MOCK
       const mockRawFile = createMockRawFile('/dev/null', 'foo.ts')
-      const mockFileDiff = createMockFileDiff('/dev/null', 'foo.ts')
       const mockDiffparser = vi.mocked(diffparser)
 
       mockDiffparser.mockReturnValue([mockRawFile])
-      vi.mocked(FileDiff).build.mockReturnValue(mockFileDiff)
 
       // GIVEN
       const rawContent = SAMPLE_DIFF
@@ -95,19 +70,19 @@ describe('ParsedDiff', () => {
 
       // EXPECT
       expect(mockDiffparser).toHaveBeenCalledWith(rawContent)
-      expect(vi.mocked(FileDiff).build).toHaveBeenCalledWith(rawContent, mockRawFile)
       expect(result.rawContent).toBe(rawContent)
-      expect(result.files).toEqual([mockFileDiff])
+      expect(result.files).toHaveLength(1)
+      expect(result.files[0].oldPath).toBe('/dev/null')
+      expect(result.files[0].newPath).toBe('foo.ts')
+      expect(result.files[0].isNew).toBe(true)
     })
 
     it('given multi-file diff, when building, expect multiple files parsed', () => {
       // MOCK
       const mockRawFiles = [createMockRawFile('/dev/null', 'file1.ts'), createMockRawFile('file2.ts', 'file2.ts')]
-      const mockFileDiffs = [createMockFileDiff('/dev/null', 'file1.ts'), createMockFileDiff('file2.ts', 'file2.ts')]
       const mockDiffparser = vi.mocked(diffparser)
 
       mockDiffparser.mockReturnValue(mockRawFiles)
-      vi.mocked(FileDiff).build.mockReturnValueOnce(mockFileDiffs[0]).mockReturnValueOnce(mockFileDiffs[1])
 
       // GIVEN
       const rawContent = MULTI_FILE_DIFF
@@ -117,20 +92,19 @@ describe('ParsedDiff', () => {
 
       // EXPECT
       expect(mockDiffparser).toHaveBeenCalledWith(rawContent)
-      expect(vi.mocked(FileDiff).build).toHaveBeenCalledTimes(2)
-      expect(vi.mocked(FileDiff).build).toHaveBeenNthCalledWith(1, rawContent, mockRawFiles[0])
-      expect(vi.mocked(FileDiff).build).toHaveBeenNthCalledWith(2, rawContent, mockRawFiles[1])
-      expect(result.files).toEqual(mockFileDiffs)
+      expect(result.files).toHaveLength(2)
+      expect(result.files[0].newPath).toBe('file1.ts')
+      expect(result.files[0].isNew).toBe(true)
+      expect(result.files[1].newPath).toBe('file2.ts')
+      expect(result.files[1].isNew).toBe(false)
     })
 
     it('given deletion diff, when building, expect file with deletions parsed', () => {
       // MOCK
       const mockRawFile = createMockRawFile('example.js', 'example.js')
-      const mockFileDiff = createMockFileDiff('example.js', 'example.js')
       const mockDiffparser = vi.mocked(diffparser)
 
       mockDiffparser.mockReturnValue([mockRawFile])
-      vi.mocked(FileDiff).build.mockReturnValue(mockFileDiff)
 
       // GIVEN
       const rawContent = DELETION_DIFF
@@ -141,16 +115,16 @@ describe('ParsedDiff', () => {
       // EXPECT
       expect(mockDiffparser).toHaveBeenCalledWith(rawContent)
       expect(result.files).toHaveLength(1)
+      expect(result.files[0].oldPath).toBe('example.js')
+      expect(result.files[0].newPath).toBe('example.js')
     })
 
     it('given rename diff, when building, expect renamed file parsed', () => {
       // MOCK
       const mockRawFile = createMockRawFile('old-name.js', 'new-name.js')
-      const mockFileDiff = createMockFileDiff('old-name.js', 'new-name.js')
       const mockDiffparser = vi.mocked(diffparser)
 
       mockDiffparser.mockReturnValue([mockRawFile])
-      vi.mocked(FileDiff).build.mockReturnValue(mockFileDiff)
 
       // GIVEN
       const rawContent = RENAME_DIFF
@@ -160,18 +134,18 @@ describe('ParsedDiff', () => {
 
       // EXPECT
       expect(mockDiffparser).toHaveBeenCalledWith(rawContent)
-      expect(vi.mocked(FileDiff).build).toHaveBeenCalledWith(rawContent, mockRawFile)
-      expect(result.files).toEqual([mockFileDiff])
+      expect(result.files).toHaveLength(1)
+      expect(result.files[0].oldPath).toBe('old-name.js')
+      expect(result.files[0].newPath).toBe('new-name.js')
+      expect(result.files[0].isRenamed).toBe(true)
     })
 
     it('given mixed changes diff, when building, expect file with mixed changes parsed', () => {
       // MOCK
       const mockRawFile = createMockRawFile('utils.ts', 'utils.ts')
-      const mockFileDiff = createMockFileDiff('utils.ts', 'utils.ts')
       const mockDiffparser = vi.mocked(diffparser)
 
       mockDiffparser.mockReturnValue([mockRawFile])
-      vi.mocked(FileDiff).build.mockReturnValue(mockFileDiff)
 
       // GIVEN
       const rawContent = MIXED_DIFF
@@ -182,6 +156,8 @@ describe('ParsedDiff', () => {
       // EXPECT
       expect(mockDiffparser).toHaveBeenCalledWith(rawContent)
       expect(result.files).toHaveLength(1)
+      expect(result.files[0].oldPath).toBe('utils.ts')
+      expect(result.files[0].newPath).toBe('utils.ts')
     })
 
     it('given empty diff content, when building, expect empty files array', () => {
@@ -201,7 +177,7 @@ describe('ParsedDiff', () => {
       expect(result.files).toEqual([])
     })
 
-    it('given diffparser returns empty array, when building, expect no FileDiff.build calls', () => {
+    it('given diffparser returns empty array, when building, expect empty files array', () => {
       // MOCK
       const mockDiffparser = vi.mocked(diffparser)
       mockDiffparser.mockReturnValue([])
@@ -214,7 +190,6 @@ describe('ParsedDiff', () => {
 
       // EXPECT
       expect(mockDiffparser).toHaveBeenCalledWith(rawContent)
-      expect(vi.mocked(FileDiff).build).not.toHaveBeenCalled()
       expect(result.files).toEqual([])
     })
   })

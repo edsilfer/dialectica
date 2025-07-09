@@ -1,38 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import { Hunk } from './Hunk'
 import { LineDiff } from './LineDiff'
-
-function createDiffLine(
-  content: string,
-  type: 'context' | 'add' | 'delete',
-  lineNumberOld: number | null = null,
-  lineNumberNew: number | null = null,
-): LineDiff {
-  return {
-    content,
-    type,
-    lineNumberOld,
-    lineNumberNew,
-  } as LineDiff
-}
-
-const SIMPLE_CHANGES: LineDiff[] = [
-  createDiffLine('+added line', 'add', null, 1),
-  createDiffLine(' unchanged line', 'context', 2, 2),
-]
-
-const HEADER_CHANGES: LineDiff[] = [
-  createDiffLine('@@ -58,11 +58,10 @@ import type {', 'context', 58, 58),
-  createDiffLine('   FulfilledThenable,', 'context', 59, 59),
-  createDiffLine('   RejectedThenable,', 'context', 60, 60),
-]
-
-const HEADER_ONLY_CHANGES: LineDiff[] = [createDiffLine('@@ -100,2 +100,2 @@ lone header', 'context', 100, 100)]
-
-const SHUFFLED_CHANGES: LineDiff[] = [
-  createDiffLine(' line 2', 'context', 2, 2),
-  createDiffLine(' line 1', 'context', 1, 1),
-]
+import {
+  createLineDiff,
+  SIMPLE_CHANGES,
+  HEADER_CHANGES,
+  HEADER_ONLY_CHANGES,
+  SHUFFLED_CHANGES,
+} from '../utils/test/models/test-utils'
 
 describe('Hunk – happy path', () => {
   it('given simple hunk, when created, expect correct header', () => {
@@ -110,7 +85,7 @@ describe('Hunk – additional properties', () => {
   it('given file path, when created, expect preserved file path', () => {
     // GIVEN
     const filePath = 'src/components/MyComponent.tsx'
-    const changes = [createDiffLine('+new line', 'add', null, 1)]
+    const changes = [createLineDiff('+new line', 'add', null, 1)]
 
     // WHEN
     const hunk = new Hunk(1, 1, 1, 1, changes, filePath)
@@ -133,7 +108,7 @@ describe('Hunk – additional properties', () => {
 
   it('given context line at start of file, when created, expect no header', () => {
     // GIVEN
-    const changes = [createDiffLine(' unchanged line', 'context', 1, 1)]
+    const changes = [createLineDiff(' unchanged line', 'context', 1, 1)]
 
     // WHEN
     const hunk = new Hunk(1, 1, 1, 1, changes, '')

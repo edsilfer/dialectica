@@ -1,60 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import type { RawFile, RawChunk } from 'diffparser'
+import type { HunkDirection } from '../components/code-panel/components/types'
+import {
+  createMockHunk,
+  createMockLineDiff,
+  createRawChunk as createMockRawChunk,
+  createRawFile as createMockRawFile,
+} from '../utils/test/models/test-utils'
 import { FileDiff } from './FileDiff'
 import { Hunk } from './Hunk'
-import { LineDiff } from './LineDiff'
-import type { HunkDirection } from '../components/code-panel/components/types'
-
-const createMockRawFile = (overrides: Partial<RawFile> = {}): RawFile => ({
-  from: 'src/test.ts',
-  to: 'src/test.ts',
-  chunks: [],
-  deletions: 0,
-  additions: 0,
-  ...overrides,
-})
-
-const createMockRawChunk = (overrides: Partial<RawChunk> = {}): RawChunk => ({
-  content: '@@ -1,3 +1,3 @@',
-  changes: [
-    { content: ' function foo() {', type: 'normal', oldLine: 1, newLine: 1 },
-    { content: '-  console.log("old")', type: 'del', oldLine: 2, newLine: undefined },
-    { content: '+  console.log("new")', type: 'add', oldLine: undefined, newLine: 2 },
-    { content: ' }', type: 'normal', oldLine: 3, newLine: 3 },
-  ],
-  oldStart: 1,
-  oldLines: 3,
-  newStart: 1,
-  newLines: 3,
-  ...overrides,
-})
-
-const createMockLineDiff = (overrides: Partial<LineDiff> = {}): LineDiff => ({
-  content: 'test line',
-  type: 'context',
-  lineNumberOld: 1,
-  lineNumberNew: 1,
-  ...overrides,
-})
-
-const createMockHunk = (
-  overrides: Partial<{
-    oldStart: number
-    oldLines: number
-    newStart: number
-    newLines: number
-    changes: LineDiff[]
-    filePath: string
-  }> = {},
-): Hunk =>
-  new Hunk(
-    overrides.oldStart ?? 1,
-    overrides.oldLines ?? 3,
-    overrides.newStart ?? 1,
-    overrides.newLines ?? 3,
-    overrides.changes ?? [],
-    overrides.filePath ?? 'test.ts',
-  )
 
 describe('FileDiff', () => {
   describe('static build method', () => {

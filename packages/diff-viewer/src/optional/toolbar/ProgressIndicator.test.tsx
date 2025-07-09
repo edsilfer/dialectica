@@ -1,8 +1,8 @@
 import React from 'react'
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '../../test/render'
+import { render, screen } from '../../utils/test/render'
 import { ProgressIndicator } from './ProgressIndicator'
-import { createProgressProps } from '../../test/antd-utils'
+import { createProgressProps } from '../../utils/test/antd-utils'
 
 // Only mock env utils to ensure consistent test behavior
 vi.mock('../../utils/env-utils', () => ({
