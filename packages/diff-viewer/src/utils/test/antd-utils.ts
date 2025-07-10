@@ -64,7 +64,7 @@ export const createMockCodePanelConfig = (
     config: { mode: 'unified' as const, ignoreWhitespace: false },
     fileStateMap: new Map(),
     allFileKeys: [],
-    getFileState: vi.fn(),
+    getFileState: vi.fn().mockReturnValue({ isCollapsed: false, isViewed: false }),
     setViewed: vi.fn(),
     setCollapsed: vi.fn(),
     setAllFileKeys: vi.fn(),

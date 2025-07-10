@@ -3,11 +3,12 @@ import { Checkbox, Typography } from 'antd'
 import React, { useCallback, useContext, useMemo } from 'react'
 
 import { ThemeContext } from '../../../themes/providers/theme-context'
+import { useFileState, useCodePanelSettings } from '../providers/code-panel-context'
 import FileActivitySummary from '../../ui/activity-summary/FileActivitySummary'
 import ExpandButton from '../../ui/buttons/ExpandButton'
 import CopyButton from '../../ui/buttons/CopyButton'
 import WrapLinesButton from '../../ui/buttons/LineWrapButton'
-import { HunkListHeaderProps } from './types'
+import { FileViewerHeaderProps } from './types'
 
 const { Text } = Typography
 
@@ -65,22 +66,25 @@ const useStyles = () => {
   )
 }
 
-const HunkListHeader: React.FC<HunkListHeaderProps> = (props) => {
-  const { file, filePath, isCollapsed, isViewed, mode, onWrapLinesChange, toggleCollapsed, toggleViewed, wrapLines } =
-    props
+const FileViewerHeader: React.FC<FileViewerHeaderProps> = (props) => {
+  const { file, onWrapLinesChange, wrapLines } = props
   const styles = useStyles()
 
+  const { isCollapsed, isViewed, toggleCollapsed, toggleViewed } = useFileState(file.key)
+  const { config } = useCodePanelSettings()
+  const mode = config.mode
+
   const handleCopyFilePath = useCallback(() => {
-    navigator.clipboard.writeText(filePath).catch((error) => {
+    navigator.clipboard.writeText(file.key).catch((error) => {
       console.error(error)
     })
-  }, [filePath])
+  }, [file.key])
 
   return (
     <div css={[styles.headerBase, isCollapsed || isViewed ? styles.headerCollapsed : styles.headerExpanded]}>
       <ExpandButton collapsed={isCollapsed} size={16} onClick={() => toggleCollapsed(!isCollapsed)} />
       <FileActivitySummary file={file} />
-      <Text className="file-path">{filePath}</Text>
+      <Text className="file-path">{file.key}</Text>
       <CopyButton onClick={handleCopyFilePath} tooltip="Copy file path" toastText="File path copied to clipboard" />
       {mode === 'unified' && (
         <WrapLinesButton isWrapped={wrapLines} onClick={() => onWrapLinesChange(!wrapLines)} size={16} />
@@ -95,4 +99,4 @@ const HunkListHeader: React.FC<HunkListHeaderProps> = (props) => {
   )
 }
 
-export default HunkListHeader
+export default FileViewerHeader

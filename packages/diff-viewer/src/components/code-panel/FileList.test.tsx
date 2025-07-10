@@ -7,7 +7,7 @@ import { CodePanelConfigProvider } from './providers/code-panel-context'
 import { DiffViewerConfigProvider } from '../diff-viewer/providers/diff-viewer-context'
 import { CodePanel, type FileListProps } from './FileList'
 import { Themes } from '../../themes/themes'
-import type { HunkListProps } from './components/types'
+import type { FileViewerProps } from './components/types'
 import type { Range } from '../diff-viewer/types'
 
 /**
@@ -43,8 +43,8 @@ import type { Range } from '../diff-viewer/types'
  */
 
 // MOCK
-vi.mock('./components/HunkList', () => ({
-  default: (props: HunkListProps) => {
+vi.mock('./components/FileViewer', () => ({
+  default: (props: FileViewerProps) => {
     const { file, id, onLoadMoreLines, maxLinesToFetch } = props
     const range: Range = { start: 1, end: 5 }
     return (

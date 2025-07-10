@@ -3,10 +3,10 @@ import React, { useCallback, useContext, useMemo, useState } from 'react'
 import { useContextSelector } from 'use-context-selector'
 import { ThemeContext } from '../../../themes/providers/theme-context'
 import { CodePanelConfigContext, useFileState } from '../providers/code-panel-context'
-import { HunkDirection, HunkListProps } from './types'
+import { HunkDirection, FileViewerProps } from './types'
 import { useHunkListViewModel } from '../hooks/use-hunk-list-view-model'
 import { DiffLineViewModel } from '../models/DiffLineViewModel'
-import HunkListHeader from './HunkListHeader'
+import FileViewerHeader from './FileViewerHeader'
 import SplitViewer from './SplitViewer'
 import UnifiedViewer from './UnifiedViewer'
 
@@ -45,14 +45,14 @@ const useStyles = () => {
   )
 }
 
-const HunkList: React.FC<HunkListProps> = (props) => {
+const FileViewer: React.FC<FileViewerProps> = (props) => {
   const { file, maxLinesToFetch, onLoadMoreLines, id } = props
   const styles = useStyles()
   const config = useContextSelector(CodePanelConfigContext, (ctx) => {
     if (!ctx) throw new Error('FileViewer must be inside CodePanelConfigProvider')
     return ctx.config
   })
-  const { isCollapsed, isViewed, toggleCollapsed, toggleViewed } = useFileState(file.key)
+  const { isCollapsed } = useFileState(file.key)
   const [wrapLines, setWrapLines] = useState<boolean>(true)
 
   const { hunkList, dispatch } = useHunkListViewModel({
@@ -82,24 +82,14 @@ const HunkList: React.FC<HunkListProps> = (props) => {
 
   return (
     <div id={id}>
-      <HunkListHeader
-        file={file}
-        filePath={hunkList.filePath}
-        isCollapsed={isCollapsed}
-        isViewed={isViewed}
-        mode={config.mode}
-        onWrapLinesChange={setWrapLines}
-        toggleCollapsed={toggleCollapsed}
-        toggleViewed={toggleViewed}
-        wrapLines={wrapLines}
-      />
+      <FileViewerHeader file={file} onWrapLinesChange={setWrapLines} wrapLines={wrapLines} />
 
-      <div css={isCollapsed || isViewed ? styles.bodyCollapsed : styles.bodyExpanded}>
+      <div css={isCollapsed ? styles.bodyCollapsed : styles.bodyExpanded}>
         <div css={styles.hunksContainer}>
           {config.mode === 'split' && (
             <SplitViewer
               lines={hunkList.linePairs}
-              onLoadMoreLines={(line: DiffLineViewModel, direction: string) =>
+              onLoadMoreLines={(line: DiffLineViewModel, direction: HunkDirection) =>
                 void handleLoadMoreLines(line, direction)
               }
               loadMoreLinesCount={maxLinesToFetch}
@@ -120,4 +110,4 @@ const HunkList: React.FC<HunkListProps> = (props) => {
   )
 }
 
-export default HunkList
+export default FileViewer

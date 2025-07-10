@@ -21,6 +21,7 @@ export default defineConfig({
         'src/test/__fixtures__/',
         '**/types.ts',
         '**/index.ts',
+        'src/utils/test/',
         'src/utils/test/__fixtures__/',
         'src/utils/parsers/diff-parser.ts',
       ],

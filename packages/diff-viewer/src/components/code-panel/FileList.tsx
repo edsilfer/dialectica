@@ -5,7 +5,7 @@ import { FileDiff } from '../../models/FileDiff'
 import { ThemeContext } from '../../themes/providers/theme-context'
 import { useDiffViewerConfig } from '../diff-viewer/providers/diff-viewer-context'
 import { LoadMoreLinesHandler } from '../diff-viewer/types'
-import HunkList from './components/HunkList'
+import FileViewer from './components/FileViewer'
 import { CodePanelConfigProvider, useCodePanelConfig } from './providers/code-panel-context'
 
 const useStyles = () => {
@@ -100,7 +100,7 @@ const CodePanelContent: React.FC<FileListProps> = (props) => {
   return (
     <div css={[styles.container, props.css]} className={props.className}>
       {props.files.map((file) => (
-        <HunkList
+        <FileViewer
           key={file.newPath || file.oldPath}
           id={`file-diff-${file.newPath || file.oldPath}`}
           file={file}

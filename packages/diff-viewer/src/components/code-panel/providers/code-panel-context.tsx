@@ -55,7 +55,9 @@ export const CodePanelConfigProvider: React.FC<CodePanelConfigContextProps> = (p
       const prevState = prev.get(fileKey) ?? DEFAULT_FILE_STATE
       if (prevState.isViewed === isViewed) return prev // bail-out
       const next = new Map(prev)
-      next.set(fileKey, { ...prevState, isViewed })
+      // When marking as viewed, also collapse the file
+      const shouldCollapse = isViewed ? true : prevState.isCollapsed
+      next.set(fileKey, { ...prevState, isViewed, isCollapsed: shouldCollapse })
       return next
     })
   }, [])

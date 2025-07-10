@@ -7,7 +7,7 @@ export type DisplayType = 'split' | 'unified'
 export type Side = 'left' | 'right'
 export type HunkDirection = 'up' | 'down' | 'out' | 'in' | 'in_up' | 'in_down'
 
-export interface HunkListProps {
+export interface FileViewerProps {
   /** A unique identifier for the file viewer. */
   id?: string
   /** The file diff object. */
@@ -19,24 +19,11 @@ export interface HunkListProps {
   onLoadMoreLines?: LoadMoreLinesHandler
 }
 
-export interface HunkListHeaderProps {
-  /* Whether the hunk list is collapsed */
-  isCollapsed: boolean
-  /* Whether the hunk list is viewed */
-  isViewed: boolean
+export interface FileViewerHeaderProps {
   /* The file diff */
   file: FileDiff
-  /* The file path */
-  filePath: string
-  /* The display mode */
-  mode: 'split' | 'unified'
   /* Whether the lines are wrapped */
   wrapLines: boolean
-
-  /* Toggles the collapsed state of the hunk list */
-  toggleCollapsed: (collapsed: boolean) => void
-  /* Toggles the viewed state of the hunk list */
-  toggleViewed: (viewed: boolean) => void
   /* Toggles the wrap lines state of the hunk list */
   onWrapLinesChange: (wrapLines: boolean) => void
 }

@@ -219,7 +219,7 @@ describe('CodePanelConfigProvider', () => {
       // EXPECT
       expect(mockWriteStorageValue).toHaveBeenCalledWith('__code_panel_view_state__', {
         config: DEFAULT_CODE_PANEL_CONFIG,
-        fileStates: { 'test.ts': { isCollapsed: false, isViewed: true } },
+        fileStates: { 'test.ts': { isCollapsed: true, isViewed: true } },
       })
     })
   })
@@ -286,7 +286,7 @@ describe('CodePanelConfigProvider', () => {
       })
 
       // EXPECT
-      expect(getContext().getFileState(fileKey)).toEqual({ isCollapsed: false, isViewed: true })
+      expect(getContext().getFileState(fileKey)).toEqual({ isCollapsed: true, isViewed: true })
     })
 
     test('given file collapsed state, when setCollapsed called, expect state updated', async () => {
