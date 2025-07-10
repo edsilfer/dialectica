@@ -139,6 +139,11 @@ const _mockTypography = () => ({
     const { children, href, ...restProps } = props
     return _createTestElement('a', { href, 'data-testid': 'typography-link', ...restProps }, children)
   },
+
+  Paragraph: (props: { children: React.ReactNode; [key: string]: unknown }) => {
+    const { children, ...restProps } = props
+    return _createTestElement('p', { 'data-testid': 'typography-paragraph', ...restProps }, children)
+  },
 })
 
 const _mockTag = () => (props: { children: React.ReactNode; color?: string; [key: string]: unknown }) => {

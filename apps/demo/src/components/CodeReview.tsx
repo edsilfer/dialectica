@@ -2,6 +2,7 @@ import {
   AddButton,
   DefaultToolbar,
   DiffViewer,
+  InlineComment,
   LineMetadata,
   LineRequest,
   LoadMoreLinesResult,
@@ -14,6 +15,7 @@ import useGetPrDiff from '../hooks/use-get-pr-diff'
 import useGetPrMetadata from '../hooks/use-get-pr-metadata'
 import ErrorCard from './ErrorCard'
 import InfoCard from './InfoCard'
+import mockComment from '../__fixtures__/mock-inline-comment'
 
 interface CodeReviewProps {
   /** The error to display. */
@@ -73,6 +75,15 @@ export default function CodeReview({ error, prMetadata, prDiff, displayedDiff, l
             splitDockIdx: 1,
             content: <AddButton key="add-button" onClick={handleAddButtonClick} />,
             onDock: handleDocking,
+          },
+        ]}
+        widgets={[
+          {
+            content: <InlineComment comment={mockComment} />,
+            line: 186,
+            side: 'right',
+            position: 'bottom',
+            filepath: 'packages/react-client/src/ReactFlightClient.js',
           },
         ]}
       />

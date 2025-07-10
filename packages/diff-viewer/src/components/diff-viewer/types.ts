@@ -32,6 +32,22 @@ export interface Overlay {
   onDock?: (metadata: LineMetadata) => void
 }
 
+/**
+ * A widget is content to be displayed at a specific line position.
+ */
+export interface Widget {
+  /** Custom React component to be displayed as widget content */
+  content: React.ReactNode
+  /** The line number where the widget should be positioned */
+  line: number
+  /** The position of the widget relative to the line */
+  position: 'top' | 'bottom'
+  /** The filepath where the widget should be displayed */
+  filepath: string
+  /** The side where the widget should be positioned (for split view) */
+  side: 'left' | 'right'
+}
+
 export interface LineRequest {
   /** The key/path of the file needing more lines */
   fileKey: string
@@ -67,6 +83,8 @@ export interface DiffViewerProps {
   maxLinesToFetch?: number
   /** Array of overlays to display on top of line columns when hovered. */
   overlays?: Overlay[]
+  /** Array of widgets to display at specific line positions. */
+  widgets?: Widget[]
 
   /** Called when the user requests to load (expand) more lines for a specific file. */
   onLoadMoreLines?: LoadMoreLinesHandler

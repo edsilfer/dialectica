@@ -909,4 +909,571 @@ describe('UnifiedViewer', () => {
       })
     })
   })
+
+  describe('widget scenarios', () => {
+    describe('happy path', () => {
+      it('given widget with top position on existing line, when rendered, expect widget rendered above line', () => {
+        // GIVEN
+        const widgetContent = <span data-testid="top-widget">Top Widget</span>
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 5 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          widgets: [{ content: widgetContent, line: 5, position: 'top', filepath: 'test.js', side: 'left' }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        expect(screen.getByTestId('top-widget')).toBeInTheDocument()
+        const rows = screen.getAllByRole('row')
+        expect(rows).toHaveLength(2) // widget row + line row
+        expect(rows[0]).toContainElement(screen.getByTestId('top-widget'))
+      })
+
+      it('given widget with bottom position on existing line, when rendered, expect widget rendered below line', () => {
+        // GIVEN
+        const widgetContent = <span data-testid="bottom-widget">Bottom Widget</span>
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 5 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          widgets: [{ content: widgetContent, line: 5, position: 'bottom', filepath: 'test.js', side: 'left' }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        expect(screen.getByTestId('bottom-widget')).toBeInTheDocument()
+        const rows = screen.getAllByRole('row')
+        expect(rows).toHaveLength(2) // line row + widget row
+        expect(rows[1]).toContainElement(screen.getByTestId('bottom-widget'))
+      })
+
+      it('given widget on line with left line number only, when rendered, expect widget rendered correctly', () => {
+        // GIVEN
+        const widgetContent = <span data-testid="left-only-widget">Left Only Widget</span>
+        const line = createMockLine({ lineNumberLeft: 10, lineNumberRight: null })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          widgets: [{ content: widgetContent, line: 10, position: 'top', filepath: 'test.js', side: 'left' }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        expect(screen.getByTestId('left-only-widget')).toBeInTheDocument()
+      })
+
+      it('given widget on line with right line number only, when rendered, expect widget rendered correctly', () => {
+        // GIVEN
+        const widgetContent = <span data-testid="right-only-widget">Right Only Widget</span>
+        // Create a line with explicit null left line number and right line number 15
+        const line = new DiffLineViewModel(
+          'add', // typeLeft
+          '+added line', // contentLeft
+          '<span>+added line</span>', // highlightedContentLeft
+          null, // lineNumberLeft - explicitly null
+          null, // typeRight
+          null, // contentRight
+          null, // highlightedContentRight
+          15, // lineNumberRight - explicitly 15
+          undefined, // hunkDirection
+        )
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          widgets: [{ content: widgetContent, line: 15, position: 'top', filepath: 'test.js', side: 'right' }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        // The unified line number should be 15 (right line number) since left is null
+        expect(screen.getByTestId('right-only-widget')).toBeInTheDocument()
+        const rows = screen.getAllByRole('row')
+        expect(rows).toHaveLength(2) // widget row + line row
+        expect(rows[0]).toContainElement(screen.getByTestId('right-only-widget'))
+      })
+
+      it('given multiple widgets on same line, when rendered, expect all widgets rendered in correct order', () => {
+        // GIVEN
+        const topWidget = <span data-testid="top-widget">Top</span>
+        const bottomWidget = <span data-testid="bottom-widget">Bottom</span>
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 5 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          widgets: [
+            { content: topWidget, line: 5, position: 'top', filepath: 'test.js', side: 'left' },
+            { content: bottomWidget, line: 5, position: 'bottom', filepath: 'test.js', side: 'left' },
+          ],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        expect(screen.getByTestId('top-widget')).toBeInTheDocument()
+        expect(screen.getByTestId('bottom-widget')).toBeInTheDocument()
+        const rows = screen.getAllByRole('row')
+        expect(rows).toHaveLength(3) // top widget + line + bottom widget
+        expect(rows[0]).toContainElement(screen.getByTestId('top-widget'))
+        expect(rows[2]).toContainElement(screen.getByTestId('bottom-widget'))
+      })
+
+      it('given widgets on different lines, when rendered, expect widgets rendered on correct lines', () => {
+        // GIVEN
+        const widget1 = <span data-testid="widget-1">Widget 1</span>
+        const widget2 = <span data-testid="widget-2">Widget 2</span>
+        const line1 = createMockLine({ lineNumberLeft: 1, lineNumberRight: 1 })
+        const line2 = createMockLine({ lineNumberLeft: 2, lineNumberRight: 2 })
+        const props = createUnifiedViewerProps({
+          lines: [line1, line2],
+          widgets: [
+            { content: widget1, line: 1, position: 'top', filepath: 'test.js', side: 'left' },
+            { content: widget2, line: 2, position: 'bottom', filepath: 'test.js', side: 'left' },
+          ],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        expect(screen.getByTestId('widget-1')).toBeInTheDocument()
+        expect(screen.getByTestId('widget-2')).toBeInTheDocument()
+        const rows = screen.getAllByRole('row')
+        expect(rows).toHaveLength(4) // widget1 + line1 + line2 + widget2
+      })
+
+      it('given complex widget content with React component, when rendered, expect component rendered correctly', () => {
+        // GIVEN
+        const ComplexWidget = () => (
+          <div data-testid="complex-widget">
+            <button>Widget Action</button>
+            <span>Widget Info</span>
+          </div>
+        )
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 5 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          widgets: [{ content: <ComplexWidget />, line: 5, position: 'top', filepath: 'test.js', side: 'left' }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        expect(screen.getByTestId('complex-widget')).toBeInTheDocument()
+        expect(screen.getByRole('button', { name: 'Widget Action' })).toBeInTheDocument()
+        expect(screen.getByText('Widget Info')).toBeInTheDocument()
+      })
+
+      it('given widget with colspan 3, when rendered, expect widget spans all columns', () => {
+        // GIVEN
+        const widgetContent = <span data-testid="spanning-widget">Spanning Widget</span>
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 5 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          widgets: [{ content: widgetContent, line: 5, position: 'top', filepath: 'test.js', side: 'left' }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        const widgetRow = screen.getAllByRole('row')[0]
+        const widgetCell = widgetRow.querySelector('td')
+        expect(widgetCell).toHaveAttribute('colspan', '3')
+        expect(widgetCell).toContainElement(screen.getByTestId('spanning-widget'))
+      })
+    })
+
+    describe('edge cases', () => {
+      it('given widget on non-existing line, when rendered, expect widget not rendered', () => {
+        // GIVEN
+        const widgetContent = <span data-testid="non-existing-widget">Non-existing Widget</span>
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 5 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          widgets: [{ content: widgetContent, line: 999, position: 'top', filepath: 'test.js', side: 'left' }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        expect(screen.queryByTestId('non-existing-widget')).not.toBeInTheDocument()
+        const rows = screen.getAllByRole('row')
+        expect(rows).toHaveLength(1) // only the line row, no widget row
+      })
+
+      it('given widget on line with null line numbers, when rendered, expect widget not rendered', () => {
+        // GIVEN
+        const widgetContent = <span data-testid="null-line-widget">Null Line Widget</span>
+        const line = createMockLine({ lineNumberLeft: null, lineNumberRight: null })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          widgets: [{ content: widgetContent, line: 0, position: 'top', filepath: 'test.js', side: 'left' }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        expect(screen.queryByTestId('null-line-widget')).not.toBeInTheDocument()
+      })
+
+      it('given no widgets prop, when rendered, expect no widget rows and no errors', () => {
+        // GIVEN
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 5 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          // no widgets prop
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        const rows = screen.getAllByRole('row')
+        expect(rows).toHaveLength(1) // only the line row
+      })
+
+      it('given empty widgets array, when rendered, expect no widget rows and no errors', () => {
+        // GIVEN
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 5 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          widgets: [],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        const rows = screen.getAllByRole('row')
+        expect(rows).toHaveLength(1) // only the line row
+      })
+
+      it('given widget with null content, when rendered, expect no rendering errors', () => {
+        // GIVEN
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 5 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          widgets: [{ content: null, line: 5, position: 'top', filepath: 'test.js', side: 'left' }],
+        })
+
+        // WHEN & EXPECT
+        expect(() => {
+          render(<UnifiedViewer {...props} />)
+        }).not.toThrow()
+      })
+
+      it('given widget with undefined content, when rendered, expect no rendering errors', () => {
+        // GIVEN
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 5 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          widgets: [
+            { content: undefined as React.ReactNode, line: 5, position: 'top', filepath: 'test.js', side: 'left' },
+          ],
+        })
+
+        // WHEN & EXPECT
+        expect(() => {
+          render(<UnifiedViewer {...props} />)
+        }).not.toThrow()
+      })
+
+      it('given widget with invalid position, when rendered, expect runtime error due to missing validation', () => {
+        // GIVEN
+        const widgetContent = <span data-testid="invalid-position-widget">Invalid Position Widget</span>
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 5 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          widgets: [
+            {
+              content: widgetContent,
+              line: 5,
+              position: 'invalid' as 'top' | 'bottom',
+              filepath: 'test.js',
+              side: 'left',
+            },
+          ],
+        })
+
+        // WHEN & EXPECT
+        expect(() => {
+          render(<UnifiedViewer {...props} />)
+        }).toThrow("Cannot read properties of undefined (reading 'push')")
+      })
+
+      it('given widget on hunk line, when rendered, expect widget rendered correctly', () => {
+        // GIVEN
+        const widgetContent = <span data-testid="hunk-widget">Hunk Widget</span>
+        const hunkLine = createHunkLine('@@ -1,3 +1,3 @@', 'out')
+        const props = createUnifiedViewerProps({
+          lines: [hunkLine],
+          widgets: [{ content: widgetContent, line: 0, position: 'top', filepath: 'test.js', side: 'left' }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        expect(screen.getByTestId('hunk-widget')).toBeInTheDocument()
+      })
+
+      it('given multiple widgets with same line and position, when rendered, expect all widgets rendered', () => {
+        // GIVEN
+        const widget1 = <span data-testid="duplicate-widget-1">Duplicate 1</span>
+        const widget2 = <span data-testid="duplicate-widget-2">Duplicate 2</span>
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 5 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          widgets: [
+            { content: widget1, line: 5, position: 'top', filepath: 'test.js', side: 'left' },
+            { content: widget2, line: 5, position: 'top', filepath: 'test.js', side: 'left' },
+          ],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        expect(screen.getByTestId('duplicate-widget-1')).toBeInTheDocument()
+        expect(screen.getByTestId('duplicate-widget-2')).toBeInTheDocument()
+        const rows = screen.getAllByRole('row')
+        expect(rows).toHaveLength(3) // widget1 + widget2 + line
+      })
+
+      it('given widget with negative line number, when rendered, expect widget not rendered', () => {
+        // GIVEN
+        const widgetContent = <span data-testid="negative-line-widget">Negative Line Widget</span>
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 5 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          widgets: [{ content: widgetContent, line: -1, position: 'top', filepath: 'test.js', side: 'left' }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        expect(screen.queryByTestId('negative-line-widget')).not.toBeInTheDocument()
+      })
+
+      it('given widget with very large line number, when rendered, expect widget not rendered', () => {
+        // GIVEN
+        const widgetContent = <span data-testid="large-line-widget">Large Line Widget</span>
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 5 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          widgets: [{ content: widgetContent, line: 999999, position: 'top', filepath: 'test.js', side: 'left' }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        expect(screen.queryByTestId('large-line-widget')).not.toBeInTheDocument()
+      })
+
+      it('given widget with empty string content, when rendered, expect widget rendered with empty content', () => {
+        // GIVEN
+        const widgetContent = <span data-testid="empty-content-widget"></span>
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 5 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          widgets: [{ content: widgetContent, line: 5, position: 'top', filepath: 'test.js', side: 'left' }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        expect(screen.getByTestId('empty-content-widget')).toBeInTheDocument()
+      })
+
+      it('given widget with very long content, when rendered, expect content displayed without truncation', () => {
+        // GIVEN
+        const longContent = 'a'.repeat(1000)
+        const widgetContent = <span data-testid="long-content-widget">{longContent}</span>
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 5 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          widgets: [{ content: widgetContent, line: 5, position: 'top', filepath: 'test.js', side: 'left' }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        expect(screen.getByText(longContent)).toBeInTheDocument()
+      })
+
+      it('given widget with special characters in content, when rendered, expect content displayed correctly', () => {
+        // GIVEN
+        const specialContent = '<script>alert("test")</script> & <div>content</div>'
+        const widgetContent = <span data-testid="special-content-widget">{specialContent}</span>
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 5 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          widgets: [{ content: widgetContent, line: 5, position: 'top', filepath: 'test.js', side: 'left' }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        expect(screen.getByText(specialContent)).toBeInTheDocument()
+      })
+
+      it('given widget with React fragments, when rendered, expect content displayed correctly', () => {
+        // GIVEN
+        const widgetContent = (
+          <>
+            <span data-testid="fragment-widget-1">Fragment 1</span>
+            <span data-testid="fragment-widget-2">Fragment 2</span>
+          </>
+        )
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 5 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          widgets: [{ content: widgetContent, line: 5, position: 'top', filepath: 'test.js', side: 'left' }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        expect(screen.getByTestId('fragment-widget-1')).toBeInTheDocument()
+        expect(screen.getByTestId('fragment-widget-2')).toBeInTheDocument()
+      })
+
+      it('given widget with array of React elements, when rendered, expect all elements displayed', () => {
+        // GIVEN
+        const widgetContent = [
+          <span key="1" data-testid="array-widget-1">
+            Array 1
+          </span>,
+          <span key="2" data-testid="array-widget-2">
+            Array 2
+          </span>,
+        ]
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 5 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          widgets: [{ content: widgetContent, line: 5, position: 'top', filepath: 'test.js', side: 'left' }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        expect(screen.getByTestId('array-widget-1')).toBeInTheDocument()
+        expect(screen.getByTestId('array-widget-2')).toBeInTheDocument()
+      })
+    })
+
+    describe('widget deduplication scenarios', () => {
+      it('given deletion and insertion lines with same line number, when both have widgets, expect widgets rendered only once', () => {
+        // GIVEN
+        const widgetContent = <span data-testid="deduplicated-widget">Deduplicated Widget</span>
+        const deletionLine = createMockLine({
+          typeLeft: 'delete',
+          lineNumberLeft: 5,
+          lineNumberRight: null,
+        })
+        const insertionLine = createMockLine({
+          typeLeft: 'add',
+          lineNumberLeft: null,
+          lineNumberRight: 5,
+        })
+        const props = createUnifiedViewerProps({
+          lines: [deletionLine, insertionLine],
+          widgets: [{ content: widgetContent, line: 5, position: 'top', filepath: 'test.js', side: 'left' }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        const widgetElements = screen.getAllByTestId('deduplicated-widget')
+        expect(widgetElements).toHaveLength(1) // Should only render once
+      })
+
+      it('given multiple lines with same unified line number, when widgets exist, expect widgets rendered only once per position', () => {
+        // GIVEN
+        const topWidget = <span data-testid="top-dedup-widget">Top Widget</span>
+        const bottomWidget = <span data-testid="bottom-dedup-widget">Bottom Widget</span>
+        const line1 = createMockLine({ lineNumberLeft: 5, lineNumberRight: 5 })
+        const line2 = createMockLine({ lineNumberLeft: 5, lineNumberRight: 5 })
+        const props = createUnifiedViewerProps({
+          lines: [line1, line2],
+          widgets: [
+            { content: topWidget, line: 5, position: 'top', filepath: 'test.js', side: 'left' },
+            { content: bottomWidget, line: 5, position: 'bottom', filepath: 'test.js', side: 'left' },
+          ],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        expect(screen.getAllByTestId('top-dedup-widget')).toHaveLength(1)
+        expect(screen.getAllByTestId('bottom-dedup-widget')).toHaveLength(1)
+        const rows = screen.getAllByRole('row')
+        expect(rows).toHaveLength(4) // top widget + line1 + line2 + bottom widget
+      })
+    })
+
+    describe('widget key generation scenarios', () => {
+      it('given multiple widgets, when rendered, expect unique keys for each widget row', () => {
+        // GIVEN
+        const widget1 = <span data-testid="key-widget-1">Widget 1</span>
+        const widget2 = <span data-testid="key-widget-2">Widget 2</span>
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 5 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          widgets: [
+            { content: widget1, line: 5, position: 'top', filepath: 'test.js', side: 'left' },
+            { content: widget2, line: 5, position: 'bottom', filepath: 'test.js', side: 'left' },
+          ],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        expect(screen.getByTestId('key-widget-1')).toBeInTheDocument()
+        expect(screen.getByTestId('key-widget-2')).toBeInTheDocument()
+        // Keys should be unique: widget-top-5-0 and widget-bottom-5-0
+      })
+
+      it('given widgets on different lines, when rendered, expect line-specific keys', () => {
+        // GIVEN
+        const widget1 = <span data-testid="line-key-widget-1">Line 1 Widget</span>
+        const widget2 = <span data-testid="line-key-widget-2">Line 2 Widget</span>
+        const line1 = createMockLine({ lineNumberLeft: 1, lineNumberRight: 1 })
+        const line2 = createMockLine({ lineNumberLeft: 2, lineNumberRight: 2 })
+        const props = createUnifiedViewerProps({
+          lines: [line1, line2],
+          widgets: [
+            { content: widget1, line: 1, position: 'top', filepath: 'test.js', side: 'left' },
+            { content: widget2, line: 2, position: 'top', filepath: 'test.js', side: 'left' },
+          ],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+
+        // EXPECT
+        expect(screen.getByTestId('line-key-widget-1')).toBeInTheDocument()
+        expect(screen.getByTestId('line-key-widget-2')).toBeInTheDocument()
+        // Keys should be: widget-top-1-0 and widget-top-2-0
+      })
+    })
+  })
 })

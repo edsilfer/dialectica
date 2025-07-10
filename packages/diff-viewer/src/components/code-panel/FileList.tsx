@@ -4,7 +4,7 @@ import React, { useContext, useEffect } from 'react'
 import { FileDiff } from '../../models/FileDiff'
 import { ThemeContext } from '../../themes/providers/theme-context'
 import { useDiffViewerConfig } from '../diff-viewer/providers/diff-viewer-context'
-import { LoadMoreLinesHandler, Overlay } from '../diff-viewer/types'
+import { LoadMoreLinesHandler, Overlay, Widget } from '../diff-viewer/types'
 import FileViewer from './components/FileViewer'
 import { CodePanelConfigProvider, useCodePanelConfig } from './providers/code-panel-context'
 
@@ -40,6 +40,8 @@ export type FileListProps = {
   maxLinesToFetch?: number
   /** Array of overlays to display on top of line columns when hovered. */
   overlays?: Overlay[]
+  /** Array of widgets to display at specific line positions. */
+  widgets?: Widget[]
 
   /** Called when the user requests to load (expand) more lines for a specific file. */
   onLoadMoreLines?: LoadMoreLinesHandler
@@ -109,6 +111,7 @@ const CodePanelContent: React.FC<FileListProps> = (props) => {
           onLoadMoreLines={props.onLoadMoreLines}
           maxLinesToFetch={props.maxLinesToFetch}
           overlays={props.overlays}
+          widgets={props.widgets}
         />
       ))}
     </div>

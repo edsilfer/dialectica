@@ -47,7 +47,7 @@ const useStyles = () => {
 }
 
 const FileViewer: React.FC<FileViewerProps> = (props) => {
-  const { file, maxLinesToFetch, onLoadMoreLines, id, overlays } = props
+  const { file, maxLinesToFetch, onLoadMoreLines, id, overlays, widgets } = props
   const styles = useStyles()
   const config = useContextSelector(CodePanelConfigContext, (ctx) => {
     if (!ctx) throw new Error('FileViewer must be inside CodePanelConfigProvider')
@@ -55,6 +55,13 @@ const FileViewer: React.FC<FileViewerProps> = (props) => {
   })
   const { isCollapsed } = useFileState(file.key)
   const [wrapLines, setWrapLines] = useState<boolean>(true)
+
+  // Filter widgets for this specific file
+  const fileWidgets = useMemo(() => {
+    if (!widgets) return undefined
+    const filePath = file.newPath || file.oldPath
+    return widgets.filter((widget) => widget.filepath === filePath)
+  }, [widgets, file.newPath, file.oldPath])
 
   const { hunkList, dispatch } = useHunkListViewModel({
     file: file,
@@ -103,6 +110,7 @@ const FileViewer: React.FC<FileViewerProps> = (props) => {
               }
               loadMoreLinesCount={maxLinesToFetch ?? 10}
               overlays={overlays}
+              widgets={fileWidgets}
             />
           )}
           {config.mode === 'unified' && (
@@ -113,6 +121,7 @@ const FileViewer: React.FC<FileViewerProps> = (props) => {
               onLoadMoreLines={(line, direction) => void handleLoadMoreLines(line, direction)}
               loadMoreLinesCount={maxLinesToFetch ?? 10}
               overlays={overlays}
+              widgets={fileWidgets}
             />
           )}
         </div>

@@ -1,2 +1,3 @@
 export { PullRequestHeader } from './PullRequestHeader'
-export type { PullRequestMetadata } from './types'
+export { InlineComment } from './InlineComment'
+export type { PullRequestMetadata, InlineCommentProps, InlineCommentData, InlineCommentAuthor } from './types'

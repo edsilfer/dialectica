@@ -1,8 +1,9 @@
-import { LoadMoreLinesHandler, Overlay } from '../../diff-viewer/types'
+import { LoadMoreLinesHandler, Overlay, Widget } from '../../diff-viewer/types'
 import { FileDiff } from '../../../models/FileDiff'
 import { DiffLineViewModel } from '../models/DiffLineViewModel'
 
 export type DiffLineType = 'add' | 'delete' | 'context' | 'hunk' | 'empty'
+export { Widget }
 export type DisplayType = 'split' | 'unified'
 export type Side = 'left' | 'right'
 export type HunkDirection = 'up' | 'down' | 'out' | 'in' | 'in_up' | 'in_down'
@@ -16,6 +17,8 @@ export interface FileViewerProps {
   maxLinesToFetch?: number
   /** Array of overlays to display on top of line columns when hovered. */
   overlays?: Overlay[]
+  /** Array of widgets to display at specific line positions. */
+  widgets?: Widget[]
 
   /** Called when user requests to load (expand) more lines around a hunk. */
   onLoadMoreLines?: LoadMoreLinesHandler
@@ -41,6 +44,8 @@ export interface UnifiedViewerProps {
   loadMoreLinesCount?: number
   /** Array of overlays to display on top of line columns when hovered. */
   overlays?: Overlay[]
+  /** Array of widgets to display at specific line positions. */
+  widgets?: Widget[]
 
   /** Called when user requests to load (expand) more lines around a hunk. */
   onLoadMoreLines?: (line: DiffLineViewModel, direction: HunkDirection) => void
@@ -53,6 +58,8 @@ export interface SplitViewerProps {
   loadMoreLinesCount?: number
   /** Array of overlays to display on top of line columns when hovered. */
   overlays?: Overlay[]
+  /** Array of widgets to display at specific line positions. */
+  widgets?: Widget[]
 
   /** Called when user requests to load (expand) more lines around a hunk. */
   onLoadMoreLines?: (line: DiffLineViewModel, direction: HunkDirection) => void
