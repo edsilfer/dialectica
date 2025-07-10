@@ -9,6 +9,18 @@ export interface Range {
   end: number
 }
 
+/**
+ * An overlay is content to be displayed on top of the line column when the line is hovered.
+ */
+export interface Overlay {
+  /** Custom React component to be displayed as overlay content */
+  content: React.ReactNode
+  /** Index of the line column where the overlay should be positioned in unified view. */
+  unifiedDocking: 0 | 1 | 2 | 3
+  /** Index of the line column where the overlay should be positioned in split view. */
+  splitDocking: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
+}
+
 export interface LineRequest {
   /** The key/path of the file needing more lines */
   fileKey: string
@@ -42,6 +54,8 @@ export interface DiffViewerProps {
   toolbar?: React.ReactNode
   /** Number of lines to request when user clicks "load more". Defaults to 5. */
   maxLinesToFetch?: number
+  /** Array of overlays to display on top of line columns when hovered. */
+  overlays?: Overlay[]
 
   /** Called when the user requests to load (expand) more lines for a specific file. */
   onLoadMoreLines?: LoadMoreLinesHandler

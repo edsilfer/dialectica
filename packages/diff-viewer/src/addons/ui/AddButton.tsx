@@ -1,8 +1,17 @@
 import { PlusOutlined } from '@ant-design/icons'
-import { css } from '@emotion/react'
+import { css, Interpolation, Theme } from '@emotion/react'
 import React, { useContext } from 'react'
-import { ThemeContext } from '../../../themes/providers/theme-context'
-import { AddButtonProps } from './types'
+import { ThemeContext } from '../../themes/providers/theme-context'
+
+export interface AddButtonProps {
+  className?: string
+  // Kept to make typescript happy
+  css?: Interpolation<Theme>
+
+  // Callbacks ____________________________________________
+  /** Optional click handler attached to the add button element */
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
+}
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -39,7 +48,7 @@ const useStyles = () => {
   }
 }
 
-const AddButton: React.FC<AddButtonProps> = ({ className, css: _css, onClick }) => {
+export const AddButton: React.FC<AddButtonProps> = ({ className, css: _css, onClick }) => {
   const styles = useStyles()
   return (
     <button css={styles.button} className={className} onClick={onClick}>
@@ -47,5 +56,3 @@ const AddButton: React.FC<AddButtonProps> = ({ className, css: _css, onClick }) 
     </button>
   )
 }
-
-export default AddButton

@@ -1,94 +1,93 @@
-import {
-  DefaultToolbar,
-  DiffViewer,
-  LineRequest,
-  ParsedDiff,
-  PullRequestHeader,
-  useDiffViewerConfig,
-} from '@diff-viewer'
+import { LineRequest, LoadMoreLinesResult, useDiffViewerConfig } from '@diff-viewer'
 import { css } from '@emotion/react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Alert } from 'antd'
+import { useCallback, useEffect, useMemo, useReducer } from 'react'
+
 import AppToolbar from './components/AppToolbar'
-import ErrorCard from './components/ErrorCard'
+import CodeReview from './components/CodeReview'
 import Footer from './components/Footer'
-import InfoCard from './components/InfoCard'
-import { ParsedPR } from './components/search-form/types'
+import type { UseGetPrDiffReturn, UseGetPrMetadataReturn } from './hooks/types'
 import useGetPrDiff from './hooks/use-get-pr-diff'
 import useGetPrMetadata from './hooks/use-get-pr-metadata'
 import useLoadMoreLines from './hooks/use-load-more-lines'
 import { useSettings } from './provider/setttings-provider'
-import { parseURL, setURL } from './utils'
-import { Alert } from 'antd'
+import { initialState, prViewReducer } from './reducers'
 
-const createStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) => ({
-  container: css`
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-    gap: ${theme.spacing.sm};
-    padding: ${theme.spacing.md};
-    background-color: ${theme.colors.hunkViewerBg};
-    overflow: hidden;
-  `,
-  content: css`
-    flex: 1;
-    overflow: hidden;
-  `,
-})
+function useStyles({ theme }: ReturnType<typeof useDiffViewerConfig>) {
+  return useMemo(
+    () => ({
+      container: css`
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        gap: ${theme.spacing.sm};
+        padding: ${theme.spacing.md};
+        background-color: ${theme.colors.hunkViewerBg};
+        overflow: hidden;
+      `,
+      content: css`
+        flex: 1;
+        overflow: hidden;
+      `,
+    }),
+    [theme],
+  )
+}
 
 export default function App() {
-  const { theme } = useDiffViewerConfig()
+  const config = useDiffViewerConfig()
+  const styles = useStyles(config)
+
   const { githubPat, useMocks } = useSettings()
-  const styles = useMemo(() => createStyles(theme), [theme])
-  const [selectedPr, setSelectedPr] = useState<ParsedPR | null>(null)
+  const [state, dispatch] = useReducer(prViewReducer, initialState)
 
-  useEffect(() => setSelectedPr(parseURL()), [])
-  useEffect(() => setURL(selectedPr), [selectedPr])
-  const handleSearch = useCallback((pr: ParsedPR) => setSelectedPr(pr), [])
+  useEffect(() => dispatch({ type: 'INITIALIZE_FROM_URL' }), [])
 
-  const prMetadata = useGetPrMetadata({
-    owner: selectedPr?.owner ?? '',
-    repo: selectedPr?.repo ?? '',
-    pullNumber: selectedPr?.prNumber ?? 0,
-  })
+  useEffect(() => void (document.title = state.pageTitle), [state.pageTitle])
+  const updateDiff = useCallback((diff: string | undefined) => {
+    dispatch({ type: 'PARSE_DIFF', payload: diff })
+  }, [])
 
-  // Update browser tab title when PR metadata is loaded
-  useEffect(() => {
-    if (prMetadata.data?.title) {
-      document.title = `${prMetadata.data.title} - Diff Viewer Demo`
-    } else {
-      document.title = 'Diff Viewer Demo'
-    }
-  }, [prMetadata.data?.title])
+  const updatePageTitle = useCallback((prTitle?: string) => {
+    dispatch({ type: 'UPDATE_PAGE_TITLE', payload: prTitle })
+  }, [])
 
-  const prDiff = useGetPrDiff({
-    owner: selectedPr?.owner ?? '',
-    repo: selectedPr?.repo ?? '',
-    pullNumber: selectedPr?.prNumber ?? 0,
-  })
+  const prParams = useMemo(
+    () => ({
+      owner: state.selectedPr?.owner ?? '',
+      repo: state.selectedPr?.repo ?? '',
+      pullNumber: state.selectedPr?.prNumber ?? 0,
+    }),
+    [state.selectedPr],
+  )
 
+  const prMetadata = useGetPrMetadata(prParams)
+  const prDiff = useGetPrDiff(prParams)
   const { fetchLines } = useLoadMoreLines({
-    owner: selectedPr?.owner ?? '',
-    repo: selectedPr?.repo ?? '',
-    pullNumber: selectedPr?.prNumber ?? 0,
+    ...prParams,
     githubToken: githubPat,
     baseSha: prMetadata.data?.base_sha ?? '',
     headSha: prMetadata.data?.head_sha ?? '',
   })
 
-  const displayedDiff = useMemo(() => {
-    if (!prDiff.data || prDiff.data.trim() === '') return undefined
-    try {
-      return ParsedDiff.build(prDiff.data)
-    } catch (error) {
-      console.error('Failed to parse diff:', error)
-      return undefined
-    }
-  }, [prDiff.data])
+  useEffect(() => updateDiff(prDiff.data), [prDiff.data, updateDiff])
+  useEffect(() => updatePageTitle(prMetadata.data?.title), [prMetadata.data?.title, updatePageTitle])
+
+  const computeError = useCallback(
+    (prMetadata: UseGetPrMetadataReturn, prDiff: UseGetPrDiffReturn) => {
+      return !!(
+        prMetadata.error ||
+        prDiff.error ||
+        (!prMetadata.loading && !prMetadata.data) ||
+        (!prDiff.loading && !state.displayedDiff && prDiff.data)
+      )
+    },
+    [state.displayedDiff],
+  )
 
   const loadMore = useCallback(
-    async (request: LineRequest) => {
+    async (request: LineRequest): Promise<LoadMoreLinesResult> => {
       if (!prMetadata.data?.head_sha) {
         throw new Error('Cannot load more lines: PR metadata with head SHA is required')
       }
@@ -97,54 +96,23 @@ export default function App() {
     [fetchLines, prMetadata.data?.head_sha],
   )
 
-  const error =
-    prMetadata.error ||
-    prDiff.error ||
-    (!prMetadata.loading && !prMetadata.data) ||
-    (!prDiff.loading && !displayedDiff && prDiff.data)
-
-  const renderContent = () => {
-    if (error) {
-      const errorMessage = prMetadata.error || prDiff.error || 'Unknown error'
-      const errorObj = typeof errorMessage === 'string' ? new Error(errorMessage) : errorMessage
-      return <ErrorCard error={errorObj} />
-    } else if ((!prMetadata.loading && !prMetadata.data) || selectedPr === null) {
-      return (
-        <InfoCard
-          title="Load a Pull Request"
-          description="Use the search bar above to load a GitHub Pull Request and explore its diff."
-        />
-      )
-    } else if (displayedDiff && prMetadata.data?.head_sha) {
-      return (
-        <DiffViewer
-          diff={displayedDiff}
-          toolbar={
-            <DefaultToolbar
-              loading={prMetadata.loading}
-              header={prMetadata.data ? <PullRequestHeader pr={prMetadata.data} /> : undefined}
-            />
-          }
-          isMetadataLoading={prMetadata.loading}
-          isDiffLoading={prDiff.loading || !prDiff.data}
-          maxLinesToFetch={10}
-          onLoadMoreLines={loadMore}
-        />
-      )
-    } else {
-      return <InfoCard title="Loading Diff" description="Please wait while the diff is being loaded..." />
-    }
-  }
-
   return (
     <div css={styles.container}>
-      <AppToolbar onSearch={handleSearch} />
+      <AppToolbar onSearch={(pr) => dispatch({ type: 'SELECT_PR', payload: pr })} />
 
       {useMocks && (
         <Alert message="All the data is mocked. You can change it in the settings." type="warning" showIcon closable />
       )}
 
-      <div css={styles.content}>{renderContent()}</div>
+      <div css={styles.content}>
+        <CodeReview
+          error={computeError(prMetadata, prDiff)}
+          prMetadata={prMetadata}
+          prDiff={prDiff}
+          displayedDiff={state.displayedDiff}
+          loadMore={loadMore}
+        />
+      </div>
 
       <Footer />
     </div>

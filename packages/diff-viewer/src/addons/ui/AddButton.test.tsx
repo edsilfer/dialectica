@@ -1,14 +1,13 @@
 import { fireEvent, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
 import type React from 'react'
-import type { AddButtonProps } from './types'
-import { createPropsFactory } from '../../../utils/test/generic-test-utils'
+import { describe, expect, it, vi } from 'vitest'
 import {
   expectClickEventToBePassed,
   expectClickHandlerToBeCalled,
-} from '../../../utils/test/components/ui/buttons/test-utils'
-import { render } from '../../../utils/test/render'
-import AddButton from './AddButton'
+} from '../../utils/test/components/ui/buttons/test-utils'
+import { createPropsFactory } from '../../utils/test/generic-test-utils'
+import { render } from '../../utils/test/render'
+import { AddButton, AddButtonProps } from './AddButton'
 
 vi.mock('@ant-design/icons', () => ({
   PlusOutlined: () => <span data-testid="plus-icon">+</span>,

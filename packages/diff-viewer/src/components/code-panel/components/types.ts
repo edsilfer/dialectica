@@ -1,4 +1,4 @@
-import { LoadMoreLinesHandler } from '../../diff-viewer/types'
+import { LoadMoreLinesHandler, Overlay } from '../../diff-viewer/types'
 import { FileDiff } from '../../../models/FileDiff'
 import { DiffLineViewModel } from '../models/DiffLineViewModel'
 
@@ -14,6 +14,8 @@ export interface FileViewerProps {
   file: FileDiff
   /** Number of lines to request when user clicks "load more". Defaults to 5. */
   maxLinesToFetch?: number
+  /** Array of overlays to display on top of line columns when hovered. */
+  overlays?: Overlay[]
 
   /** Called when user requests to load (expand) more lines around a hunk. */
   onLoadMoreLines?: LoadMoreLinesHandler
@@ -37,6 +39,8 @@ export interface UnifiedViewerProps {
   visible?: boolean
   /** Number of lines to request when user clicks "load more". Defaults to 5. */
   loadMoreLinesCount?: number
+  /** Array of overlays to display on top of line columns when hovered. */
+  overlays?: Overlay[]
 
   /** Called when user requests to load (expand) more lines around a hunk. */
   onLoadMoreLines?: (line: DiffLineViewModel, direction: HunkDirection) => void
@@ -47,6 +51,8 @@ export interface SplitViewerProps {
   lines: DiffLineViewModel[]
   /** Number of lines to request when user clicks "load more". Defaults to 5. */
   loadMoreLinesCount?: number
+  /** Array of overlays to display on top of line columns when hovered. */
+  overlays?: Overlay[]
 
   /** Called when user requests to load (expand) more lines around a hunk. */
   onLoadMoreLines?: (line: DiffLineViewModel, direction: HunkDirection) => void

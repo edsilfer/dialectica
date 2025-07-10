@@ -164,6 +164,7 @@ const DiffViewerContent: React.FC<DiffViewerProps> = (props) => {
         css={styles.diffViewer}
         onLoadMoreLines={props.onLoadMoreLines}
         maxLinesToFetch={props.maxLinesToFetch}
+        overlays={props.overlays}
       />
     ),
     [
@@ -174,6 +175,7 @@ const DiffViewerContent: React.FC<DiffViewerProps> = (props) => {
       styles.diffViewer,
       props.onLoadMoreLines,
       props.maxLinesToFetch,
+      props.overlays,
     ],
   )
 

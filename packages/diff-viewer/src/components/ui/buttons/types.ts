@@ -1,16 +1,6 @@
-import { Interpolation, SerializedStyles, Theme } from '@emotion/react'
+import { SerializedStyles } from '@emotion/react'
 import React from 'react'
 import { HunkDirection } from '../../code-panel/components/types'
-
-export interface AddButtonProps {
-  className?: string
-  // Kept to make typescript happy
-  css?: Interpolation<Theme>
-
-  // Callbacks ____________________________________________
-  /** Optional click handler attached to the add button element */
-  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
-}
 
 export interface ExpandButtonProps {
   /** Whether the section is currently collapsed */
