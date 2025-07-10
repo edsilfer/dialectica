@@ -565,13 +565,13 @@ describe('UnifiedViewer', () => {
 
   describe('overlay scenarios', () => {
     describe('happy path', () => {
-      it('given overlay with dockIndex 0, when line hovered, expect overlay rendered in left number cell', () => {
+      it('given overlay with unifiedDockIdx 0, when line hovered, expect overlay rendered in left number cell', () => {
         // GIVEN
         const overlayContent = <span data-testid="test-overlay-0">Overlay 0</span>
         const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 10 })
         const props = createUnifiedViewerProps({
           lines: [line],
-          overlays: [{ content: overlayContent, dockIndex: 0 }],
+          overlays: [{ content: overlayContent, unifiedDockIdx: 0, splitDockIdx: 0 }],
         })
 
         // WHEN
@@ -585,13 +585,13 @@ describe('UnifiedViewer', () => {
         expect(leftNumberCell).toContainElement(screen.getByTestId('test-overlay-0'))
       })
 
-      it('given overlay with dockIndex 1, when line hovered, expect overlay rendered in right number cell', () => {
+      it('given overlay with unifiedDockIdx 1, when line hovered, expect overlay rendered in right number cell', () => {
         // GIVEN
         const overlayContent = <span data-testid="test-overlay-1">Overlay 1</span>
         const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 10 })
         const props = createUnifiedViewerProps({
           lines: [line],
-          overlays: [{ content: overlayContent, dockIndex: 1 }],
+          overlays: [{ content: overlayContent, unifiedDockIdx: 1, splitDockIdx: 1 }],
         })
 
         // WHEN
@@ -605,13 +605,13 @@ describe('UnifiedViewer', () => {
         expect(rightNumberCell).toContainElement(screen.getByTestId('test-overlay-1'))
       })
 
-      it('given overlay with dockIndex 2, when line hovered, expect overlay rendered in code cell', () => {
+      it('given overlay with unifiedDockIdx 2, when line hovered, expect overlay rendered in code cell', () => {
         // GIVEN
         const overlayContent = <span data-testid="test-overlay-2">Overlay 2</span>
         const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 10 })
         const props = createUnifiedViewerProps({
           lines: [line],
-          overlays: [{ content: overlayContent, dockIndex: 2 }],
+          overlays: [{ content: overlayContent, unifiedDockIdx: 2, splitDockIdx: 1 }],
         })
 
         // WHEN
@@ -625,7 +625,7 @@ describe('UnifiedViewer', () => {
         expect(codeCell).toContainElement(screen.getByTestId('test-overlay-2'))
       })
 
-      it('given multiple overlays with different dockIndex, when line hovered, expect all overlays rendered in correct cells', () => {
+      it('given multiple overlays with different unifiedDockIdx, when line hovered, expect all overlays rendered in correct cells', () => {
         // GIVEN
         const overlay0 = <span data-testid="overlay-0">Left</span>
         const overlay1 = <span data-testid="overlay-1">Right</span>
@@ -634,9 +634,9 @@ describe('UnifiedViewer', () => {
         const props = createUnifiedViewerProps({
           lines: [line],
           overlays: [
-            { content: overlay0, dockIndex: 0 },
-            { content: overlay1, dockIndex: 1 },
-            { content: overlay2, dockIndex: 2 },
+            { content: overlay0, unifiedDockIdx: 0, splitDockIdx: 0 },
+            { content: overlay1, unifiedDockIdx: 1, splitDockIdx: 1 },
+            { content: overlay2, unifiedDockIdx: 2, splitDockIdx: 1 },
           ],
         })
 
@@ -656,7 +656,7 @@ describe('UnifiedViewer', () => {
         expect(cells[2]).toContainElement(screen.getByTestId('overlay-2'))
       })
 
-      it('given multiple overlays with same dockIndex, when line hovered, expect all overlays rendered in target cell', () => {
+      it('given multiple overlays with same unifiedDockIdx, when line hovered, expect all overlays rendered in target cell', () => {
         // GIVEN
         const overlay1 = <span data-testid="overlay-first">First</span>
         const overlay2 = <span data-testid="overlay-second">Second</span>
@@ -664,8 +664,8 @@ describe('UnifiedViewer', () => {
         const props = createUnifiedViewerProps({
           lines: [line],
           overlays: [
-            { content: overlay1, dockIndex: 0 },
-            { content: overlay2, dockIndex: 0 },
+            { content: overlay1, unifiedDockIdx: 0, splitDockIdx: 0 },
+            { content: overlay2, unifiedDockIdx: 0, splitDockIdx: 0 },
           ],
         })
 
@@ -689,7 +689,7 @@ describe('UnifiedViewer', () => {
         const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 10 })
         const props = createUnifiedViewerProps({
           lines: [line],
-          overlays: [{ content: overlayContent, dockIndex: 0 }],
+          overlays: [{ content: overlayContent, unifiedDockIdx: 0, splitDockIdx: 0 }],
         })
 
         // WHEN
@@ -721,7 +721,7 @@ describe('UnifiedViewer', () => {
         const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 10 })
         const props = createUnifiedViewerProps({
           lines: [line],
-          overlays: [{ content: <ComplexOverlay />, dockIndex: 2 }],
+          overlays: [{ content: <ComplexOverlay />, unifiedDockIdx: 2, splitDockIdx: 1 }],
         })
 
         // WHEN
@@ -789,8 +789,8 @@ describe('UnifiedViewer', () => {
         const props = createUnifiedViewerProps({
           lines: [line],
           overlays: [
-            { content: invalidOverlay, dockIndex: 3 as 0 | 1 | 2 }, // invalid index
-            { content: validOverlay, dockIndex: 0 }, // valid index
+            { content: invalidOverlay, unifiedDockIdx: 3 as 0 | 1 | 2, splitDockIdx: 0 }, // invalid index
+            { content: validOverlay, unifiedDockIdx: 0, splitDockIdx: 0 }, // valid index
           ],
         })
 
@@ -810,7 +810,7 @@ describe('UnifiedViewer', () => {
         const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 10 })
         const props = createUnifiedViewerProps({
           lines: [line],
-          overlays: [{ content: negativeOverlay, dockIndex: -1 as 0 | 1 | 2 }],
+          overlays: [{ content: negativeOverlay, unifiedDockIdx: -1 as 0 | 1 | 2, splitDockIdx: 0 }],
         })
 
         // WHEN
@@ -828,7 +828,7 @@ describe('UnifiedViewer', () => {
         const hunkLine = createHunkLine('@@ -1,3 +1,3 @@', 'out')
         const props = createUnifiedViewerProps({
           lines: [hunkLine],
-          overlays: [{ content: overlayContent, dockIndex: 0 }],
+          overlays: [{ content: overlayContent, unifiedDockIdx: 0, splitDockIdx: 0 }],
         })
 
         // WHEN
@@ -847,7 +847,7 @@ describe('UnifiedViewer', () => {
         const line2 = createMockLine({ lineNumberLeft: 2, lineNumberRight: 2 })
         const props = createUnifiedViewerProps({
           lines: [line1, line2],
-          overlays: [{ content: overlay, dockIndex: 0 }],
+          overlays: [{ content: overlay, unifiedDockIdx: 0, splitDockIdx: 0 }],
         })
 
         // WHEN
@@ -877,7 +877,7 @@ describe('UnifiedViewer', () => {
         const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 10 })
         const props = createUnifiedViewerProps({
           lines: [line],
-          overlays: [{ content: null, dockIndex: 0 }],
+          overlays: [{ content: null, unifiedDockIdx: 0, splitDockIdx: 0 }],
         })
 
         // WHEN
@@ -895,7 +895,7 @@ describe('UnifiedViewer', () => {
         const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 10 })
         const props = createUnifiedViewerProps({
           lines: [line],
-          overlays: [{ content: undefined as React.ReactNode, dockIndex: 0 }],
+          overlays: [{ content: undefined as React.ReactNode, unifiedDockIdx: 0, splitDockIdx: 0 }],
         })
 
         // WHEN

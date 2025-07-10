@@ -2,9 +2,10 @@ import React, { useContext, useEffect, useMemo, useRef } from 'react'
 import { DiffLineType } from '../../../models/LineDiff'
 import { ThemeContext } from '../../../themes/providers/theme-context'
 import LoadMoreButton from '../../ui/buttons/LoadMoreButton'
-import ContentSide from './ContentSide'
+import DiffCell from './DiffCell'
 import { getViewerStyles } from './shared-styles'
 import { SplitViewerProps } from './types'
+import { useOverlayDocking } from '../hooks/use-overlay-docking'
 
 const SplitViewer: React.FC<SplitViewerProps> = (props) => {
   const theme = useContext(ThemeContext)
@@ -50,15 +51,11 @@ const SplitViewer: React.FC<SplitViewerProps> = (props) => {
     }
   }, [])
 
-  const overlayGroups = useMemo(() => {
-    if (!props.overlays?.length) return {}
-    const groups: Record<number, React.ReactNode[]> = {}
-    props.overlays.forEach((o) => {
-      ;(groups[o.dockIndex] ??= []).push(o.content)
-    })
-
-    return groups
-  }, [props.overlays])
+  const { overlayGroups, handleRowEnter, handleRowLeave } = useOverlayDocking({
+    overlays: props.overlays,
+    lines: props.lines,
+    viewMode: 'split',
+  })
 
   return (
     <div css={styles.container} ref={containerRef}>
@@ -76,7 +73,7 @@ const SplitViewer: React.FC<SplitViewerProps> = (props) => {
             const isHunk = leftType === 'hunk' && rightType === 'hunk'
 
             return (
-              <tr key={idx} css={styles.row}>
+              <tr key={idx} css={styles.row} data-idx={idx} onMouseEnter={handleRowEnter} onMouseLeave={handleRowLeave}>
                 {isHunk ? (
                   <>
                     {/* LEFT NUMBER CELL */}
@@ -105,17 +102,26 @@ const SplitViewer: React.FC<SplitViewerProps> = (props) => {
                   </>
                 ) : (
                   <>
-                    <ContentSide
+                    <DiffCell
+                      line={line}
                       side="left"
-                      line={line}
+                      lineType={leftType}
+                      isHunk={leftType === 'hunk'}
                       overlayGroups={overlayGroups}
+                      className="split-viewer-left-row"
+                      numberCellStyle={{ userSelect: 'none' as const, pointerEvents: 'none' as const }}
                       onLoadMoreLines={props.onLoadMoreLines}
+                      unified={false}
                     />
-                    <ContentSide
-                      side="right"
+                    <DiffCell
                       line={line}
+                      side="right"
+                      lineType={rightType}
+                      isHunk={rightType === 'hunk'}
                       overlayGroups={overlayGroups}
+                      className="split-viewer-right-row"
                       onLoadMoreLines={props.onLoadMoreLines}
+                      unified={false}
                     />
                   </>
                 )}

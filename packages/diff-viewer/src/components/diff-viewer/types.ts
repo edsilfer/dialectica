@@ -9,14 +9,27 @@ export interface Range {
   end: number
 }
 
+export interface LineMetadata {
+  /** The line number of the line that the overlay is docked to */
+  lineNumber: number | undefined
+  /** The side of the line that the overlay is docked to */
+  side: 'left' | 'right' | undefined
+  /** The content of the line that the overlay is docked to */
+  content: string | undefined
+}
+
 /**
  * An overlay is content to be displayed on top of the line column when the line is hovered.
  */
 export interface Overlay {
   /** Custom React component to be displayed as overlay content */
   content: React.ReactNode
-  /** Index of the line col. Examples: left/right line number, and code */
-  dockIndex: 0 | 1 | 2
+  /** Index of the line col for unified view. Examples: left/right line number, and code */
+  unifiedDockIdx: 0 | 1 | 2
+  /** Index of the line col for split view. Examples: line number, and code */
+  splitDockIdx: 0 | 1
+  /** Callback that gets called when the overlay is docked to a line */
+  onDock?: (metadata: LineMetadata) => void
 }
 
 export interface LineRequest {

@@ -619,7 +619,7 @@ describe('SplitViewer', () => {
   })
 
   describe('overlay scenarios', () => {
-    it('given overlay with dockIndex 0, when rendered, expect overlay content in both left and right number cells', () => {
+    it('given overlay with splitDockIdx 0, when rendered, expect overlay content in both left and right number cells', () => {
       // GIVEN
       const overlayContent = <span data-testid="test-overlay-0">Number Overlay</span>
       const line = createMockLine({
@@ -628,7 +628,7 @@ describe('SplitViewer', () => {
       })
       const props = createSplitViewerProps({
         lines: [line],
-        overlays: [{ content: overlayContent, dockIndex: 0 }],
+        overlays: [{ content: overlayContent, unifiedDockIdx: 0, splitDockIdx: 0 }],
       })
 
       // WHEN
@@ -646,13 +646,13 @@ describe('SplitViewer', () => {
       expect(rightNumberCell).toContainElement(overlayElements[1])
     })
 
-    it('given overlay with dockIndex 1, when rendered, expect overlay content in both left and right code cells', () => {
+    it('given overlay with splitDockIdx 1, when rendered, expect overlay content in both left and right code cells', () => {
       // GIVEN
       const overlayContent = <span data-testid="test-overlay-1">Code Overlay</span>
       const line = createMockLine()
       const props = createSplitViewerProps({
         lines: [line],
-        overlays: [{ content: overlayContent, dockIndex: 1 }],
+        overlays: [{ content: overlayContent, unifiedDockIdx: 1, splitDockIdx: 1 }],
       })
 
       // WHEN
@@ -670,7 +670,7 @@ describe('SplitViewer', () => {
       expect(rightCodeCell).toContainElement(overlayElements[1])
     })
 
-    it('given multiple overlays with different dockIndex, when rendered, expect all overlays in correct cells', () => {
+    it('given multiple overlays with different splitDockIdx, when rendered, expect all overlays in correct cells', () => {
       // GIVEN
       const numberOverlay = <span data-testid="number-overlay">Number</span>
       const codeOverlay = <span data-testid="code-overlay">Code</span>
@@ -678,8 +678,8 @@ describe('SplitViewer', () => {
       const props = createSplitViewerProps({
         lines: [line],
         overlays: [
-          { content: numberOverlay, dockIndex: 0 },
-          { content: codeOverlay, dockIndex: 1 },
+          { content: numberOverlay, unifiedDockIdx: 0, splitDockIdx: 0 },
+          { content: codeOverlay, unifiedDockIdx: 1, splitDockIdx: 1 },
         ],
       })
 
@@ -699,7 +699,7 @@ describe('SplitViewer', () => {
       expect(cells[3]).toContainElement(codeOverlays[1]) // right code
     })
 
-    it('given multiple overlays with same dockIndex, when rendered, expect all overlays grouped in target cells', () => {
+    it('given multiple overlays with same splitDockIdx, when rendered, expect all overlays grouped in target cells', () => {
       // GIVEN
       const firstOverlay = <span data-testid="overlay-first">First</span>
       const secondOverlay = <span data-testid="overlay-second">Second</span>
@@ -707,8 +707,8 @@ describe('SplitViewer', () => {
       const props = createSplitViewerProps({
         lines: [line],
         overlays: [
-          { content: firstOverlay, dockIndex: 0 },
-          { content: secondOverlay, dockIndex: 0 },
+          { content: firstOverlay, unifiedDockIdx: 0, splitDockIdx: 0 },
+          { content: secondOverlay, unifiedDockIdx: 0, splitDockIdx: 0 },
         ],
       })
 
@@ -743,7 +743,7 @@ describe('SplitViewer', () => {
       const line = createMockLine()
       const props = createSplitViewerProps({
         lines: [line],
-        overlays: [{ content: <ComplexOverlay />, dockIndex: 1 }],
+        overlays: [{ content: <ComplexOverlay />, unifiedDockIdx: 1, splitDockIdx: 1 }],
       })
 
       // WHEN
@@ -804,7 +804,7 @@ describe('SplitViewer', () => {
       const line = createMockLine()
       const props = createSplitViewerProps({
         lines: [line],
-        overlays: [{ content: invalidOverlay, dockIndex: 99 as 0 | 1 | 2 }], // Invalid dockIndex
+        overlays: [{ content: invalidOverlay, unifiedDockIdx: 2, splitDockIdx: 99 as 0 | 1 }], // Invalid splitDockIdx
       })
 
       // WHEN
@@ -826,7 +826,7 @@ describe('SplitViewer', () => {
       const hunkLine = createHunkLine('@@ -1,3 +1,3 @@')
       const props = createSplitViewerProps({
         lines: [hunkLine],
-        overlays: [{ content: hunkOverlay, dockIndex: 0 }],
+        overlays: [{ content: hunkOverlay, unifiedDockIdx: 0, splitDockIdx: 0 }],
       })
 
       // WHEN
@@ -851,7 +851,7 @@ describe('SplitViewer', () => {
       ]
       const props = createSplitViewerProps({
         lines,
-        overlays: [{ content: lineOverlay, dockIndex: 1 }], // Code cells
+        overlays: [{ content: lineOverlay, unifiedDockIdx: 1, splitDockIdx: 1 }], // Code cells
       })
 
       // WHEN
@@ -884,7 +884,7 @@ describe('SplitViewer', () => {
       ]
       const props = createSplitViewerProps({
         lines,
-        overlays: [{ content: mixedOverlay, dockIndex: 0 }], // Number cells
+        overlays: [{ content: mixedOverlay, unifiedDockIdx: 0, splitDockIdx: 0 }], // Number cells
       })
 
       // WHEN

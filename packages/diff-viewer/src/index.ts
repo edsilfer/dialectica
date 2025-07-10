@@ -18,7 +18,12 @@ export {
 export type { FileExplorerConfig } from './components/file-explorer/types'
 export * from './components/diff-viewer/DiffViewer'
 export * from './components/diff-viewer/providers/diff-viewer-context'
-export type { LineRequest, LoadMoreLinesResult, LoadMoreLinesHandler } from './components/diff-viewer/types'
+export type {
+  LineRequest,
+  LoadMoreLinesResult,
+  LoadMoreLinesHandler,
+  LineMetadata,
+} from './components/diff-viewer/types'
 export { ParsedDiff } from './models/ParsedDiff'
 export * from './addons/pull-request'
 export { Toolbar as DefaultToolbar } from './addons/toolbar/DefaultToolbar'

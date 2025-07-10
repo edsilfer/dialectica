@@ -2,11 +2,13 @@ import {
   AddButton,
   DefaultToolbar,
   DiffViewer,
+  LineMetadata,
   LineRequest,
   LoadMoreLinesResult,
   ParsedDiff,
   PullRequestHeader,
 } from '@diff-viewer'
+import { useCallback, useRef } from 'react'
 
 import useGetPrDiff from '../hooks/use-get-pr-diff'
 import useGetPrMetadata from '../hooks/use-get-pr-metadata'
@@ -27,8 +29,14 @@ interface CodeReviewProps {
 }
 
 export default function CodeReview({ error, prMetadata, prDiff, displayedDiff, loadMore }: CodeReviewProps) {
-  const handleAddButtonClick = () => {
-    console.log('add button clicked')
+  const dockedLineRef = useRef<LineMetadata | null>(null)
+
+  const handleAddButtonClick = useCallback(() => {
+    console.log('Add comment to line:', dockedLineRef.current)
+  }, [])
+
+  const handleDocking = (line: LineMetadata) => {
+    dockedLineRef.current = line
   }
 
   if (error) {
@@ -61,8 +69,10 @@ export default function CodeReview({ error, prMetadata, prDiff, displayedDiff, l
         onLoadMoreLines={loadMore}
         overlays={[
           {
+            unifiedDockIdx: 2,
+            splitDockIdx: 1,
             content: <AddButton key="add-button" onClick={handleAddButtonClick} />,
-            dockIndex: 2,
+            onDock: handleDocking,
           },
         ]}
       />
