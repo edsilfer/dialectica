@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import React, { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
-import { Toolbar as DefaultToolbar } from '../../optional/toolbar/DefaultToolbar'
+import { Toolbar as DefaultToolbar } from '../../addons/toolbar/DefaultToolbar'
 import { Themes } from '../../themes'
 import { CodePanel } from '../code-panel/FileList'
 import { FileExplorer } from '../file-explorer/FileExplorer'

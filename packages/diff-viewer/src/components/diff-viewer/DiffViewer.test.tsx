@@ -120,7 +120,7 @@ vi.mock('./components/Drawer', () => ({
   ),
 }))
 
-vi.mock('../../optional/toolbar/DefaultToolbar', () => ({
+vi.mock('../../addons/toolbar/DefaultToolbar', () => ({
   Toolbar: ({ loading }: { loading: boolean }) => (
     <div data-testid="default-toolbar">
       <div data-testid="toolbar-loading">{loading ? 'true' : 'false'}</div>

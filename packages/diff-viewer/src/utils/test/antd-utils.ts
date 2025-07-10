@@ -1,7 +1,7 @@
 import React from 'react'
 import { vi } from 'vitest'
 import type { CodePanelConfigContextState } from '../../components/code-panel/providers/types'
-import type { CustomButton, ToolbarWidget } from '../../optional/toolbar/types'
+import type { CustomButton, ToolbarWidget } from '../../addons/toolbar/types'
 
 export const createAntdMocks = () => ({
   Progress: _mockProgress(),
