@@ -29,6 +29,7 @@ export const getViewerStyles = (theme: ThemeTokens) => {
   }
 
   const baseCell = css`
+    position: relative;
     vertical-align: middle;
     height: ${theme.typography.codeLineHeight}rem;
     line-height: ${theme.typography.codeLineHeight}rem;
@@ -42,6 +43,7 @@ export const getViewerStyles = (theme: ThemeTokens) => {
     css`
       text-align: center;
       user-select: none;
+      pointer-events: none;
     `,
   ]
 
@@ -105,28 +107,46 @@ export const getViewerStyles = (theme: ThemeTokens) => {
     background: ${theme.colors.hunkViewerBg};
     width: 100%;
     overflow-x: auto;
+
+    /* Hover-based lock — only when NOT selecting */
+    &:not(.is-selecting):has(.split-viewer-left-row:hover) .split-viewer-right-row {
+      user-select: none;
+      pointer-events: none;
+    }
+
+    &:not(.is-selecting):has(.split-viewer-right-row:hover) .split-viewer-left-row {
+      user-select: none;
+      pointer-events: none;
+    }
+
+    /* Active-selection lock — freeze the opposite side */
+    &.selecting-left .split-viewer-right-row,
+    &.selecting-right .split-viewer-left-row {
+      user-select: none;
+      pointer-events: none;
+    }
   `
 
   const row = css`
-    display: table-row;
+    position: relative;
     color: ${theme.colors.textPrimary};
-    /* Show add button when hovering over left side cells */
-    &:has(.split-viewer-left-row:hover) .split-viewer-left-row .add-comment-btn {
+
+    /* Show overlay when hovering over left side cells */
+    &:has(.split-viewer-left-row:hover) .split-viewer-left-row .diff-view-overlay {
       opacity: 1;
-      pointer-events: auto;
     }
 
-    /* Show add button when hovering over right side cells */
-    &:has(.split-viewer-right-row:hover) .split-viewer-right-row .add-comment-btn {
+    /* Show overlay when hovering over right side cells */
+    &:has(.split-viewer-right-row:hover) .split-viewer-right-row .diff-view-overlay {
       opacity: 1;
-      pointer-events: auto;
     }
 
-    /* For unified viewer - keep the original behavior for backward compatibility */
+    /* Fallback for unified viewer */
     &:hover
-      .add-comment-btn:not(.split-viewer-left-row .add-comment-btn):not(.split-viewer-right-row .add-comment-btn) {
+      .diff-view-overlay:not(.split-viewer-left-row .diff-view-overlay):not(
+        .split-viewer-right-row .diff-view-overlay
+      ) {
       opacity: 1;
-      pointer-events: auto;
     }
   `
 
@@ -142,15 +162,12 @@ export const getViewerStyles = (theme: ThemeTokens) => {
     width: 1ch;
     text-align: center;
   `
-  const addButton = css`
+
+  const overlay = css`
     position: absolute;
     left: 0;
     top: 50%;
-    transform: translate(-50%, -50%);
     opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.15s ease-in-out;
-    z-index: 10;
   `
 
   return {
@@ -161,6 +178,6 @@ export const getViewerStyles = (theme: ThemeTokens) => {
     rightNumberCell,
     codeCell,
     lineType,
-    addButton,
+    overlay,
   }
 }

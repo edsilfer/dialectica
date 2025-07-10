@@ -15,10 +15,8 @@ export interface Range {
 export interface Overlay {
   /** Custom React component to be displayed as overlay content */
   content: React.ReactNode
-  /** Index of the line column where the overlay should be positioned in unified view. */
-  unifiedDocking: 0 | 1 | 2 | 3
-  /** Index of the line column where the overlay should be positioned in split view. */
-  splitDocking: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
+  /** Index of the line col. Examples: left/right line number, and code */
+  dockIndex: 0 | 1 | 2
 }
 
 export interface LineRequest {

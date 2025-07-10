@@ -1,24 +1,67 @@
-import React, { useContext, useMemo } from 'react'
-import { ThemeContext } from '../../../themes/providers/theme-context'
-import { SplitViewerProps } from './types'
-import { getViewerStyles } from './shared-styles'
-import LoadMoreButton from '../../ui/buttons/LoadMoreButton'
+import React, { useContext, useEffect, useMemo, useRef } from 'react'
 import { DiffLineType } from '../../../models/LineDiff'
+import { ThemeContext } from '../../../themes/providers/theme-context'
+import LoadMoreButton from '../../ui/buttons/LoadMoreButton'
+import ContentSide from './ContentSide'
+import { getViewerStyles } from './shared-styles'
+import { SplitViewerProps } from './types'
 
 const SplitViewer: React.FC<SplitViewerProps> = (props) => {
   const theme = useContext(ThemeContext)
   const styles = useMemo(() => getViewerStyles(theme), [theme])
+  const containerRef = useRef<HTMLDivElement>(null)
+  const rafIdRef = useRef<number | null>(null)
 
-  const preffix: Record<DiffLineType, string> = {
-    add: '+',
-    delete: '-',
-    context: ' ',
-    hunk: ' ',
-    empty: ' ',
+  const getSelectionSide = (sel: Selection | null): 'left' | 'right' | null => {
+    if (!sel || sel.rangeCount === 0) return null
+    const anchorNode = sel.anchorNode
+    const anchorEl = anchorNode instanceof Element ? anchorNode : anchorNode?.parentElement
+    if (!anchorEl) return null
+    if (anchorEl.closest('.split-viewer-left-row')) return 'left'
+    if (anchorEl.closest('.split-viewer-right-row')) return 'right'
+    return null
   }
 
+  useEffect(() => {
+    const handleSelectionChange = () => {
+      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current)
+
+      rafIdRef.current = requestAnimationFrame(() => {
+        const sel = window.getSelection()
+        const has = !!(sel && sel.rangeCount && !sel.isCollapsed)
+        const side = has ? getSelectionSide(sel) : null
+        const container = containerRef.current
+        if (!container) return
+
+        container.classList.toggle('is-selecting', has)
+        container.classList.toggle('selecting-left', has && side === 'left')
+        container.classList.toggle('selecting-right', has && side === 'right')
+
+        if (!has) {
+          container.classList.remove('selecting-left', 'selecting-right')
+        }
+      })
+    }
+
+    document.addEventListener('selectionchange', handleSelectionChange)
+    return () => {
+      document.removeEventListener('selectionchange', handleSelectionChange)
+      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current)
+    }
+  }, [])
+
+  const overlayGroups = useMemo(() => {
+    if (!props.overlays?.length) return {}
+    const groups: Record<number, React.ReactNode[]> = {}
+    props.overlays.forEach((o) => {
+      ;(groups[o.dockIndex] ??= []).push(o.content)
+    })
+
+    return groups
+  }, [props.overlays])
+
   return (
-    <div css={styles.container} data-diff-container>
+    <div css={styles.container} ref={containerRef}>
       <table css={styles.table}>
         <colgroup>
           <col style={{ width: '50px' }} />
@@ -37,7 +80,11 @@ const SplitViewer: React.FC<SplitViewerProps> = (props) => {
                 {isHunk ? (
                   <>
                     {/* LEFT NUMBER CELL */}
-                    <td css={styles.leftNumberCell['hunk']} className="split-viewer-left-row">
+                    <td
+                      css={styles.leftNumberCell['hunk']}
+                      className="split-viewer-left-row"
+                      style={{ userSelect: 'none', pointerEvents: 'none' }}
+                    >
                       <LoadMoreButton
                         direction={line.hunkDirection ?? 'out'}
                         onClick={(_, direction) => {
@@ -48,7 +95,7 @@ const SplitViewer: React.FC<SplitViewerProps> = (props) => {
 
                     {/* MERGED CODE CELL (spans remaining 3 columns) */}
                     <td css={styles.codeCell['hunk']} colSpan={3}>
-                      <span css={styles.lineType}>{preffix['hunk']}</span>
+                      <span css={styles.lineType}> </span>
                       <span
                         dangerouslySetInnerHTML={{
                           __html: line.highlightedContentLeft ?? line.highlightedContentRight ?? '&nbsp;',
@@ -58,42 +105,18 @@ const SplitViewer: React.FC<SplitViewerProps> = (props) => {
                   </>
                 ) : (
                   <>
-                    {/* LEFT SIDE */}
-                    <td css={styles.leftNumberCell[leftType]} className="split-viewer-left-row">
-                      {leftType === 'hunk' ? (
-                        <LoadMoreButton
-                          direction={line.hunkDirection ?? 'out'}
-                          onClick={(_, direction) => {
-                            props.onLoadMoreLines?.(line, direction)
-                          }}
-                        />
-                      ) : (
-                        line.lineNumberLeft
-                      )}
-                    </td>
-
-                    <td css={styles.codeCell[leftType]} className="split-viewer-left-row">
-                      <span css={styles.lineType}>{preffix[leftType]}</span>
-                      <span
-                        dangerouslySetInnerHTML={{
-                          __html: line.highlightedContentLeft ?? '&nbsp;',
-                        }}
-                      />
-                    </td>
-
-                    {/* RIGHT SIDE */}
-                    <td css={styles.rightNumberCell[rightType]} className="split-viewer-right-row">
-                      {line.lineNumberRight}
-                    </td>
-
-                    <td css={styles.codeCell[rightType]} className="split-viewer-right-row">
-                      <span css={styles.lineType}>{preffix[rightType]}</span>
-                      <span
-                        dangerouslySetInnerHTML={{
-                          __html: line.highlightedContentRight ?? '&nbsp;',
-                        }}
-                      />
-                    </td>
+                    <ContentSide
+                      side="left"
+                      line={line}
+                      overlayGroups={overlayGroups}
+                      onLoadMoreLines={props.onLoadMoreLines}
+                    />
+                    <ContentSide
+                      side="right"
+                      line={line}
+                      overlayGroups={overlayGroups}
+                      onLoadMoreLines={props.onLoadMoreLines}
+                    />
                   </>
                 )}
               </tr>

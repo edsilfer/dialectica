@@ -18,17 +18,17 @@ const useStyles = () => {
 
   return {
     button: css`
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       color: white;
       border-radius: 6px;
-      cursor: pointer;
       display: flex;
       border: none;
       align-items: center;
       justify-content: center;
       font-size: 12px;
       background-color: ${theme.colors.hunkViewerAddCommentBg};
+      cursor: pointer;
 
       /* Smooth scaling animation */
       transition:
@@ -42,7 +42,7 @@ const useStyles = () => {
       transform: translate(-50%, -50%) scale(1);
 
       &:hover {
-        transform: translate(-50%, -50%) scale(1.1);
+        transform: translate(-50%, -50%) scale(1.25);
       }
     `,
   }

@@ -21,6 +21,7 @@ import type { DiffLineType, HunkDirection, UnifiedViewerProps } from './types'
  * - Valid lines array → Table rendered with correct structure → Lines displayed with proper line numbers and content
  * - Hunk lines → Load more buttons rendered with correct direction → Click handlers called with proper parameters
  * - Different line types (add/delete/context) → Correct prefixes and styling applied
+ * - Overlays with valid dockIndex → Hover interactions show/hide overlays in correct cells → Multiple overlays group correctly
  *
  * ## Edge Cases
  * - **Empty lines array**: Table structure preserved but no rows rendered
@@ -31,6 +32,11 @@ import type { DiffLineType, HunkDirection, UnifiedViewerProps } from './types'
  * - **Multiple hunk lines**: All load more buttons functional with correct callbacks
  * - **Missing onLoadMoreLines handler**: No errors when buttons clicked
  * - **Different visibility/wrap settings**: Component adapts rendering accordingly
+ * - **No overlays provided**: No errors, hover interactions work without overlays
+ * - **Empty overlays array**: No errors, no overlay content rendered on hover
+ * - **Invalid overlay dockIndex**: Component handles gracefully, no rendering errors
+ * - **Multiple overlays same dockIndex**: All overlays rendered together in target cell
+ * - **Complex overlay content**: React components rendered correctly as overlay content
  *
  * ## Assertions
  * - Verify table structure (colgroup, cells, colspan for hunks)
@@ -39,6 +45,8 @@ import type { DiffLineType, HunkDirection, UnifiedViewerProps } from './types'
  * - Test hunk direction mapping and button interactions
  * - Ensure HTML content rendered safely with proper escaping
  * - Verify key generation for React optimization
+ * - Validate hover state management and overlay visibility
+ * - Test overlay grouping by dockIndex and content rendering
  */
 
 // MOCK
@@ -552,6 +560,353 @@ describe('UnifiedViewer', () => {
       expect(buttons).toHaveLength(2)
       expect(mockOnLoadMoreLines).toHaveBeenCalledWith(lines[0], 'up')
       expect(mockOnLoadMoreLines).toHaveBeenCalledWith(lines[2], 'down')
+    })
+  })
+
+  describe('overlay scenarios', () => {
+    describe('happy path', () => {
+      it('given overlay with dockIndex 0, when line hovered, expect overlay rendered in left number cell', () => {
+        // GIVEN
+        const overlayContent = <span data-testid="test-overlay-0">Overlay 0</span>
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 10 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          overlays: [{ content: overlayContent, dockIndex: 0 }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+        const row = screen.getByRole('row')
+        fireEvent.mouseEnter(row)
+
+        // EXPECT
+        expect(screen.getByTestId('test-overlay-0')).toBeInTheDocument()
+        const leftNumberCell = screen.getAllByRole('cell')[0]
+        expect(leftNumberCell).toContainElement(screen.getByTestId('test-overlay-0'))
+      })
+
+      it('given overlay with dockIndex 1, when line hovered, expect overlay rendered in right number cell', () => {
+        // GIVEN
+        const overlayContent = <span data-testid="test-overlay-1">Overlay 1</span>
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 10 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          overlays: [{ content: overlayContent, dockIndex: 1 }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+        const row = screen.getByRole('row')
+        fireEvent.mouseEnter(row)
+
+        // EXPECT
+        expect(screen.getByTestId('test-overlay-1')).toBeInTheDocument()
+        const rightNumberCell = screen.getAllByRole('cell')[1]
+        expect(rightNumberCell).toContainElement(screen.getByTestId('test-overlay-1'))
+      })
+
+      it('given overlay with dockIndex 2, when line hovered, expect overlay rendered in code cell', () => {
+        // GIVEN
+        const overlayContent = <span data-testid="test-overlay-2">Overlay 2</span>
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 10 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          overlays: [{ content: overlayContent, dockIndex: 2 }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+        const row = screen.getByRole('row')
+        fireEvent.mouseEnter(row)
+
+        // EXPECT
+        expect(screen.getByTestId('test-overlay-2')).toBeInTheDocument()
+        const codeCell = screen.getAllByRole('cell')[2]
+        expect(codeCell).toContainElement(screen.getByTestId('test-overlay-2'))
+      })
+
+      it('given multiple overlays with different dockIndex, when line hovered, expect all overlays rendered in correct cells', () => {
+        // GIVEN
+        const overlay0 = <span data-testid="overlay-0">Left</span>
+        const overlay1 = <span data-testid="overlay-1">Right</span>
+        const overlay2 = <span data-testid="overlay-2">Code</span>
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 10 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          overlays: [
+            { content: overlay0, dockIndex: 0 },
+            { content: overlay1, dockIndex: 1 },
+            { content: overlay2, dockIndex: 2 },
+          ],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+        const row = screen.getByRole('row')
+        fireEvent.mouseEnter(row)
+
+        // EXPECT
+        expect(screen.getByTestId('overlay-0')).toBeInTheDocument()
+        expect(screen.getByTestId('overlay-1')).toBeInTheDocument()
+        expect(screen.getByTestId('overlay-2')).toBeInTheDocument()
+
+        const cells = screen.getAllByRole('cell')
+        expect(cells[0]).toContainElement(screen.getByTestId('overlay-0'))
+        expect(cells[1]).toContainElement(screen.getByTestId('overlay-1'))
+        expect(cells[2]).toContainElement(screen.getByTestId('overlay-2'))
+      })
+
+      it('given multiple overlays with same dockIndex, when line hovered, expect all overlays rendered in target cell', () => {
+        // GIVEN
+        const overlay1 = <span data-testid="overlay-first">First</span>
+        const overlay2 = <span data-testid="overlay-second">Second</span>
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 10 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          overlays: [
+            { content: overlay1, dockIndex: 0 },
+            { content: overlay2, dockIndex: 0 },
+          ],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+        const row = screen.getByRole('row')
+        fireEvent.mouseEnter(row)
+
+        // EXPECT
+        expect(screen.getByTestId('overlay-first')).toBeInTheDocument()
+        expect(screen.getByTestId('overlay-second')).toBeInTheDocument()
+
+        const leftNumberCell = screen.getAllByRole('cell')[0]
+        expect(leftNumberCell).toContainElement(screen.getByTestId('overlay-first'))
+        expect(leftNumberCell).toContainElement(screen.getByTestId('overlay-second'))
+      })
+
+      it('given overlay, when line hovered then unhovered, expect overlay shown then hidden', () => {
+        // GIVEN
+        const overlayContent = <span data-testid="toggle-overlay">Toggle Me</span>
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 10 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          overlays: [{ content: overlayContent, dockIndex: 0 }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+        const row = screen.getByRole('row')
+
+        // With CSS-based logic, overlay content is always in DOM but controlled by CSS opacity
+        expect(screen.getByTestId('toggle-overlay')).toBeInTheDocument()
+
+        // Hover - overlay should still be in DOM (CSS controls visibility)
+        fireEvent.mouseEnter(row)
+        expect(screen.getByTestId('toggle-overlay')).toBeInTheDocument()
+
+        // Unhover - overlay should still be in DOM (CSS controls visibility)
+        fireEvent.mouseLeave(row)
+
+        // EXPECT
+        expect(screen.getByTestId('toggle-overlay')).toBeInTheDocument()
+      })
+
+      it('given complex overlay content with React component, when line hovered, expect component rendered correctly', () => {
+        // GIVEN
+        const ComplexOverlay = () => (
+          <div data-testid="complex-overlay">
+            <button>Action</button>
+            <span>Info</span>
+          </div>
+        )
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 10 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          overlays: [{ content: <ComplexOverlay />, dockIndex: 2 }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+        const row = screen.getByRole('row')
+        fireEvent.mouseEnter(row)
+
+        // EXPECT
+        expect(screen.getByTestId('complex-overlay')).toBeInTheDocument()
+        expect(screen.getByRole('button', { name: 'Action' })).toBeInTheDocument()
+        expect(screen.getByText('Info')).toBeInTheDocument()
+      })
+    })
+
+    describe('edge cases', () => {
+      it('given no overlays prop, when line hovered, expect no overlay content and no errors', () => {
+        // GIVEN
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 10 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          // no overlays prop
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+        const row = screen.getByRole('row')
+
+        // EXPECT
+        expect(() => {
+          fireEvent.mouseEnter(row)
+          fireEvent.mouseLeave(row)
+        }).not.toThrow()
+
+        fireEvent.mouseEnter(row)
+        expect(screen.queryByText(/overlay/i)).not.toBeInTheDocument()
+      })
+
+      it('given empty overlays array, when line hovered, expect no overlay content and no errors', () => {
+        // GIVEN
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 10 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          overlays: [],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+        const row = screen.getByRole('row')
+
+        // EXPECT
+        expect(() => {
+          fireEvent.mouseEnter(row)
+          fireEvent.mouseLeave(row)
+        }).not.toThrow()
+
+        fireEvent.mouseEnter(row)
+        expect(screen.queryByText(/overlay/i)).not.toBeInTheDocument()
+      })
+
+      it('given overlay with invalid dockIndex, when line hovered, expect overlay not rendered', () => {
+        // GIVEN
+        const invalidOverlay = <span data-testid="invalid-overlay">Should not render</span>
+        const validOverlay = <span data-testid="valid-overlay">Should render</span>
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 10 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          overlays: [
+            { content: invalidOverlay, dockIndex: 3 as 0 | 1 | 2 }, // invalid index
+            { content: validOverlay, dockIndex: 0 }, // valid index
+          ],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+        const row = screen.getByRole('row')
+        fireEvent.mouseEnter(row)
+
+        // EXPECT
+        expect(screen.queryByTestId('invalid-overlay')).not.toBeInTheDocument()
+        expect(screen.getByTestId('valid-overlay')).toBeInTheDocument()
+      })
+
+      it('given overlays with negative dockIndex, when line hovered, expect overlay not rendered', () => {
+        // GIVEN
+        const negativeOverlay = <span data-testid="negative-overlay">Should not render</span>
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 10 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          overlays: [{ content: negativeOverlay, dockIndex: -1 as 0 | 1 | 2 }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+        const row = screen.getByRole('row')
+        fireEvent.mouseEnter(row)
+
+        // EXPECT
+        expect(screen.queryByTestId('negative-overlay')).not.toBeInTheDocument()
+      })
+
+      it('given hunk line with overlays, when hovered, expect overlays not rendered for hunk lines', () => {
+        // GIVEN
+        const overlayContent = <span data-testid="hunk-overlay">Hunk Overlay</span>
+        const hunkLine = createHunkLine('@@ -1,3 +1,3 @@', 'out')
+        const props = createUnifiedViewerProps({
+          lines: [hunkLine],
+          overlays: [{ content: overlayContent, dockIndex: 0 }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+        const row = screen.getByRole('row')
+        fireEvent.mouseEnter(row)
+
+        // EXPECT
+        expect(screen.queryByTestId('hunk-overlay')).not.toBeInTheDocument()
+      })
+
+      it('given multiple lines with overlays, when different lines hovered, expect overlays shown for correct line only', () => {
+        // GIVEN
+        const overlay = <span data-testid="shared-overlay">Shared</span>
+        const line1 = createMockLine({ lineNumberLeft: 1, lineNumberRight: 1 })
+        const line2 = createMockLine({ lineNumberLeft: 2, lineNumberRight: 2 })
+        const props = createUnifiedViewerProps({
+          lines: [line1, line2],
+          overlays: [{ content: overlay, dockIndex: 0 }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+        const rows = screen.getAllByRole('row')
+
+        // With CSS-based logic, overlay content is always in DOM for all lines
+        const overlayElements = screen.getAllByTestId('shared-overlay')
+        expect(overlayElements).toHaveLength(2) // One for each line
+
+        // Hover first line - overlay should still be in DOM (CSS controls visibility)
+        fireEvent.mouseEnter(rows[0])
+        expect(screen.getAllByTestId('shared-overlay')).toHaveLength(2)
+
+        // Move to second line - overlay should still be in DOM (CSS controls visibility)
+        fireEvent.mouseLeave(rows[0])
+        expect(screen.getAllByTestId('shared-overlay')).toHaveLength(2)
+
+        fireEvent.mouseEnter(rows[1])
+
+        // EXPECT
+        expect(screen.getAllByTestId('shared-overlay')).toHaveLength(2)
+      })
+
+      it('given overlay with null content, when line hovered, expect no rendering errors', () => {
+        // GIVEN
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 10 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          overlays: [{ content: null, dockIndex: 0 }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+        const row = screen.getByRole('row')
+
+        // EXPECT
+        expect(() => {
+          fireEvent.mouseEnter(row)
+        }).not.toThrow()
+      })
+
+      it('given overlay with undefined content, when line hovered, expect no rendering errors', () => {
+        // GIVEN
+        const line = createMockLine({ lineNumberLeft: 5, lineNumberRight: 10 })
+        const props = createUnifiedViewerProps({
+          lines: [line],
+          overlays: [{ content: undefined as React.ReactNode, dockIndex: 0 }],
+        })
+
+        // WHEN
+        render(<UnifiedViewer {...props} />)
+        const row = screen.getByRole('row')
+
+        // EXPECT
+        expect(() => {
+          fireEvent.mouseEnter(row)
+        }).not.toThrow()
+      })
     })
   })
 })

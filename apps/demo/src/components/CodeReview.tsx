@@ -27,6 +27,10 @@ interface CodeReviewProps {
 }
 
 export default function CodeReview({ error, prMetadata, prDiff, displayedDiff, loadMore }: CodeReviewProps) {
+  const handleAddButtonClick = () => {
+    console.log('add button clicked')
+  }
+
   if (error) {
     const errorMessage = prMetadata.error || prDiff.error || 'Unknown error'
     return <ErrorCard error={typeof errorMessage === 'string' ? new Error(errorMessage) : errorMessage} />
@@ -57,9 +61,8 @@ export default function CodeReview({ error, prMetadata, prDiff, displayedDiff, l
         onLoadMoreLines={loadMore}
         overlays={[
           {
-            content: <AddButton key="add-button" />,
-            unifiedDocking: 0,
-            splitDocking: 0,
+            content: <AddButton key="add-button" onClick={handleAddButtonClick} />,
+            dockIndex: 2,
           },
         ]}
       />

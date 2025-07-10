@@ -1,9 +1,9 @@
 import React, { useContext, useMemo } from 'react'
+import { DiffLineType } from '../../../models/LineDiff'
 import { ThemeContext } from '../../../themes/providers/theme-context'
+import LoadMoreButton from '../../ui/buttons/LoadMoreButton'
 import { getViewerStyles } from './shared-styles'
 import { UnifiedViewerProps } from './types'
-import LoadMoreButton from '../../ui/buttons/LoadMoreButton'
-import { DiffLineType } from '../../../models/LineDiff'
 
 /** Map diff-symbols shown at the start of each code cell */
 const prefix: Record<DiffLineType, string> = {
@@ -18,8 +18,18 @@ const UnifiedViewer: React.FC<UnifiedViewerProps> = (props) => {
   const theme = useContext(ThemeContext)
   const styles = useMemo(() => getViewerStyles(theme), [theme])
 
+  const overlayGroups = useMemo(() => {
+    if (!props.overlays?.length) return {}
+    const groups: Record<number, React.ReactNode[]> = {}
+    props.overlays.forEach((o) => {
+      ;(groups[o.dockIndex] ??= []).push(o.content)
+    })
+
+    return groups
+  }, [props.overlays])
+
   return (
-    <div css={styles.container} data-diff-container>
+    <div css={styles.container}>
       <table css={styles.table}>
         <colgroup>
           <col style={{ width: '50px' }} />
@@ -58,10 +68,20 @@ const UnifiedViewer: React.FC<UnifiedViewerProps> = (props) => {
                 ) : (
                   <>
                     {/* LEFT NUMBER CELL */}
-                    <td css={styles.leftNumberCell[lineType]}>{line.lineNumberLeft}</td>
+                    <td css={styles.leftNumberCell[lineType]}>
+                      {line.lineNumberLeft}
+                      <div css={styles.overlay} className="diff-view-overlay">
+                        {overlayGroups[0]}
+                      </div>
+                    </td>
 
                     {/* RIGHT NUMBER CELL */}
-                    <td css={styles.rightNumberCell[lineType]}>{line.lineNumberRight}</td>
+                    <td css={styles.rightNumberCell[lineType]}>
+                      {line.lineNumberRight}
+                      <div css={styles.overlay} className="diff-view-overlay">
+                        {overlayGroups[1]}
+                      </div>
+                    </td>
 
                     {/* CODE CELL */}
                     <td css={styles.codeCell[lineType]}>
@@ -71,6 +91,9 @@ const UnifiedViewer: React.FC<UnifiedViewerProps> = (props) => {
                           __html: line.highlightedContentLeft ?? '&nbsp;',
                         }}
                       />
+                      <div css={styles.overlay} className="diff-view-overlay">
+                        {overlayGroups[2]}
+                      </div>
                     </td>
                   </>
                 )}

@@ -1,6 +1,6 @@
 import { fireEvent, screen } from '@testing-library/react'
 import React from 'react'
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import { createPropsFactory } from '../../../utils/test/generic-test-utils'
 import { SIMPLE_CHANGES } from '../../../utils/test/models/test-utils'
 import { render } from '../../../utils/test/render'
@@ -21,6 +21,7 @@ import type { DiffLineType, HunkDirection, SplitViewerProps } from './types'
  * - Hunk lines → Load more buttons rendered with correct direction → Click handlers called with proper parameters
  * - Different line types (add/delete/context) → Correct prefixes and styling applied
  * - Split view structure → Left and right columns properly configured
+ * - Overlays with valid dockIndex → Overlays rendered in correct cells → Multiple overlays group correctly
  *
  * ## Edge Cases
  * - **Empty lines array**: Table structure preserved but no rows rendered
@@ -30,6 +31,11 @@ import type { DiffLineType, HunkDirection, SplitViewerProps } from './types'
  * - **Multiple hunk lines**: All load more buttons functional with correct callbacks
  * - **Missing onLoadMoreLines handler**: No errors when buttons clicked
  * - **Mixed line types**: Only the relevant side (left or right) renders content for its type; the other side may be empty
+ * - **No overlays provided**: No errors, overlay containers exist but remain empty
+ * - **Empty overlays array**: No errors, no overlay content rendered
+ * - **Invalid overlay dockIndex**: Component handles gracefully, no rendering errors
+ * - **Multiple overlays same dockIndex**: All overlays rendered together in target cells
+ * - **Complex overlay content**: React components rendered correctly as overlay content
  *
  * ## Assertions
  * - Verify table structure (colgroup, cells, colspan for hunks; hunk lines render merged cell)
@@ -39,6 +45,8 @@ import type { DiffLineType, HunkDirection, SplitViewerProps } from './types'
  * - Ensure HTML content rendered safely with proper escaping
  * - Verify key generation for React optimization
  * - Test split view column layout and styling
+ * - Validate overlay grouping by dockIndex and content rendering in both left and right cells
+ * - Test overlay container existence and proper positioning within cells
  */
 
 // MOCK
@@ -607,6 +615,500 @@ describe('SplitViewer', () => {
       expect(line1Elements.length).toBeGreaterThan(0) // At least one instance
       const line100Elements = screen.getAllByText('line 100 left')
       expect(line100Elements.length).toBeGreaterThan(0) // At least one instance
+    })
+  })
+
+  describe('overlay scenarios', () => {
+    it('given overlay with dockIndex 0, when rendered, expect overlay content in both left and right number cells', () => {
+      // GIVEN
+      const overlayContent = <span data-testid="test-overlay-0">Number Overlay</span>
+      const line = createMockLine({
+        lineNumberLeft: 5,
+        lineNumberRight: 5,
+      })
+      const props = createSplitViewerProps({
+        lines: [line],
+        overlays: [{ content: overlayContent, dockIndex: 0 }],
+      })
+
+      // WHEN
+      render(<SplitViewer {...props} />)
+
+      // EXPECT
+      const overlayElements = screen.getAllByTestId('test-overlay-0')
+      expect(overlayElements).toHaveLength(2) // Both left and right number cells
+
+      const cells = screen.getAllByRole('cell')
+      const leftNumberCell = cells[0] // left number cell
+      const rightNumberCell = cells[2] // right number cell
+
+      expect(leftNumberCell).toContainElement(overlayElements[0])
+      expect(rightNumberCell).toContainElement(overlayElements[1])
+    })
+
+    it('given overlay with dockIndex 1, when rendered, expect overlay content in both left and right code cells', () => {
+      // GIVEN
+      const overlayContent = <span data-testid="test-overlay-1">Code Overlay</span>
+      const line = createMockLine()
+      const props = createSplitViewerProps({
+        lines: [line],
+        overlays: [{ content: overlayContent, dockIndex: 1 }],
+      })
+
+      // WHEN
+      render(<SplitViewer {...props} />)
+
+      // EXPECT
+      const overlayElements = screen.getAllByTestId('test-overlay-1')
+      expect(overlayElements).toHaveLength(2) // Both left and right code cells
+
+      const cells = screen.getAllByRole('cell')
+      const leftCodeCell = cells[1] // left code cell
+      const rightCodeCell = cells[3] // right code cell
+
+      expect(leftCodeCell).toContainElement(overlayElements[0])
+      expect(rightCodeCell).toContainElement(overlayElements[1])
+    })
+
+    it('given multiple overlays with different dockIndex, when rendered, expect all overlays in correct cells', () => {
+      // GIVEN
+      const numberOverlay = <span data-testid="number-overlay">Number</span>
+      const codeOverlay = <span data-testid="code-overlay">Code</span>
+      const line = createMockLine()
+      const props = createSplitViewerProps({
+        lines: [line],
+        overlays: [
+          { content: numberOverlay, dockIndex: 0 },
+          { content: codeOverlay, dockIndex: 1 },
+        ],
+      })
+
+      // WHEN
+      render(<SplitViewer {...props} />)
+
+      // EXPECT
+      const numberOverlays = screen.getAllByTestId('number-overlay')
+      const codeOverlays = screen.getAllByTestId('code-overlay')
+      expect(numberOverlays).toHaveLength(2) // Both left and right number cells
+      expect(codeOverlays).toHaveLength(2) // Both left and right code cells
+
+      const cells = screen.getAllByRole('cell')
+      expect(cells[0]).toContainElement(numberOverlays[0]) // left number
+      expect(cells[1]).toContainElement(codeOverlays[0]) // left code
+      expect(cells[2]).toContainElement(numberOverlays[1]) // right number
+      expect(cells[3]).toContainElement(codeOverlays[1]) // right code
+    })
+
+    it('given multiple overlays with same dockIndex, when rendered, expect all overlays grouped in target cells', () => {
+      // GIVEN
+      const firstOverlay = <span data-testid="overlay-first">First</span>
+      const secondOverlay = <span data-testid="overlay-second">Second</span>
+      const line = createMockLine()
+      const props = createSplitViewerProps({
+        lines: [line],
+        overlays: [
+          { content: firstOverlay, dockIndex: 0 },
+          { content: secondOverlay, dockIndex: 0 },
+        ],
+      })
+
+      // WHEN
+      render(<SplitViewer {...props} />)
+
+      // EXPECT
+      const firstElements = screen.getAllByTestId('overlay-first')
+      const secondElements = screen.getAllByTestId('overlay-second')
+      expect(firstElements).toHaveLength(2)
+      expect(secondElements).toHaveLength(2)
+
+      const cells = screen.getAllByRole('cell')
+      const leftNumberCell = cells[0]
+      const rightNumberCell = cells[2]
+
+      // Both overlays should be in both number cells
+      expect(leftNumberCell).toContainElement(firstElements[0])
+      expect(leftNumberCell).toContainElement(secondElements[0])
+      expect(rightNumberCell).toContainElement(firstElements[1])
+      expect(rightNumberCell).toContainElement(secondElements[1])
+    })
+
+    it('given complex overlay content with React component, when rendered, expect component rendered correctly', () => {
+      // GIVEN
+      const ComplexOverlay = () => (
+        <div data-testid="complex-overlay">
+          <button>Action</button>
+          <span>Complex Content</span>
+        </div>
+      )
+      const line = createMockLine()
+      const props = createSplitViewerProps({
+        lines: [line],
+        overlays: [{ content: <ComplexOverlay />, dockIndex: 1 }],
+      })
+
+      // WHEN
+      render(<SplitViewer {...props} />)
+
+      // EXPECT
+      const complexOverlays = screen.getAllByTestId('complex-overlay')
+      expect(complexOverlays).toHaveLength(2)
+      const buttons = screen.getAllByText('Action')
+      expect(buttons).toHaveLength(2)
+      const spans = screen.getAllByText('Complex Content')
+      expect(spans).toHaveLength(2)
+    })
+
+    it('given no overlays prop, when rendered, expect overlay containers exist but empty, no errors', () => {
+      // GIVEN
+      const line = createMockLine()
+      const props = createSplitViewerProps({
+        lines: [line],
+        // no overlays prop
+      })
+
+      // WHEN
+      const { container } = render(<SplitViewer {...props} />)
+
+      // EXPECT
+      const overlayContainers = container.querySelectorAll('.diff-view-overlay')
+      expect(overlayContainers).toHaveLength(4) // 2 per line (number + code) x 2 sides
+      overlayContainers.forEach((overlayContainer) => {
+        expect(overlayContainer).toBeEmptyDOMElement()
+      })
+      expect(screen.queryByText(/overlay/i)).not.toBeInTheDocument()
+    })
+
+    it('given empty overlays array, when rendered, expect overlay containers exist but empty, no errors', () => {
+      // GIVEN
+      const line = createMockLine()
+      const props = createSplitViewerProps({
+        lines: [line],
+        overlays: [],
+      })
+
+      // WHEN
+      const { container } = render(<SplitViewer {...props} />)
+
+      // EXPECT
+      const overlayContainers = container.querySelectorAll('.diff-view-overlay')
+      expect(overlayContainers).toHaveLength(4) // 2 per line (number + code) x 2 sides
+      overlayContainers.forEach((overlayContainer) => {
+        expect(overlayContainer).toBeEmptyDOMElement()
+      })
+      expect(screen.queryByText(/overlay/i)).not.toBeInTheDocument()
+    })
+
+    it('given overlay with invalid dockIndex, when rendered, expect overlay not rendered anywhere', () => {
+      // GIVEN
+      const invalidOverlay = <span data-testid="invalid-overlay">Should not render</span>
+      const line = createMockLine()
+      const props = createSplitViewerProps({
+        lines: [line],
+        overlays: [{ content: invalidOverlay, dockIndex: 99 as 0 | 1 | 2 }], // Invalid dockIndex
+      })
+
+      // WHEN
+      const { container } = render(<SplitViewer {...props} />)
+
+      // EXPECT
+      expect(screen.queryByTestId('invalid-overlay')).not.toBeInTheDocument()
+      // Overlay containers should still exist but be empty
+      const overlayContainers = container.querySelectorAll('.diff-view-overlay')
+      expect(overlayContainers).toHaveLength(4)
+      overlayContainers.forEach((overlayContainer) => {
+        expect(overlayContainer).toBeEmptyDOMElement()
+      })
+    })
+
+    it('given overlays with hunk line, when rendered, expect overlays not applied to hunk structure', () => {
+      // GIVEN
+      const hunkOverlay = <span data-testid="hunk-overlay">Hunk Action</span>
+      const hunkLine = createHunkLine('@@ -1,3 +1,3 @@')
+      const props = createSplitViewerProps({
+        lines: [hunkLine],
+        overlays: [{ content: hunkOverlay, dockIndex: 0 }],
+      })
+
+      // WHEN
+      render(<SplitViewer {...props} />)
+
+      // EXPECT
+      // Hunk lines don't use ContentSide component, so overlays are not rendered
+      expect(screen.queryByTestId('hunk-overlay')).not.toBeInTheDocument()
+
+      const cells = screen.getAllByRole('cell')
+      expect(cells).toHaveLength(2) // hunk has merged structure: left number + merged content
+      expect(screen.getByTestId('load-more-button')).toBeInTheDocument()
+    })
+
+    it('given multiple lines with overlays, when rendered, expect overlays applied to all matching lines', () => {
+      // GIVEN
+      const lineOverlay = <span data-testid="multi-line-overlay">Multi Line</span>
+      const lines = [
+        createMockLine({ lineNumberLeft: 1, lineNumberRight: 1 }),
+        createMockLine({ lineNumberLeft: 2, lineNumberRight: 2 }),
+        createMockLine({ lineNumberLeft: 3, lineNumberRight: 3 }),
+      ]
+      const props = createSplitViewerProps({
+        lines,
+        overlays: [{ content: lineOverlay, dockIndex: 1 }], // Code cells
+      })
+
+      // WHEN
+      render(<SplitViewer {...props} />)
+
+      // EXPECT
+      const overlayElements = screen.getAllByTestId('multi-line-overlay')
+      expect(overlayElements).toHaveLength(6) // 3 lines × 2 sides (left + right code cells)
+
+      const rows = screen.getAllByRole('row')
+      expect(rows).toHaveLength(3)
+      // Each row should have overlays in both code cells
+      rows.forEach((row) => {
+        const codeCells = row.querySelectorAll('td:nth-child(2), td:nth-child(4)') // left and right code cells
+        expect(codeCells).toHaveLength(2)
+        codeCells.forEach((cell) => {
+          expect(cell.querySelector('[data-testid="multi-line-overlay"]')).toBeInTheDocument()
+        })
+      })
+    })
+
+    it('given overlays with mixed line types, when rendered, expect overlays applied correctly to each line type', () => {
+      // GIVEN
+      const mixedOverlay = <span data-testid="mixed-overlay">Mixed</span>
+      const lines = [
+        createMockLine({ typeLeft: 'context', typeRight: 'context' }),
+        createMockLine({ typeLeft: 'add', typeRight: 'add' }),
+        createMockLine({ typeLeft: 'delete', typeRight: 'delete' }),
+        createHunkLine('@@ -1,3 +1,3 @@'),
+      ]
+      const props = createSplitViewerProps({
+        lines,
+        overlays: [{ content: mixedOverlay, dockIndex: 0 }], // Number cells
+      })
+
+      // WHEN
+      render(<SplitViewer {...props} />)
+
+      // EXPECT
+      const overlayElements = screen.getAllByTestId('mixed-overlay')
+      expect(overlayElements).toHaveLength(6) // 3 regular lines × 2 sides (hunk lines don't get overlays)
+
+      const rows = screen.getAllByRole('row')
+      expect(rows).toHaveLength(4)
+
+      // First 3 rows (regular lines) should have overlays in both number cells
+      for (let i = 0; i < 3; i++) {
+        const numberCells = rows[i].querySelectorAll('td:nth-child(1), td:nth-child(3)') // left and right number cells
+        expect(numberCells).toHaveLength(2)
+        numberCells.forEach((cell) => {
+          expect(cell.querySelector('[data-testid="mixed-overlay"]')).toBeInTheDocument()
+        })
+      }
+
+      // Last row (hunk) should NOT have overlay because hunk lines don't use ContentSide
+      const hunkNumberCell = rows[3].querySelector('td:nth-child(1)') // only left number cell for hunk
+      expect(hunkNumberCell?.querySelector('[data-testid="mixed-overlay"]')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('text selection behavior', () => {
+    let mockGetSelection: ReturnType<typeof vi.fn>
+    let mockSelection: Partial<Selection>
+
+    beforeEach(() => {
+      // Mock window.getSelection
+      mockSelection = {
+        rangeCount: 1,
+        isCollapsed: false,
+        anchorNode: null,
+      }
+      mockGetSelection = vi.fn(() => mockSelection as Selection)
+      Object.defineProperty(window, 'getSelection', {
+        value: mockGetSelection,
+        writable: true,
+      })
+
+      // Mock requestAnimationFrame to execute immediately
+      vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+        cb(0)
+        return 0
+      })
+
+      // Mock cancelAnimationFrame
+      vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {})
+    })
+
+    afterEach(() => {
+      vi.restoreAllMocks()
+    })
+
+    const createMockElement = (className: string): HTMLElement => {
+      const element = document.createElement('div')
+      element.className = className
+      return element
+    }
+
+    const createMockSelectionWithAnchor = (closestClassName: string): Partial<Selection> => {
+      const mockElement = createMockElement('test-element')
+      mockElement.closest = vi.fn((selector: string) => {
+        if (selector === closestClassName) {
+          return createMockElement(closestClassName.replace('.', ''))
+        }
+        return null
+      })
+
+      return {
+        ...mockSelection,
+        anchorNode: mockElement,
+      }
+    }
+
+    it('given text selection starts on left side, when selection changes, expect left side selected and right side locked', () => {
+      // GIVEN - Setup component with lines
+      const lines = [
+        createMockLine({
+          typeLeft: 'context',
+          typeRight: 'context',
+          contentLeft: 'left content',
+          contentRight: 'right content',
+        }),
+      ]
+      const props = createSplitViewerProps({ lines })
+
+      // Mock selection on left side
+      mockSelection = createMockSelectionWithAnchor('.split-viewer-left-row')
+      mockGetSelection.mockReturnValue(mockSelection as Selection)
+
+      // WHEN
+      const { container } = render(<SplitViewer {...props} />)
+
+      // Trigger selectionchange event
+      const selectionChangeEvent = new Event('selectionchange')
+      document.dispatchEvent(selectionChangeEvent)
+
+      // EXPECT
+      const splitViewerContainer = container.firstChild as HTMLElement
+      expect(splitViewerContainer).toHaveClass('is-selecting')
+      expect(splitViewerContainer).toHaveClass('selecting-left')
+      expect(splitViewerContainer).not.toHaveClass('selecting-right')
+    })
+
+    it('given text selection starts on right side, when selection changes, expect right side selected and left side locked', () => {
+      // GIVEN - Setup component with lines
+      const lines = [
+        createMockLine({
+          typeLeft: 'context',
+          typeRight: 'context',
+          contentLeft: 'left content',
+          contentRight: 'right content',
+        }),
+      ]
+      const props = createSplitViewerProps({ lines })
+
+      // Mock selection on right side
+      mockSelection = createMockSelectionWithAnchor('.split-viewer-right-row')
+      mockGetSelection.mockReturnValue(mockSelection as Selection)
+
+      // WHEN
+      const { container } = render(<SplitViewer {...props} />)
+
+      // Trigger selectionchange event
+      const selectionChangeEvent = new Event('selectionchange')
+      document.dispatchEvent(selectionChangeEvent)
+
+      // EXPECT
+      const splitViewerContainer = container.firstChild as HTMLElement
+      expect(splitViewerContainer).toHaveClass('is-selecting')
+      expect(splitViewerContainer).toHaveClass('selecting-right')
+      expect(splitViewerContainer).not.toHaveClass('selecting-left')
+    })
+
+    it('given text selection is cleared, when selection changes, expect no side classes applied', () => {
+      // GIVEN - Setup component with lines
+      const lines = [
+        createMockLine({
+          typeLeft: 'context',
+          typeRight: 'context',
+        }),
+      ]
+      const props = createSplitViewerProps({ lines })
+
+      // First establish a selection
+      mockSelection = createMockSelectionWithAnchor('.split-viewer-left-row')
+      mockGetSelection.mockReturnValue(mockSelection as Selection)
+
+      const { container } = render(<SplitViewer {...props} />)
+
+      // Trigger initial selection
+      document.dispatchEvent(new Event('selectionchange'))
+      const splitViewerContainer = container.firstChild as HTMLElement
+      expect(splitViewerContainer).toHaveClass('selecting-left')
+
+      // WHEN - Clear selection
+      mockSelection = {
+        rangeCount: 0,
+        isCollapsed: true,
+        anchorNode: null,
+      }
+      mockGetSelection.mockReturnValue(mockSelection as Selection)
+
+      // Trigger selectionchange event
+      const selectionChangeEvent = new Event('selectionchange')
+      document.dispatchEvent(selectionChangeEvent)
+
+      // EXPECT
+      expect(splitViewerContainer).not.toHaveClass('is-selecting')
+      expect(splitViewerContainer).not.toHaveClass('selecting-left')
+      expect(splitViewerContainer).not.toHaveClass('selecting-right')
+    })
+
+    it('given selection outside split viewer, when selection changes, expect no side classes applied', () => {
+      // GIVEN - Setup component with lines
+      const lines = [
+        createMockLine({
+          typeLeft: 'context',
+          typeRight: 'context',
+        }),
+      ]
+      const props = createSplitViewerProps({ lines })
+
+      // Mock selection outside the split viewer (neither left nor right side)
+      const mockElement = createMockElement('other-element')
+      mockElement.closest = vi.fn(() => null) // Not found in either side
+
+      mockSelection = {
+        ...mockSelection,
+        anchorNode: mockElement,
+      }
+      mockGetSelection.mockReturnValue(mockSelection as Selection)
+
+      // WHEN
+      const { container } = render(<SplitViewer {...props} />)
+
+      // Trigger selectionchange event
+      const selectionChangeEvent = new Event('selectionchange')
+      document.dispatchEvent(selectionChangeEvent)
+
+      // EXPECT
+      const splitViewerContainer = container.firstChild as HTMLElement
+      expect(splitViewerContainer).toHaveClass('is-selecting') // Has selection, but...
+      expect(splitViewerContainer).not.toHaveClass('selecting-left') // Not on left
+      expect(splitViewerContainer).not.toHaveClass('selecting-right') // Not on right
+    })
+
+    it('given component unmounts, when unmounted, expect event listeners cleaned up', () => {
+      // GIVEN
+      const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener')
+      const lines = [createMockLine()]
+      const props = createSplitViewerProps({ lines })
+
+      // WHEN
+      const { unmount } = render(<SplitViewer {...props} />)
+      unmount()
+
+      // EXPECT
+      expect(removeEventListenerSpy).toHaveBeenCalledWith('selectionchange', expect.any(Function))
     })
   })
 })
