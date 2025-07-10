@@ -13,6 +13,7 @@ export const createAntdMocks = () => ({
   Input: _mockInput(),
   Space: _mockSpace(),
   Tooltip: _mockTooltip(),
+  Checkbox: _mockCheckbox(),
   ConfigProvider: _mockConfigProvider(),
   theme: _mockTheme(),
 })
@@ -251,6 +252,26 @@ const _mockSpace = () => ({
   Compact: (props: { children: React.ReactNode }) =>
     _createTestElement('div', { 'data-testid': 'space-compact' }, props.children),
 })
+
+const _mockCheckbox =
+  () =>
+  (props: {
+    children?: React.ReactNode
+    checked?: boolean
+    onChange?: (e: { target: { checked: boolean } }) => void
+    [key: string]: unknown
+  }) => {
+    const { children, checked, onChange, ...restProps } = props
+    return _createTestElement('label', { 'data-testid': 'checkbox-wrapper', ...restProps }, [
+      _createTestElement('input', {
+        type: 'checkbox',
+        checked,
+        onChange,
+        'data-testid': 'checkbox-input',
+      }),
+      children && _createTestElement('span', { 'data-testid': 'checkbox-label' }, children),
+    ])
+  }
 
 const _mockTooltip = () => {
   return (props: { children: React.ReactNode; title?: React.ReactNode; open?: boolean; placement?: string }) => {

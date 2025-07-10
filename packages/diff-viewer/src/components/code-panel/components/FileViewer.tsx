@@ -1,6 +1,7 @@
 import { css } from '@emotion/react'
 import React, { useCallback, useContext, useMemo, useState } from 'react'
 import { useContextSelector } from 'use-context-selector'
+import { notification } from 'antd'
 import { ThemeContext } from '../../../themes/providers/theme-context'
 import { CodePanelConfigContext, useFileState } from '../providers/code-panel-context'
 import { HunkDirection, FileViewerProps } from './types'
@@ -63,17 +64,25 @@ const FileViewer: React.FC<FileViewerProps> = (props) => {
 
   const handleLoadMoreLines = useCallback(
     async (line: DiffLineViewModel, direction: HunkDirection) => {
-      const ranges = hunkList.getLoadRange(line, direction)
-      const result = await onLoadMoreLines?.({
-        fileKey: file.key,
-        leftRange: ranges.leftRange,
-        rightRange: ranges.rightRange,
-      })
+      try {
+        const ranges = hunkList.getLoadRange(line, direction)
+        const result = await onLoadMoreLines?.({
+          fileKey: file.key,
+          leftRange: ranges.leftRange,
+          rightRange: ranges.rightRange,
+        })
 
-      if (result) {
-        dispatch({
-          type: 'lines_loaded',
-          payload: { line, result, direction },
+        if (result) {
+          dispatch({
+            type: 'lines_loaded',
+            payload: { line, result, direction },
+          })
+        }
+      } catch (e: unknown) {
+        notification.error({
+          message: 'Error loading lines',
+          description: `An error occurred while trying to load more lines. Please try again. ${String(e)}`,
+          placement: 'topRight',
         })
       }
     },
@@ -92,7 +101,7 @@ const FileViewer: React.FC<FileViewerProps> = (props) => {
               onLoadMoreLines={(line: DiffLineViewModel, direction: HunkDirection) =>
                 void handleLoadMoreLines(line, direction)
               }
-              loadMoreLinesCount={maxLinesToFetch}
+              loadMoreLinesCount={maxLinesToFetch ?? 10}
             />
           )}
           {config.mode === 'unified' && (
@@ -101,7 +110,7 @@ const FileViewer: React.FC<FileViewerProps> = (props) => {
               wrapLines={wrapLines}
               visible={!isCollapsed}
               onLoadMoreLines={(line, direction) => void handleLoadMoreLines(line, direction)}
-              loadMoreLinesCount={maxLinesToFetch}
+              loadMoreLinesCount={maxLinesToFetch ?? 10}
             />
           )}
         </div>
