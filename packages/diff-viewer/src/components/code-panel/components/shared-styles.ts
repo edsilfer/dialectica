@@ -73,6 +73,7 @@ export const getViewerStyles = (theme: ThemeTokens) => {
       text-align: left;
       padding: 0 ${theme.spacing.sm};
       background: ${backgroundByType[type]};
+      white-space: pre;
     `,
   ]
 
@@ -113,11 +114,21 @@ export const getViewerStyles = (theme: ThemeTokens) => {
     &:not(.is-selecting):has(.split-viewer-left-row:hover) .split-viewer-right-row {
       user-select: none;
       pointer-events: none;
+
+      /* Allow widgets to remain interactive */
+      td[colspan] {
+        pointer-events: auto;
+      }
     }
 
     &:not(.is-selecting):has(.split-viewer-right-row:hover) .split-viewer-left-row {
       user-select: none;
       pointer-events: none;
+
+      /* Allow widgets to remain interactive */
+      td[colspan] {
+        pointer-events: auto;
+      }
     }
 
     /* Active-selection lock — freeze the opposite side */
@@ -125,6 +136,16 @@ export const getViewerStyles = (theme: ThemeTokens) => {
     &.selecting-right .split-viewer-left-row {
       user-select: none;
       pointer-events: none;
+
+      /* Allow widgets to remain interactive even during selection */
+      td[colspan] {
+        pointer-events: auto;
+      }
+    }
+
+    /* Ensure widget rows are always interactive */
+    tr:has(td[colspan]) {
+      pointer-events: auto;
     }
   `
 

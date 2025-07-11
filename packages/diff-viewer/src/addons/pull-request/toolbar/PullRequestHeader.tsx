@@ -1,8 +1,8 @@
 import { css } from '@emotion/react'
 import { Avatar, Tag, Typography } from 'antd'
 import React from 'react'
-import { useDiffViewerConfig } from '../../components/diff-viewer/providers/diff-viewer-context'
-import type { PullRequestMetadata, StatTagProps } from './types'
+import { useDiffViewerConfig } from '../../../components/diff-viewer/providers/diff-viewer-context'
+import type { PullRequestMetadata, StatTagProps } from './models'
 
 const { Title, Text, Link } = Typography
 

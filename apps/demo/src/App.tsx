@@ -9,6 +9,7 @@ import Footer from './components/Footer'
 import type { UseGetPrDiffReturn, UseGetPrMetadataReturn } from './hooks/types'
 import useGetPrDiff from './hooks/use-get-pr-diff'
 import useGetPrMetadata from './hooks/use-get-pr-metadata'
+import useListInlineComments from './hooks/use-list-inline-comments'
 import useLoadMoreLines from './hooks/use-load-more-lines'
 import { useSettings } from './provider/setttings-provider'
 import { initialState, prViewReducer } from './reducers'
@@ -64,6 +65,7 @@ export default function App() {
 
   const prMetadata = useGetPrMetadata(prParams)
   const prDiff = useGetPrDiff(prParams)
+  const inlineComments = useListInlineComments(prParams)
   const { fetchLines } = useLoadMoreLines({
     ...prParams,
     githubToken: githubPat,
@@ -109,6 +111,7 @@ export default function App() {
           error={computeError(prMetadata, prDiff)}
           prMetadata={prMetadata}
           prDiff={prDiff}
+          inlineComments={inlineComments}
           displayedDiff={state.displayedDiff}
           loadMore={loadMore}
         />

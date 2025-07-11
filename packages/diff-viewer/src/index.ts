@@ -25,7 +25,7 @@ export type {
   LineMetadata,
 } from './components/diff-viewer/types'
 export { ParsedDiff } from './models/ParsedDiff'
-export * from './addons/pull-request'
+export * from './addons/pull-request/'
 export { Toolbar as DefaultToolbar } from './addons/toolbar/DefaultToolbar'
 export type { CustomButton, DefaultToolbarProps, ToolbarWidget } from './addons/toolbar/types'
 export type { Overlay, Widget } from './components/diff-viewer/types'

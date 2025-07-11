@@ -7,44 +7,8 @@ export interface StatTagProps {
   color: string
 }
 
-export interface InlineCommentAuthor {
-  /** GitHub username */
-  login: string
-  /** URL to user's avatar image */
-  avatar_url: string
-  /** URL to user's GitHub profile */
-  html_url: string
-}
-
-export interface InlineCommentData {
-  /** Unique identifier for the comment */
-  id: string
-  /** The comment body/text content */
-  body: string
-  /** The author of the comment */
-  author: InlineCommentAuthor
-  /** ISO timestamp when comment was created */
-  created_at: string
-  /** ISO timestamp when comment was last updated */
-  updated_at: string
-  /** Whether the comment has been resolved */
-  resolved: boolean
-  /** URL to the comment on GitHub */
-  html_url: string
-}
-
-export interface InlineCommentProps {
-  /** The comment data to display */
-  comment: InlineCommentData
-  /** Optional callback when reply button is clicked */
-  onReply?: () => void
-  /** Optional callback when resolve button is clicked */
-  onResolve?: () => void
-  /** Optional callback when edit button is clicked */
-  onEdit?: () => void
-  /** Optional callback when delete button is clicked */
-  onDelete?: () => void
-}
+// Re-export comment models from the comments directory
+export * from '../comments/models'
 
 export interface PullRequestMetadata {
   /** Pull request number */

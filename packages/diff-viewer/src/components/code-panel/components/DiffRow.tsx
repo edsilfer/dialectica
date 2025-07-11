@@ -90,7 +90,7 @@ const WidgetRow: React.FC<{ viewModel: DiffRowViewModel; pos: 'top' | 'bottom'; 
               <tr key={`widget-${props.pos}-${props.viewModel.getLineNumber('right')}-${index}`}>
                 <td css={styles.leftNumberCell['empty']}>&nbsp;</td>
                 <td css={styles.codeCell['empty']}>&nbsp;</td>
-                <td css={styles.rightNumberCell['empty']} colSpan={2}>
+                <td css={styles.rightNumberCell['empty']} colSpan={2} style={{ pointerEvents: 'auto' }}>
                   {widget.content}
                 </td>
               </tr>
