@@ -15,6 +15,7 @@ const useStyles = () => {
     `,
     label: css`
       margin-right: 4px;
+      min-width: 4ch;
       font-size: ${theme.typography.regularFontSize}px;
       color: ${theme.colors.textPrimary};
     `,

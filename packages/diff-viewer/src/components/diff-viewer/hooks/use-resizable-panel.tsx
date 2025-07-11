@@ -8,7 +8,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
  */
 function getInitialPercentage(): number {
   if (typeof window === 'undefined') return 25 // SSR fallback
-  return window.innerWidth <= 1600 ? 20 : 15
+  return window.innerWidth <= 1600 ? 25 : 15
 }
 
 /**

@@ -80,8 +80,8 @@ export default function CodeReview({ error, prMetadata, prDiff, displayedDiff, l
         widgets={[
           {
             content: <InlineComment comment={mockComment} />,
-            line: 186,
-            side: 'right',
+            line: 14,
+            side: 'left',
             position: 'bottom',
             filepath: 'packages/react-client/src/ReactFlightClient.js',
           },

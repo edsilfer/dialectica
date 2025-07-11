@@ -3,11 +3,11 @@ import { Checkbox, Typography } from 'antd'
 import React, { useCallback, useContext, useMemo } from 'react'
 
 import { ThemeContext } from '../../../themes/providers/theme-context'
-import { useFileState, useCodePanelSettings } from '../providers/code-panel-context'
 import FileActivitySummary from '../../ui/activity-summary/FileActivitySummary'
-import ExpandButton from '../../ui/buttons/ExpandButton'
 import CopyButton from '../../ui/buttons/CopyButton'
+import ExpandButton from '../../ui/buttons/ExpandButton'
 import WrapLinesButton from '../../ui/buttons/LineWrapButton'
+import { useCodePanelSettings, useFileState } from '../providers/code-panel-context'
 import { FileViewerHeaderProps } from './types'
 
 const { Text } = Typography
@@ -84,11 +84,15 @@ const FileViewerHeader: React.FC<FileViewerHeaderProps> = (props) => {
     <div css={[styles.headerBase, isCollapsed || isViewed ? styles.headerCollapsed : styles.headerExpanded]}>
       <ExpandButton collapsed={isCollapsed} size={16} onClick={() => toggleCollapsed(!isCollapsed)} />
       <FileActivitySummary file={file} />
-      <Text className="file-path">{file.key}</Text>
+
       <CopyButton onClick={handleCopyFilePath} tooltip="Copy file path" toastText="File path copied to clipboard" />
       {mode === 'unified' && (
         <WrapLinesButton isWrapped={wrapLines} onClick={() => onWrapLinesChange(!wrapLines)} size={16} />
       )}
+
+      <Text className="file-path" ellipsis={{ tooltip: file.key }}>
+        {file.key}
+      </Text>
 
       <div css={styles.rightContainer}>
         <Checkbox css={styles.viewedCheckbox} checked={isViewed} onChange={(e) => toggleViewed(e.target.checked)}>

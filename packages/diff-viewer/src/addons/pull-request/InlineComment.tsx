@@ -14,10 +14,10 @@ const useStyles = () => {
       display: flex;
       gap: ${theme.spacing.sm};
       padding: ${theme.spacing.sm};
+      margin: ${theme.spacing.sm};
       background-color: ${theme.colors.backgroundContainer};
-      border-top: 1px solid ${theme.colors.border};
-      border-bottom: 1px solid ${theme.colors.border};
-      margin: ${theme.spacing.xs} 0;
+      border: 1px solid ${theme.colors.border};
+      border-radius: ${theme.spacing.sm};
       position: relative;
     `,
 
@@ -65,6 +65,7 @@ const useStyles = () => {
       margin: 0;
       white-space: pre-wrap;
       word-break: break-word;
+      text-align: left;
     `,
 
     actions: css`

@@ -70,6 +70,7 @@ export const getViewerStyles = (theme: ThemeTokens) => {
   const createCodeCell = (type: DiffLineType): SerializedStyles[] => [
     baseCell,
     css`
+      text-align: left;
       padding: 0 ${theme.spacing.sm};
       background: ${backgroundByType[type]};
     `,

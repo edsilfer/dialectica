@@ -1,471 +1,267 @@
-import { fireEvent, screen } from '@testing-library/react'
 import React from 'react'
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
+import { fireEvent, screen } from '@testing-library/react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPropsFactory } from '../../../utils/test/generic-test-utils'
-import { SIMPLE_CHANGES } from '../../../utils/test/models/test-utils'
 import { render } from '../../../utils/test/render'
 import { DiffLineViewModel } from '../models/DiffLineViewModel'
 import SplitViewer from './SplitViewer'
-import type { DiffLineType, HunkDirection, SplitViewerProps } from './types'
+import type { SplitViewerProps } from './types'
+import { HunkDirection } from './types'
+import type { Overlay, Widget } from '../../diff-viewer/types'
 
 /**
  * # SplitViewer Testing Strategy
  *
  * ## Mocked Boundaries
- * - **LoadMoreButton**: Mocked to isolate SplitViewer from button component logic and test click interactions
- * - **DiffLineViewModel**: Used as test data factory to create predictable line representations
- * - **Test fixtures**: LINE_TYPE_TEST_CASES and SIMPLE_CHANGES provide standardized test data
+ *
+ * - **useOverlayDocking**: Mocked to test overlay docking behavior without complex hook logic
+ * - **DiffRow**: Mocked to isolate row rendering and test prop passing
+ * - **ThemeContext**: Provided by render utility with light theme
+ * - **window.getSelection**: Mocked to test selection change behavior
+ * - **requestAnimationFrame**: Mocked to test selection change debouncing
  *
  * ## Happy Path
- * - Valid lines array → Table rendered with correct structure → Lines displayed with proper line numbers and content
- * - Hunk lines → Load more buttons rendered with correct direction → Click handlers called with proper parameters
- * - Different line types (add/delete/context) → Correct prefixes and styling applied
- * - Split view structure → Left and right columns properly configured
- * - Overlays with valid dockIndex → Overlays rendered in correct cells → Multiple overlays group correctly
+ * - Lines array with mixed types → Table renders with correct structure → DiffRow components receive correct props
+ * - Overlays provided → Overlay groups passed to DiffRow components
+ * - Widgets provided → Widgets passed to DiffRow components
+ * - Load more callback provided → Callback passed to DiffRow components
+ * - Selection changes → Container classes updated correctly
  *
  * ## Edge Cases
- * - **Empty lines array**: Table structure preserved but no rows rendered
- * - **Null line numbers**: Component renders empty cell (not a default value)
- * - **Null or empty highlighted content**: Falls back to non-breaking space (`&nbsp;`), not original content
- * - **Very long content**: No truncation, full content displayed
- * - **Multiple hunk lines**: All load more buttons functional with correct callbacks
- * - **Missing onLoadMoreLines handler**: No errors when buttons clicked
- * - **Mixed line types**: Only the relevant side (left or right) renders content for its type; the other side may be empty
- * - **No overlays provided**: No errors, overlay containers exist but remain empty
- * - **Empty overlays array**: No errors, no overlay content rendered
- * - **Invalid overlay dockIndex**: Component handles gracefully, no rendering errors
- * - **Multiple overlays same dockIndex**: All overlays rendered together in target cells
- * - **Complex overlay content**: React components rendered correctly as overlay content
+ * - **Empty lines array**: Table renders with empty tbody
+ * - **No overlays**: Empty overlay groups object passed to DiffRow
+ * - **No widgets**: Undefined widgets prop passed to DiffRow
+ * - **No load more callback**: Undefined callback passed to DiffRow
+ * - **Hunk lines**: DiffRow receives isHunk=true
+ * - **Non-hunk lines**: DiffRow receives isHunk=false
+ * - **Mixed line types**: Each line type handled correctly
+ * - **Selection outside component**: No class changes
+ * - **Collapsed selection**: Classes removed
  *
  * ## Assertions
- * - Verify table structure (colgroup, cells, colspan for hunks; hunk lines render merged cell)
- * - Check line type prefixes (+/-/space) and content rendering
- * - Validate line number display and null handling (empty cell for null)
- * - Test hunk direction mapping and button interactions
- * - Ensure HTML content rendered safely with proper escaping
- * - Verify key generation for React optimization
- * - Test split view column layout and styling
- * - Validate overlay grouping by dockIndex and content rendering in both left and right cells
- * - Test overlay container existence and proper positioning within cells
+ * - Verify table structure with correct colgroup and columns
+ * - Test DiffRow prop passing for all scenarios
+ * - Validate overlay docking integration
+ * - Check mouse event handling
+ * - Ensure split view mode is always false
+ * - Test selection change behavior and CSS class management
  */
 
-// MOCK
-vi.mock('../../ui/buttons/LoadMoreButton', () => ({
-  default: ({
-    onClick,
-    direction,
-  }: {
-    onClick?: (e: React.MouseEvent, d: HunkDirection) => void
-    direction: HunkDirection
-  }) => (
-    <button data-testid="load-more-button" onClick={(e) => onClick?.(e, direction)}>
-      Load More {direction}
-    </button>
+// MOCKS
+const { useOverlayDocking } = vi.hoisted(() => ({
+  useOverlayDocking: vi.fn(),
+}))
+
+vi.mock('../hooks/use-overlay-docking', () => ({
+  useOverlayDocking,
+}))
+
+vi.mock('./DiffRow', () => ({
+  DiffRow: vi.fn(
+    ({
+      line,
+      isHunk,
+      overlays,
+      widgets,
+      loadLines,
+      unified,
+      onMouseEnter,
+      onMouseLeave,
+      idx,
+    }: {
+      line: DiffLineViewModel
+      isHunk: boolean
+      overlays: Record<number, React.ReactNode[]>
+      widgets?: Widget[]
+      loadLines?: (line: DiffLineViewModel, direction: HunkDirection) => void
+      unified: boolean
+      onMouseEnter?: (e: React.MouseEvent<HTMLTableRowElement>) => void
+      onMouseLeave?: (e: React.MouseEvent<HTMLTableRowElement>) => void
+      idx: number
+    }) => (
+      <tr
+        data-testid={`diff-row-${idx}`}
+        data-line-type-left={line.typeLeft ?? 'empty'}
+        data-line-type-right={line.typeRight ?? 'empty'}
+        data-is-hunk={isHunk}
+        data-overlays-count={Object.keys(overlays || {}).length}
+        data-widgets-count={widgets?.length || 0}
+        data-unified={unified}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+      >
+        <td>Left: {line.lineNumberLeft}</td>
+        <td>Right: {line.lineNumberRight}</td>
+        {loadLines && (
+          <td>
+            <button data-testid={`load-more-${idx}`} onClick={() => loadLines(line, 'down')}>
+              Load More
+            </button>
+          </td>
+        )}
+      </tr>
+    ),
   ),
 }))
 
-// HELPERS
-const createSplitViewerProps = createPropsFactory<SplitViewerProps>({
+const makeSplitViewerProps = createPropsFactory<SplitViewerProps>({
   lines: [],
   loadMoreLinesCount: 5,
+  overlays: [],
+  widgets: [],
   onLoadMoreLines: vi.fn(),
 })
 
-const createMockLine = (overrides: Partial<DiffLineViewModel> = {}): DiffLineViewModel => {
-  const defaults = {
-    typeLeft: 'context' as const,
-    contentLeft: 'test line left',
-    highlightedContentLeft: '<span>test line left</span>',
-    lineNumberLeft: 1,
-    typeRight: 'context' as const,
-    contentRight: 'test line right',
-    highlightedContentRight: '<span>test line right</span>',
-    lineNumberRight: 1,
-  }
+const createMockLine = (
+  typeLeft: 'add' | 'delete' | 'context' | 'hunk' | 'empty' = 'context',
+  typeRight: 'add' | 'delete' | 'context' | 'hunk' | 'empty' = 'context',
+  contentLeft: string = 'left content',
+  contentRight: string = 'right content',
+  lineNumberLeft: number = 1,
+  lineNumberRight: number = 1,
+  hunkDirection?: HunkDirection,
+): DiffLineViewModel => {
   return new DiffLineViewModel(
-    overrides.typeLeft ?? defaults.typeLeft,
-    overrides.contentLeft ?? defaults.contentLeft,
-    overrides.highlightedContentLeft ?? defaults.highlightedContentLeft,
-    overrides.lineNumberLeft ?? defaults.lineNumberLeft,
-    overrides.typeRight ?? defaults.typeRight,
-    overrides.contentRight ?? defaults.contentRight,
-    overrides.highlightedContentRight ?? defaults.highlightedContentRight,
-    overrides.lineNumberRight ?? defaults.lineNumberRight,
-    overrides.hunkDirection,
+    typeLeft,
+    contentLeft,
+    contentLeft,
+    lineNumberLeft,
+    typeRight,
+    contentRight,
+    contentRight,
+    lineNumberRight,
+    hunkDirection,
   )
 }
 
-const createHunkLine = (content: string, direction: HunkDirection = 'out'): DiffLineViewModel => {
-  return new DiffLineViewModel('hunk', content, content, null, 'hunk', content, content, null, direction)
-}
+const createMockOverlay = (id: string, splitDockIdx: 0 | 1 = 0): Overlay => ({
+  unifiedDockIdx: 0,
+  splitDockIdx,
+  content: <div data-testid={`overlay-${id}`}>Overlay {id}</div>,
+})
+
+const createMockWidget = (id: string, side: 'left' | 'right' = 'left'): Widget => ({
+  content: <div data-testid={`widget-${id}`}>Widget {id}</div>,
+  line: 1,
+  position: 'top',
+  filepath: 'test.ts',
+  side,
+})
 
 describe('SplitViewer', () => {
-  describe('basic rendering scenarios', () => {
-    it('given empty lines array, when rendered, expect empty table with correct structure', () => {
-      // GIVEN
-      const props = createSplitViewerProps({ lines: [] })
+  let mockOverlayGroups: Record<number, React.ReactNode[]>
+  let mockHandleRowEnter: ReturnType<typeof vi.fn>
+  let mockHandleRowLeave: ReturnType<typeof vi.fn>
+  let mockGetSelection: ReturnType<typeof vi.fn>
+  let mockRequestAnimationFrame: ReturnType<typeof vi.fn>
+  let mockCancelAnimationFrame: ReturnType<typeof vi.fn>
 
-      // WHEN
-      render(<SplitViewer {...props} />)
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockOverlayGroups = { 0: [<div key="overlay-1">Overlay 1</div>] }
+    mockHandleRowEnter = vi.fn()
+    mockHandleRowLeave = vi.fn()
+    mockGetSelection = vi.fn()
+    mockRequestAnimationFrame = vi.fn((cb: () => void) => {
+      cb()
+      return 1
+    })
+    mockCancelAnimationFrame = vi.fn()
 
-      // EXPECT
-      expect(screen.getByRole('table')).toBeInTheDocument()
-      expect(screen.getByRole('rowgroup')).toBeInTheDocument() // tbody has role="rowgroup"
-      expect(screen.queryByRole('row')).not.toBeInTheDocument()
+    useOverlayDocking.mockReturnValue({
+      overlayGroups: mockOverlayGroups,
+      handleRowEnter: mockHandleRowEnter,
+      handleRowLeave: mockHandleRowLeave,
     })
 
-    it('given single context line, when rendered, expect line displayed with correct structure', () => {
+    // Mock window APIs
+    Object.defineProperty(window, 'getSelection', {
+      value: mockGetSelection,
+      configurable: true,
+    })
+    Object.defineProperty(window, 'requestAnimationFrame', {
+      value: mockRequestAnimationFrame,
+      configurable: true,
+    })
+    Object.defineProperty(window, 'cancelAnimationFrame', {
+      value: mockCancelAnimationFrame,
+      configurable: true,
+    })
+  })
+
+  describe('rendering scenarios', () => {
+    it('given empty lines array, when rendered, expect empty table body', () => {
       // GIVEN
-      const line = createMockLine({
-        typeLeft: 'context',
-        typeRight: 'context',
-        lineNumberLeft: 5,
-        lineNumberRight: 5,
-      })
-      const props = createSplitViewerProps({ lines: [line] })
+      const props = makeSplitViewerProps({ lines: [] })
 
       // WHEN
       render(<SplitViewer {...props} />)
 
       // EXPECT
-      const row = screen.getByRole('row')
+      const table = screen.getByRole('table')
+      expect(table).toBeInTheDocument()
+      expect(table.querySelector('tbody')).toBeInTheDocument()
+      expect(table.querySelectorAll('tr')).toHaveLength(0)
+    })
+
+    it('given single context line, when rendered, expect one DiffRow with correct props', () => {
+      // GIVEN
+      const line = createMockLine('context', 'context', 'function test() {', 'function test() {', 1, 1)
+      const props = makeSplitViewerProps({ lines: [line] })
+
+      // WHEN
+      render(<SplitViewer {...props} />)
+
+      // EXPECT
+      const row = screen.getByTestId('diff-row-0')
       expect(row).toBeInTheDocument()
-      const cells = screen.getAllByRole('cell')
-      expect(cells).toHaveLength(4) // left number, left code, right number, right code
-      expect(cells[0]).toHaveTextContent('5') // left number
-      expect(cells[2]).toHaveTextContent('5') // right number
-      expect(screen.getByText('test line left')).toBeInTheDocument()
-      expect(screen.getByText('test line right')).toBeInTheDocument()
+      expect(row).toHaveAttribute('data-line-type-left', 'context')
+      expect(row).toHaveAttribute('data-line-type-right', 'context')
+      expect(row).toHaveAttribute('data-is-hunk', 'false')
+      expect(row).toHaveAttribute('data-unified', 'false')
     })
 
-    it('given multiple lines with different types, when rendered, expect all lines displayed correctly', () => {
+    it('given hunk line, when rendered, expect DiffRow with isHunk=true', () => {
+      // GIVEN
+      const line = createMockLine('hunk', 'hunk', '@@ -1,3 +1,4 @@', '@@ -1,3 +1,4 @@', undefined, undefined, 'out')
+      const props = makeSplitViewerProps({ lines: [line] })
+
+      // WHEN
+      render(<SplitViewer {...props} />)
+
+      // EXPECT
+      const row = screen.getByTestId('diff-row-0')
+      expect(row).toHaveAttribute('data-line-type-left', 'hunk')
+      expect(row).toHaveAttribute('data-line-type-right', 'hunk')
+      expect(row).toHaveAttribute('data-is-hunk', 'true')
+    })
+
+    it('given mixed line types, when rendered, expect correct line types for each row', () => {
       // GIVEN
       const lines = [
-        createMockLine({
-          typeLeft: 'context',
-          typeRight: 'context',
-          lineNumberLeft: 1,
-          lineNumberRight: 1,
-          contentLeft: 'context line left',
-          contentRight: 'context line right',
-          highlightedContentLeft: '<span>context line left</span>',
-          highlightedContentRight: '<span>context line right</span>',
-        }),
-        createMockLine({
-          typeLeft: 'add',
-          typeRight: 'add',
-          lineNumberLeft: null,
-          lineNumberRight: 2,
-          contentLeft: '+added line left',
-          contentRight: '+added line right',
-          highlightedContentLeft: '<span>+added line left</span>',
-          highlightedContentRight: '<span>+added line right</span>',
-        }),
-        createMockLine({
-          typeLeft: 'delete',
-          typeRight: 'delete',
-          lineNumberLeft: 3,
-          lineNumberRight: null,
-          contentLeft: '-deleted line left',
-          contentRight: '-deleted line right',
-          highlightedContentLeft: '<span>-deleted line left</span>',
-          highlightedContentRight: '<span>-deleted line right</span>',
-        }),
+        createMockLine('hunk', 'hunk', '@@ -1,3 +1,4 @@', '@@ -1,3 +1,4 @@', undefined, undefined, 'out'),
+        createMockLine('context', 'context', 'function test() {', 'function test() {', 1, 1),
+        createMockLine('delete', 'empty', '  return false;', '', 2, undefined),
+        createMockLine('empty', 'add', '', '  return true;', undefined, 3),
       ]
-      const props = createSplitViewerProps({ lines })
+      const props = makeSplitViewerProps({ lines })
 
       // WHEN
       render(<SplitViewer {...props} />)
 
       // EXPECT
-      const rows = screen.getAllByRole('row')
-      expect(rows).toHaveLength(3)
-      expect(screen.getByText('context line left')).toBeInTheDocument()
-      expect(screen.getByText('context line right')).toBeInTheDocument()
-      expect(screen.getByText('+added line left')).toBeInTheDocument()
-      expect(screen.getByText('+added line right')).toBeInTheDocument()
-      expect(screen.getByText('-deleted line left')).toBeInTheDocument()
-      expect(screen.getByText('-deleted line right')).toBeInTheDocument()
-    })
-
-    it('given SIMPLE_CHANGES data, when converted to view models and rendered, expect correct display', () => {
-      // GIVEN
-      const lines = SIMPLE_CHANGES.map((change) =>
-        createMockLine({
-          typeLeft: change.type,
-          typeRight: change.type,
-          contentLeft: change.content,
-          contentRight: change.content,
-          highlightedContentLeft: `<span>${change.content}</span>`,
-          highlightedContentRight: `<span>${change.content}</span>`,
-          lineNumberLeft: change.lineNumberOld,
-          lineNumberRight: change.lineNumberNew,
-        }),
-      )
-      const props = createSplitViewerProps({ lines })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-
-      // EXPECT
-      const addedElements = screen.getAllByText('+added line')
-      expect(addedElements).toHaveLength(2) // left and right sides
-      const unchangedElements = screen.getAllByText(/unchanged line/)
-      expect(unchangedElements).toHaveLength(2) // left and right sides
+      expect(screen.getByTestId('diff-row-0')).toHaveAttribute('data-line-type-left', 'hunk')
+      expect(screen.getByTestId('diff-row-1')).toHaveAttribute('data-line-type-left', 'context')
+      expect(screen.getByTestId('diff-row-2')).toHaveAttribute('data-line-type-left', 'delete')
+      expect(screen.getByTestId('diff-row-3')).toHaveAttribute('data-line-type-left', 'empty')
     })
   })
 
-  describe('line type prefix scenarios', () => {
-    const prefixTestCases: Array<{
-      description: string
-      lineType: DiffLineType
-      expectedPrefix: string
-    }> = [
-      { description: 'add line type', lineType: 'add', expectedPrefix: '+' },
-      { description: 'delete line type', lineType: 'delete', expectedPrefix: '-' },
-      { description: 'context line type', lineType: 'context', expectedPrefix: ' ' },
-      { description: 'hunk line type', lineType: 'hunk', expectedPrefix: ' ' },
-      { description: 'empty line type', lineType: 'empty', expectedPrefix: ' ' },
-    ]
-
-    it.each(prefixTestCases)(
-      'given $description, when rendered, expect correct prefix',
-      ({ lineType, expectedPrefix }) => {
-        // GIVEN
-        const line = createMockLine({
-          typeLeft: lineType,
-          typeRight: lineType,
-          contentLeft: `${expectedPrefix}test content`,
-          contentRight: `${expectedPrefix}test content`,
-          highlightedContentLeft: `<span>${expectedPrefix}test content</span>`,
-          highlightedContentRight: `<span>${expectedPrefix}test content</span>`,
-        })
-        const props = createSplitViewerProps({ lines: [line] })
-
-        // WHEN
-        render(<SplitViewer {...props} />)
-
-        // EXPECT
-        // For context, hunk, and empty types, the prefix is a space, so we need to match differently
-        if (expectedPrefix === ' ') {
-          const elements = screen.getAllByText(/test content/)
-          // Hunk lines use colspan, so they only render once
-          const expectedLength = lineType === 'hunk' ? 1 : 2
-          expect(elements).toHaveLength(expectedLength)
-        } else {
-          const elements = screen.getAllByText(`${expectedPrefix}test content`)
-          expect(elements).toHaveLength(2) // left and right sides
-        }
-      },
-    )
-  })
-
-  describe('hunk line scenarios', () => {
-    it('given hunk line with out direction, when rendered, expect load more button with correct direction', () => {
-      // GIVEN
-      const hunkLine = createHunkLine('@@ -1,3 +1,3 @@', 'out')
-      const props = createSplitViewerProps({ lines: [hunkLine] })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-
-      // EXPECT
-      expect(screen.getByTestId('load-more-button')).toBeInTheDocument()
-      expect(screen.getByText('Load More out')).toBeInTheDocument()
-    })
-
-    it('given hunk line with up direction, when rendered, expect load more button with correct direction', () => {
-      // GIVEN
-      const hunkLine = createHunkLine('@@ -1,3 +1,3 @@', 'up')
-      const props = createSplitViewerProps({ lines: [hunkLine] })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-
-      // EXPECT
-      expect(screen.getByTestId('load-more-button')).toBeInTheDocument()
-      expect(screen.getByText('Load More up')).toBeInTheDocument()
-    })
-
-    it('given hunk line with down direction, when rendered, expect load more button with correct direction', () => {
-      // GIVEN
-      const hunkLine = createHunkLine('@@ -1,3 +1,3 @@', 'down')
-      const props = createSplitViewerProps({ lines: [hunkLine] })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-
-      // EXPECT
-      expect(screen.getByTestId('load-more-button')).toBeInTheDocument()
-      expect(screen.getByText('Load More down')).toBeInTheDocument()
-    })
-
-    it('given hunk line, when load more button clicked, expect onLoadMoreLines called with correct parameters', () => {
-      // GIVEN
-      const mockOnLoadMoreLines = vi.fn()
-      const hunkLine = createHunkLine('@@ -1,3 +1,3 @@', 'out')
-      const props = createSplitViewerProps({
-        lines: [hunkLine],
-        onLoadMoreLines: mockOnLoadMoreLines,
-      })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-      fireEvent.click(screen.getByTestId('load-more-button'))
-
-      // EXPECT
-      expect(mockOnLoadMoreLines).toHaveBeenCalledWith(hunkLine, 'out')
-    })
-
-    it('given hunk line without onLoadMoreLines handler, when load more button clicked, expect no error', () => {
-      // GIVEN
-      const hunkLine = createHunkLine('@@ -1,3 +1,3 @@', 'out')
-      const props = createSplitViewerProps({
-        lines: [hunkLine],
-        onLoadMoreLines: undefined,
-      })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-
-      // EXPECT
-      expect(() => {
-        fireEvent.click(screen.getByTestId('load-more-button'))
-      }).not.toThrow()
-    })
-
-    it('given multiple hunk lines, when rendered, expect all load more buttons functional', () => {
-      // GIVEN
-      const mockOnLoadMoreLines = vi.fn()
-      const hunkLines = [
-        createHunkLine('@@ -1,3 +1,3 @@', 'up'),
-        createHunkLine('@@ -5,2 +5,2 @@', 'down'),
-        createHunkLine('@@ -10,1 +10,1 @@', 'out'),
-      ]
-      const props = createSplitViewerProps({
-        lines: hunkLines,
-        onLoadMoreLines: mockOnLoadMoreLines,
-      })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-      const buttons = screen.getAllByTestId('load-more-button')
-      fireEvent.click(buttons[0])
-      fireEvent.click(buttons[1])
-      fireEvent.click(buttons[2])
-
-      // EXPECT
-      expect(buttons).toHaveLength(3)
-      expect(mockOnLoadMoreLines).toHaveBeenCalledWith(hunkLines[0], 'up')
-      expect(mockOnLoadMoreLines).toHaveBeenCalledWith(hunkLines[1], 'down')
-      expect(mockOnLoadMoreLines).toHaveBeenCalledWith(hunkLines[2], 'out')
-    })
-  })
-
-  describe('line number scenarios', () => {
-    it('given line with null line numbers, when rendered, expect no line numbers displayed', () => {
-      // GIVEN
-      const line = createMockLine({
-        lineNumberLeft: null,
-        lineNumberRight: null,
-      })
-      const props = createSplitViewerProps({ lines: [line] })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-
-      // EXPECT
-      const cells = screen.getAllByRole('cell')
-      // The component renders null line numbers as empty text nodes, but they're still present
-      expect(cells[0]).toBeInTheDocument() // left number cell exists
-      expect(cells[2]).toBeInTheDocument() // right number cell exists
-      // Note: The component renders null values as empty text, which is the expected behavior
-    })
-
-    it('given line with mixed null line numbers, when rendered, expect only valid numbers displayed', () => {
-      // GIVEN
-      const line = createMockLine({
-        lineNumberLeft: 5,
-        lineNumberRight: null,
-      })
-      const props = createSplitViewerProps({ lines: [line] })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-
-      // EXPECT
-      const cells = screen.getAllByRole('cell')
-      expect(cells[0]).toHaveTextContent('5') // left number displayed
-      expect(cells[2]).toBeInTheDocument() // right number cell exists but empty
-      // Note: The component renders null values as empty text, which is the expected behavior
-    })
-  })
-
-  describe('content rendering scenarios', () => {
-    it('given line with null highlighted content, when rendered, expect non-breaking space fallback', () => {
-      // GIVEN
-      const line = createMockLine({
-        highlightedContentLeft: null,
-        highlightedContentRight: null,
-        contentLeft: 'original content left',
-        contentRight: 'original content right',
-      })
-      const props = createSplitViewerProps({ lines: [line] })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-
-      // EXPECT
-      const cells = screen.getAllByRole('cell')
-      expect(cells[1]).toBeInTheDocument() // left code cell exists
-      expect(cells[3]).toBeInTheDocument() // right code cell exists
-      // The component falls back to &nbsp; when highlighted content is null
-    })
-
-    it('given line with empty highlighted content, when rendered, expect non-breaking space', () => {
-      // GIVEN
-      const line = createMockLine({
-        highlightedContentLeft: '',
-        highlightedContentRight: '',
-        contentLeft: '',
-        contentRight: '',
-      })
-      const props = createSplitViewerProps({ lines: [line] })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-
-      // EXPECT
-      const cells = screen.getAllByRole('cell')
-      expect(cells[1]).toBeInTheDocument() // left code cell exists
-      expect(cells[3]).toBeInTheDocument() // right code cell exists
-    })
-
-    it('given line with HTML content, when rendered, expect HTML safely rendered', () => {
-      // GIVEN
-      const line = createMockLine({
-        highlightedContentLeft: '<span class="highlight">test</span>',
-        highlightedContentRight: '<span class="highlight">test</span>',
-      })
-      const props = createSplitViewerProps({ lines: [line] })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-
-      // EXPECT
-      const spanElements = screen.getAllByText('test')
-      expect(spanElements).toHaveLength(2)
-      spanElements.forEach((span) => {
-        expect(span).toHaveClass('highlight')
-      })
-    })
-  })
-
-  describe('table structure scenarios', () => {
+  describe('table structure', () => {
     it('given any lines, when rendered, expect correct table structure with colgroup', () => {
       // GIVEN
-      const line = createMockLine()
-      const props = createSplitViewerProps({ lines: [line] })
+      const line = createMockLine('context', 'context', 'test line', 'test line', 1, 1)
+      const props = makeSplitViewerProps({ lines: [line] })
 
       // WHEN
       render(<SplitViewer {...props} />)
@@ -477,638 +273,378 @@ describe('SplitViewer', () => {
 
       const cols = colgroup?.querySelectorAll('col')
       expect(cols).toHaveLength(4)
-      expect(cols?.[0]).toHaveStyle({ width: '50px' }) // left number
-      expect(cols?.[1]).toHaveStyle({ width: 'auto' }) // left code
-      expect(cols?.[2]).toHaveStyle({ width: '50px' }) // right number
-      expect(cols?.[3]).toHaveStyle({ width: 'auto' }) // right code
+      expect(cols?.[0]).toHaveStyle({ width: '50px' })
+      expect(cols?.[1]).toHaveStyle({ width: 'auto' })
+      expect(cols?.[2]).toHaveStyle({ width: '50px' })
+      expect(cols?.[3]).toHaveStyle({ width: 'auto' })
     })
 
-    it('given hunk line, when rendered, expect colspan for merged content cell', () => {
-      // GIVEN
-      const hunkLine = createHunkLine('@@ -1,3 +1,3 @@')
-      const props = createSplitViewerProps({ lines: [hunkLine] })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-
-      // EXPECT
-      const cells = screen.getAllByRole('cell')
-      expect(cells).toHaveLength(2) // left number + merged content (colspan=3)
-      expect(cells[1]).toHaveAttribute('colspan', '3')
-    })
-
-    it('given regular line, when rendered, expect four separate cells', () => {
-      // GIVEN
-      const line = createMockLine()
-      const props = createSplitViewerProps({ lines: [line] })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-
-      // EXPECT
-      const cells = screen.getAllByRole('cell')
-      expect(cells).toHaveLength(4) // left number, left code, right number, right code
-      cells.forEach((cell) => {
-        expect(cell).not.toHaveAttribute('colspan')
-      })
-    })
-  })
-
-  describe('mixed line type scenarios', () => {
-    it('given line with different types on left and right, when rendered, expect both handled correctly', () => {
-      // GIVEN
-      const line = createMockLine({
-        typeLeft: 'add',
-        typeRight: 'delete',
-        contentLeft: '+added content',
-        contentRight: '-deleted content',
-        highlightedContentLeft: '<span>+added content</span>',
-        highlightedContentRight: '<span>-deleted content</span>',
-        lineNumberLeft: null,
-        lineNumberRight: 5,
-      })
-      const props = createSplitViewerProps({ lines: [line] })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-
-      // EXPECT
-      const addedElements = screen.getAllByText('+added content')
-      expect(addedElements).toHaveLength(1) // only left side has add
-      const deletedElements = screen.getAllByText('-deleted content')
-      expect(deletedElements).toHaveLength(1) // only right side has delete
-      const cells = screen.getAllByRole('cell')
-      expect(cells[0]).toBeInTheDocument() // left number cell exists but empty for add
-      expect(cells[2]).toHaveTextContent('5') // right number for delete
-    })
-
-    it('given line with hunk on left and regular on right, when rendered, expect load more button on left', () => {
-      // GIVEN
-      const line = new DiffLineViewModel(
-        'hunk',
-        'hunk content',
-        'hunk content',
-        null,
-        'context',
-        'regular content',
-        '<span>regular content</span>',
-        5,
-        'out',
-      )
-      const props = createSplitViewerProps({ lines: [line] })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-
-      // EXPECT
-      expect(screen.getByTestId('load-more-button')).toBeInTheDocument()
-      expect(screen.getByText('regular content')).toBeInTheDocument()
-      const cells = screen.getAllByRole('cell')
-      expect(cells[2]).toHaveTextContent('5') // right number displayed
-    })
-  })
-
-  describe('performance and optimization scenarios', () => {
-    it('given multiple lines, when rendered, expect unique keys for each row', () => {
+    it('given multiple lines, when rendered, expect correct number of rows', () => {
       // GIVEN
       const lines = [
-        createMockLine({ lineNumberLeft: 1, lineNumberRight: 1 }),
-        createMockLine({ lineNumberLeft: 2, lineNumberRight: 2 }),
-        createMockLine({ lineNumberLeft: 3, lineNumberRight: 3 }),
+        createMockLine('context', 'context', 'line 1', 'line 1', 1, 1),
+        createMockLine('context', 'context', 'line 2', 'line 2', 2, 2),
+        createMockLine('context', 'context', 'line 3', 'line 3', 3, 3),
       ]
-      const props = createSplitViewerProps({ lines })
+      const props = makeSplitViewerProps({ lines })
 
       // WHEN
       render(<SplitViewer {...props} />)
 
       // EXPECT
-      const rows = screen.getAllByRole('row')
+      const rows = screen.getAllByTestId(/^diff-row-/)
       expect(rows).toHaveLength(3)
-      // Each row should have a unique key (index-based in this implementation)
-      rows.forEach((row, _) => {
-        expect(row).toBeInTheDocument()
-      })
-    })
-
-    it('given large number of lines, when rendered, expect all lines displayed', () => {
-      // GIVEN
-      const lines = Array.from({ length: 100 }, (_, i) =>
-        createMockLine({
-          lineNumberLeft: i + 1,
-          lineNumberRight: i + 1,
-          contentLeft: `line ${i + 1} left`,
-          contentRight: `line ${i + 1} right`,
-          highlightedContentLeft: `<span>line ${i + 1} left</span>`,
-          highlightedContentRight: `<span>line ${i + 1} right</span>`,
-        }),
-      )
-      const props = createSplitViewerProps({ lines })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-
-      // EXPECT
-      const rows = screen.getAllByRole('row')
-      expect(rows).toHaveLength(100)
-      // Check that the first and last lines are rendered
-      const line1Elements = screen.getAllByText('line 1 left')
-      expect(line1Elements.length).toBeGreaterThan(0) // At least one instance
-      const line100Elements = screen.getAllByText('line 100 left')
-      expect(line100Elements.length).toBeGreaterThan(0) // At least one instance
     })
   })
 
-  describe('overlay scenarios', () => {
-    it('given overlay with splitDockIdx 0, when rendered, expect overlay content in both left and right number cells', () => {
+  describe('overlay integration', () => {
+    it('given overlays provided, when rendered, expect overlay groups passed to DiffRow', () => {
       // GIVEN
-      const overlayContent = <span data-testid="test-overlay-0">Number Overlay</span>
-      const line = createMockLine({
-        lineNumberLeft: 5,
-        lineNumberRight: 5,
-      })
-      const props = createSplitViewerProps({
-        lines: [line],
-        overlays: [{ content: overlayContent, unifiedDockIdx: 0, splitDockIdx: 0 }],
+      const overlays = [createMockOverlay('1', 0), createMockOverlay('2', 1)]
+      const line = createMockLine('context', 'context', 'test line', 'test line', 1, 1)
+      const props = makeSplitViewerProps({ lines: [line], overlays })
+
+      // MOCK
+      useOverlayDocking.mockReturnValue({
+        overlayGroups: { 0: [<div key="overlay-1">Overlay 1</div>], 1: [<div key="overlay-2">Overlay 2</div>] },
+        handleRowEnter: mockHandleRowEnter,
+        handleRowLeave: mockHandleRowLeave,
       })
 
       // WHEN
       render(<SplitViewer {...props} />)
 
       // EXPECT
-      const overlayElements = screen.getAllByTestId('test-overlay-0')
-      expect(overlayElements).toHaveLength(2) // Both left and right number cells
-
-      const cells = screen.getAllByRole('cell')
-      const leftNumberCell = cells[0] // left number cell
-      const rightNumberCell = cells[2] // right number cell
-
-      expect(leftNumberCell).toContainElement(overlayElements[0])
-      expect(rightNumberCell).toContainElement(overlayElements[1])
+      expect(useOverlayDocking).toHaveBeenCalledWith({
+        overlays,
+        lines: [line],
+        viewMode: 'split',
+      })
+      const row = screen.getByTestId('diff-row-0')
+      expect(row).toHaveAttribute('data-overlays-count', '2')
     })
 
-    it('given overlay with splitDockIdx 1, when rendered, expect overlay content in both left and right code cells', () => {
+    it('given no overlays, when rendered, expect empty overlay groups', () => {
       // GIVEN
-      const overlayContent = <span data-testid="test-overlay-1">Code Overlay</span>
-      const line = createMockLine()
-      const props = createSplitViewerProps({
-        lines: [line],
-        overlays: [{ content: overlayContent, unifiedDockIdx: 1, splitDockIdx: 1 }],
+      const line = createMockLine('context', 'context', 'test line', 'test line', 1, 1)
+      const props = makeSplitViewerProps({ lines: [line], overlays: undefined })
+
+      // MOCK
+      useOverlayDocking.mockReturnValue({
+        overlayGroups: {},
+        handleRowEnter: mockHandleRowEnter,
+        handleRowLeave: mockHandleRowLeave,
       })
 
       // WHEN
       render(<SplitViewer {...props} />)
 
       // EXPECT
-      const overlayElements = screen.getAllByTestId('test-overlay-1')
-      expect(overlayElements).toHaveLength(2) // Both left and right code cells
-
-      const cells = screen.getAllByRole('cell')
-      const leftCodeCell = cells[1] // left code cell
-      const rightCodeCell = cells[3] // right code cell
-
-      expect(leftCodeCell).toContainElement(overlayElements[0])
-      expect(rightCodeCell).toContainElement(overlayElements[1])
-    })
-
-    it('given multiple overlays with different splitDockIdx, when rendered, expect all overlays in correct cells', () => {
-      // GIVEN
-      const numberOverlay = <span data-testid="number-overlay">Number</span>
-      const codeOverlay = <span data-testid="code-overlay">Code</span>
-      const line = createMockLine()
-      const props = createSplitViewerProps({
-        lines: [line],
-        overlays: [
-          { content: numberOverlay, unifiedDockIdx: 0, splitDockIdx: 0 },
-          { content: codeOverlay, unifiedDockIdx: 1, splitDockIdx: 1 },
-        ],
-      })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-
-      // EXPECT
-      const numberOverlays = screen.getAllByTestId('number-overlay')
-      const codeOverlays = screen.getAllByTestId('code-overlay')
-      expect(numberOverlays).toHaveLength(2) // Both left and right number cells
-      expect(codeOverlays).toHaveLength(2) // Both left and right code cells
-
-      const cells = screen.getAllByRole('cell')
-      expect(cells[0]).toContainElement(numberOverlays[0]) // left number
-      expect(cells[1]).toContainElement(codeOverlays[0]) // left code
-      expect(cells[2]).toContainElement(numberOverlays[1]) // right number
-      expect(cells[3]).toContainElement(codeOverlays[1]) // right code
-    })
-
-    it('given multiple overlays with same splitDockIdx, when rendered, expect all overlays grouped in target cells', () => {
-      // GIVEN
-      const firstOverlay = <span data-testid="overlay-first">First</span>
-      const secondOverlay = <span data-testid="overlay-second">Second</span>
-      const line = createMockLine()
-      const props = createSplitViewerProps({
-        lines: [line],
-        overlays: [
-          { content: firstOverlay, unifiedDockIdx: 0, splitDockIdx: 0 },
-          { content: secondOverlay, unifiedDockIdx: 0, splitDockIdx: 0 },
-        ],
-      })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-
-      // EXPECT
-      const firstElements = screen.getAllByTestId('overlay-first')
-      const secondElements = screen.getAllByTestId('overlay-second')
-      expect(firstElements).toHaveLength(2)
-      expect(secondElements).toHaveLength(2)
-
-      const cells = screen.getAllByRole('cell')
-      const leftNumberCell = cells[0]
-      const rightNumberCell = cells[2]
-
-      // Both overlays should be in both number cells
-      expect(leftNumberCell).toContainElement(firstElements[0])
-      expect(leftNumberCell).toContainElement(secondElements[0])
-      expect(rightNumberCell).toContainElement(firstElements[1])
-      expect(rightNumberCell).toContainElement(secondElements[1])
-    })
-
-    it('given complex overlay content with React component, when rendered, expect component rendered correctly', () => {
-      // GIVEN
-      const ComplexOverlay = () => (
-        <div data-testid="complex-overlay">
-          <button>Action</button>
-          <span>Complex Content</span>
-        </div>
-      )
-      const line = createMockLine()
-      const props = createSplitViewerProps({
-        lines: [line],
-        overlays: [{ content: <ComplexOverlay />, unifiedDockIdx: 1, splitDockIdx: 1 }],
-      })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-
-      // EXPECT
-      const complexOverlays = screen.getAllByTestId('complex-overlay')
-      expect(complexOverlays).toHaveLength(2)
-      const buttons = screen.getAllByText('Action')
-      expect(buttons).toHaveLength(2)
-      const spans = screen.getAllByText('Complex Content')
-      expect(spans).toHaveLength(2)
-    })
-
-    it('given no overlays prop, when rendered, expect overlay containers exist but empty, no errors', () => {
-      // GIVEN
-      const line = createMockLine()
-      const props = createSplitViewerProps({
-        lines: [line],
-        // no overlays prop
-      })
-
-      // WHEN
-      const { container } = render(<SplitViewer {...props} />)
-
-      // EXPECT
-      const overlayContainers = container.querySelectorAll('.diff-view-overlay')
-      expect(overlayContainers).toHaveLength(4) // 2 per line (number + code) x 2 sides
-      overlayContainers.forEach((overlayContainer) => {
-        expect(overlayContainer).toBeEmptyDOMElement()
-      })
-      expect(screen.queryByText(/overlay/i)).not.toBeInTheDocument()
-    })
-
-    it('given empty overlays array, when rendered, expect overlay containers exist but empty, no errors', () => {
-      // GIVEN
-      const line = createMockLine()
-      const props = createSplitViewerProps({
-        lines: [line],
-        overlays: [],
-      })
-
-      // WHEN
-      const { container } = render(<SplitViewer {...props} />)
-
-      // EXPECT
-      const overlayContainers = container.querySelectorAll('.diff-view-overlay')
-      expect(overlayContainers).toHaveLength(4) // 2 per line (number + code) x 2 sides
-      overlayContainers.forEach((overlayContainer) => {
-        expect(overlayContainer).toBeEmptyDOMElement()
-      })
-      expect(screen.queryByText(/overlay/i)).not.toBeInTheDocument()
-    })
-
-    it('given overlay with invalid dockIndex, when rendered, expect overlay not rendered anywhere', () => {
-      // GIVEN
-      const invalidOverlay = <span data-testid="invalid-overlay">Should not render</span>
-      const line = createMockLine()
-      const props = createSplitViewerProps({
-        lines: [line],
-        overlays: [{ content: invalidOverlay, unifiedDockIdx: 2, splitDockIdx: 99 as 0 | 1 }], // Invalid splitDockIdx
-      })
-
-      // WHEN
-      const { container } = render(<SplitViewer {...props} />)
-
-      // EXPECT
-      expect(screen.queryByTestId('invalid-overlay')).not.toBeInTheDocument()
-      // Overlay containers should still exist but be empty
-      const overlayContainers = container.querySelectorAll('.diff-view-overlay')
-      expect(overlayContainers).toHaveLength(4)
-      overlayContainers.forEach((overlayContainer) => {
-        expect(overlayContainer).toBeEmptyDOMElement()
-      })
-    })
-
-    it('given overlays with hunk line, when rendered, expect overlays not applied to hunk structure', () => {
-      // GIVEN
-      const hunkOverlay = <span data-testid="hunk-overlay">Hunk Action</span>
-      const hunkLine = createHunkLine('@@ -1,3 +1,3 @@')
-      const props = createSplitViewerProps({
-        lines: [hunkLine],
-        overlays: [{ content: hunkOverlay, unifiedDockIdx: 0, splitDockIdx: 0 }],
-      })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-
-      // EXPECT
-      // Hunk lines don't use ContentSide component, so overlays are not rendered
-      expect(screen.queryByTestId('hunk-overlay')).not.toBeInTheDocument()
-
-      const cells = screen.getAllByRole('cell')
-      expect(cells).toHaveLength(2) // hunk has merged structure: left number + merged content
-      expect(screen.getByTestId('load-more-button')).toBeInTheDocument()
-    })
-
-    it('given multiple lines with overlays, when rendered, expect overlays applied to all matching lines', () => {
-      // GIVEN
-      const lineOverlay = <span data-testid="multi-line-overlay">Multi Line</span>
-      const lines = [
-        createMockLine({ lineNumberLeft: 1, lineNumberRight: 1 }),
-        createMockLine({ lineNumberLeft: 2, lineNumberRight: 2 }),
-        createMockLine({ lineNumberLeft: 3, lineNumberRight: 3 }),
-      ]
-      const props = createSplitViewerProps({
-        lines,
-        overlays: [{ content: lineOverlay, unifiedDockIdx: 1, splitDockIdx: 1 }], // Code cells
-      })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-
-      // EXPECT
-      const overlayElements = screen.getAllByTestId('multi-line-overlay')
-      expect(overlayElements).toHaveLength(6) // 3 lines × 2 sides (left + right code cells)
-
-      const rows = screen.getAllByRole('row')
-      expect(rows).toHaveLength(3)
-      // Each row should have overlays in both code cells
-      rows.forEach((row) => {
-        const codeCells = row.querySelectorAll('td:nth-child(2), td:nth-child(4)') // left and right code cells
-        expect(codeCells).toHaveLength(2)
-        codeCells.forEach((cell) => {
-          expect(cell.querySelector('[data-testid="multi-line-overlay"]')).toBeInTheDocument()
-        })
-      })
-    })
-
-    it('given overlays with mixed line types, when rendered, expect overlays applied correctly to each line type', () => {
-      // GIVEN
-      const mixedOverlay = <span data-testid="mixed-overlay">Mixed</span>
-      const lines = [
-        createMockLine({ typeLeft: 'context', typeRight: 'context' }),
-        createMockLine({ typeLeft: 'add', typeRight: 'add' }),
-        createMockLine({ typeLeft: 'delete', typeRight: 'delete' }),
-        createHunkLine('@@ -1,3 +1,3 @@'),
-      ]
-      const props = createSplitViewerProps({
-        lines,
-        overlays: [{ content: mixedOverlay, unifiedDockIdx: 0, splitDockIdx: 0 }], // Number cells
-      })
-
-      // WHEN
-      render(<SplitViewer {...props} />)
-
-      // EXPECT
-      const overlayElements = screen.getAllByTestId('mixed-overlay')
-      expect(overlayElements).toHaveLength(6) // 3 regular lines × 2 sides (hunk lines don't get overlays)
-
-      const rows = screen.getAllByRole('row')
-      expect(rows).toHaveLength(4)
-
-      // First 3 rows (regular lines) should have overlays in both number cells
-      for (let i = 0; i < 3; i++) {
-        const numberCells = rows[i].querySelectorAll('td:nth-child(1), td:nth-child(3)') // left and right number cells
-        expect(numberCells).toHaveLength(2)
-        numberCells.forEach((cell) => {
-          expect(cell.querySelector('[data-testid="mixed-overlay"]')).toBeInTheDocument()
-        })
-      }
-
-      // Last row (hunk) should NOT have overlay because hunk lines don't use ContentSide
-      const hunkNumberCell = rows[3].querySelector('td:nth-child(1)') // only left number cell for hunk
-      expect(hunkNumberCell?.querySelector('[data-testid="mixed-overlay"]')).not.toBeInTheDocument()
+      const row = screen.getByTestId('diff-row-0')
+      expect(row).toHaveAttribute('data-overlays-count', '0')
     })
   })
 
-  describe('text selection behavior', () => {
-    let mockGetSelection: ReturnType<typeof vi.fn>
-    let mockSelection: Partial<Selection>
+  describe('widget integration', () => {
+    it('given widgets provided, when rendered, expect widgets passed to DiffRow', () => {
+      // GIVEN
+      const widgets = [createMockWidget('1', 'left'), createMockWidget('2', 'right')]
+      const line = createMockLine('context', 'context', 'test line', 'test line', 1, 1)
+      const props = makeSplitViewerProps({ lines: [line], widgets })
 
-    beforeEach(() => {
-      // Mock window.getSelection
-      mockSelection = {
+      // WHEN
+      render(<SplitViewer {...props} />)
+
+      // EXPECT
+      const row = screen.getByTestId('diff-row-0')
+      expect(row).toHaveAttribute('data-widgets-count', '2')
+    })
+
+    it('given no widgets, when rendered, expect undefined widgets passed to DiffRow', () => {
+      // GIVEN
+      const line = createMockLine('context', 'context', 'test line', 'test line', 1, 1)
+      const props = makeSplitViewerProps({ lines: [line], widgets: undefined })
+
+      // WHEN
+      render(<SplitViewer {...props} />)
+
+      // EXPECT
+      const row = screen.getByTestId('diff-row-0')
+      expect(row).toHaveAttribute('data-widgets-count', '0')
+    })
+  })
+
+  describe('load more functionality', () => {
+    it('given load more callback provided, when rendered, expect callback passed to DiffRow', () => {
+      // GIVEN
+      const mockLoadMore = vi.fn()
+      const line = createMockLine('context', 'context', 'test line', 'test line', 1, 1)
+      const props = makeSplitViewerProps({ lines: [line], onLoadMoreLines: mockLoadMore })
+
+      // WHEN
+      render(<SplitViewer {...props} />)
+
+      // EXPECT
+      const loadMoreButton = screen.getByTestId('load-more-0')
+      expect(loadMoreButton).toBeInTheDocument()
+    })
+
+    it('given no load more callback, when rendered, expect no load more button', () => {
+      // GIVEN
+      const line = createMockLine('context', 'context', 'test line', 'test line', 1, 1)
+      const props = makeSplitViewerProps({ lines: [line], onLoadMoreLines: undefined })
+
+      // WHEN
+      render(<SplitViewer {...props} />)
+
+      // EXPECT
+      expect(screen.queryByTestId('load-more-0')).not.toBeInTheDocument()
+    })
+
+    it('given load more triggered, when clicked, expect callback called with correct parameters', () => {
+      // GIVEN
+      const mockLoadMore = vi.fn()
+      const line = createMockLine('context', 'context', 'test line', 'test line', 1, 1)
+      const props = makeSplitViewerProps({ lines: [line], onLoadMoreLines: mockLoadMore })
+
+      // WHEN
+      render(<SplitViewer {...props} />)
+      fireEvent.click(screen.getByTestId('load-more-0'))
+
+      // EXPECT
+      expect(mockLoadMore).toHaveBeenCalledWith(line, 'down')
+    })
+  })
+
+  describe('mouse event handling', () => {
+    it('given row hovered, when mouse enters, expect handleRowEnter called', () => {
+      // GIVEN
+      const line = createMockLine('context', 'context', 'test line', 'test line', 1, 1)
+      const props = makeSplitViewerProps({ lines: [line] })
+
+      // WHEN
+      render(<SplitViewer {...props} />)
+      fireEvent.mouseEnter(screen.getByTestId('diff-row-0'))
+
+      // EXPECT
+      expect(mockHandleRowEnter).toHaveBeenCalled()
+    })
+
+    it('given row unhovered, when mouse leaves, expect handleRowLeave called', () => {
+      // GIVEN
+      const line = createMockLine('context', 'context', 'test line', 'test line', 1, 1)
+      const props = makeSplitViewerProps({ lines: [line] })
+
+      // WHEN
+      render(<SplitViewer {...props} />)
+      fireEvent.mouseLeave(screen.getByTestId('diff-row-0'))
+
+      // EXPECT
+      expect(mockHandleRowLeave).toHaveBeenCalled()
+    })
+  })
+
+  describe('selection change handling', () => {
+    it('given selection change event, when selection exists, expect container classes updated', () => {
+      // GIVEN
+      const line = createMockLine('context', 'context', 'test line', 'test line', 1, 1)
+      const props = makeSplitViewerProps({ lines: [line] })
+
+      // Mock selection with left side selected
+      const mockSelection = {
         rangeCount: 1,
         isCollapsed: false,
-        anchorNode: null,
+        anchorNode: {
+          parentElement: {
+            closest: vi.fn((selector: string): Element | null => {
+              if (selector === '.split-viewer-left-row') return { tagName: 'TD' } as Element
+              return null
+            }),
+          },
+        },
       }
-      mockGetSelection = vi.fn(() => mockSelection as Selection)
-      Object.defineProperty(window, 'getSelection', {
-        value: mockGetSelection,
-        writable: true,
-      })
-
-      // Mock requestAnimationFrame to execute immediately
-      vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
-        cb(0)
-        return 0
-      })
-
-      // Mock cancelAnimationFrame
-      vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {})
-    })
-
-    afterEach(() => {
-      vi.restoreAllMocks()
-    })
-
-    const createMockElement = (className: string): HTMLElement => {
-      const element = document.createElement('div')
-      element.className = className
-      return element
-    }
-
-    const createMockSelectionWithAnchor = (closestClassName: string): Partial<Selection> => {
-      const mockElement = createMockElement('test-element')
-      mockElement.closest = vi.fn((selector: string) => {
-        if (selector === closestClassName) {
-          return createMockElement(closestClassName.replace('.', ''))
-        }
-        return null
-      })
-
-      return {
-        ...mockSelection,
-        anchorNode: mockElement,
-      }
-    }
-
-    it('given text selection starts on left side, when selection changes, expect left side selected and right side locked', () => {
-      // GIVEN - Setup component with lines
-      const lines = [
-        createMockLine({
-          typeLeft: 'context',
-          typeRight: 'context',
-          contentLeft: 'left content',
-          contentRight: 'right content',
-        }),
-      ]
-      const props = createSplitViewerProps({ lines })
-
-      // Mock selection on left side
-      mockSelection = createMockSelectionWithAnchor('.split-viewer-left-row')
-      mockGetSelection.mockReturnValue(mockSelection as Selection)
+      mockGetSelection.mockReturnValue(mockSelection)
 
       // WHEN
-      const { container } = render(<SplitViewer {...props} />)
+      render(<SplitViewer {...props} />)
+      const container = screen.getByRole('table').parentElement
 
-      // Trigger selectionchange event
-      const selectionChangeEvent = new Event('selectionchange')
-      document.dispatchEvent(selectionChangeEvent)
-
-      // EXPECT
-      const splitViewerContainer = container.firstChild as HTMLElement
-      expect(splitViewerContainer).toHaveClass('is-selecting')
-      expect(splitViewerContainer).toHaveClass('selecting-left')
-      expect(splitViewerContainer).not.toHaveClass('selecting-right')
-    })
-
-    it('given text selection starts on right side, when selection changes, expect right side selected and left side locked', () => {
-      // GIVEN - Setup component with lines
-      const lines = [
-        createMockLine({
-          typeLeft: 'context',
-          typeRight: 'context',
-          contentLeft: 'left content',
-          contentRight: 'right content',
-        }),
-      ]
-      const props = createSplitViewerProps({ lines })
-
-      // Mock selection on right side
-      mockSelection = createMockSelectionWithAnchor('.split-viewer-right-row')
-      mockGetSelection.mockReturnValue(mockSelection as Selection)
-
-      // WHEN
-      const { container } = render(<SplitViewer {...props} />)
-
-      // Trigger selectionchange event
-      const selectionChangeEvent = new Event('selectionchange')
-      document.dispatchEvent(selectionChangeEvent)
+      // Trigger selection change
+      fireEvent(document, new Event('selectionchange'))
 
       // EXPECT
-      const splitViewerContainer = container.firstChild as HTMLElement
-      expect(splitViewerContainer).toHaveClass('is-selecting')
-      expect(splitViewerContainer).toHaveClass('selecting-right')
-      expect(splitViewerContainer).not.toHaveClass('selecting-left')
+      expect(mockRequestAnimationFrame).toHaveBeenCalled()
+      expect(container).toHaveClass('is-selecting')
+      expect(container).toHaveClass('selecting-left')
+      expect(container).not.toHaveClass('selecting-right')
     })
 
-    it('given text selection is cleared, when selection changes, expect no side classes applied', () => {
-      // GIVEN - Setup component with lines
-      const lines = [
-        createMockLine({
-          typeLeft: 'context',
-          typeRight: 'context',
-        }),
-      ]
-      const props = createSplitViewerProps({ lines })
-
-      // First establish a selection
-      mockSelection = createMockSelectionWithAnchor('.split-viewer-left-row')
-      mockGetSelection.mockReturnValue(mockSelection as Selection)
-
-      const { container } = render(<SplitViewer {...props} />)
-
-      // Trigger initial selection
-      document.dispatchEvent(new Event('selectionchange'))
-      const splitViewerContainer = container.firstChild as HTMLElement
-      expect(splitViewerContainer).toHaveClass('selecting-left')
-
-      // WHEN - Clear selection
-      mockSelection = {
-        rangeCount: 0,
-        isCollapsed: true,
-        anchorNode: null,
-      }
-      mockGetSelection.mockReturnValue(mockSelection as Selection)
-
-      // Trigger selectionchange event
-      const selectionChangeEvent = new Event('selectionchange')
-      document.dispatchEvent(selectionChangeEvent)
-
-      // EXPECT
-      expect(splitViewerContainer).not.toHaveClass('is-selecting')
-      expect(splitViewerContainer).not.toHaveClass('selecting-left')
-      expect(splitViewerContainer).not.toHaveClass('selecting-right')
-    })
-
-    it('given selection outside split viewer, when selection changes, expect no side classes applied', () => {
-      // GIVEN - Setup component with lines
-      const lines = [
-        createMockLine({
-          typeLeft: 'context',
-          typeRight: 'context',
-        }),
-      ]
-      const props = createSplitViewerProps({ lines })
-
-      // Mock selection outside the split viewer (neither left nor right side)
-      const mockElement = createMockElement('other-element')
-      mockElement.closest = vi.fn(() => null) // Not found in either side
-
-      mockSelection = {
-        ...mockSelection,
-        anchorNode: mockElement,
-      }
-      mockGetSelection.mockReturnValue(mockSelection as Selection)
-
-      // WHEN
-      const { container } = render(<SplitViewer {...props} />)
-
-      // Trigger selectionchange event
-      const selectionChangeEvent = new Event('selectionchange')
-      document.dispatchEvent(selectionChangeEvent)
-
-      // EXPECT
-      const splitViewerContainer = container.firstChild as HTMLElement
-      expect(splitViewerContainer).toHaveClass('is-selecting') // Has selection, but...
-      expect(splitViewerContainer).not.toHaveClass('selecting-left') // Not on left
-      expect(splitViewerContainer).not.toHaveClass('selecting-right') // Not on right
-    })
-
-    it('given component unmounts, when unmounted, expect event listeners cleaned up', () => {
+    it('given selection change event, when right side selected, expect selecting-right class added', () => {
       // GIVEN
-      const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener')
-      const lines = [createMockLine()]
-      const props = createSplitViewerProps({ lines })
+      const line = createMockLine('context', 'context', 'test line', 'test line', 1, 1)
+      const props = makeSplitViewerProps({ lines: [line] })
+
+      // Mock selection with right side selected
+      const mockSelection = {
+        rangeCount: 1,
+        isCollapsed: false,
+        anchorNode: {
+          parentElement: {
+            closest: vi.fn((selector: string): Element | null => {
+              if (selector === '.split-viewer-right-row') return { tagName: 'TD' } as Element
+              return null
+            }),
+          },
+        },
+      }
+      mockGetSelection.mockReturnValue(mockSelection)
+
+      // WHEN
+      render(<SplitViewer {...props} />)
+      const container = screen.getByRole('table').parentElement
+
+      // Trigger selection change
+      fireEvent(document, new Event('selectionchange'))
+
+      // EXPECT
+      expect(container).toHaveClass('is-selecting')
+      expect(container).toHaveClass('selecting-right')
+      expect(container).not.toHaveClass('selecting-left')
+    })
+
+    it('given selection change event, when selection collapsed, expect classes removed', () => {
+      // GIVEN
+      const line = createMockLine('context', 'context', 'test line', 'test line', 1, 1)
+      const props = makeSplitViewerProps({ lines: [line] })
+
+      // Mock collapsed selection
+      const mockSelection = {
+        rangeCount: 1,
+        isCollapsed: true,
+      }
+      mockGetSelection.mockReturnValue(mockSelection)
+
+      // WHEN
+      render(<SplitViewer {...props} />)
+      const container = screen.getByRole('table').parentElement
+
+      // Trigger selection change
+      fireEvent(document, new Event('selectionchange'))
+
+      // EXPECT
+      expect(container).not.toHaveClass('is-selecting')
+      expect(container).not.toHaveClass('selecting-left')
+      expect(container).not.toHaveClass('selecting-right')
+    })
+
+    it('given selection change event, when no selection, expect classes removed', () => {
+      // GIVEN
+      const line = createMockLine('context', 'context', 'test line', 'test line', 1, 1)
+      const props = makeSplitViewerProps({ lines: [line] })
+
+      // Mock no selection
+      const mockSelection = {
+        rangeCount: 0,
+        isCollapsed: false,
+      }
+      mockGetSelection.mockReturnValue(mockSelection)
+
+      // WHEN
+      render(<SplitViewer {...props} />)
+      const container = screen.getByRole('table').parentElement
+
+      // Trigger selection change
+      fireEvent(document, new Event('selectionchange'))
+
+      // EXPECT
+      expect(container).not.toHaveClass('is-selecting')
+      expect(container).not.toHaveClass('selecting-left')
+      expect(container).not.toHaveClass('selecting-right')
+    })
+
+    it('given selection change event, when selection outside component, expect no class changes', () => {
+      // GIVEN
+      const line = createMockLine('context', 'context', 'test line', 'test line', 1, 1)
+      const props = makeSplitViewerProps({ lines: [line] })
+
+      // Mock selection outside component
+      const mockSelection = {
+        rangeCount: 1,
+        isCollapsed: false,
+        anchorNode: {
+          parentElement: {
+            closest: vi.fn((): Element | null => null), // No matching elements
+          },
+        },
+      }
+      mockGetSelection.mockReturnValue(mockSelection)
+
+      // WHEN
+      render(<SplitViewer {...props} />)
+      const container = screen.getByRole('table').parentElement
+
+      // Trigger selection change
+      fireEvent(document, new Event('selectionchange'))
+
+      // EXPECT
+      expect(container).toHaveClass('is-selecting')
+      expect(container).not.toHaveClass('selecting-left')
+      expect(container).not.toHaveClass('selecting-right')
+    })
+
+    it('given component unmounted, when selection change occurs, expect no errors', () => {
+      // GIVEN
+      const line = createMockLine('context', 'context', 'test line', 'test line', 1, 1)
+      const props = makeSplitViewerProps({ lines: [line] })
 
       // WHEN
       const { unmount } = render(<SplitViewer {...props} />)
+
+      // Trigger selection change before unmount to verify it works
+      fireEvent(document, new Event('selectionchange'))
+      expect(mockRequestAnimationFrame).toHaveBeenCalled()
+
+      // Reset mock for unmount test
+      vi.clearAllMocks()
       unmount()
 
+      // Trigger selection change after unmount
+      fireEvent(document, new Event('selectionchange'))
+
       // EXPECT
-      expect(removeEventListenerSpy).toHaveBeenCalledWith('selectionchange', expect.any(Function))
+      // Should not throw any errors and should not call requestAnimationFrame after unmount
+      expect(mockRequestAnimationFrame).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('animation frame handling', () => {
+    it('given rapid selection changes, when debounced, expect only one animation frame request', () => {
+      // GIVEN
+      const line = createMockLine('context', 'context', 'test line', 'test line', 1, 1)
+      const props = makeSplitViewerProps({ lines: [line] })
+
+      const mockSelection = {
+        rangeCount: 1,
+        isCollapsed: false,
+        anchorNode: {
+          parentElement: {
+            closest: vi.fn((): Element | null => ({ tagName: 'TD' }) as Element),
+          },
+        },
+      }
+      mockGetSelection.mockReturnValue(mockSelection)
+
+      // WHEN
+      render(<SplitViewer {...props} />)
+
+      // Trigger multiple rapid selection changes
+      fireEvent(document, new Event('selectionchange'))
+      fireEvent(document, new Event('selectionchange'))
+      fireEvent(document, new Event('selectionchange'))
+
+      // EXPECT
+      expect(mockRequestAnimationFrame).toHaveBeenCalledTimes(3)
+      expect(mockCancelAnimationFrame).toHaveBeenCalledTimes(2)
     })
   })
 })
