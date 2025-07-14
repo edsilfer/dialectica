@@ -1,4 +1,4 @@
-export const FACEBOOK_REACT_33665_METADATA = {
+export const METADATA = {
   url: 'https://api.github.com/repos/facebook/react/pulls/33665',
   id: 2626637432,
   node_id: 'PR_kwDOAJy2Ks6cj054',

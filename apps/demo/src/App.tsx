@@ -1,18 +1,19 @@
-import { LineRequest, LoadMoreLinesResult, useDiffViewerConfig } from '@diff-viewer'
+import { PrKey, useDiffViewerConfig } from '@diff-viewer'
 import { css } from '@emotion/react'
-import { Alert } from 'antd'
-import { useCallback, useEffect, useMemo, useReducer } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
+import { Alert, notification } from 'antd'
 import AppToolbar from './components/AppToolbar'
-import CodeReview from './components/CodeReview'
 import Footer from './components/Footer'
-import type { UseGetPrDiffReturn, UseGetPrMetadataReturn } from './hooks/types'
-import useGetPrDiff from './hooks/use-get-pr-diff'
-import useGetPrMetadata from './hooks/use-get-pr-metadata'
-import useListInlineComments from './hooks/use-list-inline-comments'
-import useLoadMoreLines from './hooks/use-load-more-lines'
+
+import { AddButton, DefaultToolbar, DiffViewer, PullRequestHeader } from '@diff-viewer'
+
+import ErrorCard from './components/ErrorCard'
+import InfoCard from './components/InfoCard'
+import { mapPullRequestMetadata } from './components/mappers'
+import { usePrViewModel } from './hooks/use-pr-view-model'
 import { useSettings } from './provider/setttings-provider'
-import { initialState, prViewReducer } from './reducers'
+import { parseURL } from './utils'
 
 function useStyles({ theme }: ReturnType<typeof useDiffViewerConfig>) {
   return useMemo(
@@ -39,83 +40,82 @@ function useStyles({ theme }: ReturnType<typeof useDiffViewerConfig>) {
 export default function App() {
   const config = useDiffViewerConfig()
   const styles = useStyles(config)
+  const { useMocks } = useSettings()
 
-  const { githubPat, useMocks } = useSettings()
-  const [state, dispatch] = useReducer(prViewReducer, initialState)
+  // STATE ---------------------------------------------------------------------------------------------
+  const [prKey, setPrKey] = useState<PrKey | undefined>(parseURL())
+  const { metadata, loading, errors, diff, commentWidgets, loadMore, setDockedLine, onAddButton } =
+    usePrViewModel(prKey)
 
-  useEffect(() => dispatch({ type: 'INITIALIZE_FROM_URL' }), [])
+  // ERRORS --------------------------------------------------------------------------------------------
+  useEffect(() => {
+    if (errors.comments) {
+      notification.error({
+        message: 'Failed to load inline comments',
+        description: errors.comments.message,
+      })
+    }
+  }, [errors.comments])
 
-  useEffect(() => void (document.title = state.pageTitle), [state.pageTitle])
-  const updateDiff = useCallback((diff: string | undefined) => {
-    dispatch({ type: 'PARSE_DIFF', payload: diff })
-  }, [])
+  useEffect(() => {
+    if (metadata) {
+      document.title = metadata.title ?? 'Diff Viewer Demo'
+    }
+  }, [metadata])
 
-  const updatePageTitle = useCallback((prTitle?: string) => {
-    dispatch({ type: 'UPDATE_PAGE_TITLE', payload: prTitle })
-  }, [])
-
-  const prParams = useMemo(
-    () => ({
-      owner: state.selectedPr?.owner ?? '',
-      repo: state.selectedPr?.repo ?? '',
-      pullNumber: state.selectedPr?.prNumber ?? 0,
-    }),
-    [state.selectedPr],
-  )
-
-  const prMetadata = useGetPrMetadata(prParams)
-  const prDiff = useGetPrDiff(prParams)
-  const inlineComments = useListInlineComments(prParams)
-  const { fetchLines } = useLoadMoreLines({
-    ...prParams,
-    githubToken: githubPat,
-    baseSha: prMetadata.data?.base_sha ?? '',
-    headSha: prMetadata.data?.head_sha ?? '',
-  })
-
-  useEffect(() => updateDiff(prDiff.data), [prDiff.data, updateDiff])
-  useEffect(() => updatePageTitle(prMetadata.data?.title), [prMetadata.data?.title, updatePageTitle])
-
-  const computeError = useCallback(
-    (prMetadata: UseGetPrMetadataReturn, prDiff: UseGetPrDiffReturn) => {
-      return !!(
-        prMetadata.error ||
-        prDiff.error ||
-        (!prMetadata.loading && !prMetadata.data) ||
-        (!prDiff.loading && !state.displayedDiff && prDiff.data)
+  // RENDER --------------------------------------------------------------------------------------------
+  const content = () => {
+    if (errors.metadata || errors.diff) {
+      // Return an error card if failed to fetch critical data
+      return <ErrorCard error={errors.metadata || errors.diff} />
+    } else if (!loading.metadata && !metadata) {
+      // Tell the user to load a pull request
+      return (
+        <InfoCard
+          title="Load a Pull Request"
+          description="Use the search bar above to load a GitHub Pull Request and explore its diff."
+        />
       )
-    },
-    [state.displayedDiff],
-  )
-
-  const loadMore = useCallback(
-    async (request: LineRequest): Promise<LoadMoreLinesResult> => {
-      if (!prMetadata.data?.head_sha) {
-        throw new Error('Cannot load more lines: PR metadata with head SHA is required')
-      }
-      return fetchLines(request)
-    },
-    [fetchLines, prMetadata.data?.head_sha],
-  )
+    } else if (diff && metadata?.head?.sha) {
+      // Render the diff viewer if the diff and metadata are loaded
+      return (
+        <DiffViewer
+          diff={diff}
+          toolbar={
+            <DefaultToolbar
+              loading={loading.metadata}
+              header={metadata ? <PullRequestHeader pr={mapPullRequestMetadata(metadata)} /> : undefined}
+            />
+          }
+          isMetadataLoading={loading.metadata}
+          isDiffLoading={loading.diff}
+          maxLinesToFetch={10}
+          onLoadMoreLines={loadMore}
+          overlays={[
+            {
+              unifiedDockIdx: 2,
+              splitDockIdx: 1,
+              content: <AddButton key="add-button" onClick={onAddButton} />,
+              onDock: setDockedLine,
+            },
+          ]}
+          widgets={commentWidgets}
+        />
+      )
+    } else {
+      return <InfoCard title="Loading Diff" description="Please wait while the diff is being loaded..." />
+    }
+  }
 
   return (
     <div css={styles.container}>
-      <AppToolbar onSearch={(pr) => dispatch({ type: 'SELECT_PR', payload: pr })} />
+      <AppToolbar onSearch={setPrKey} />
 
       {useMocks && (
         <Alert message="All the data is mocked. You can change it in the settings." type="warning" showIcon closable />
       )}
 
-      <div css={styles.content}>
-        <CodeReview
-          error={computeError(prMetadata, prDiff)}
-          prMetadata={prMetadata}
-          prDiff={prDiff}
-          inlineComments={inlineComments}
-          displayedDiff={state.displayedDiff}
-          loadMore={loadMore}
-        />
-      </div>
+      <div css={styles.content}>{content()}</div>
 
       <Footer />
     </div>

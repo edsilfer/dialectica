@@ -1,4 +1,74 @@
-export const SAMPLE_COMMENTS = [
+export const COMMENTS = [
+  {
+    url: 'https://api.github.com/repos/apache/spark/pulls/comments/682317335',
+    pull_request_review_id: 721897266,
+    id: 682317335,
+    node_id: 'MDI0OlB1bGxSZXF1ZXN0UmV2aWV3Q29tbWVudDY4MjMxNzMzNQ==',
+    diff_hunk:
+      '@@ -10,6 +10,7 @@ object MimaExcludes {\n \n   // Exclude rules for 3.2.x from 3.1.0 after 3.1.0 release\n   lazy val v32excludes = v31excludes ++ Seq(\n+    ProblemFilters.exclude[IncompatibleResultTypeProblem]("org.apache.spark.sql.expressions.MutableAggregationBuffer.jsonValue"),\n     ProblemFilters.exclude[IncompatibleMethTypeProblem]("org.apache.spark.ml.param.FloatParam.jValueDecode"),\n     ProblemFilters.exclude[IncompatibleMethTypeProblem]("org.apache.spark.mllib.tree.model.TreeEnsembleModel#SaveLoadV1_0.readMetadata"),\n     ProblemFilters.exclude[IncompatibleResultTypeProblem]("org.apache.spark.sql.expressions.MutableAggregationBuffer.jsonValue")',
+    path: 'packages/react-client/src/ReactFlightClient.js',
+    commit_id: '02782040e91b9ba38d72f43d016727b94efd405d',
+    original_commit_id: '02782040e91b9ba38d72f43d016727b94efd405d',
+    user: {
+      login: 'fake-user',
+      id: 12345678,
+      node_id: 'MDQ6VXNlcjEyMzQ1Njc4',
+      avatar_url: 'https://avatars.githubusercontent.com/u/12345678?v=4',
+      gravatar_id: '',
+      url: 'https://api.github.com/users/fake-user',
+      html_url: 'https://github.com/fake-user',
+      followers_url: 'https://api.github.com/users/fake-user/followers',
+      following_url: 'https://api.github.com/users/fake-user/following{/other_user}',
+      gists_url: 'https://api.github.com/users/fake-user/gists{/gist_id}',
+      starred_url: 'https://api.github.com/users/fake-user/starred{/owner}{/repo}',
+      subscriptions_url: 'https://api.github.com/users/fake-user/subscriptions',
+      organizations_url: 'https://api.github.com/users/fake-user/orgs',
+      repos_url: 'https://api.github.com/users/fake-user/repos',
+      events_url: 'https://api.github.com/users/fake-user/events{/privacy}',
+      received_events_url: 'https://api.github.com/users/fake-user/received_events',
+      type: 'User',
+      user_view_type: 'public',
+      site_admin: false,
+    },
+    body: 'This is a fake comment added for testing purposes. It should appear on line 13 right side.',
+    created_at: '2021-08-04T06:10:00Z',
+    updated_at: '2021-08-04T06:10:00Z',
+    html_url: 'https://github.com/apache/spark/pull/33630#discussion_r682317335',
+    pull_request_url: 'https://api.github.com/repos/apache/spark/pulls/33630',
+    author_association: 'CONTRIBUTOR',
+    _links: {
+      self: {
+        href: 'https://api.github.com/repos/apache/spark/pulls/comments/682317335',
+      },
+      html: {
+        href: 'https://github.com/apache/spark/pull/33630#discussion_r682317335',
+      },
+      pull_request: {
+        href: 'https://api.github.com/repos/apache/spark/pulls/33630',
+      },
+    },
+    reactions: {
+      url: 'https://api.github.com/repos/apache/spark/pulls/comments/682317335/reactions',
+      total_count: 0,
+      '+1': 0,
+      '-1': 0,
+      laugh: 0,
+      hooray: 0,
+      confused: 0,
+      heart: 0,
+      rocket: 0,
+      eyes: 0,
+    },
+    start_line: null,
+    original_start_line: null,
+    start_side: null,
+    line: 13,
+    original_line: 13,
+    side: 'RIGHT',
+    original_position: 3,
+    position: 3,
+    subject_type: 'line',
+  },
   {
     url: 'https://api.github.com/repos/apache/spark/pulls/comments/682317336',
     pull_request_review_id: 721897267,
@@ -6,7 +76,7 @@ export const SAMPLE_COMMENTS = [
     node_id: 'MDI0OlB1bGxSZXF1ZXN0UmV2aWV3Q29tbWVudDY4MjMxNzMzNg==',
     diff_hunk:
       '@@ -36,6 +36,10 @@ object MimaExcludes {\n \n   // Exclude rules for 3.3.x from 3.2.0 after 3.2.0 release\n   lazy val v33excludes = v32excludes ++ Seq(\n+    ProblemFilters.exclude[IncompatibleResultTypeProblem]("org.apache.spark.ml.param.FloatParam.jValueEncode"),\n+    ProblemFilters.exclude[IncompatibleMethTypeProblem]("org.apache.spark.ml.param.FloatParam.jValueDecode"),\n+    ProblemFilters.exclude[IncompatibleMethTypeProblem]("org.apache.spark.mllib.tree.model.TreeEnsembleModel#SaveLoadV1_0.readMetadata"),\n+    ProblemFilters.exclude[IncompatibleResultTypeProblem]("org.apache.spark.sql.expressions.MutableAggregationBuffer.jsonValue")',
-    path: 'project/MimaExcludes.scala',
+    path: 'packages/react-client/src/ReactFlightClient.js',
     commit_id: '02782040e91b9ba38d72f43d016727b94efd405d',
     original_commit_id: '02782040e91b9ba38d72f43d016727b94efd405d',
     user: {
@@ -76,7 +146,7 @@ export const SAMPLE_COMMENTS = [
     node_id: 'MDI0OlB1bGxSZXF1ZXN0UmV2aWV3Q29tbWVudDY4MjMyNjg3Mw==',
     diff_hunk:
       '@@ -36,6 +36,10 @@ object MimaExcludes {\n \n   // Exclude rules for 3.3.x from 3.2.0 after 3.2.0 release\n   lazy val v33excludes = v32excludes ++ Seq(\n+    ProblemFilters.exclude[IncompatibleResultTypeProblem]("org.apache.spark.ml.param.FloatParam.jValueEncode"),\n+    ProblemFilters.exclude[IncompatibleMethTypeProblem]("org.apache.spark.ml.param.FloatParam.jValueDecode"),\n+    ProblemFilters.exclude[IncompatibleMethTypeProblem]("org.apache.spark.mllib.tree.model.TreeEnsembleModel#SaveLoadV1_0.readMetadata"),\n+    ProblemFilters.exclude[IncompatibleResultTypeProblem]("org.apache.spark.sql.expressions.MutableAggregationBuffer.jsonValue")',
-    path: 'project/MimaExcludes.scala',
+    path: 'packages/react-client/src/ReactFlightClient.js',
     commit_id: '02782040e91b9ba38d72f43d016727b94efd405d',
     original_commit_id: '02782040e91b9ba38d72f43d016727b94efd405d',
     user: {

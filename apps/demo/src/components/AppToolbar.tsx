@@ -1,11 +1,10 @@
 import { SettingOutlined } from '@ant-design/icons'
-import { ThemeTokens, useDiffViewerConfig } from '@diff-viewer'
+import { PrKey, ThemeTokens, useDiffViewerConfig } from '@diff-viewer'
 import { css } from '@emotion/react'
 import { Button, Typography } from 'antd'
 import React, { useState } from 'react'
 import SearchForm from './search-form/SearchForm'
 import SettingsModal from './settings/SettingsModal'
-import { ParsedPR } from './search-form/types'
 
 const { Title, Text } = Typography
 
@@ -44,7 +43,7 @@ const useStyles = (theme: ThemeTokens) => ({
   `,
 })
 
-const AppToolbar: React.FC<{ onSearch: (pr: ParsedPR) => void }> = ({ onSearch }) => {
+const AppToolbar: React.FC<{ onSearch: (pr: PrKey) => void }> = ({ onSearch }) => {
   const { theme } = useDiffViewerConfig()
   const styles = useStyles(theme)
   const [settingsOpen, setSettingsOpen] = useState(false)

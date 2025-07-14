@@ -1,4 +1,4 @@
-import { ParsedPR } from './types'
+import { PrKey } from '@diff-viewer'
 
 const PR_URL_REGEX = /^(?:https?:\/\/)?github\.com\/([\w.-]+)\/([\w.-]+)\/pull\/(\d+)/
 
@@ -8,13 +8,13 @@ const PR_URL_REGEX = /^(?:https?:\/\/)?github\.com\/([\w.-]+)\/([\w.-]+)\/pull\/
  * @param value - The URL to parse
  * @returns       The parsed PR object or null if the URL is invalid
  */
-export const parse = (value: string): ParsedPR | null => {
+export const parse = (value: string): PrKey | null => {
   const trimmed = value.trim()
   const match = trimmed.match(PR_URL_REGEX)
   if (!match) return null
   return {
     owner: match[1],
     repo: match[2],
-    prNumber: parseInt(match[3], 10),
+    pullNumber: parseInt(match[3], 10),
   }
 }
