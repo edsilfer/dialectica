@@ -54,6 +54,7 @@ const SplitViewer: React.FC<SplitViewerProps> = (props) => {
     overlays: props.overlays,
     lines: props.lines,
     viewMode: 'split',
+    filepath: props.filepath,
   })
 
   return (

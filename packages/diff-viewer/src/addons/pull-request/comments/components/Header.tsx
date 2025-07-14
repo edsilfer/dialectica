@@ -2,18 +2,25 @@ import { MoreOutlined } from '@ant-design/icons'
 import { css } from '@emotion/react'
 import { Dropdown, MenuProps, message, Typography } from 'antd'
 import React, { useCallback, useMemo } from 'react'
-import { useDiffViewerConfig } from '../../../components/diff-viewer/providers/diff-viewer-context'
-import { InlineCommentAuthor } from './models'
+import { useDiffViewerConfig } from '../../../../components/diff-viewer/providers/diff-viewer-context'
+import { CommentAuthor, CommentState } from '../../models/CommentMetadata'
+import { InlineCommentEvent } from '../InlineComment'
 
 const { Text, Link } = Typography
 
 export interface CommentHeaderProps {
+  /** The state of the comment */
+  state: CommentState
   /** The author of the comment */
-  author: InlineCommentAuthor
+  author: CommentAuthor
+  /** Current user information */
+  currentUser: CommentAuthor
   /** ISO timestamp when comment was created */
   createdAt: string
   /** URL to the comment on GitHub */
   commentUrl: string
+  /** Callback function triggered when an event occurs */
+  onEventTrigger?: (event: InlineCommentEvent) => void
 }
 
 const useStyles = () => {
@@ -65,13 +72,25 @@ const useStyles = () => {
 /**
  * A component that displays the header of an inline comment including author, timestamp, and a menu.
  *
- * @param author - The author of the comment
- * @param createdAt - ISO timestamp when comment was created
- * @param commentUrl - URL to the comment on GitHub
- * @returns A React component that displays the comment header
+ * @param state          - The state of the comment
+ * @param author         - The author of the comment
+ * @param currentUser    - Current user information
+ * @param createdAt      - ISO timestamp when comment was created
+ * @param commentUrl     - URL to the comment on GitHub
+ * @param onEventTrigger - Callback function triggered when an event occurs
+ * @returns                A React component that displays the comment header
  */
-export const CommentHeader: React.FC<CommentHeaderProps> = ({ author, createdAt, commentUrl }) => {
+export const Header: React.FC<CommentHeaderProps> = ({
+  state,
+  author,
+  currentUser,
+  createdAt,
+  commentUrl,
+  onEventTrigger,
+}) => {
   const styles = useStyles()
+
+  const isAuthor = currentUser.login === author.login
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp)
@@ -100,7 +119,36 @@ export const CommentHeader: React.FC<CommentHeaderProps> = ({ author, createdAt,
       })
   }, [commentUrl])
 
-  const menuProps: MenuProps = useMemo(
+  const handleMenuClick = useCallback(
+    (event: InlineCommentEvent) => {
+      onEventTrigger?.(event)
+    },
+    [onEventTrigger],
+  )
+
+  const draftOptions: MenuProps = useMemo(
+    () => ({
+      items: isAuthor
+        ? [
+            {
+              key: 'edit',
+              label: 'Edit',
+              onClick: () => {
+                handleMenuClick(InlineCommentEvent.EDIT_DRAFT)
+              },
+            },
+            {
+              key: 'delete',
+              label: 'Delete',
+              onClick: () => handleMenuClick(InlineCommentEvent.DELETE_DRAFT),
+            },
+          ]
+        : [],
+    }),
+    [handleMenuClick, isAuthor],
+  )
+
+  const publishedOptions: MenuProps = useMemo(
     () => ({
       items: [
         {
@@ -108,9 +156,31 @@ export const CommentHeader: React.FC<CommentHeaderProps> = ({ author, createdAt,
           label: 'Copy link',
           onClick: handleCopyLink,
         },
+        ...(isAuthor
+          ? [
+              {
+                key: 'edit',
+                label: 'Edit',
+                onClick: () => handleMenuClick(InlineCommentEvent.EDIT_PUBLISHED),
+              },
+              {
+                key: 'delete',
+                label: 'Delete',
+                onClick: () => handleMenuClick(InlineCommentEvent.DELETE_PUBLISHED),
+              },
+              {
+                type: 'divider' as const,
+              },
+            ]
+          : []),
+        {
+          key: 'resolve',
+          label: 'Resolve',
+          onClick: () => handleMenuClick(InlineCommentEvent.RESOLVE_PUBLISHED),
+        },
       ],
     }),
-    [handleCopyLink],
+    [handleCopyLink, handleMenuClick, isAuthor],
   )
 
   return (
@@ -127,7 +197,11 @@ export const CommentHeader: React.FC<CommentHeaderProps> = ({ author, createdAt,
       <Text css={styles.timestamp} data-testid="comment-timestamp">
         {formatTimestamp(createdAt)}
       </Text>
-      <Dropdown menu={menuProps} trigger={['click']} placement="bottomRight">
+      <Dropdown
+        menu={state === CommentState.SAVED_DRAFT ? draftOptions : publishedOptions}
+        trigger={['click']}
+        placement="bottomRight"
+      >
         <MoreOutlined css={styles.menuButton} data-testid="comment-menu-button" />
       </Dropdown>
     </div>

@@ -1,9 +1,21 @@
-import { QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons'
+import {
+  BoldOutlined,
+  CheckSquareOutlined,
+  CodeOutlined,
+  ItalicOutlined,
+  OrderedListOutlined,
+  QuestionCircleOutlined,
+  SettingOutlined,
+  UnorderedListOutlined,
+} from '@ant-design/icons'
 import { css } from '@emotion/react'
-import { Button, Input } from 'antd'
-import React, { useEffect, useState } from 'react'
+import { Button, Input, Tag } from 'antd'
+import React from 'react'
 import { useDiffViewerConfig } from '../../../../components/diff-viewer/providers/diff-viewer-context'
-import { CustomTabs } from './CustomTabs'
+import { MarkdownText } from '../../../MarkdownText'
+import { HeaderIcon, MarkdownIcon, QuotingIcon } from '../../../ui/icons'
+import { useEditorViewModel } from '../hooks/use-editor-view-model'
+import { CustomTabs } from './tabs'
 import { TabActionButton, TabItem } from './types'
 
 const { TextArea } = Input
@@ -17,8 +29,6 @@ const useStyles = () => {
       align-items: flex-start;
       gap: ${theme.spacing.sm};
       padding: ${theme.spacing.sm};
-      background-color: ${theme.colors.backgroundContainer};
-      border-top: 1px solid ${theme.colors.border};
     `,
 
     innerContainer: css`
@@ -32,8 +42,6 @@ const useStyles = () => {
 
     textArea: css`
       background-color: ${theme.colors.backgroundPrimary} !important;
-      border: 1px solid ${theme.colors.border};
-      border-radius: ${theme.spacing.xs};
       font-family: ${theme.typography.regularFontFamily};
       font-size: ${theme.typography.regularFontSize}px;
       box-shadow: none !important;
@@ -44,8 +52,6 @@ const useStyles = () => {
 
     preview: css`
       background-color: ${theme.colors.backgroundPrimary};
-      border: 1px solid ${theme.colors.border};
-      border-radius: ${theme.spacing.xs};
       padding: ${theme.spacing.sm};
       font-family: ${theme.typography.regularFontFamily};
       font-size: ${theme.typography.regularFontSize}px;
@@ -60,6 +66,12 @@ const useStyles = () => {
       gap: ${theme.spacing.xs};
       justify-content: flex-end;
     `,
+
+    markdownTag: css`
+      display: inline-flex;
+      align-items: center;
+      gap: ${theme.spacing.xs};
+    `,
   }
 }
 
@@ -70,6 +82,9 @@ export interface CommentEditorProps {
   placeholder?: string
   /** Whether the editor is visible */
   isVisible?: boolean
+  /** Whether there are saved drafts in the current context indicating review mode */
+  isReviewing?: boolean
+
   /** Optional callback when edit is saved */
   onSave?: (newText: string) => void
   /** Optional callback when edit is cancelled */
@@ -87,61 +102,44 @@ export interface CommentEditorProps {
  * @param onCancel - Optional callback when edit is cancelled
  * @param placeholder - Optional placeholder text for the editor
  * @param isVisible - Whether the editor is visible
+ * @param isReviewing - Whether there are saved drafts in the current context indicating review mode
  * @returns A React component that displays a comment editor interface
  */
-export const CommentEditor: React.FC<CommentEditorProps> = ({
+export const Editor: React.FC<CommentEditorProps> = ({
   initialText,
+  placeholder,
+  isVisible = true,
   onSave,
   onCancel,
-  placeholder = 'Edit your comment...',
-  isVisible = true,
   onTabHeaderAction,
+  isReviewing = false,
 }) => {
-  const [editText, setEditText] = useState(initialText)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [activeTab, setActiveTab] = useState('write')
   const styles = useStyles()
-
-  useEffect(() => setEditText(initialText), [initialText])
-
-  const handleSave = () => {
-    if (editText.trim() && onSave) {
-      setIsSubmitting(true)
-      try {
-        onSave(editText.trim())
-      } finally {
-        setIsSubmitting(false)
-      }
-    }
-  }
-
-  const handleCancel = () => {
-    setEditText(initialText)
-    onCancel?.()
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-      e.preventDefault()
-      handleSave()
-    } else if (e.key === 'Escape') {
-      handleCancel()
-    }
-  }
+  const {
+    editText,
+    setEditText,
+    previewText,
+    isSubmitting,
+    activeTab,
+    textAreaRef,
+    handleSave,
+    handleCancel,
+    handleKeyDown,
+    handleWrap,
+    handleLinePrefix,
+    handleTabClick,
+    handleHeaderAction,
+    hasChanges,
+    isValid,
+  } = useEditorViewModel({
+    initialText,
+    onSave,
+    onCancel,
+    onTabHeaderAction,
+  })
 
   if (!isVisible) {
     return null
-  }
-
-  const hasChanges = editText.trim() !== initialText.trim()
-  const isValid = editText.trim().length > 0
-
-  const handleTabClick = (tabKey: string) => {
-    setActiveTab(tabKey)
-  }
-
-  const handleHeaderAction = (action: string) => {
-    onTabHeaderAction?.(action)
   }
 
   const tabs: TabItem[] = [
@@ -151,15 +149,22 @@ export const CommentEditor: React.FC<CommentEditorProps> = ({
       helper: 'Edit your comment',
       content: (
         <TextArea
+          ref={textAreaRef}
           value={editText}
           onChange={(e) => setEditText(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           css={styles.textArea}
           data-testid="editor-textarea"
-          rows={4}
+          rows={5}
           autoFocus
         />
+      ),
+      footer: (
+        <Tag css={styles.markdownTag}>
+          <MarkdownIcon inverted />
+          <span>Markdown is supported</span>
+        </Tag>
       ),
     },
     {
@@ -168,7 +173,7 @@ export const CommentEditor: React.FC<CommentEditorProps> = ({
       helper: 'Preview your comment',
       content: (
         <div css={styles.preview} data-testid="editor-preview">
-          {editText || <span style={{ color: '#999' }}>Nothing to preview</span>}
+          <MarkdownText>{previewText}</MarkdownText>
         </div>
       ),
     },
@@ -176,29 +181,81 @@ export const CommentEditor: React.FC<CommentEditorProps> = ({
 
   const actions: TabActionButton[] = [
     {
+      key: 'header',
+      icon: <HeaderIcon />,
+      tooltip: 'Add header (h3)',
+      onClick: () => handleLinePrefix('### '),
+      group: 1,
+    },
+    {
+      key: 'bold',
+      icon: <BoldOutlined />,
+      tooltip: 'Add bold text',
+      onClick: () => handleWrap('**', '**', 'strong text'),
+      group: 1,
+    },
+    {
+      key: 'italic',
+      icon: <ItalicOutlined />,
+      tooltip: 'Add italic text',
+      onClick: () => handleWrap('_', '_', 'emphasized text'),
+      group: 1,
+    },
+    {
+      key: 'quote',
+      icon: <QuotingIcon />,
+      tooltip: 'Insert a quote',
+      onClick: () => handleLinePrefix('> '),
+      group: 1,
+    },
+    {
+      key: 'code',
+      icon: <CodeOutlined />,
+      tooltip: 'Insert code',
+      onClick: () => handleWrap('`', '`', 'code'),
+      group: 1,
+    },
+    {
+      key: 'numbered-list',
+      icon: <OrderedListOutlined />,
+      tooltip: 'Add numbered list',
+      onClick: () => handleLinePrefix('1. '),
+      group: 2,
+    },
+    {
+      key: 'bulleted-list',
+      icon: <UnorderedListOutlined />,
+      tooltip: 'Add bulleted list',
+      onClick: () => handleLinePrefix('- '),
+      group: 2,
+    },
+    {
+      key: 'task-list',
+      icon: <CheckSquareOutlined />,
+      tooltip: 'Add task list',
+      onClick: () => handleLinePrefix('- [ ] '),
+      group: 2,
+    },
+    {
       key: 'format',
       icon: <SettingOutlined />,
       tooltip: 'Format code',
       onClick: () => handleHeaderAction('format'),
+      group: 3,
     },
     {
       key: 'help',
       icon: <QuestionCircleOutlined />,
       tooltip: 'Help',
       onClick: () => handleHeaderAction('help'),
+      group: 3,
     },
   ]
 
   return (
-    <div css={styles.outerContainer} data-testid="comment-editor">
+    <div css={styles.outerContainer}>
       <div css={styles.innerContainer}>
-        <CustomTabs
-          tabs={tabs}
-          actions={actions}
-          activeTab={activeTab}
-          onTabChange={handleTabClick}
-          data-testid="editor-tabs"
-        />
+        <CustomTabs tabs={tabs} actions={actions} activeTab={activeTab} onTabChange={handleTabClick} />
 
         <div css={styles.footer}>
           <Button onClick={handleCancel} size="middle" data-testid="cancel-button" disabled={isSubmitting}>
@@ -209,11 +266,10 @@ export const CommentEditor: React.FC<CommentEditorProps> = ({
             type="primary"
             size="middle"
             onClick={handleSave}
-            data-testid="post-button"
             disabled={!isValid || !hasChanges || isSubmitting}
             loading={isSubmitting}
           >
-            Post
+            {isReviewing ? 'Add review comment' : 'Start a review'}
           </Button>
         </div>
       </div>

@@ -16,6 +16,8 @@ export interface LineMetadata {
   side: 'left' | 'right' | undefined
   /** The content of the line that the overlay is docked to */
   content: string | undefined
+  /** The path of the file that the line belongs to */
+  filepath: string | undefined
 }
 
 /**

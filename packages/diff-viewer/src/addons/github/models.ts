@@ -40,60 +40,144 @@ export interface GitHubPullRequest {
 }
 
 /**
+ * Comprehensive GitHub user/author information.
+ */
+export interface GitHubUser {
+  /** GitHub username */
+  login: string
+  /** URL to user's avatar image */
+  avatar_url: string
+  /** URL to user's GitHub profile */
+  html_url: string
+  /** GitHub user ID */
+  id: number
+  /** GitHub's internal node ID */
+  node_id: string
+  /** Gravatar ID (deprecated) */
+  gravatar_id: string
+  /** API URL for the user */
+  url: string
+  /** User type (usually "User") */
+  type: string
+  /** Whether user is a site admin */
+  site_admin: boolean
+  /** User view type */
+  user_view_type?: string
+  /** Various API URLs for user resources */
+  followers_url: string
+  /** URL for following user */
+  following_url: string
+  /** URL for gists */
+  gists_url: string
+  /** URL for starred repositories */
+  starred_url: string
+  /** URL for subscriptions */
+  subscriptions_url: string
+  /** URL for organizations */
+  organizations_url: string
+  /** URL for repositories */
+  repos_url: string
+  /** URL for events */
+  events_url: string
+  /** URL for received events */
+  received_events_url: string
+}
+
+/**
+ * GitHub comment HATEOAS links.
+ */
+export interface GitHubCommentLinks {
+  /** Self reference link */
+  self: { href: string }
+  /** HTML view link */
+  html: { href: string }
+  /** Pull request link */
+  pull_request: { href: string }
+}
+
+/**
+ * GitHub comment reactions.
+ */
+export interface GitHubCommentReactions {
+  /** URL for reactions API */
+  url: string
+  /** Total reaction count */
+  total_count: number
+  /** Individual reaction counts */
+  '+1': number
+  /** Total reaction count */
+  '-1': number
+  /** Total reaction count */
+  laugh: number
+  /** Total reaction count */
+  hooray: number
+  /** Total reaction count */
+  confused: number
+  /** Total reaction count */
+  heart: number
+  /** Total reaction count */
+  rocket: number
+  /** Total reaction count */
+  eyes: number
+}
+
+/**
  * Represents a GitHub inline comment (pull request review comment).
+ * This is the comprehensive model that includes all GitHub API fields.
  */
 export interface GitHubInlineComment {
-  /** Unique identifier of the comment */
-  id: number
-  /** Node ID for GraphQL API compatibility */
-  node_id: string
-  /** URL to the comment via API */
+  /** API URL for the comment */
   url: string
-  /** The comment body/content */
-  body: string
-  /** File path where the comment was made */
+  /** ID of the review this comment belongs to */
+  pull_request_review_id: number | null
+  /** Unique identifier for the comment */
+  id: number
+  /** GitHub's internal node ID */
+  node_id: string
+  /** The actual diff hunk the comment is on */
+  diff_hunk: string
+  /** File path where the comment is located */
   path: string
-  /** Line number where the comment was made */
-  line?: number | null
-  /** Original line number (for outdated comments) */
-  original_line?: number | null
-  /** Start line for multi-line comments */
-  start_line?: number | null
-  /** Original start line for multi-line comments */
-  original_start_line?: number | null
-  /** Side of the diff ('LEFT' for deletion, 'RIGHT' for addition) */
-  side?: 'LEFT' | 'RIGHT'
-  /** Start side for multi-line comments */
-  start_side?: 'LEFT' | 'RIGHT' | null
   /** Position in the diff */
-  position?: number | null
+  position: number
   /** Original position in the diff */
-  original_position?: number | null
-  /** Commit SHA the comment is associated with */
+  original_position: number
+  /** Commit SHA where the comment was made */
   commit_id: string
   /** Original commit SHA */
   original_commit_id: string
-  /** Comment author */
-  user: {
-    login: string
-    id: number
-    avatar_url: string
-    html_url: string
-  }
-  /** When the comment was created */
+  /** ID of the comment this is replying to (if any) */
+  in_reply_to_id: number | null
+  /** The comment body/text content */
+  body: string
+  /** The author of the comment */
+  user: GitHubUser
+  /** ISO timestamp when comment was created */
   created_at: string
-  /** When the comment was last updated */
+  /** ISO timestamp when comment was last updated */
   updated_at: string
-  /** HTML URL to view the comment */
+  /** URL to the comment on GitHub */
   html_url: string
-  /** Pull request URL */
+  /** URL to the pull request */
   pull_request_url: string
-  /** Author's association with the repository */
+  /** Relationship of author to the repository */
   author_association: string
-  /** ID of the comment this is replying to */
-  in_reply_to_id?: number | null
-  /** Pull request review ID */
-  pull_request_review_id?: number | null
-  /** Subject type */
-  subject_type?: string
+  /** HATEOAS links */
+  _links: GitHubCommentLinks
+  /** Reaction counts */
+  reactions: GitHubCommentReactions
+  /** Start line for multi-line comments */
+  start_line: number | null
+  /** Original start line for multi-line comments */
+  original_start_line: number | null
+  /** Which side of the diff the start is on */
+  start_side: 'LEFT' | 'RIGHT' | null
+  /** Line number where comment is located */
+  line: number | null
+  /** Original line number */
+  original_line: number | null
+  /** Which side of the diff the comment is on */
+  side: 'LEFT' | 'RIGHT' | null
+  /** Type of subject (usually "line") */
+  subject_type: string
 }

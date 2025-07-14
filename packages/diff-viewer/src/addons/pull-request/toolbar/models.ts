@@ -1,3 +1,6 @@
+// Re-export comment models from github addon
+export type { GitHubInlineComment, GitHubUser, GitHubCommentLinks, GitHubCommentReactions } from '../../github/models'
+
 export interface StatTagProps {
   /** The value to display */
   value: number
@@ -6,9 +9,6 @@ export interface StatTagProps {
   /** The color of the tag */
   color: string
 }
-
-// Re-export comment models from the comments directory
-export * from '../comments/models'
 
 export interface PullRequestMetadata {
   /** Pull request number */

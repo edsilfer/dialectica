@@ -12,29 +12,9 @@ import type { FSNodeProps } from './types'
 import { vi } from 'vitest'
 
 vi.mock('antd', async () => {
-  const actual = await vi.importActual('antd')
+  const { createAntdMocks } = await import('../../../utils/test/antd-utils')
   return {
-    ...actual,
-    Dropdown: ({
-      children,
-      menu,
-      trigger,
-    }: {
-      children: React.ReactNode
-      menu: { items: unknown; onClick: (params: { key: string }) => void }
-      trigger: string[]
-    }) => (
-      <div data-testid="dropdown" data-trigger={trigger.join(',')}>
-        {children}
-        <div data-testid="dropdown-menu" onClick={() => menu.onClick({ key: 'copy' })}>
-          Copy Menu
-        </div>
-      </div>
-    ),
-    message: {
-      success: vi.fn(),
-      error: vi.fn(),
-    },
+    ...createAntdMocks(),
     theme: {
       useToken: () => ({ token: { colorBgTextHover: '#f0f0f0' } }),
     },

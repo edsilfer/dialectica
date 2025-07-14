@@ -1,14 +1,33 @@
 import { css } from '@emotion/react'
-import { Avatar, Typography } from 'antd'
+import { Avatar } from 'antd'
 import React from 'react'
 import { useDiffViewerConfig } from '../../../components/diff-viewer/providers/diff-viewer-context'
-import type { InlineCommentProps } from '../toolbar/models'
-import { CommentActions } from './CommentActions'
-import { CommentHeader } from './CommentHeader'
-import { CommentReactions } from './CommentReactions'
-import { CommentReply } from './CommentReply'
+import { MarkdownText } from '../../MarkdownText'
+import { CommentAuthor, CommentMetadata, CommentState } from '../models/CommentMetadata'
+import { Editor } from './components/Editor'
+import { Header } from './components/Header'
+import { Reactions } from './components/Reactions'
+import { Reply } from './components/Reply'
 
-const { Paragraph } = Typography
+/**
+ * Event types that can be triggered by the InlineComment component
+ */
+export enum InlineCommentEvent {
+  // Events that will act on the local draft data
+  ADD_DRAFT = 'ADD_DRAFT',
+  SAVE_DRAFT = 'SAVE_DRAFT',
+  CANCEL_DRAFT = 'CANCEL_DRAFT',
+  DELETE_DRAFT = 'DELETE_DRAFT',
+  EDIT_DRAFT = 'EDIT_DRAFT',
+  PUBLISH_DRAFT = 'PUBLISH_DRAFT',
+
+  // Events that will act on the server data
+  RESOLVE_PUBLISHED = 'RESOLVE_PUBLISHED',
+  DELETE_PUBLISHED = 'DELETE_PUBLISHED',
+  EDIT_PUBLISHED = 'EDIT_PUBLISHED',
+
+  POST_REACTION = 'POST_REACTION',
+}
 
 const useStyles = () => {
   const { theme } = useDiffViewerConfig()
@@ -18,16 +37,26 @@ const useStyles = () => {
       border-top: 1px solid ${theme.colors.border};
       border-bottom: 1px solid ${theme.colors.border};
       background-color: ${theme.colors.backgroundPrimary};
+      padding: ${theme.spacing.sm};
     `,
 
     innerContainer: css`
       display: flex;
+      flex-direction: column;
+      max-width: 1000px;
       gap: ${theme.spacing.sm};
-      padding: ${theme.spacing.sm};
       margin: ${theme.spacing.sm};
       border: 1px solid ${theme.colors.border};
       border-radius: ${theme.spacing.xs};
       position: relative;
+    `,
+
+    content: css`
+      display: flex;
+      flex-direction: row;
+      padding: ${theme.spacing.sm};
+      width: 100%;
+      gap: ${theme.spacing.sm};
     `,
 
     avatar: css`
@@ -36,85 +65,135 @@ const useStyles = () => {
       margin-top: 2px;
     `,
 
-    content: css`
-      flex: 1;
-      min-width: 0;
-    `,
-
-    body: css`
-      font-family: ${theme.typography.regularFontFamily};
-      color: ${theme.colors.textPrimary};
-      font-size: ${theme.typography.regularFontSize}px;
-      line-height: 1.4;
-      margin: 0;
-      white-space: pre-wrap;
-      word-break: break-word;
-      text-align: left;
+    editorContainer: css`
+      background-color: ${theme.colors.backgroundPrimary};
+      padding: ${theme.spacing.xs};
+      border-top: 1px solid ${theme.colors.border};
     `,
   }
 }
 
 /**
- * A component that displays multiple GitHub-style inline comments with a single reply footer.
- *
- * @param comments - The array of comment data to display
- * @param currentUser - Current user data for reply functionality
- * @param onResolve - Optional callback when resolve button is clicked
- * @param onEdit - Optional callback when edit button is clicked
- * @param onDelete - Optional callback when delete button is clicked
- * @param onReplySubmit - Optional callback when reply is submitted
- * @returns A React component that displays inline comments with a reply footer
+ * Event handler type that takes metadata, event, and optional data
  */
-export const InlineComment: React.FC<InlineCommentProps> = ({
-  comments,
-  currentUser,
-  onResolve,
-  onEdit,
-  onDelete,
-  onReplySubmit,
-}) => {
-  const handleReactionClick = (reactionType: string) => {
-    console.log('Reaction clicked:', reactionType)
-    // TODO: Implement reaction handling
-  }
+export type EventHandler = (metadata: CommentMetadata, event: InlineCommentEvent, data?: string) => void
 
-  const handleReplySubmit = (replyText: string) => {
-    console.log('Reply submitted:', replyText)
-    onReplySubmit?.(replyText)
-  }
+/**
+ * Props for the InlineComment component
+ */
+export interface InlineCommentProps {
+  /** Array of comments in the thread */
+  thread: CommentMetadata[]
+  /** Current user information */
+  currentUser: CommentAuthor
+  /** Whether there are saved drafts in the current context indicating review mode */
+  isReviewing?: boolean
 
+  /** Callback function triggered when an event occurs */
+  onEventTrigger: EventHandler
+}
+
+/**
+ * A React component that displays inline comments with intelligent state-based rendering.
+ * Handles different scenarios based on DRAFT comment presence in the thread.
+ *
+ * @param thread - Array of comments in the thread
+ * @param currentUser - Current user information
+ * @param onEventTrigger - Callback function triggered when an event occurs
+ * @param isReviewing - Whether there are saved drafts in the current context indicating review mode
+ * @returns A React component that displays inline comments with appropriate UI for the thread state
+ */
+export const InlineComment: React.FC<InlineCommentProps> = ({ thread, currentUser, isReviewing, onEventTrigger }) => {
   const styles = useStyles()
 
-  if (comments.length === 0) {
-    return null
-  }
+  if (thread.length === 0) return null
 
-  return (
-    <div css={styles.outerContainer} data-testid="inline-comments">
-      {comments.map((comment, _index) => (
-        <div key={comment.id}>
-          <div css={styles.innerContainer} data-testid={`inline-comment-${comment.id}`}>
-            <Avatar
-              src={comment.user.avatar_url}
-              size={24}
-              alt={comment.user.login}
-              data-testid={`comment-author-avatar-${comment.id}`}
-              css={styles.avatar}
-            />
+  const draftComments = thread.filter((comment) => comment.state === CommentState.DRAFT)
+  const nonDraftComments = thread.filter((comment) => comment.state !== CommentState.DRAFT)
 
-            <div css={styles.content}>
-              <CommentHeader author={comment.user} createdAt={comment.created_at} commentUrl={comment.html_url} />
-              <Paragraph css={styles.body} data-testid={`comment-body-${comment.id}`}>
-                {comment.body}
-              </Paragraph>
-              <CommentReactions reactions={comment.reactions} onReactionClick={handleReactionClick} />
-              <CommentActions onResolve={onResolve} onEdit={onEdit} onDelete={onDelete} />
-            </div>
-          </div>
-        </div>
-      ))}
+  // VALIDATIONS
+  if (draftComments.length > 1) throw new Error('Thread cannot have more than one DRAFT comment')
+  const hasDraftComment = draftComments.length === 1
+  const hasNonDraftComments = nonDraftComments.length > 0
 
-      <CommentReply currentUser={currentUser} onSubmit={handleReplySubmit} placeholder="Add a comment..." />
+  const renderComment = (comment: CommentMetadata) => (
+    <div css={styles.content} key={comment.id}>
+      <Avatar
+        src={comment.author.avatar_url}
+        size={24}
+        alt={comment.author.login}
+        data-testid={`comment-author-avatar-${comment.id}`}
+        css={styles.avatar}
+      />
+
+      <div style={{ flex: 1 }}>
+        <Header
+          state={comment.state}
+          author={comment.author}
+          currentUser={currentUser}
+          createdAt={comment.created_at}
+          commentUrl={comment.url}
+          onEventTrigger={(event) => onEventTrigger?.(comment, event)}
+        />
+        <MarkdownText>{comment.body}</MarkdownText>
+        <Reactions
+          reactions={comment.reactions}
+          onReactionClick={(reactionType) => onEventTrigger?.(comment, InlineCommentEvent.POST_REACTION, reactionType)}
+        />
+      </div>
     </div>
   )
+
+  const renderEditor = (draftComment: CommentMetadata) => (
+    <Editor
+      initialText={draftComment.body}
+      placeholder="Add a comment..."
+      isVisible={true}
+      onSave={(commentText) => onEventTrigger?.(draftComment, InlineCommentEvent.SAVE_DRAFT, commentText)}
+      onCancel={() => onEventTrigger?.(draftComment, InlineCommentEvent.CANCEL_DRAFT)}
+      isReviewing={isReviewing}
+    />
+  )
+
+  // Case 1: Thread has a single DRAFT comment only - render only the editor
+  if (hasDraftComment && !hasNonDraftComments) {
+    const draftComment = draftComments[0]
+    return (
+      <div css={styles.editorContainer} data-testid="draft-only-editor">
+        {renderEditor(draftComment)}
+      </div>
+    )
+  }
+
+  // Case 2: Thread has non-DRAFT comments and zero DRAFT comments - render with Reply section or Editor
+  if (hasNonDraftComments && !hasDraftComment) {
+    return (
+      <div css={styles.outerContainer} data-testid="inline-comments">
+        <div css={styles.innerContainer}>
+          {nonDraftComments.map(renderComment)}
+          <Reply
+            currentUser={currentUser}
+            onEventTrigger={() => onEventTrigger?.(nonDraftComments[0], InlineCommentEvent.ADD_DRAFT, '')}
+            placeholder="Add a comment..."
+          />
+        </div>
+      </div>
+    )
+  }
+
+  // Case 3: Thread has non-DRAFT comments and a single DRAFT comment - render conversation + Editor (no Reply)
+  if (hasNonDraftComments && hasDraftComment) {
+    const draftComment = draftComments[0]
+
+    return (
+      <div css={styles.outerContainer} data-testid="inline-comments-with-draft">
+        <div css={styles.innerContainer}>
+          {nonDraftComments.map(renderComment)}
+          <div css={styles.editorContainer}>{renderEditor(draftComment)}</div>
+        </div>
+      </div>
+    )
+  }
+
+  return null
 }

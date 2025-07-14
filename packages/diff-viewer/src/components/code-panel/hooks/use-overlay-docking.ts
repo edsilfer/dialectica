@@ -10,6 +10,8 @@ interface UseOverlayDockingProps {
   lines: DiffLineViewModel[]
   /** Whether this is unified view (true) or split view (false) */
   viewMode: 'unified' | 'split'
+  /** The path of the file being displayed. */
+  filepath: string
 }
 
 interface UseOverlayDockingReturn {
@@ -21,7 +23,12 @@ interface UseOverlayDockingReturn {
   handleRowLeave: (e: React.MouseEvent<HTMLTableRowElement>) => void
 }
 
-export const useOverlayDocking = ({ overlays, lines, viewMode }: UseOverlayDockingProps): UseOverlayDockingReturn => {
+export const useOverlayDocking = ({
+  overlays,
+  lines,
+  viewMode,
+  filepath,
+}: UseOverlayDockingProps): UseOverlayDockingReturn => {
   const overlayGroups = useMemo(() => {
     if (!overlays?.length) return {}
     const groups: Record<number, React.ReactNode[]> = {}
@@ -31,14 +38,7 @@ export const useOverlayDocking = ({ overlays, lines, viewMode }: UseOverlayDocki
     })
 
     return groups
-  }, [
-    overlays
-      ?.map((o) =>
-        'id' in o ? (o as Overlay & { id: string }).id : viewMode === 'unified' ? o.unifiedDockIdx : o.splitDockIdx,
-      )
-      .join('|'),
-    viewMode,
-  ])
+  }, [overlays, viewMode])
 
   const lastIdxRef = useRef<number | null>(null)
 
@@ -51,10 +51,10 @@ export const useOverlayDocking = ({ overlays, lines, viewMode }: UseOverlayDocki
           type SideType = 'left' | 'right' | undefined
           let side: SideType = line.lineNumberLeft ? 'left' : line.lineNumberRight ? 'right' : undefined
           let content = line.contentLeft ?? line.contentRight ?? undefined
-          overlay.onDock({ lineNumber, side, content })
+          overlay.onDock({ lineNumber, side, content, filepath })
         })
       }, 100),
-    [],
+    [filepath],
   )
 
   useEffect(() => dispatch.cancel(), [dispatch])

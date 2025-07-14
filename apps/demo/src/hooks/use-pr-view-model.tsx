@@ -1,88 +1,65 @@
 import {
+  CommentState,
   getMoreLines,
-  InlineComment as InlineCommentComponent,
-  InlineCommentData,
   LineMetadata,
   LineRequest,
   LoadMoreLinesResult,
   ParsedDiff,
   PrKey,
 } from '@diff-viewer'
-import React, { useCallback, useMemo, useState } from 'react'
-import { mapInlineComment } from '../components/mappers'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { CommentMetadataFactory } from '../models/CommentMetadataFactory'
+import { WidgetFactory } from '../models/WidgetFactory'
+import { useCommentContext } from '../provider/comment-provider'
 import { useSettings } from '../provider/setttings-provider'
+import { CURRENT_USER } from './comment-utils'
+import { useCommentState } from './use-comment-state'
 import { usePullRequestData } from './use-pull-request-data'
 
 export function usePrViewModel(prKey?: PrKey) {
   const { githubPat: token, useMocks } = useSettings()
-  const { metadata, rawDiff, comments, loading, errors } = usePullRequestData(prKey)
+
+  const [dockedLine, setDockedLine] = useState<LineMetadata | undefined>()
+  const { metadata, rawDiff, comments: existingComments, loading, errors } = usePullRequestData(prKey)
   const diff = useMemo(() => (rawDiff ? ParsedDiff.build(rawDiff) : undefined), [rawDiff])
+  const { comments, onCommentEvent } = useCommentState()
+  const { handle } = useCommentContext()
+  const processedCommentsRef = useRef<Set<number>>(new Set())
+
+  useEffect(() => {
+    if (existingComments && existingComments.length > 0) {
+      const newComments = existingComments.filter((c) => !processedCommentsRef.current.has(c.id))
+      if (newComments.length > 0) {
+        handle.addComments(
+          newComments.map((githubComment) => {
+            processedCommentsRef.current.add(githubComment.id)
+            return CommentMetadataFactory.fromGitHubComment(githubComment)
+          }),
+        )
+      }
+    }
+  }, [existingComments, handle])
 
   /**
-   * Build the comment widgets.
+   * Build the comment widgets from all managed comments.
    *
    * @returns The comment widgets.
    */
-  const commentWidgets = useMemo(() => {
-    const widgets: Array<{
-      content: React.ReactNode
-      line: number
-      side: 'left' | 'right'
-      position: 'bottom'
-      filepath: string
-    }> = []
+  const widgets = useMemo(() => {
+    if (comments.size === 0) return []
+    const groupedComments = handle.getCommentsGroupedByLocation()
+    const isReviewing = handle.getComments(CommentState.SAVED_DRAFT).size > 0
+    return WidgetFactory.build(groupedComments, CURRENT_USER, onCommentEvent, isReviewing)
+  }, [comments, handle, onCommentEvent])
 
-    if (comments && diff) {
-      const commentGroups = new Map<string, InlineCommentData[]>()
-
-      comments
-        .filter((comment) => comment.line && comment.path)
-        .forEach((comment) => {
-          const file = diff.files.find((f) => f.newPath === comment.path || f.oldPath === comment.path)
-          if (!file) return
-
-          const filepath = file.newPath || file.oldPath
-          const side = comment.side === 'LEFT' ? 'left' : 'right'
-          const key = `${filepath}:${comment.line}:${side}`
-
-          const diffViewerComment = mapInlineComment(comment)
-          if (!commentGroups.has(key)) {
-            commentGroups.set(key, [])
-          }
-          commentGroups.get(key)!.push(diffViewerComment)
-        })
-
-      const currentUser = {
-        login: 'current-user',
-        avatar_url: 'https://github.com/github.png',
-      }
-
-      commentGroups.forEach((groupComments, key) => {
-        const [filepath, lineStr, side] = key.split(':')
-        const line = parseInt(lineStr, 10)
-
-        widgets.push({
-          content: (
-            <InlineCommentComponent
-              comments={groupComments}
-              currentUser={currentUser}
-              onReplySubmit={(replyText: string) => {
-                console.log('Reply submitted:', replyText)
-              }}
-            />
-          ),
-          line,
-          side: side as 'left' | 'right',
-          position: 'bottom',
-          filepath,
-        })
-      })
-    }
-
-    return widgets
-  }, [comments, diff])
-
-  const [dockedLine, setDockedLine] = useState<LineMetadata | undefined>()
+  /**
+   * Handle the dock event from the DiffViewer overlay.
+   *
+   * @param lineMetadata - The line metadata for the docked line.
+   */
+  const onDock = useCallback((lineMetadata: LineMetadata) => {
+    setDockedLine(lineMetadata)
+  }, [])
 
   /**
    * Handle the click event of the add comment button.
@@ -90,8 +67,9 @@ export function usePrViewModel(prKey?: PrKey) {
    * @param dockedLine - The line to add the comment to.
    */
   const onAddButton = useCallback(() => {
-    console.log('Add comment to line:', dockedLine)
-  }, [dockedLine])
+    if (!dockedLine || !dockedLine.lineNumber || !dockedLine.side || !dockedLine.filepath) return
+    handle.addComment(CommentMetadataFactory.createDraft(dockedLine, CURRENT_USER))
+  }, [dockedLine, handle])
 
   /**
    * Load more lines from the pull request.
@@ -123,9 +101,10 @@ export function usePrViewModel(prKey?: PrKey) {
     loading,
     errors,
     diff,
-    commentWidgets,
+    existingComments,
+    commentWidgets: widgets,
     loadMore,
-    setDockedLine,
+    onDock,
     onAddButton,
   }
 }

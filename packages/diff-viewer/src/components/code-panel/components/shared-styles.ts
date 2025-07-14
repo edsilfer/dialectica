@@ -73,7 +73,9 @@ export const getViewerStyles = (theme: ThemeTokens) => {
       text-align: left;
       padding: 0 ${theme.spacing.sm};
       background: ${backgroundByType[type]};
-      white-space: pre;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-width: 0;
     `,
   ]
 
@@ -102,6 +104,12 @@ export const getViewerStyles = (theme: ThemeTokens) => {
     },
     {} as Record<DiffLineType, SerializedStyles[]>,
   )
+
+  const widgetCell = css`
+    text-align: left;
+    pointer-events: auto;
+    user-select: text;
+  `
 
   const container = css`
     display: flex;
@@ -199,6 +207,7 @@ export const getViewerStyles = (theme: ThemeTokens) => {
     leftNumberCell,
     rightNumberCell,
     codeCell,
+    widgetCell,
     lineType,
     overlay,
   }

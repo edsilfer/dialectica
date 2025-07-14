@@ -14,6 +14,7 @@ const UnifiedViewer: React.FC<UnifiedViewerProps> = (props) => {
     overlays: props.overlays,
     lines: props.lines,
     viewMode: 'unified',
+    filepath: props.filepath,
   })
 
   return (

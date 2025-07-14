@@ -1,3 +1,11 @@
+export { InlineComment, InlineCommentEvent } from './comments/InlineComment'
+export { CommentMetadata, CommentState } from './models/CommentMetadata'
+export type {
+  GitHubCommentLinks,
+  GitHubCommentReactions,
+  GitHubInlineComment,
+  GitHubUser,
+  PullRequestMetadata,
+} from './toolbar/models'
 export { PullRequestHeader } from './toolbar/PullRequestHeader'
-export { InlineComment } from './comments/InlineComment'
-export type { PullRequestMetadata, InlineCommentProps, InlineCommentData, InlineCommentAuthor } from './toolbar/models'
+export type { CommentAuthor } from './models/CommentMetadata'

@@ -30,7 +30,7 @@ export const COMMENTS = [
       user_view_type: 'public',
       site_admin: false,
     },
-    body: 'This is a fake comment added for testing purposes. It should appear on line 13 right side.',
+    body: 'This is a fake comment added for testing purposes. It should appear on line 13 right side.\n ## Example of header\n Here we will **test out** some _markdown_ rendering:\n ```json\n{\n  "name": "John",\n  "age": 30\n}\n```',
     created_at: '2021-08-04T06:10:00Z',
     updated_at: '2021-08-04T06:10:00Z',
     html_url: 'https://github.com/apache/spark/pull/33630#discussion_r682317335',

@@ -105,6 +105,7 @@ const FileViewer: React.FC<FileViewerProps> = (props) => {
           {config.mode === 'split' && (
             <SplitViewer
               lines={hunkList.linePairs}
+              filepath={file.newPath || file.oldPath}
               onLoadMoreLines={(line: DiffLineViewModel, direction: HunkDirection) =>
                 void handleLoadMoreLines(line, direction)
               }
@@ -116,6 +117,7 @@ const FileViewer: React.FC<FileViewerProps> = (props) => {
           {config.mode === 'unified' && (
             <UnifiedViewer
               lines={hunkList.linePairs}
+              filepath={file.newPath || file.oldPath}
               wrapLines={wrapLines}
               visible={!isCollapsed}
               onLoadMoreLines={(line, direction) => void handleLoadMoreLines(line, direction)}

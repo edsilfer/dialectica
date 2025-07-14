@@ -9,6 +9,8 @@ export interface TabItem {
   helper?: string
   /** The content to render when this tab is active */
   content: React.ReactNode
+  /** Optional footer to display for the tab */
+  footer?: React.ReactNode
 }
 
 export interface TabActionButton {
@@ -18,21 +20,11 @@ export interface TabActionButton {
   icon: React.ReactNode
   /** Optional tooltip text */
   tooltip?: string
-  /** Callback when the action is clicked */
-  onClick: () => void
   /** Whether the button should be disabled */
   disabled?: boolean
-}
+  /** The group number for the action button */
+  group?: number
 
-export interface CustomTabsProps {
-  /** Array of tab items */
-  tabs: TabItem[]
-  /** Array of action buttons to display on the right side of the header */
-  actions?: TabActionButton[]
-  /** Currently active tab key */
-  activeTab: string
-  /** Callback when a tab is clicked */
-  onTabChange: (tabKey: string) => void
-  /** Optional CSS class name */
-  className?: string
+  /** Callback when the action is clicked */
+  onClick: () => void
 }

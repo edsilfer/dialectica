@@ -1,4 +1,3 @@
-import { PrKey, useDiffViewerConfig } from '@diff-viewer'
 import { css } from '@emotion/react'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -6,12 +5,13 @@ import { Alert, notification } from 'antd'
 import AppToolbar from './components/AppToolbar'
 import Footer from './components/Footer'
 
-import { AddButton, DefaultToolbar, DiffViewer, PullRequestHeader } from '@diff-viewer'
+import { AddButton, DefaultToolbar, DiffViewer, PrKey, PullRequestHeader, useDiffViewerConfig } from '@diff-viewer'
 
 import ErrorCard from './components/ErrorCard'
 import InfoCard from './components/InfoCard'
 import { mapPullRequestMetadata } from './components/mappers'
 import { usePrViewModel } from './hooks/use-pr-view-model'
+import { CommentProvider } from './provider/comment-provider'
 import { useSettings } from './provider/setttings-provider'
 import { parseURL } from './utils'
 
@@ -44,7 +44,7 @@ export default function App() {
 
   // STATE ---------------------------------------------------------------------------------------------
   const [prKey, setPrKey] = useState<PrKey | undefined>(parseURL())
-  const { metadata, loading, errors, diff, commentWidgets, loadMore, setDockedLine, onAddButton } =
+  const { metadata, loading, errors, diff, commentWidgets, loadMore, onDock, onAddButton, existingComments } =
     usePrViewModel(prKey)
 
   // ERRORS --------------------------------------------------------------------------------------------
@@ -96,7 +96,7 @@ export default function App() {
               unifiedDockIdx: 2,
               splitDockIdx: 1,
               content: <AddButton key="add-button" onClick={onAddButton} />,
-              onDock: setDockedLine,
+              onDock,
             },
           ]}
           widgets={commentWidgets}
@@ -115,7 +115,9 @@ export default function App() {
         <Alert message="All the data is mocked. You can change it in the settings." type="warning" showIcon closable />
       )}
 
-      <div css={styles.content}>{content()}</div>
+      <CommentProvider existingComments={existingComments} diff={diff}>
+        <div css={styles.content}>{content()}</div>
+      </CommentProvider>
 
       <Footer />
     </div>

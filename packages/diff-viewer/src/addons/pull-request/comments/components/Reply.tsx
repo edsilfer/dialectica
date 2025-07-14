@@ -1,8 +1,8 @@
 import { css } from '@emotion/react'
 import { Avatar, Input } from 'antd'
-import React, { useState } from 'react'
-import { useDiffViewerConfig } from '../../../components/diff-viewer/providers/diff-viewer-context'
-import { CommentEditor } from './editor/CommentEditor'
+import React from 'react'
+import { useDiffViewerConfig } from '../../../../components/diff-viewer/providers/diff-viewer-context'
+import { CommentAuthor } from '../../models/CommentMetadata'
 
 const { TextArea } = Input
 
@@ -19,6 +19,10 @@ const useStyles = () => {
       border-top: 1px solid ${theme.colors.border};
       cursor: pointer;
       transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: ${theme.colors.backgroundContainer};
+      }
     `,
 
     avatar: css`
@@ -31,91 +35,47 @@ const useStyles = () => {
       background-color: ${theme.colors.backgroundPrimary} !important;
       border: 1px solid ${theme.colors.border};
       border-radius: ${theme.spacing.xs};
+      cursor: pointer;
+      pointer-events: none;
     `,
   }
 }
 
 export interface CommentReplyProps {
   /** The current user data */
-  currentUser: {
-    login: string
-    avatar_url: string
-  }
+  currentUser: CommentAuthor
   /** Optional placeholder text for the reply input */
   placeholder?: string
   /** Whether the reply form is visible */
   isVisible?: boolean
-
-  /** Optional callback when reply is submitted */
-  onSubmit?: (replyText: string) => void
+  /** Callback function triggered when the reply area is clicked */
+  onEventTrigger?: () => void
 }
 
-type ReplyState = 'displaying' | 'editing'
-
 /**
- * A component that displays a reply interface for inline comments.
+ * A component that displays a clickable reply interface for inline comments.
+ * When clicked, it triggers the parent to create a new DRAFT comment.
  *
  * @param currentUser - The current user data
- * @param onSubmit - Optional callback when reply is submitted
+ * @param onEventTrigger - Callback function triggered when the reply area is clicked
  * @param placeholder - Optional placeholder text for the reply input
  * @param isVisible - Whether the reply form is visible
- * @returns A React component that displays a comment reply interface
+ * @returns A React component that displays a clickable comment reply interface
  */
-export const CommentReply: React.FC<CommentReplyProps> = ({
+export const Reply: React.FC<CommentReplyProps> = ({
   currentUser,
-  onSubmit,
+  onEventTrigger,
   placeholder = 'Write a reply...',
   isVisible = true,
 }) => {
-  const [replyText, setReplyText] = useState('')
-  const [state, setState] = useState<ReplyState>('displaying')
   const styles = useStyles()
 
-  const handleSubmit = () => {
-    if (replyText.trim() && onSubmit) {
-      onSubmit(replyText.trim())
-      setReplyText('')
-      setState('displaying')
-    }
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-      handleSubmit()
-    }
-  }
-
   const handleContainerClick = () => {
-    setState('editing')
-  }
-
-  const handleSave = (newText: string) => {
-    if (onSubmit) {
-      onSubmit(newText)
-      setReplyText('')
-      setState('displaying')
-    }
-  }
-
-  const handleCancel = () => {
-    setReplyText('')
-    setState('displaying')
+    onEventTrigger?.()
   }
 
   if (!isVisible) {
     return null
-  }
-
-  if (state === 'editing') {
-    return (
-      <CommentEditor
-        initialText={replyText}
-        placeholder={placeholder}
-        onSave={handleSave}
-        onCancel={handleCancel}
-        isVisible={true}
-      />
-    )
   }
 
   return (
@@ -129,9 +89,7 @@ export const CommentReply: React.FC<CommentReplyProps> = ({
       />
 
       <TextArea
-        value={replyText}
-        onChange={(e) => setReplyText(e.target.value)}
-        onKeyDown={handleKeyDown}
+        value=""
         placeholder={placeholder}
         css={styles.textArea}
         data-testid="reply-textarea"

@@ -1,7 +1,7 @@
 import React from 'react'
 import { vi } from 'vitest'
-import type { CodePanelConfigContextState } from '../../components/code-panel/providers/types'
 import type { CustomButton, ToolbarWidget } from '../../addons/toolbar/types'
+import type { CodePanelConfigContextState } from '../../components/code-panel/providers/types'
 
 export const createAntdMocks = () => ({
   Progress: _mockProgress(),
@@ -15,7 +15,12 @@ export const createAntdMocks = () => ({
   Tooltip: _mockTooltip(),
   Checkbox: _mockCheckbox(),
   ConfigProvider: _mockConfigProvider(),
+  Dropdown: _mockDropdown(),
   theme: _mockTheme(),
+  message: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
 })
 
 /**
@@ -250,6 +255,14 @@ const _mockInput = () => {
   }
 
   InputComponent.Search = SearchComponent
+  const TextAreaComponent = (
+    props: React.TextareaHTMLAttributes<HTMLTextAreaElement> & { ['data-testid']?: string },
+  ) => {
+    const { children, ['data-testid']: dataTestId = 'textarea', ...rest } = props
+    return _createTestElement('textarea', { 'data-testid': dataTestId, ...rest }, children)
+  }
+
+  ;(InputComponent as unknown as { TextArea: typeof TextAreaComponent }).TextArea = TextAreaComponent
   return InputComponent
 }
 
@@ -317,6 +330,77 @@ const _mockTooltip = () => {
 }
 
 const _mockConfigProvider = () => (props: { children: React.ReactNode }) => props.children
+
+interface MockMenuItem {
+  key?: string
+  label?: React.ReactNode
+  onClick?: () => void
+  type?: 'divider'
+}
+
+interface MockMenuProps {
+  items?: MockMenuItem[]
+  onClick?: (info: { key: string }) => void
+}
+
+interface MockDropdownProps {
+  children: React.ReactNode
+  menu?: MockMenuProps
+  trigger?: string[]
+  placement?: string
+  [key: string]: unknown
+}
+
+const _mockDropdown = () => (props: MockDropdownProps) => {
+  const { children, menu, trigger, ...restProps } = props
+  return _createTestElement(
+    'div',
+    {
+      'data-testid': 'dropdown',
+      'data-trigger': trigger?.join(',') || '',
+      ...restProps,
+    },
+    [
+      children,
+      _createTestElement(
+        'div',
+        {
+          key: 'dropdown-menu',
+          'data-testid': 'dropdown-menu',
+          // For legacy support: if dropdown-menu is clicked directly, trigger the first menu item's onClick
+          onClick: () => {
+            const firstItem = menu?.items?.find((item) => item?.type !== 'divider')
+            if (firstItem?.onClick) {
+              firstItem.onClick()
+            } else if (menu?.onClick) {
+              // Handle MenuProps onClick pattern (like in FSNode)
+              menu.onClick({ key: firstItem?.key || 'copy' })
+            }
+          },
+        },
+        menu?.items
+          ?.filter((item) => item?.type !== 'divider')
+          .map((item) =>
+            _createTestElement(
+              'div',
+              {
+                key: item.key ?? (typeof item.label === 'string' ? item.label : 'menu-item'),
+                onClick: () => {
+                  if (item.onClick) {
+                    item.onClick()
+                  } else if (menu?.onClick && item.key) {
+                    menu.onClick({ key: item.key })
+                  }
+                },
+                'data-testid': 'dropdown-menu-item',
+              },
+              item.label,
+            ),
+          ),
+      ),
+    ],
+  )
+}
 
 const _mockTheme = () => ({
   darkAlgorithm: 'dark-algorithm',

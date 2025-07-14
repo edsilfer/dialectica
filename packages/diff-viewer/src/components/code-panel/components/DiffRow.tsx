@@ -79,7 +79,9 @@ const WidgetRow: React.FC<{ viewModel: DiffRowViewModel; pos: 'top' | 'bottom'; 
             // Left widget: spans first 2 columns (left number + left code)
             return (
               <tr key={`widget-${props.pos}-${props.viewModel.getLineNumber('left')}-${index}`}>
-                <td colSpan={2}>{widget.content}</td>
+                <td colSpan={2} css={styles.widgetCell}>
+                  {widget.content}
+                </td>
                 <td css={styles.rightNumberCell['empty']}>&nbsp;</td>
                 <td css={styles.codeCell['empty']}>&nbsp;</td>
               </tr>
@@ -90,7 +92,7 @@ const WidgetRow: React.FC<{ viewModel: DiffRowViewModel; pos: 'top' | 'bottom'; 
               <tr key={`widget-${props.pos}-${props.viewModel.getLineNumber('right')}-${index}`}>
                 <td css={styles.leftNumberCell['empty']}>&nbsp;</td>
                 <td css={styles.codeCell['empty']}>&nbsp;</td>
-                <td css={styles.rightNumberCell['empty']} colSpan={2} style={{ pointerEvents: 'auto' }}>
+                <td css={[styles.rightNumberCell['empty'], styles.widgetCell]} colSpan={2}>
                   {widget.content}
                 </td>
               </tr>

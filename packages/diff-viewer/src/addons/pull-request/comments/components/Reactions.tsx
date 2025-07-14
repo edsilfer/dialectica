@@ -1,17 +1,16 @@
 import { css } from '@emotion/react'
 import { Button } from 'antd'
 import React from 'react'
-import { useDiffViewerConfig } from '../../../components/diff-viewer/providers/diff-viewer-context'
-import type { InlineCommentReactions } from './models'
+import { useDiffViewerConfig } from '../../../../components/diff-viewer/providers/diff-viewer-context'
 
 export interface CommentReactionsProps {
   /** The reactions data to display */
-  reactions: InlineCommentReactions
+  reactions: Map<string, number>
   /** Optional callback when a reaction is clicked */
   onReactionClick?: (reactionType: string) => void
 }
 
-const REACTION_EMOJIS: Record<keyof Omit<InlineCommentReactions, 'url' | 'total_count'>, string> = {
+const REACTION_EMOJIS: Record<string, string> = {
   '+1': '👍',
   '-1': '👎',
   laugh: '😄',
@@ -73,11 +72,11 @@ const useStyles = () => {
 /**
  * A component that displays GitHub-style reactions for a comment.
  *
- * @param reactions - The reactions data to display
+ * @param reactions - The reactions data to display as a Map
  * @param onReactionClick - Optional callback when a reaction is clicked
  * @returns A React component that displays comment reactions
  */
-export const CommentReactions: React.FC<CommentReactionsProps> = ({ reactions, onReactionClick }) => {
+export const Reactions: React.FC<CommentReactionsProps> = ({ reactions, onReactionClick }) => {
   const styles = useStyles()
 
   const handleReactionClick = (reactionType: string) => {
@@ -85,8 +84,8 @@ export const CommentReactions: React.FC<CommentReactionsProps> = ({ reactions, o
   }
 
   // Only show reactions that have a count > 0
-  const activeReactions = Object.entries(REACTION_EMOJIS).filter(
-    ([key]) => (reactions[key as keyof typeof reactions] as number) > 0,
+  const activeReactions = Array.from(reactions.entries()).filter(
+    ([reactionType, count]) => count > 0 && REACTION_EMOJIS[reactionType],
   )
 
   if (activeReactions.length === 0) {
@@ -95,7 +94,7 @@ export const CommentReactions: React.FC<CommentReactionsProps> = ({ reactions, o
 
   return (
     <div css={styles.container} data-testid="comment-reactions">
-      {activeReactions.map(([reactionType, emoji]) => (
+      {activeReactions.map(([reactionType, count]) => (
         <Button
           key={reactionType}
           type="text"
@@ -104,8 +103,8 @@ export const CommentReactions: React.FC<CommentReactionsProps> = ({ reactions, o
           css={styles.reactionButton}
           data-testid={`reaction-${reactionType}`}
         >
-          <span css={styles.emoji}>{emoji}</span>
-          <span css={styles.count}>{reactions[reactionType as keyof typeof reactions]}</span>
+          <span css={styles.emoji}>{REACTION_EMOJIS[reactionType]}</span>
+          <span css={styles.count}>{count}</span>
         </Button>
       ))}
     </div>

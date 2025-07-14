@@ -36,6 +36,8 @@ export interface FileViewerHeaderProps {
 export interface UnifiedViewerProps {
   /** Lines to display */
   lines: DiffLineViewModel[]
+  /** The path of the file being displayed. */
+  filepath: string
   /** Whether to wrap long lines or enable horizontal scrolling (defaults to true). */
   wrapLines?: boolean
   /** Whether the viewer is currently visible (for performance optimization) */
@@ -54,6 +56,8 @@ export interface UnifiedViewerProps {
 export interface SplitViewerProps {
   /** Lines to display */
   lines: DiffLineViewModel[]
+  /** The path of the file being displayed. */
+  filepath: string
   /** Number of lines to request when user clicks "load more". Defaults to 5. */
   loadMoreLinesCount?: number
   /** Array of overlays to display on top of line columns when hovered. */
