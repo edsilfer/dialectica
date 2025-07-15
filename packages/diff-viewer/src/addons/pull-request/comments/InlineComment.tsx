@@ -1,5 +1,5 @@
 import { css } from '@emotion/react'
-import { Avatar } from 'antd'
+import { Avatar, Divider } from 'antd'
 import React from 'react'
 import { useDiffViewerConfig } from '../../../components/diff-viewer/providers/diff-viewer-context'
 import { COMMENT_WIDTHS, MACBOOK_14_WIDTH } from '../../../utils/screen-utils'
@@ -48,7 +48,7 @@ const useStyles = () => {
     innerContainer: (addBorder: boolean) => css`
       max-width: ${MAX_WIDTH_PX}px;
       min-width: ${MIN_WIDTH_PX}px;
-      width: fit-content;
+      width: 75%;
       border: ${addBorder ? `1px solid ${theme.colors.border}` : 'none'};
       border-radius: ${theme.spacing.xs};
     `,
@@ -64,6 +64,11 @@ const useStyles = () => {
       flex-shrink: 0;
       align-self: flex-start;
       margin-top: 2px;
+    `,
+
+    divider: css`
+      margin: 0;
+      border-color: ${theme.colors.border};
     `,
   }
 }
@@ -139,6 +144,15 @@ export const InlineComment: React.FC<InlineCommentProps> = ({ thread, currentUse
     </div>
   )
 
+  const renderCommentsWithDividers = (comments: CommentMetadata[]) => {
+    return comments.map((comment, index) => (
+      <React.Fragment key={comment.id}>
+        {renderComment(comment)}
+        {index < comments.length - 1 && <Divider css={styles.divider} />}
+      </React.Fragment>
+    ))
+  }
+
   const renderEditor = (draftComment: CommentMetadata) => (
     <Editor
       initialText={draftComment.body}
@@ -164,7 +178,7 @@ export const InlineComment: React.FC<InlineCommentProps> = ({ thread, currentUse
   else if (hasNonDraftComments && !hasDraftComment) {
     content = (
       <>
-        {nonDraftComments.map(renderComment)}
+        {renderCommentsWithDividers(nonDraftComments)}
         <Reply
           currentUser={currentUser}
           onEventTrigger={() => onEventTrigger?.(nonDraftComments[0], InlineCommentEvent.ADD_DRAFT, '')}
@@ -180,7 +194,7 @@ export const InlineComment: React.FC<InlineCommentProps> = ({ thread, currentUse
     const draftComment = draftComments[0]
     content = (
       <>
-        {nonDraftComments.map(renderComment)}
+        {renderCommentsWithDividers(nonDraftComments)}
         {renderEditor(draftComment)}
       </>
     )

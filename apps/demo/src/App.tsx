@@ -5,13 +5,21 @@ import { Alert, notification } from 'antd'
 import AppToolbar from './components/AppToolbar'
 import Footer from './components/Footer'
 
-import { AddButton, DefaultToolbar, DiffViewer, PrKey, PullRequestHeader, useDiffViewerConfig } from '@diff-viewer'
+import {
+  AddButton,
+  DefaultToolbar,
+  DiffViewer,
+  PrKey,
+  PullRequestHeader,
+  ReviewButton,
+  useDiffViewerConfig,
+} from '@diff-viewer'
 
 import ErrorCard from './components/ErrorCard'
 import InfoCard from './components/InfoCard'
 import { mapPullRequestMetadata } from './components/mappers'
 import { usePrViewModel } from './hooks/use-pr-view-model'
-import { CommentProvider } from './provider/comment-provider'
+import { useReview } from './hooks/use-review'
 import { useSettings } from './provider/setttings-provider'
 import { parseURL } from './utils'
 
@@ -44,8 +52,9 @@ export default function App() {
 
   // STATE ---------------------------------------------------------------------------------------------
   const [prKey, setPrKey] = useState<PrKey | undefined>(parseURL())
-  const { metadata, loading, errors, diff, commentWidgets, loadMore, onDock, onAddButton, existingComments } =
+  const { metadata, loading, errors, diff, commentWidgets, isPrAuthor, loadMore, onDock, onAddButton } =
     usePrViewModel(prKey)
+  const { pendingReviewComments, handleSubmitReview } = useReview()
 
   // ERRORS --------------------------------------------------------------------------------------------
   useEffect(() => {
@@ -85,6 +94,19 @@ export default function App() {
             <DefaultToolbar
               loading={loading.metadata}
               header={metadata ? <PullRequestHeader pr={mapPullRequestMetadata(metadata)} /> : undefined}
+              additionalWidget={[
+                {
+                  key: 'review-button',
+                  component: (
+                    <ReviewButton
+                      comments={pendingReviewComments}
+                      isAuthor={isPrAuthor}
+                      onSubmitReview={handleSubmitReview}
+                    />
+                  ),
+                  side: 'right',
+                },
+              ]}
             />
           }
           isMetadataLoading={loading.metadata}
@@ -115,9 +137,7 @@ export default function App() {
         <Alert message="All the data is mocked. You can change it in the settings." type="warning" showIcon closable />
       )}
 
-      <CommentProvider existingComments={existingComments} diff={diff}>
-        <div css={styles.content}>{content()}</div>
-      </CommentProvider>
+      <div css={styles.content}>{content()}</div>
 
       <Footer />
     </div>

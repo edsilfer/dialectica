@@ -41,6 +41,13 @@ export function usePrViewModel(prKey?: PrKey) {
   }, [existingComments, handle])
 
   /**
+   * Determine if the current user is the author of the pull request.
+   */
+  const isPrAuthor = useMemo(() => {
+    return metadata?.user?.login === CURRENT_USER.login
+  }, [metadata?.user?.login])
+
+  /**
    * Build the comment widgets from all managed comments.
    *
    * @returns The comment widgets.
@@ -103,6 +110,7 @@ export function usePrViewModel(prKey?: PrKey) {
     diff,
     existingComments,
     commentWidgets: widgets,
+    isPrAuthor,
     loadMore,
     onDock,
     onAddButton,

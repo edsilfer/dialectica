@@ -28,7 +28,6 @@ const useStyles = () => {
       display: flex;
       align-items: flex-start;
       gap: ${theme.spacing.sm};
-      padding: ${theme.spacing.sm};
     `,
 
     innerContainer: css`
@@ -91,6 +90,8 @@ export interface CommentEditorProps {
   onCancel?: () => void
   /** Optional callback for tab header button actions */
   onTabHeaderAction?: (action: string) => void
+  /** Optional callback when text changes in real-time */
+  onTextChange?: (newText: string) => void
 }
 
 /**
@@ -112,6 +113,7 @@ export const Editor: React.FC<CommentEditorProps> = ({
   onSave,
   onCancel,
   onTabHeaderAction,
+  onTextChange,
   isReviewing = false,
 }) => {
   const styles = useStyles()
@@ -136,6 +138,7 @@ export const Editor: React.FC<CommentEditorProps> = ({
     onSave,
     onCancel,
     onTabHeaderAction,
+    onTextChange,
   })
 
   if (!isVisible) {
@@ -257,21 +260,27 @@ export const Editor: React.FC<CommentEditorProps> = ({
       <div css={styles.innerContainer}>
         <CustomTabs tabs={tabs} actions={actions} activeTab={activeTab} onTabChange={handleTabClick} />
 
-        <div css={styles.footer}>
-          <Button onClick={handleCancel} size="middle" data-testid="cancel-button" disabled={isSubmitting}>
-            Cancel
-          </Button>
+        {(onSave || onCancel) && (
+          <div css={styles.footer}>
+            {onCancel && (
+              <Button onClick={handleCancel} size="middle" data-testid="cancel-button" disabled={isSubmitting}>
+                Cancel
+              </Button>
+            )}
 
-          <Button
-            type="primary"
-            size="middle"
-            onClick={handleSave}
-            disabled={!isValid || !hasChanges || isSubmitting}
-            loading={isSubmitting}
-          >
-            {isReviewing ? 'Add review comment' : 'Start a review'}
-          </Button>
-        </div>
+            {onSave && (
+              <Button
+                type="primary"
+                size="middle"
+                onClick={handleSave}
+                disabled={!isValid || !hasChanges || isSubmitting}
+                loading={isSubmitting}
+              >
+                {isReviewing ? 'Add review comment' : 'Start a review'}
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )

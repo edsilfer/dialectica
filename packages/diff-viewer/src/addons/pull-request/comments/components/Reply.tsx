@@ -19,6 +19,7 @@ const useStyles = () => {
       border-top: 1px solid ${theme.colors.border};
       cursor: pointer;
       transition: background-color 0.2s ease;
+      margin-top: ${theme.spacing.md};
 
       &:hover {
         background-color: ${theme.colors.backgroundContainer};

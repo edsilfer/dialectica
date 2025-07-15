@@ -7,7 +7,7 @@ const MarkdownIcon: SVGIcon = React.forwardRef<
   { size?: number; inverted?: boolean } & React.SVGProps<SVGSVGElement>
 >(({ size = 16, inverted = false, ...props }, ref) => {
   const { theme } = useDiffViewerConfig()
-  const fillColor = inverted ? theme.colors.backgroundContainer : theme.colors.textPrimary
+  const fillColor = inverted ? theme.colors.textPrimary : theme.colors.backgroundPrimary
 
   return (
     <svg

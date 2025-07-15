@@ -10,19 +10,34 @@ export interface UseEditorViewModelProps {
   onCancel?: () => void
   /** Optional callback for tab header button actions */
   onTabHeaderAction?: (action: string) => void
+  /** Optional callback when text changes in real-time */
+  onTextChange?: (newText: string) => void
 }
 
-export const useEditorViewModel = ({ initialText, onSave, onCancel, onTabHeaderAction }: UseEditorViewModelProps) => {
-  const [editText, setEditText] = useState(initialText)
+export const useEditorViewModel = ({
+  initialText,
+  onSave,
+  onCancel,
+  onTabHeaderAction,
+  onTextChange,
+}: UseEditorViewModelProps) => {
+  const [editText, setEditTextInternal] = useState(initialText)
   const [previewText, setPreviewText] = useState(initialText)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [activeTab, setActiveTab] = useState('write')
   const textAreaRef = useRef<TextAreaRef>(null)
 
+  // Wrapper function that calls both state setter and onTextChange
+  const setEditText = (newText: string) => {
+    setEditTextInternal(newText)
+    onTextChange?.(newText)
+  }
+
   useEffect(() => {
-    setEditText(initialText)
+    setEditTextInternal(initialText)
     setPreviewText(initialText)
-  }, [initialText])
+    onTextChange?.(initialText)
+  }, [initialText, onTextChange])
 
   /**
    * Handles the header action for the editor.
