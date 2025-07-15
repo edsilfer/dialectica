@@ -24,6 +24,11 @@ const useStyles = () => {
       color: ${theme.colors.textPrimary};
       font-size: ${theme.typography.regularFontSize}px;
 
+      /* Enable word wrapping for long content */
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      word-break: break-word;
+
       /* Reduce default margins to avoid large gaps between headings and text */
       & h1,
       & h2,
@@ -38,14 +43,34 @@ const useStyles = () => {
         margin: 0; /* reset paragraph margins */
       }
 
+      & pre {
+        white-space: pre-wrap; /* Allow wrapping in code blocks */
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+      }
+
       & pre code.hljs {
         margin: 0 !important;
         padding: 0 !important;
         background-color: ${theme.colors.backgroundPrimary} !important;
         padding: 0; /* let the parent pre own the padding */
         border-radius: ${theme.spacing.sm};
-        overflow: auto;
         font-size: ${theme.typography.codeFontSize}px !important;
+        white-space: pre-wrap; /* Allow wrapping in highlighted code */
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+      }
+
+      /* Blockquote styling */
+      & blockquote {
+        display: flex;
+        margin: 0 !important;
+        padding: ${theme.spacing.sm} 0 ${theme.spacing.sm} ${theme.spacing.sm};
+        border-left: 4px solid ${theme.colors.border};
+      }
+
+      & blockquote p {
+        margin: 0 !important; /* reset paragraph margins inside blockquote */
       }
     `,
   }

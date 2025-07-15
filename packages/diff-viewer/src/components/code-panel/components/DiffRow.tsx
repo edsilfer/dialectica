@@ -184,11 +184,7 @@ const SplitHunkRow: React.FC<DiffRowProps & { viewModel: DiffRowViewModel }> = (
       css={styles.row}
     >
       {/* LEFT NUMBER CELL */}
-      <td
-        css={styles.leftNumberCell['hunk']}
-        className={props.className}
-        style={{ userSelect: 'none', pointerEvents: 'none' }}
-      >
+      <td css={styles.leftNumberCell['hunk']} className={props.className} style={{ userSelect: 'none' }}>
         <LoadMoreButton
           direction={props.line?.hunkDirection ?? 'out'}
           onClick={(_, direction) => {

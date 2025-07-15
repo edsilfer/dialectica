@@ -1,5 +1,6 @@
 import type React from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { MACBOOK_14_WIDTH } from '../../../utils/screen-utils'
 
 /**
  * Get the initial percentage based on screen size
@@ -8,7 +9,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
  */
 function getInitialPercentage(): number {
   if (typeof window === 'undefined') return 25 // SSR fallback
-  return window.innerWidth <= 1600 ? 25 : 15
+  return window.innerWidth <= MACBOOK_14_WIDTH ? 25 : 15
 }
 
 /**

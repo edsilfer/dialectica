@@ -64,6 +64,13 @@ export const getViewerStyles = (theme: ThemeTokens) => {
       styles.push(addBorderLeft)
     }
 
+    // Allow pointer events for hunk cells that contain load more buttons
+    if (type === 'hunk') {
+      styles.push(css`
+        pointer-events: auto;
+      `)
+    }
+
     return styles
   }
 

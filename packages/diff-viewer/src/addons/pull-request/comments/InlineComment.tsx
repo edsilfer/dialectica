@@ -2,6 +2,7 @@ import { css } from '@emotion/react'
 import { Avatar } from 'antd'
 import React from 'react'
 import { useDiffViewerConfig } from '../../../components/diff-viewer/providers/diff-viewer-context'
+import { COMMENT_WIDTHS, MACBOOK_14_WIDTH } from '../../../utils/screen-utils'
 import { MarkdownText } from '../../MarkdownText'
 import { CommentAuthor, CommentMetadata, CommentState } from '../models/CommentMetadata'
 import { Editor } from './components/Editor'
@@ -32,6 +33,10 @@ export enum InlineCommentEvent {
 const useStyles = () => {
   const { theme } = useDiffViewerConfig()
 
+  // Determine comment widths based on screen size
+  const isSmallScreen = typeof window !== 'undefined' && window.innerWidth <= MACBOOK_14_WIDTH
+  const { MIN_WIDTH_PX, MAX_WIDTH_PX } = isSmallScreen ? COMMENT_WIDTHS.SMALL_SCREEN : COMMENT_WIDTHS.LARGE_SCREEN
+
   return {
     outerContainer: css`
       border-top: 1px solid ${theme.colors.border};
@@ -40,22 +45,18 @@ const useStyles = () => {
       padding: ${theme.spacing.sm};
     `,
 
-    innerContainer: css`
-      display: flex;
-      flex-direction: column;
-      max-width: 1000px;
-      gap: ${theme.spacing.sm};
-      margin: ${theme.spacing.sm};
-      border: 1px solid ${theme.colors.border};
+    innerContainer: (addBorder: boolean) => css`
+      max-width: ${MAX_WIDTH_PX}px;
+      min-width: ${MIN_WIDTH_PX}px;
+      width: fit-content;
+      border: ${addBorder ? `1px solid ${theme.colors.border}` : 'none'};
       border-radius: ${theme.spacing.xs};
-      position: relative;
     `,
 
     content: css`
       display: flex;
       flex-direction: row;
       padding: ${theme.spacing.sm};
-      width: 100%;
       gap: ${theme.spacing.sm};
     `,
 
@@ -63,12 +64,6 @@ const useStyles = () => {
       flex-shrink: 0;
       align-self: flex-start;
       margin-top: 2px;
-    `,
-
-    editorContainer: css`
-      background-color: ${theme.colors.backgroundPrimary};
-      padding: ${theme.spacing.xs};
-      border-top: 1px solid ${theme.colors.border};
     `,
   }
 }
@@ -155,45 +150,51 @@ export const InlineComment: React.FC<InlineCommentProps> = ({ thread, currentUse
     />
   )
 
+  let content: React.ReactNode
+  let testId: string
+  let addBorder = false
+
   // Case 1: Thread has a single DRAFT comment only - render only the editor
   if (hasDraftComment && !hasNonDraftComments) {
     const draftComment = draftComments[0]
-    return (
-      <div css={styles.editorContainer} data-testid="draft-only-editor">
-        {renderEditor(draftComment)}
-      </div>
-    )
+    content = renderEditor(draftComment)
+    testId = 'draft-only-editor'
   }
-
-  // Case 2: Thread has non-DRAFT comments and zero DRAFT comments - render with Reply section or Editor
-  if (hasNonDraftComments && !hasDraftComment) {
-    return (
-      <div css={styles.outerContainer} data-testid="inline-comments">
-        <div css={styles.innerContainer}>
-          {nonDraftComments.map(renderComment)}
-          <Reply
-            currentUser={currentUser}
-            onEventTrigger={() => onEventTrigger?.(nonDraftComments[0], InlineCommentEvent.ADD_DRAFT, '')}
-            placeholder="Add a comment..."
-          />
-        </div>
-      </div>
+  // Case 2: Thread has non-DRAFT comments and zero DRAFT comments - render with Reply section
+  else if (hasNonDraftComments && !hasDraftComment) {
+    content = (
+      <>
+        {nonDraftComments.map(renderComment)}
+        <Reply
+          currentUser={currentUser}
+          onEventTrigger={() => onEventTrigger?.(nonDraftComments[0], InlineCommentEvent.ADD_DRAFT, '')}
+          placeholder="Add a comment..."
+        />
+      </>
     )
+    addBorder = true
+    testId = 'inline-comments'
   }
-
-  // Case 3: Thread has non-DRAFT comments and a single DRAFT comment - render conversation + Editor (no Reply)
-  if (hasNonDraftComments && hasDraftComment) {
+  // Case 3: Thread has non-DRAFT comments and a single DRAFT comment - render conversation + Editor
+  else if (hasNonDraftComments && hasDraftComment) {
     const draftComment = draftComments[0]
-
-    return (
-      <div css={styles.outerContainer} data-testid="inline-comments-with-draft">
-        <div css={styles.innerContainer}>
-          {nonDraftComments.map(renderComment)}
-          <div css={styles.editorContainer}>{renderEditor(draftComment)}</div>
-        </div>
-      </div>
+    content = (
+      <>
+        {nonDraftComments.map(renderComment)}
+        {renderEditor(draftComment)}
+      </>
     )
+    addBorder = true
+    testId = 'inline-comments-with-draft'
+  }
+  // No valid case found
+  else {
+    return null
   }
 
-  return null
+  return (
+    <div css={styles.outerContainer} data-testid={testId}>
+      <div css={styles.innerContainer(addBorder)}>{content}</div>
+    </div>
+  )
 }
