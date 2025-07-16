@@ -2,7 +2,7 @@ import { CodePanelConfig, DiffViewerConfigProvider, FileExplorerConfig, Themes }
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
-import { ReviewProvider } from './provider/review-provider'
+import { CommentsProvider } from './provider/comments-provider'
 import { SettingsProvider } from './provider/setttings-provider'
 
 const DEFAULT_FILE_EXPLORER_CONFIG: FileExplorerConfig = {
@@ -28,9 +28,9 @@ function Root() {
         codePanelConfig={DEFAULT_CODE_PANEL_CONFIG}
         storage="local"
       >
-        <ReviewProvider>
+        <CommentsProvider>
           <App />
-        </ReviewProvider>
+        </CommentsProvider>
       </DiffViewerConfigProvider>
     </SettingsProvider>
   )

@@ -1,6 +1,6 @@
 import { CommentState, PrKey, PublishReviewResponse, ReviewPayload, publishReview } from '@diff-viewer'
 import { useCallback, useMemo, useState } from 'react'
-import { useReviewContext } from '../provider/review-provider'
+import { useCommentsContext } from '../provider/comments-provider'
 import { useSettings } from '../provider/setttings-provider'
 
 /**
@@ -9,7 +9,7 @@ import { useSettings } from '../provider/setttings-provider'
  * @returns Object containing pending review comments and submit handler
  */
 export function useReview(prKey: PrKey) {
-  const { handle } = useReviewContext()
+  const { handle } = useCommentsContext()
   const { githubPat: token, useMocks } = useSettings()
   const [isPosting, setIsPosting] = useState(false)
 

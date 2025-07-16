@@ -10,7 +10,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { CommentMetadataFactory } from '../models/CommentMetadataFactory'
 import { WidgetFactory } from '../models/WidgetFactory'
-import { useReviewContext } from '../provider/review-provider'
+import { useCommentsContext } from '../provider/comments-provider'
 import { useSettings } from '../provider/setttings-provider'
 import { useCommentState } from './use-comment-state'
 import { usePullRequestData } from './use-github-data'
@@ -22,7 +22,7 @@ export function usePrViewModel(prKey?: PrKey, refetchTrigger = 0) {
   const { metadata, rawDiff, comments: existingComments, loading, errors } = usePullRequestData(prKey, refetchTrigger)
   const diff = useMemo(() => (rawDiff ? ParsedDiff.build(rawDiff) : undefined), [rawDiff])
   const { comments, onCommentEvent } = useCommentState(prKey)
-  const { handle } = useReviewContext()
+  const { handle } = useCommentsContext()
   const processedCommentsRef = useRef<Set<number>>(new Set())
 
   useEffect(() => {

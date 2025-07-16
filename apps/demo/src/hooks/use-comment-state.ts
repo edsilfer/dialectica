@@ -11,7 +11,7 @@ import { GitHubInlineComment } from '@diff-viewer/src/addons/pull-request'
 import { useCallback, useEffect, useState } from 'react'
 import { CommentMetadataFactory } from '../models/CommentMetadataFactory'
 import { EventHandler } from '../models/WidgetFactory'
-import { useReviewContext } from '../provider/review-provider'
+import { useCommentsContext } from '../provider/comments-provider'
 import { useSettings } from '../provider/setttings-provider'
 
 /**
@@ -23,7 +23,7 @@ export function useCommentState(prKey: PrKey) {
   const [author, setAuthor] = useState<CommentAuthor | null>(null)
 
   const { currentUser } = useSettings()
-  const { comments, handle } = useReviewContext()
+  const { comments, handle } = useCommentsContext()
   const { githubPat: token } = useSettings()
 
   useEffect(() => {

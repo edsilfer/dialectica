@@ -18,20 +18,18 @@ interface ReviewHandle {
   getThread: () => Map<string, CommentMetadata[]>
 }
 
-interface ReviewContextValue {
+interface CommentsContextValue {
   /** The comments to render */
   comments: Map<string, CommentMetadata>
   /** The number of comments */
   size: number
-  /** Whether there are any published comments */
-  hasPublished: boolean
   /** Handle with all comment operations */
   handle: ReviewHandle
 }
 
-const ReviewContext = createContext<ReviewContextValue | null>(null)
+const CommentsContext = createContext<CommentsContextValue | null>(null)
 
-interface ReviewProviderProps {
+interface CommentsProviderProps {
   /** The children to render */
   children: React.ReactNode
 }
@@ -45,15 +43,10 @@ function getLocationKey(path: string, line: number, side: 'LEFT' | 'RIGHT'): str
   return `${path}:${line}:${sideStr}`
 }
 
-export function ReviewProvider({ children }: ReviewProviderProps) {
+export function CommentsProvider({ children }: CommentsProviderProps) {
   const [comments, setComments] = useState<Map<string, CommentMetadata>>(new Map())
 
   const size = comments.size
-
-  const hasPublished = useMemo(
-    () => Array.from(comments.values()).some((comment) => comment.currentState === CommentState.PUBLISHED),
-    [comments],
-  )
 
   const add = useCallback((commentOrComments: CommentMetadata | CommentMetadata[]) => {
     const commentsToAdd = Array.isArray(commentOrComments) ? commentOrComments : [commentOrComments]
@@ -159,21 +152,20 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
     [add, update, remove, clear, get, list, getThread],
   )
 
-  const contextValue: ReviewContextValue = useMemo(
+  const contextValue: CommentsContextValue = useMemo(
     () => ({
       comments,
       size,
-      hasPublished,
       handle,
     }),
-    [comments, size, hasPublished, handle],
+    [comments, size, handle],
   )
 
-  return <ReviewContext.Provider value={contextValue}>{children}</ReviewContext.Provider>
+  return <CommentsContext.Provider value={contextValue}>{children}</CommentsContext.Provider>
 }
 
-export function useReviewContext(): ReviewContextValue {
-  const context = useContext(ReviewContext)
+export function useCommentsContext(): CommentsContextValue {
+  const context = useContext(CommentsContext)
   if (!context) {
     throw new Error('useCommentContext must be used within a CommentProvider')
   }
