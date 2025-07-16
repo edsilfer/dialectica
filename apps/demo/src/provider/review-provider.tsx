@@ -1,7 +1,9 @@
 import { CommentMetadata, CommentState } from '@diff-viewer'
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react'
 
-interface CommentHandle {
+interface ReviewHandle {
+  /** Set the posting state */
+  setPosting: (isPosting: boolean) => void
   /** Add a new comment in any state */
   addComment: (comment: CommentMetadata) => void
   /** Add multiple comments at once */
@@ -22,7 +24,7 @@ interface CommentHandle {
   getCommentsGroupedByLocation: () => Map<string, CommentMetadata[]>
 }
 
-interface CommentContextValue {
+interface ReviewContextValue {
   /** The comments to render */
   comments: Map<string, CommentMetadata>
   /** The number of comments */
@@ -31,13 +33,15 @@ interface CommentContextValue {
   hasDrafts: boolean
   /** Whether there are any published comments */
   hasPublished: boolean
+  /** Whether the review is currently being posted */
+  isPosting: boolean
   /** Handle with all comment operations */
-  handle: CommentHandle
+  handle: ReviewHandle
 }
 
-const CommentContext = createContext<CommentContextValue | null>(null)
+const ReviewContext = createContext<ReviewContextValue | null>(null)
 
-interface CommentProviderProps {
+interface ReviewProviderProps {
   /** The children to render */
   children: React.ReactNode
 }
@@ -51,8 +55,9 @@ function getLocationKey(path: string, line: number, side: 'LEFT' | 'RIGHT'): str
   return `${path}:${line}:${sideStr}`
 }
 
-export function CommentProvider({ children }: CommentProviderProps) {
+export function ReviewProvider({ children }: ReviewProviderProps) {
   const [comments, setComments] = useState<Map<string, CommentMetadata>>(new Map())
+  const [isPosting, setPosting] = useState<boolean>(false)
 
   const size = comments.size
 
@@ -213,8 +218,9 @@ export function CommentProvider({ children }: CommentProviderProps) {
     return grouped
   }, [comments])
 
-  const handle: CommentHandle = useMemo(
+  const handle: ReviewHandle = useMemo(
     () => ({
+      setPosting,
       addComment,
       addComments,
       saveDraft,
@@ -226,6 +232,7 @@ export function CommentProvider({ children }: CommentProviderProps) {
       getCommentsGroupedByLocation,
     }),
     [
+      setPosting,
       addComment,
       addComments,
       saveDraft,
@@ -238,19 +245,23 @@ export function CommentProvider({ children }: CommentProviderProps) {
     ],
   )
 
-  const contextValue: CommentContextValue = {
-    comments,
-    size,
-    hasDrafts,
-    hasPublished,
-    handle,
-  }
+  const contextValue: ReviewContextValue = useMemo(
+    () => ({
+      comments,
+      size,
+      hasDrafts,
+      hasPublished,
+      isPosting,
+      handle,
+    }),
+    [comments, size, hasDrafts, hasPublished, isPosting, handle],
+  )
 
-  return <CommentContext.Provider value={contextValue}>{children}</CommentContext.Provider>
+  return <ReviewContext.Provider value={contextValue}>{children}</ReviewContext.Provider>
 }
 
-export function useCommentContext(): CommentContextValue {
-  const context = useContext(CommentContext)
+export function useReviewContext(): ReviewContextValue {
+  const context = useContext(ReviewContext)
   if (!context) {
     throw new Error('useCommentContext must be used within a CommentProvider')
   }

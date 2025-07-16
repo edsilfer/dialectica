@@ -26,6 +26,7 @@ vi.mock('antd', async (importOriginal: () => Promise<typeof import('antd')>) => 
     Divider: actual.Divider,
     Space: actual.Space,
     Button: actual.Button,
+    Spin: actual.Spin,
   } as typeof import('antd')
 })
 
@@ -70,6 +71,7 @@ const createMockCommentMetadata = (overrides: Partial<CommentMetadata> = {}): Co
 const createReviewButtonProps = createPropsFactory<ReviewButtonProps>({
   comments: [],
   isAuthor: false,
+  isPosting: false,
   onSubmitReview: vi.fn(),
 })
 
@@ -301,6 +303,16 @@ describe('ReviewButton', () => {
       // EXPECT
       expectSubmitButtonToBeEnabled()
     })
+
+    it('given isPosting is true, when rendered, expect main button disabled', () => {
+      // GIVEN
+      const props = createReviewButtonProps({ isPosting: true })
+      render(<ReviewButton {...props} />)
+
+      // EXPECT
+      const mainButton = screen.getByRole('button')
+      expect(mainButton).toBeDisabled()
+    })
   })
 
   describe('submit review functionality', () => {
@@ -412,31 +424,52 @@ describe('ReviewButton', () => {
   })
 
   describe('loading states', () => {
-    it('given submit in progress, when rendered, expect submit button loading', async () => {
-      // MOCK – simulate a long-running async submit but type as void for linting compatibility
-      const mockOnSubmit = vi.fn((() => {
-        void new Promise<void>(() => {})
-      }) as typeof createReviewButtonProps extends never ? never : (payload: unknown) => void)
-
+    it('given isPosting is true, when rendered, expect main button disabled and shows loading state', () => {
       // GIVEN
-      const props = createReviewButtonProps({ onSubmitReview: mockOnSubmit })
+      const props = createReviewButtonProps({ isPosting: true })
       render(<ReviewButton {...props} />)
-      clickReviewButton()
 
-      await waitFor(() => expect(screen.getByTestId('editor')).toBeInTheDocument())
-      enterReviewText('test comment')
+      // EXPECT
+      const mainButton = screen.getByRole('button')
+      expect(mainButton).toBeDisabled()
+      expect(screen.getByText('Publishing review...')).toBeInTheDocument()
+    })
+
+    it('given isPosting is true, when button clicked, expect popover does not open', () => {
+      // GIVEN
+      const props = createReviewButtonProps({ isPosting: true })
+      render(<ReviewButton {...props} />)
 
       // WHEN
-      clickSubmitReview()
+      clickReviewButton()
 
-      // EXPECT – submit button should either be disabled or popover hidden
+      // EXPECT
+      expect(screen.queryByTestId('editor')).not.toBeInTheDocument()
+    })
+
+    it('given isPosting is false, when rendered, expect normal button state', () => {
+      // GIVEN
+      const props = createReviewButtonProps({ isPosting: false })
+      render(<ReviewButton {...props} />)
+
+      // EXPECT
+      const mainButton = screen.getByRole('button')
+      expect(mainButton).not.toBeDisabled()
+      expect(screen.getByText('Review changes')).toBeInTheDocument()
+    })
+
+    it('given isPosting is false, when button clicked, expect popover opens normally', async () => {
+      // GIVEN
+      const props = createReviewButtonProps({ isPosting: false })
+      render(<ReviewButton {...props} />)
+
+      // WHEN
+      clickReviewButton()
+
+      // EXPECT
       await waitFor(() => {
-        const btn = screen.queryByRole('button', { name: /submit review/i })
-        if (btn) {
-          expect(btn).toBeDisabled()
-        }
-        // Popover should be closed – no button should have the open class
-        expect(document.querySelector('button.ant-popover-open')).toBeNull()
+        expect(screen.getByTestId('editor')).toBeInTheDocument()
+        expect(screen.getByRole('button', { name: /submit review/i })).toBeInTheDocument()
       })
     })
   })
@@ -452,6 +485,16 @@ describe('ReviewButton', () => {
       await waitFor(() => {
         expect(() => clickSubmitReview()).not.toThrow()
       })
+    })
+
+    it('given isPosting is true and no onSubmitReview, when rendered, expect button still disabled', () => {
+      // GIVEN
+      const props = createReviewButtonProps({ isPosting: true, onSubmitReview: undefined })
+      render(<ReviewButton {...props} />)
+
+      // EXPECT
+      const mainButton = screen.getByRole('button')
+      expect(mainButton).toBeDisabled()
     })
   })
 })

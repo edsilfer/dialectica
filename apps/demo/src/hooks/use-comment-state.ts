@@ -2,7 +2,7 @@ import { CommentState, InlineCommentEvent } from '@diff-viewer'
 import { useCallback } from 'react'
 import { CommentMetadataFactory } from '../models/CommentMetadataFactory'
 import { EventHandler } from '../models/WidgetFactory'
-import { useCommentContext } from '../provider/comment-provider'
+import { useReviewContext } from '../provider/review-provider'
 import { useSettings } from '../provider/setttings-provider'
 
 /**
@@ -11,7 +11,7 @@ import { useSettings } from '../provider/setttings-provider'
  * @returns Comment state management functions and data
  */
 export function useCommentState() {
-  const { comments, handle } = useCommentContext()
+  const { comments, handle } = useReviewContext()
   const { currentUser } = useSettings()
 
   /**

@@ -1,14 +1,14 @@
 import { CommentState, ReviewPayload } from '@diff-viewer'
 import { useCallback, useMemo } from 'react'
-import { useCommentContext } from '../provider/comment-provider'
+import { useReviewContext } from '../provider/review-provider'
 
 /**
  * Hook that provides review submission functionality.
  *
  * @returns Object containing pending review comments and submit handler
  */
-export function useReview() {
-  const { handle } = useCommentContext()
+export function publishReview() {
+  const { handle } = useReviewContext()
 
   const comments = useMemo(() => {
     const savedDraftComments = handle.getComments(CommentState.SAVED_DRAFT)

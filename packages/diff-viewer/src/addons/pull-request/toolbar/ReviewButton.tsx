@@ -1,5 +1,5 @@
 import { css } from '@emotion/react'
-import { Button, Divider, Popover, Radio, Space } from 'antd'
+import { Button, Divider, Popover, Radio, Space, Spin } from 'antd'
 import React, { useState } from 'react'
 import { useDiffViewerConfig } from '../../../components/diff-viewer/providers/diff-viewer-context'
 import ChevronDown from '../../../components/ui/icons/ChevronDown'
@@ -70,6 +70,8 @@ export interface ReviewButtonProps {
   comments: CommentMetadata[]
   /** Whether the current user is the PR author */
   isAuthor: boolean
+  /** Whether the review is currently being posted */
+  isPosting?: boolean
   /** Callback when the review is submitted */
   onSubmitReview?: (payload: ReviewPayload) => void
 }
@@ -78,11 +80,15 @@ export interface ReviewButtonProps {
  * A component that displays a review button which opens a popover for submitting code reviews.
  * The button label changes based on whether there are pending review comments.
  */
-export const ReviewButton: React.FC<ReviewButtonProps> = ({ comments, isAuthor, onSubmitReview }) => {
+export const ReviewButton: React.FC<ReviewButtonProps> = ({
+  comments,
+  isAuthor,
+  isPosting = false,
+  onSubmitReview,
+}) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   const [reviewText, setReviewText] = useState('')
   const [reviewType, setReviewType] = useState<ReviewStatus>(ReviewStatus.COMMENT)
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const styles = useStyles()
 
   const commentCount = comments.length
@@ -100,26 +106,19 @@ export const ReviewButton: React.FC<ReviewButtonProps> = ({ comments, isAuthor, 
   const handleSubmitReview = () => {
     if (!onSubmitReview) return
 
-    setIsSubmitting(true)
-    try {
-      const payload: ReviewPayload = {
-        reviewStatus: reviewType,
-        comment: reviewText.trim() || undefined,
-      }
-      onSubmitReview(payload)
-      setIsPopoverOpen(false)
-      setReviewText('')
-      setReviewType(ReviewStatus.COMMENT)
-    } finally {
-      setIsSubmitting(false)
+    const payload: ReviewPayload = {
+      reviewStatus: reviewType,
+      comment: reviewText.trim() || undefined,
     }
+    onSubmitReview(payload)
+    setIsPopoverOpen(false)
+    setReviewText('')
+    setReviewType(ReviewStatus.COMMENT)
   }
 
   // Updated submit disabled logic
   const isSubmitDisabled =
-    !onSubmitReview ||
-    isSubmitting ||
-    (reviewType === ReviewStatus.COMMENT && !reviewText.trim() && comments.length === 0)
+    !onSubmitReview || isPosting || (reviewType === ReviewStatus.COMMENT && !reviewText.trim() && comments.length === 0)
 
   const popoverContent = (
     <div css={styles.popoverContainer}>
@@ -153,7 +152,7 @@ export const ReviewButton: React.FC<ReviewButtonProps> = ({ comments, isAuthor, 
       <Divider css={styles.divider} />
 
       <div css={styles.footer}>
-        <Button type="primary" onClick={handleSubmitReview} disabled={isSubmitDisabled} loading={isSubmitting}>
+        <Button type="primary" onClick={handleSubmitReview} disabled={isSubmitDisabled} loading={isPosting}>
           Submit Review
         </Button>
       </div>
@@ -170,10 +169,19 @@ export const ReviewButton: React.FC<ReviewButtonProps> = ({ comments, isAuthor, 
         onOpenChange={handleOpenChange}
         placement="bottomRight"
       >
-        <Button type="primary">
+        <Button type="primary" disabled={isPosting}>
           <div css={styles.buttonContent}>
-            {buttonLabel}
-            <ChevronDown size={16} css={styles.chevron} className={isPopoverOpen ? 'open' : ''} />
+            {isPosting ? (
+              <>
+                <Spin size="small" />
+                Publishing review...
+              </>
+            ) : (
+              <>
+                {buttonLabel}
+                <ChevronDown size={16} css={styles.chevron} className={isPopoverOpen ? 'open' : ''} />
+              </>
+            )}
           </div>
         </Button>
       </Popover>
