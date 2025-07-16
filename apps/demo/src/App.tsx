@@ -19,7 +19,7 @@ import ErrorCard from './components/ErrorCard'
 import InfoCard from './components/InfoCard'
 import { mapPullRequestMetadata } from './components/mappers'
 import { usePrViewModel } from './hooks/use-pr-view-model'
-import { publishReview } from './hooks/use-review'
+import { useReview } from './hooks/use-review'
 import { useSettings } from './provider/setttings-provider'
 import { parseURL } from './utils'
 
@@ -52,9 +52,9 @@ export default function App() {
 
   // STATE ---------------------------------------------------------------------------------------------
   const [prKey, setPrKey] = useState<PrKey | undefined>(parseURL())
+  const { isPosting, comments, onSubmitReview } = useReview(prKey)
   const { metadata, loading, errors, diff, commentWidgets, isPrAuthor, loadMore, onDock, onAddButton } =
     usePrViewModel(prKey)
-  const { pendingReviewComments, handleSubmitReview } = publishReview()
 
   // ERRORS --------------------------------------------------------------------------------------------
   useEffect(() => {
@@ -97,9 +97,10 @@ export default function App() {
                   key: 'review-button',
                   component: (
                     <ReviewButton
-                      comments={pendingReviewComments}
+                      isPosting={isPosting}
+                      comments={comments}
                       isAuthor={isPrAuthor}
-                      onSubmitReview={handleSubmitReview}
+                      onSubmitReview={onSubmitReview}
                     />
                   ),
                   side: 'right',

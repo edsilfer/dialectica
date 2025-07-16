@@ -1,17 +1,19 @@
 import { css } from '@emotion/react'
-import { Button, Divider, Popover, Radio, Space, Spin } from 'antd'
+import { Button, Divider, Popover, Radio, Space } from 'antd'
 import React, { useState } from 'react'
 import { useDiffViewerConfig } from '../../../components/diff-viewer/providers/diff-viewer-context'
 import ChevronDown from '../../../components/ui/icons/ChevronDown'
 import { ReviewStatus } from '../../github/models'
 import { Editor } from '../comments/components/Editor'
-import { CommentMetadata } from '../models/CommentMetadata'
+import { CommentMetadata, CommentState } from '../models/CommentMetadata'
 
 export interface ReviewPayload {
   /** The status of the review */
   reviewStatus: ReviewStatus
   /** The comment of the review */
   comment?: string
+  /** The commit SHA associated with the review (injected by parent). */
+  commitId?: string
 }
 
 const useStyles = () => {
@@ -91,7 +93,7 @@ export const ReviewButton: React.FC<ReviewButtonProps> = ({
   const [reviewType, setReviewType] = useState<ReviewStatus>(ReviewStatus.COMMENT)
   const styles = useStyles()
 
-  const commentCount = comments.length
+  const commentCount = comments.filter((c) => c.currentState === CommentState.PENDING).length
   const buttonLabel = commentCount === 0 ? 'Review changes' : `Finish your review (${commentCount})`
 
   const handleOpenChange = (open: boolean) => {
@@ -105,12 +107,10 @@ export const ReviewButton: React.FC<ReviewButtonProps> = ({
 
   const handleSubmitReview = () => {
     if (!onSubmitReview) return
-
-    const payload: ReviewPayload = {
+    onSubmitReview({
       reviewStatus: reviewType,
       comment: reviewText.trim() || undefined,
-    }
-    onSubmitReview(payload)
+    })
     setIsPopoverOpen(false)
     setReviewText('')
     setReviewType(ReviewStatus.COMMENT)
@@ -169,19 +169,12 @@ export const ReviewButton: React.FC<ReviewButtonProps> = ({
         onOpenChange={handleOpenChange}
         placement="bottomRight"
       >
-        <Button type="primary" disabled={isPosting}>
+        <Button type="primary" disabled={isPosting} loading={isPosting}>
           <div css={styles.buttonContent}>
-            {isPosting ? (
-              <>
-                <Spin size="small" />
-                Publishing review...
-              </>
-            ) : (
-              <>
-                {buttonLabel}
-                <ChevronDown size={16} css={styles.chevron} className={isPopoverOpen ? 'open' : ''} />
-              </>
-            )}
+            <>
+              {buttonLabel}
+              <ChevronDown size={16} css={styles.chevron} className={isPopoverOpen ? 'open' : ''} />
+            </>
           </div>
         </Button>
       </Popover>

@@ -1,29 +1,60 @@
-import { CommentState, ReviewPayload } from '@diff-viewer'
-import { useCallback, useMemo } from 'react'
+import { CommentState, PrKey, PublishReviewResponse, ReviewPayload, publishReview } from '@diff-viewer'
+import { useCallback, useMemo, useState } from 'react'
 import { useReviewContext } from '../provider/review-provider'
+import { useSettings } from '../provider/setttings-provider'
 
 /**
  * Hook that provides review submission functionality.
  *
  * @returns Object containing pending review comments and submit handler
  */
-export function publishReview() {
+export function useReview(prKey: PrKey) {
   const { handle } = useReviewContext()
+  const { githubPat: token, useMocks } = useSettings()
+  const [isPosting, setIsPosting] = useState(false)
 
   const comments = useMemo(() => {
-    const savedDraftComments = handle.getComments(CommentState.SAVED_DRAFT)
-    return Array.from(savedDraftComments.values())
+    return Array.from(handle.list(CommentState.PENDING).values())
   }, [handle])
 
-  const handleSubmitReview = useCallback(
+  const onSubmitReview = useCallback(
     (payload: ReviewPayload) => {
-      console.log('Requested to submit review: ', payload, comments, 'author will come later')
+      const reviewComments = comments.map((comment) => ({
+        path: comment.path,
+        line: comment.line,
+        side: comment.side,
+        body: comment.body,
+      }))
+
+      if (reviewComments.length === 0) {
+        throw new Error('No review comments to submit')
+      }
+
+      setIsPosting(true)
+
+      publishReview({
+        prKey,
+        token,
+        useMocks,
+        body: payload.comment,
+        event: payload.reviewStatus,
+        comments: reviewComments,
+        commitId: payload.commitId,
+      })
+        .then((_: PublishReviewResponse) => {
+          handle.clear()
+        })
+        .catch((error: Error) => {
+          console.error('Error publishing review', error)
+        })
+        .finally(() => setIsPosting(false))
     },
-    [comments, handle],
+    [comments, handle, token, useMocks],
   )
 
   return {
-    pendingReviewComments: comments,
-    handleSubmitReview,
+    isPosting,
+    comments,
+    onSubmitReview,
   }
 }

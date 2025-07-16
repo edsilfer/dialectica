@@ -49,7 +49,7 @@ const AppToolbar: React.FC<{ onSearch: (pr: PrKey) => void }> = ({ onSearch }) =
   const { currentUser } = useSettings()
   const styles = useStyles(theme)
   const [settingsOpen, setSettingsOpen] = useState(false)
-  const username = currentUser ? currentUser.username : 'unknown'
+  const username = currentUser ? currentUser.login : 'unknown'
 
   return (
     <div css={styles.container}>

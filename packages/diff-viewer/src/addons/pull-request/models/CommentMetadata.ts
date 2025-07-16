@@ -16,11 +16,30 @@ export interface CommentAuthor {
 export enum CommentState {
   /** A draft comment */
   DRAFT = 'DRAFT',
-  /** A saved draft comment */
-  SAVED_DRAFT = 'SAVED_DRAFT',
+  /** A saved draft comment, not published yet */
+  PENDING = 'PENDING',
   /** A published comment */
   PUBLISHED = 'PUBLISHED',
 }
+
+/**
+ * Event types that can be triggered by the StaticComment component
+ */
+export enum CommentEvent {
+  ADD = 'ADD',
+  REPLY = 'REPLY',
+  SAVE = 'SAVE',
+  CANCEL = 'CANCEL',
+  DELETE = 'DELETE',
+  EDIT = 'EDIT',
+  RESOLVE = 'RESOLVE',
+  REACT = 'REACT',
+}
+
+/**
+ * Event handler type that takes metadata, event, and optional data
+ */
+export type EventHandler = (comment: CommentMetadata, event: CommentEvent, data?: string) => void
 
 /**
  * Minimal comment metadata needed for display purposes
@@ -31,7 +50,9 @@ export class CommentMetadata {
   /** The author of the comment */
   author: CommentAuthor
   /** ISO timestamp when comment was created */
-  created_at: string
+  createdAt: string
+  /** ISO timestamp when comment was last updated (optional) */
+  updatedAt?: string
   /** URL to the comment */
   url: string
   /** The comment body/text content */
@@ -45,12 +66,15 @@ export class CommentMetadata {
   /** Which side of the diff the comment is on */
   side: 'LEFT' | 'RIGHT'
   /** The current state of the comment (draft, saved draft, or published) */
-  state: CommentState
+  currentState: CommentState
+  /** True if the comment was ever published to the server at any point*/
+  wasPublished: boolean
 
   constructor(data: {
     id: number
     author: CommentAuthor
-    created_at: string
+    createdAt: string
+    updatedAt?: string
     url: string
     body: string
     reactions: Map<string, number>
@@ -58,17 +82,20 @@ export class CommentMetadata {
     line: number
     side: 'LEFT' | 'RIGHT'
     state: CommentState
+    wasPublished: boolean
   }) {
     this.id = data.id
     this.author = data.author
-    this.created_at = data.created_at
+    this.createdAt = data.createdAt
+    this.updatedAt = data.updatedAt
     this.url = data.url
     this.body = data.body
     this.reactions = data.reactions
     this.path = data.path
     this.line = data.line
     this.side = data.side
-    this.state = data.state
+    this.currentState = data.state
+    this.wasPublished = data.wasPublished
   }
 
   /**
@@ -76,7 +103,7 @@ export class CommentMetadata {
    * Uses stable identifiers that don't change when content is updated.
    */
   getKey(): string {
-    const rawKey = `${this.author.login}:${this.path}:${this.line}:${this.side}:${this.created_at}:${this.id}`
+    const rawKey = `${this.author.login}:${this.path}:${this.line}:${this.side}:${this.createdAt}:${this.id}`
     return this.hashString(rawKey)
   }
 
@@ -88,7 +115,8 @@ export class CommentMetadata {
     updates: Partial<{
       id: number
       author: CommentAuthor
-      created_at: string
+      createdAt: string
+      updatedAt?: string
       url: string
       body: string
       reactions: Map<string, number>
@@ -96,19 +124,22 @@ export class CommentMetadata {
       line: number
       side: 'LEFT' | 'RIGHT'
       state: CommentState
+      wasPublished?: boolean
     }>,
   ): CommentMetadata {
     return new CommentMetadata({
       id: updates.id ?? this.id,
       author: updates.author ?? this.author,
-      created_at: updates.created_at ?? this.created_at,
+      createdAt: updates.createdAt ?? this.createdAt,
+      updatedAt: updates.updatedAt ?? this.updatedAt,
       url: updates.url ?? this.url,
       body: updates.body ?? this.body,
       reactions: updates.reactions ?? this.reactions,
       path: updates.path ?? this.path,
       line: updates.line ?? this.line,
       side: updates.side ?? this.side,
-      state: updates.state ?? this.state,
+      state: updates.state ?? this.currentState,
+      wasPublished: updates.wasPublished ?? this.wasPublished,
     })
   }
 
@@ -131,6 +162,13 @@ export class CommentMetadata {
    */
   withState(state: CommentState): CommentMetadata {
     return this.with({ state })
+  }
+
+  /**
+   * Create a new CommentMetadata instance with updated wasPublished state.
+   */
+  withWasPublished(wasPublished: boolean): CommentMetadata {
+    return this.with({ wasPublished })
   }
 
   /**

@@ -4,7 +4,7 @@ export interface User {
   /** User's display name */
   name?: string
   /** GitHub username */
-  username?: string
+  login?: string
   /** URL to user's avatar image */
   avatar_url?: string
 }

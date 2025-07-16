@@ -15,7 +15,8 @@ const createCommentMetadataArgs = createPropsFactory<CommentMetadataParams>({
     avatar_url: 'https://example.com/avatar.png',
     html_url: 'https://example.com/alice',
   },
-  created_at: '2024-01-01T00:00:00Z',
+  createdAt: '2024-01-01T00:00:00Z',
+  updatedAt: undefined,
   url: 'https://example.com/comment/1',
   body: 'initial comment',
   reactions: new Map<string, number>([['THUMBS_UP', 1]]),
@@ -23,6 +24,7 @@ const createCommentMetadataArgs = createPropsFactory<CommentMetadataParams>({
   line: 10,
   side: 'RIGHT',
   state: CommentState.DRAFT,
+  wasPublished: false,
 })
 
 const createCommentMetadata = (overrides: Partial<CommentMetadataParams> = {}): CommentMetadata =>
@@ -110,8 +112,8 @@ describe('CommentMetadata model', () => {
     const published = original.withState(CommentState.PUBLISHED)
 
     // EXPECT
-    expect(published.state).toBe(CommentState.PUBLISHED)
-    expect(original.state).toBe(CommentState.DRAFT)
+    expect(published.currentState).toBe(CommentState.PUBLISHED)
+    expect(original.currentState).toBe(CommentState.DRAFT)
   })
 
   it('given partial update via with, when path updated, expect only path changed', () => {

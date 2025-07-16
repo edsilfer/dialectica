@@ -1,5 +1,5 @@
-export { InlineComment, InlineCommentEvent } from './comments/InlineComment'
-export { CommentMetadata, CommentState } from './models/CommentMetadata'
+export { InlineComment } from './comments/InlineComment'
+export { CommentMetadata, CommentState, CommentEvent } from './models/CommentMetadata'
 export type {
   GitHubCommentLinks,
   GitHubCommentReactions,

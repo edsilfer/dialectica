@@ -1,2 +1,2 @@
 export * from './components/types'
-export { InlineComment, InlineCommentEvent } from './InlineComment'
+export { InlineComment } from './InlineComment'

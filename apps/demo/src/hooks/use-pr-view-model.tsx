@@ -15,13 +15,13 @@ import { useSettings } from '../provider/setttings-provider'
 import { useCommentState } from './use-comment-state'
 import { usePullRequestData } from './use-github-data'
 
-export function usePrViewModel(prKey?: PrKey) {
+export function usePrViewModel(prKey?: PrKey, refetchTrigger = 0) {
   const { githubPat: token, useMocks, currentUser } = useSettings()
 
   const [dockedLine, setDockedLine] = useState<LineMetadata | undefined>()
-  const { metadata, rawDiff, comments: existingComments, loading, errors } = usePullRequestData(prKey)
+  const { metadata, rawDiff, comments: existingComments, loading, errors } = usePullRequestData(prKey, refetchTrigger)
   const diff = useMemo(() => (rawDiff ? ParsedDiff.build(rawDiff) : undefined), [rawDiff])
-  const { comments, onCommentEvent } = useCommentState()
+  const { comments, onCommentEvent } = useCommentState(prKey)
   const { handle } = useReviewContext()
   const processedCommentsRef = useRef<Set<number>>(new Set())
 
@@ -29,7 +29,7 @@ export function usePrViewModel(prKey?: PrKey) {
     if (existingComments && existingComments.length > 0) {
       const newComments = existingComments.filter((c) => !processedCommentsRef.current.has(c.id))
       if (newComments.length > 0) {
-        handle.addComments(
+        handle.add(
           newComments.map((githubComment) => {
             processedCommentsRef.current.add(githubComment.id)
             return CommentMetadataFactory.fromGitHubComment(githubComment)
@@ -39,12 +39,19 @@ export function usePrViewModel(prKey?: PrKey) {
     }
   }, [existingComments, handle])
 
+  // Clear processed comments when comments are cleared from review provider
+  useEffect(() => {
+    if (comments.size === 0) {
+      processedCommentsRef.current.clear()
+    }
+  }, [comments.size])
+
   /**
    * Determine if the current user is the author of the pull request.
    */
   const isPrAuthor = useMemo(() => {
-    return metadata?.user?.login === currentUser?.username
-  }, [metadata?.user?.login, currentUser?.username])
+    return metadata?.user?.login === currentUser?.login
+  }, [metadata?.user?.login, currentUser?.login])
 
   /**
    * Build the comment widgets from all managed comments.
@@ -52,10 +59,15 @@ export function usePrViewModel(prKey?: PrKey) {
    * @returns The comment widgets.
    */
   const widgets = useMemo(() => {
-    if (comments.size === 0) return []
-    const groupedComments = handle.getCommentsGroupedByLocation()
-    const isReviewing = handle.getComments(CommentState.SAVED_DRAFT).size > 0
-    return WidgetFactory.build(groupedComments, currentUser, onCommentEvent, isReviewing)
+    if (comments.size === 0 || !currentUser) return []
+    const groupedComments = handle.getThread()
+    const isReviewing = handle.list(CommentState.PENDING).size > 0
+    const commentAuthor = {
+      login: currentUser.login!,
+      avatar_url: currentUser.avatar_url!,
+      html_url: currentUser.avatar_url!,
+    }
+    return WidgetFactory.build(groupedComments, commentAuthor, onCommentEvent, isReviewing)
   }, [comments, handle, onCommentEvent, currentUser])
 
   /**
@@ -73,8 +85,13 @@ export function usePrViewModel(prKey?: PrKey) {
    * @param dockedLine - The line to add the comment to.
    */
   const onAddButton = useCallback(() => {
-    if (!dockedLine || !dockedLine.lineNumber || !dockedLine.side || !dockedLine.filepath) return
-    handle.addComment(CommentMetadataFactory.createDraft(dockedLine, currentUser))
+    if (!dockedLine || !dockedLine.lineNumber || !dockedLine.side || !dockedLine.filepath || !currentUser) return
+    const commentAuthor = {
+      login: currentUser.login!,
+      avatar_url: currentUser.avatar_url!,
+      html_url: currentUser.avatar_url!,
+    }
+    handle.add(CommentMetadataFactory.createDraft(dockedLine, commentAuthor))
   }, [dockedLine, handle, currentUser])
 
   /**

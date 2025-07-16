@@ -24,7 +24,7 @@ const useStyles = () => {
 
     header: css`
       display: flex;
-      align-items: baseline;
+      align-items: center;
       gap: ${theme.spacing.sm};
 
       /* Reset margin/padding for the typography title inside this row */
@@ -77,7 +77,9 @@ export const PullRequestHeader: React.FC<{ pr: PullRequestMetadata }> = ({ pr })
       {/* Title and state */}
       <div css={styles.header}>
         {stateTag}
-        <Title level={4}>{pr.title}</Title>
+        <Link href={pr.html_url} target="_blank" rel="noreferrer">
+          <Title level={4}>{pr.title}</Title>
+        </Link>
       </div>
 
       {/* Author + sentence */}

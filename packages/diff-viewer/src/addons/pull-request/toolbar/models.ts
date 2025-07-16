@@ -25,7 +25,7 @@ export interface PullRequestMetadata {
   /** Username of the PR author */
   user: {
     login: string
-    avatar_url: string
+    avatar_url: string | null
     html_url: string
   }
   /** State of the PR (open, closed) */

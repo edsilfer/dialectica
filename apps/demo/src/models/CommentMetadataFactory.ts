@@ -15,7 +15,8 @@ export class CommentMetadataFactory {
     return new CommentMetadata({
       id: Date.now(), // Temporary ID for new comments
       author,
-      created_at: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: undefined,
       url: `#comment-${Date.now()}`,
       body: '',
       reactions: new Map(),
@@ -23,6 +24,7 @@ export class CommentMetadataFactory {
       line: dockedLine.lineNumber!,
       side: dockedLine.side! === 'left' ? 'LEFT' : 'RIGHT',
       state: CommentState.DRAFT,
+      wasPublished: false,
     })
   }
 
@@ -40,7 +42,8 @@ export class CommentMetadataFactory {
         avatar_url: githubComment.user.avatar_url,
         html_url: githubComment.user.html_url,
       },
-      created_at: githubComment.created_at,
+      createdAt: githubComment.created_at,
+      updatedAt: githubComment.updated_at,
       url: githubComment.html_url,
       body: githubComment.body,
       reactions: CommentMetadataFactory.buildReactions(githubComment),
@@ -48,6 +51,7 @@ export class CommentMetadataFactory {
       line: githubComment.line || 0,
       side: githubComment.side || 'RIGHT',
       state: CommentState.PUBLISHED, // GitHub comments are always published
+      wasPublished: true,
     })
   }
 

@@ -4,7 +4,7 @@ import {
   CommentState,
   GitHubInlineComment,
   InlineComment,
-  InlineCommentEvent,
+  CommentEvent,
   Widget,
 } from '@diff-viewer'
 import React from 'react'
@@ -12,12 +12,12 @@ import React from 'react'
 /**
  * Event handler for comment widget events
  */
-export type EventHandler = (metadata: CommentMetadata, event: InlineCommentEvent, data?: string) => void
+export type EventHandler = (metadata: CommentMetadata, event: CommentEvent, data?: string) => void
 
 /**
  * Generic comment type that can be either existing comment groups or new comment metadata
  */
-export type GenericComment = Map<string, GitHubInlineComment[]> | CommentMetadata[]
+export type GenericComment = Map<string, GitHubInlineComment[]> | Map<string, CommentMetadata[]> | CommentMetadata[]
 
 /**
  * Factory class for creating comment widgets
@@ -62,13 +62,17 @@ class Builder {
   build(comments: GenericComment): Widget[] {
     if (comments instanceof Map) {
       // Check if the Map contains GitHubInlineComment or CommentMetadata
-      const firstEntry = Array.from(comments.values())[0]
+      const values = Array.from((comments as Map<string, unknown>).values()) as (
+        | GitHubInlineComment[]
+        | CommentMetadata[]
+      )[]
+      const firstEntry = values[0]
       if (firstEntry && firstEntry.length > 0) {
         // Check if it's a CommentMetadata by looking for the 'author' property
         if ('author' in firstEntry[0]) {
           return this.fromGroupedMetadata(comments as Map<string, CommentMetadata[]>)
         } else {
-          return this.fromGitHub(comments)
+          return this.fromGitHub(comments as Map<string, GitHubInlineComment[]>)
         }
       }
       return []
@@ -143,7 +147,8 @@ class Builder {
         avatar_url: comment.user.avatar_url,
         html_url: comment.user.html_url,
       },
-      created_at: comment.created_at,
+      createdAt: comment.created_at,
+      updatedAt: comment.updated_at,
       url: comment.html_url,
       body: comment.body,
       reactions: this.buildReactions(comment),
@@ -151,6 +156,7 @@ class Builder {
       line: comment.line || 0,
       side: comment.side || 'RIGHT',
       state: CommentState.PUBLISHED, // GitHub comments are always published
+      wasPublished: true,
     })
   }
 

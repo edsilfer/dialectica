@@ -48,7 +48,22 @@ vi.mock('../comments/components/Editor', () => ({
 }))
 
 // TEST UTILITIES
-const createMockCommentMetadata = (overrides: Partial<CommentMetadata> = {}): CommentMetadata => {
+const createMockCommentMetadata = (
+  overrides: Partial<{
+    id: number
+    author: CommentMetadata['author']
+    createdAt: string
+    updatedAt?: string
+    url: string
+    body: string
+    reactions: Map<string, number>
+    path: string
+    line: number
+    side: 'LEFT' | 'RIGHT'
+    state: CommentState
+    wasPublished: boolean
+  }> = {},
+): CommentMetadata => {
   return new CommentMetadata({
     id: 1,
     author: {
@@ -56,14 +71,16 @@ const createMockCommentMetadata = (overrides: Partial<CommentMetadata> = {}): Co
       avatar_url: 'https://example.com/avatar.jpg',
       html_url: 'https://github.com/testuser',
     },
-    created_at: '2023-01-01T00:00:00Z',
+    createdAt: '2023-01-01T00:00:00Z',
+    updatedAt: undefined,
     url: 'https://github.com/owner/repo/pull/1#issuecomment-1',
     body: 'Test comment',
     reactions: new Map(),
     path: 'src/test.ts',
     line: 10,
     side: 'RIGHT' as const,
-    state: CommentState.DRAFT,
+    state: CommentState.PENDING,
+    wasPublished: false,
     ...overrides,
   })
 }
@@ -109,12 +126,15 @@ describe('ReviewButton', () => {
       },
       {
         description: 'one pending comment',
-        comments: [createMockCommentMetadata()],
+        comments: [createMockCommentMetadata({ state: CommentState.PENDING })],
         expectedLabel: 'Finish your review (1)',
       },
       {
         description: 'multiple pending comments',
-        comments: [createMockCommentMetadata(), createMockCommentMetadata({ id: 2 })],
+        comments: [
+          createMockCommentMetadata({ state: CommentState.PENDING }),
+          createMockCommentMetadata({ id: 2, state: CommentState.PENDING }),
+        ],
         expectedLabel: 'Finish your review (2)',
       },
     ]
@@ -264,7 +284,7 @@ describe('ReviewButton', () => {
 
     it('given comment type with pending comments but no text, when rendered, expect submit button enabled', async () => {
       // GIVEN
-      const props = createReviewButtonProps({ comments: [createMockCommentMetadata()] })
+      const props = createReviewButtonProps({ comments: [createMockCommentMetadata({ state: CommentState.PENDING })] })
       render(<ReviewButton {...props} />)
 
       // WHEN
@@ -432,7 +452,7 @@ describe('ReviewButton', () => {
       // EXPECT
       const mainButton = screen.getByRole('button')
       expect(mainButton).toBeDisabled()
-      expect(screen.getByText('Publishing review...')).toBeInTheDocument()
+      expect(screen.getByText('Review changes')).toBeInTheDocument()
     })
 
     it('given isPosting is true, when button clicked, expect popover does not open', () => {

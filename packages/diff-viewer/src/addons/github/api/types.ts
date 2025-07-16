@@ -140,12 +140,18 @@ export interface PublishReviewRequest extends GetPrMetadataRequest {
   body?: string
   /** The review event type. */
   event: ReviewStatus
+  /** The commit SHA of the head or base commit to comment on. Required when using line/side. */
+  commitId?: string
   /** The comments to include in the review. */
   comments?: {
     /** The path of the file to comment on. */
     path: string
-    /** The position in the diff to comment on. */
-    position: number
+    /** The position in the diff to comment on (mutually exclusive with line/side). */
+    position?: number
+    /** The line number in the file to comment on (used with side). */
+    line?: number
+    /** The side of the diff this line is on ("LEFT" or "RIGHT"). Required when using line. */
+    side?: 'LEFT' | 'RIGHT'
     /** The text of the comment. */
     body: string
   }[]

@@ -2,26 +2,20 @@ import { CommentMetadata, CommentState } from '@diff-viewer'
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react'
 
 interface ReviewHandle {
-  /** Set the posting state */
-  setPosting: (isPosting: boolean) => void
-  /** Add a new comment in any state */
-  addComment: (comment: CommentMetadata) => void
-  /** Add multiple comments at once */
-  addComments: (comments: CommentMetadata[]) => void
-  /** Save a draft comment */
-  saveDraft: (key: string, body?: string) => void
-  /** Update a draft comment */
-  updateDraft: (key: string, updates: Parameters<CommentMetadata['with']>[0]) => void
-  /** Cancel a draft comment */
-  cancelDraft: (key: string) => void
-  /** Delete a draft comment */
-  deleteDraft: (key: string) => void
+  /** Add one or more comments in any state */
+  add: (comment: CommentMetadata | CommentMetadata[]) => void
+  /** Update any comment */
+  update: (key: string, updates: Parameters<CommentMetadata['with']>[0]) => void
+  /** Remove a comment by key regardless of state */
+  remove: (key: string) => void
+  /** Clear all comments */
+  clear: () => void
   /** Get a single comment by key */
-  getComment: (key: string) => CommentMetadata | undefined
-  /** Get comments filtered by state */
-  getComments: (state?: CommentState) => Map<string, CommentMetadata>
+  get: (key: string) => CommentMetadata | undefined
+  /** List comments filtered by state */
+  list: (state?: CommentState) => Map<string, CommentMetadata>
   /** Get all comments grouped by location */
-  getCommentsGroupedByLocation: () => Map<string, CommentMetadata[]>
+  getThread: () => Map<string, CommentMetadata[]>
 }
 
 interface ReviewContextValue {
@@ -29,12 +23,8 @@ interface ReviewContextValue {
   comments: Map<string, CommentMetadata>
   /** The number of comments */
   size: number
-  /** Whether there are any draft comments */
-  hasDrafts: boolean
   /** Whether there are any published comments */
   hasPublished: boolean
-  /** Whether the review is currently being posted */
-  isPosting: boolean
   /** Handle with all comment operations */
   handle: ReviewHandle
 }
@@ -57,131 +47,69 @@ function getLocationKey(path: string, line: number, side: 'LEFT' | 'RIGHT'): str
 
 export function ReviewProvider({ children }: ReviewProviderProps) {
   const [comments, setComments] = useState<Map<string, CommentMetadata>>(new Map())
-  const [isPosting, setPosting] = useState<boolean>(false)
 
   const size = comments.size
 
-  const hasDrafts = useMemo(
-    () =>
-      Array.from(comments.values()).some(
-        (comment) => comment.state === CommentState.DRAFT || comment.state === CommentState.SAVED_DRAFT,
-      ),
-    [comments],
-  )
-
   const hasPublished = useMemo(
-    () => Array.from(comments.values()).some((comment) => comment.state === CommentState.PUBLISHED),
+    () => Array.from(comments.values()).some((comment) => comment.currentState === CommentState.PUBLISHED),
     [comments],
   )
 
-  const validate = useCallback(
-    (key: string, comment: CommentMetadata | undefined, states: CommentState[], operation: string): CommentMetadata => {
-      if (!comment) {
-        throw new Error(`Cannot ${operation}: Comment with key "${key}" not found`)
-      }
+  const add = useCallback((commentOrComments: CommentMetadata | CommentMetadata[]) => {
+    const commentsToAdd = Array.isArray(commentOrComments) ? commentOrComments : [commentOrComments]
 
-      if (!states.includes(comment.state)) {
-        const stateStr = states.join(' or ')
-        throw new Error(`Cannot ${operation}: Comment must be in ${stateStr} state, but is in ${comment.state} state`)
-      }
-
-      return comment
-    },
-    [],
-  )
-
-  const addComment = useCallback((comment: CommentMetadata) => {
-    const key = comment.getKey()
-    setComments((prevComments) => {
-      // Always allow adding new comments (regardless of state)
-      if (!prevComments.has(key)) {
-        const newComments = new Map(prevComments)
-        newComments.set(key, comment)
-        return newComments
-      }
-      return prevComments
-    })
-  }, [])
-
-  const addComments = useCallback((comments: CommentMetadata[]) => {
     setComments((prevComments) => {
       const newComments = new Map(prevComments)
-      comments.forEach((comment) => {
+      commentsToAdd.forEach((comment) => {
         const key = comment.getKey()
-        newComments.set(key, comment)
+        // Always allow adding new comments (regardless of state)
+        if (!newComments.has(key)) {
+          newComments.set(key, comment)
+        }
       })
       return newComments
     })
   }, [])
 
-  const saveDraft = useCallback(
-    (key: string, body?: string) => {
-      setComments((prevComments) => {
-        const comment = prevComments.get(key)
-        const validatedComment = validate(key, comment, [CommentState.DRAFT], 'save draft')
-
-        const updated = validatedComment.with({
-          state: CommentState.SAVED_DRAFT,
-          body: body || validatedComment.body,
-        })
-
-        const newComments = new Map(prevComments)
-        newComments.set(key, updated)
-        return newComments
-      })
-    },
-    [validate],
-  )
-
-  const updateDraft = useCallback((key: string, updates: Parameters<CommentMetadata['with']>[0]) => {
+  const update = useCallback((key: string, updates: Parameters<CommentMetadata['with']>[0]) => {
     setComments((prevComments) => {
       const comment = prevComments.get(key)
-      if (comment) {
-        const updated = comment.with(updates)
-        const newComments = new Map(prevComments)
-        newComments.set(key, updated)
-        return newComments
+      if (!comment) {
+        throw new Error(`Cannot update: Comment with key "${key}" not found`)
       }
-      return prevComments
+
+      const updated = comment.with(updates).with({ updatedAt: new Date().toISOString() })
+      const newComments = new Map(prevComments)
+      newComments.set(key, updated)
+      return newComments
     })
   }, [])
 
-  const cancelDraft = useCallback(
-    (key: string) => {
-      setComments((prevComments) => {
-        const comment = prevComments.get(key)
-        validate(key, comment, [CommentState.DRAFT], 'cancel draft')
+  const remove = useCallback((key: string) => {
+    setComments((prevComments) => {
+      const comment = prevComments.get(key)
+      if (!comment) {
+        throw new Error(`Cannot remove: Comment with key "${key}" not found`)
+      }
 
-        const newComments = new Map(prevComments)
-        newComments.delete(key)
-        return newComments
-      })
-    },
-    [validate],
-  )
+      const newComments = new Map(prevComments)
+      newComments.delete(key)
+      return newComments
+    })
+  }, [])
 
-  const deleteDraft = useCallback(
-    (key: string) => {
-      setComments((prevComments) => {
-        const comment = prevComments.get(key)
-        validate(key, comment, [CommentState.SAVED_DRAFT], 'delete draft')
+  const clear = useCallback(() => {
+    setComments(new Map())
+  }, [])
 
-        const newComments = new Map(prevComments)
-        newComments.delete(key)
-        return newComments
-      })
-    },
-    [validate],
-  )
-
-  const getComment = useCallback(
+  const get = useCallback(
     (key: string) => {
       return comments.get(key)
     },
     [comments],
   )
 
-  const getComments = useCallback(
+  const list = useCallback(
     (state?: CommentState): Map<string, CommentMetadata> => {
       if (state === undefined) {
         return new Map(comments)
@@ -189,7 +117,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
 
       const filtered = new Map<string, CommentMetadata>()
       for (const [key, comment] of comments) {
-        if (comment.state === state) {
+        if (comment.currentState === state) {
           filtered.set(key, comment)
         }
       }
@@ -198,7 +126,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
     [comments],
   )
 
-  const getCommentsGroupedByLocation = useCallback((): Map<string, CommentMetadata[]> => {
+  const getThread = useCallback((): Map<string, CommentMetadata[]> => {
     const grouped = new Map<string, CommentMetadata[]>()
 
     for (const comment of comments.values()) {
@@ -212,7 +140,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
 
     // Sort comments within each group by creation date
     for (const commentList of grouped.values()) {
-      commentList.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+      commentList.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
     }
 
     return grouped
@@ -220,41 +148,25 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
 
   const handle: ReviewHandle = useMemo(
     () => ({
-      setPosting,
-      addComment,
-      addComments,
-      saveDraft,
-      updateDraft,
-      cancelDraft,
-      deleteDraft,
-      getComment,
-      getComments,
-      getCommentsGroupedByLocation,
+      add,
+      update,
+      remove,
+      clear,
+      get,
+      list,
+      getThread,
     }),
-    [
-      setPosting,
-      addComment,
-      addComments,
-      saveDraft,
-      updateDraft,
-      cancelDraft,
-      deleteDraft,
-      getComment,
-      getComments,
-      getCommentsGroupedByLocation,
-    ],
+    [add, update, remove, clear, get, list, getThread],
   )
 
   const contextValue: ReviewContextValue = useMemo(
     () => ({
       comments,
       size,
-      hasDrafts,
       hasPublished,
-      isPosting,
       handle,
     }),
-    [comments, size, hasDrafts, hasPublished, isPosting, handle],
+    [comments, size, hasPublished, handle],
   )
 
   return <ReviewContext.Provider value={contextValue}>{children}</ReviewContext.Provider>

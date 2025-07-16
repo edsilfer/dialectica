@@ -3,9 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPropsFactory, expectElementToBeInTheDocument } from '../../../../utils/test/generic-test-utils'
 import { render } from '../../../../utils/test/render'
 import type { CommentAuthor } from '../../models/CommentMetadata'
-import { CommentState } from '../../models/CommentMetadata'
-import { InlineCommentEvent } from '../InlineComment'
-import type { CommentHeaderProps } from './Header'
+import { CommentState, CommentEvent } from '../../models/CommentMetadata'
+import type { HeaderProps } from './Header'
 import { Header } from './Header'
 
 // MOCK ---------------------------------------------------------------
@@ -60,7 +59,7 @@ const createCommentAuthor = createPropsFactory<CommentAuthor>({
   html_url: 'https://github.com/author',
 })
 
-const createHeaderProps = createPropsFactory<CommentHeaderProps>({
+const createHeaderProps = createPropsFactory<HeaderProps>({
   state: CommentState.PUBLISHED,
   author: createCommentAuthor(),
   currentUser: createCommentAuthor({ login: 'viewer' }),
@@ -159,7 +158,7 @@ describe('Header component', () => {
     const author = createCommentAuthor({ login: 'author' })
     const currentUser = createCommentAuthor({ login: 'author' })
     const props = createHeaderProps({
-      state: CommentState.SAVED_DRAFT,
+      state: CommentState.PENDING,
       author,
       currentUser,
     })
@@ -178,7 +177,7 @@ describe('Header component', () => {
     const author = createCommentAuthor({ login: 'author' })
     const currentUser = createCommentAuthor({ login: 'viewer' })
     const props = createHeaderProps({
-      state: CommentState.SAVED_DRAFT,
+      state: CommentState.PENDING,
       author,
       currentUser,
     })
@@ -268,13 +267,13 @@ describe('Header component', () => {
     })
   })
 
-  it('given draft edit clicked, when clicked, expect onEventTrigger called with EDIT_DRAFT', () => {
+  it('given draft edit clicked, when clicked, expect onEventTrigger called with EDIT', () => {
     // GIVEN
     const mockTrigger = vi.fn()
     const author = createCommentAuthor({ login: 'author' })
     const currentUser = createCommentAuthor({ login: 'author' })
     const props = createHeaderProps({
-      state: CommentState.SAVED_DRAFT,
+      state: CommentState.PENDING,
       author,
       currentUser,
       onEventTrigger: mockTrigger,
@@ -286,16 +285,16 @@ describe('Header component', () => {
     clickMenuOption('Edit')
 
     // EXPECT
-    expect(mockTrigger).toHaveBeenCalledWith(InlineCommentEvent.EDIT_DRAFT)
+    expect(mockTrigger).toHaveBeenCalledWith(CommentEvent.EDIT)
   })
 
-  it('given draft delete clicked, when clicked, expect onEventTrigger called with DELETE_DRAFT', () => {
+  it('given draft delete clicked, when clicked, expect onEventTrigger called with DELETE', () => {
     // GIVEN
     const mockTrigger = vi.fn()
     const author = createCommentAuthor({ login: 'author' })
     const currentUser = createCommentAuthor({ login: 'author' })
     const props = createHeaderProps({
-      state: CommentState.SAVED_DRAFT,
+      state: CommentState.PENDING,
       author,
       currentUser,
       onEventTrigger: mockTrigger,
@@ -307,10 +306,10 @@ describe('Header component', () => {
     clickMenuOption('Delete')
 
     // EXPECT
-    expect(mockTrigger).toHaveBeenCalledWith(InlineCommentEvent.DELETE_DRAFT)
+    expect(mockTrigger).toHaveBeenCalledWith(CommentEvent.DELETE)
   })
 
-  it('given published edit clicked, when clicked, expect onEventTrigger called with EDIT_PUBLISHED', () => {
+  it('given published edit clicked, when clicked, expect onEventTrigger called with EDIT', () => {
     // GIVEN
     const mockTrigger = vi.fn()
     const author = createCommentAuthor({ login: 'author' })
@@ -328,10 +327,10 @@ describe('Header component', () => {
     clickMenuOption('Edit')
 
     // EXPECT
-    expect(mockTrigger).toHaveBeenCalledWith(InlineCommentEvent.EDIT_PUBLISHED)
+    expect(mockTrigger).toHaveBeenCalledWith(CommentEvent.EDIT)
   })
 
-  it('given published delete clicked, when clicked, expect onEventTrigger called with DELETE_PUBLISHED', () => {
+  it('given published delete clicked, when clicked, expect onEventTrigger called with DELETE', () => {
     // GIVEN
     const mockTrigger = vi.fn()
     const author = createCommentAuthor({ login: 'author' })
@@ -349,10 +348,10 @@ describe('Header component', () => {
     clickMenuOption('Delete')
 
     // EXPECT
-    expect(mockTrigger).toHaveBeenCalledWith(InlineCommentEvent.DELETE_PUBLISHED)
+    expect(mockTrigger).toHaveBeenCalledWith(CommentEvent.DELETE)
   })
 
-  it('given resolve clicked, when clicked, expect onEventTrigger called with RESOLVE_PUBLISHED', () => {
+  it('given resolve clicked, when clicked, expect onEventTrigger called with RESOLVE', () => {
     // GIVEN
     const mockTrigger = vi.fn()
     const props = createHeaderProps({
@@ -366,7 +365,7 @@ describe('Header component', () => {
     clickMenuOption('Resolve')
 
     // EXPECT
-    expect(mockTrigger).toHaveBeenCalledWith(InlineCommentEvent.RESOLVE_PUBLISHED)
+    expect(mockTrigger).toHaveBeenCalledWith(CommentEvent.RESOLVE)
   })
 
   it('given no onEventTrigger provided, when menu actions clicked, expect no error thrown', () => {
@@ -374,7 +373,7 @@ describe('Header component', () => {
     const author = createCommentAuthor({ login: 'author' })
     const currentUser = createCommentAuthor({ login: 'author' })
     const props = createHeaderProps({
-      state: CommentState.SAVED_DRAFT,
+      state: CommentState.PENDING,
       author,
       currentUser,
       onEventTrigger: undefined,

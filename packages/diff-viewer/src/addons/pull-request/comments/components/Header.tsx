@@ -1,14 +1,15 @@
 import { MoreOutlined } from '@ant-design/icons'
 import { css } from '@emotion/react'
-import { Dropdown, MenuProps, message, Typography } from 'antd'
+import { Dropdown, MenuProps, message, Tag, Typography } from 'antd'
+import { ItemType } from 'antd/es/menu/interface'
 import React, { useCallback, useMemo } from 'react'
 import { useDiffViewerConfig } from '../../../../components/diff-viewer/providers/diff-viewer-context'
-import { CommentAuthor, CommentState } from '../../models/CommentMetadata'
-import { InlineCommentEvent } from '../InlineComment'
+import { formatTimestamp } from '../../../time-utils'
+import { CommentAuthor, CommentEvent, CommentState } from '../../models/CommentMetadata'
 
 const { Text, Link } = Typography
 
-export interface CommentHeaderProps {
+export interface HeaderProps {
   /** The state of the comment */
   state: CommentState
   /** The author of the comment */
@@ -20,7 +21,7 @@ export interface CommentHeaderProps {
   /** URL to the comment on GitHub */
   commentUrl: string
   /** Callback function triggered when an event occurs */
-  onEventTrigger?: (event: InlineCommentEvent) => void
+  onEventTrigger?: (event: CommentEvent) => void
 }
 
 const useStyles = () => {
@@ -66,6 +67,11 @@ const useStyles = () => {
         background-color: ${theme.colors.border}50;
       }
     `,
+
+    actions: css`
+      margin-left: auto;
+      gap: ${theme.spacing.xs};
+    `,
   }
 }
 
@@ -80,7 +86,7 @@ const useStyles = () => {
  * @param onEventTrigger - Callback function triggered when an event occurs
  * @returns                A React component that displays the comment header
  */
-export const Header: React.FC<CommentHeaderProps> = ({
+export const Header: React.FC<HeaderProps> = ({
   state,
   author,
   currentUser,
@@ -89,24 +95,7 @@ export const Header: React.FC<CommentHeaderProps> = ({
   onEventTrigger,
 }) => {
   const styles = useStyles()
-
   const isAuthor = currentUser.login === author.login
-
-  const formatTimestamp = (timestamp: string) => {
-    const date = new Date(timestamp)
-    const now = new Date()
-    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60)
-
-    if (diffInHours < 1) {
-      return 'just now'
-    } else if (diffInHours < 24) {
-      const hours = Math.floor(diffInHours)
-      return `${hours} hour${hours > 1 ? 's' : ''} ago`
-    } else {
-      const days = Math.floor(diffInHours / 24)
-      return `${days} day${days > 1 ? 's' : ''} ago`
-    }
-  }
 
   const handleCopyLink = useCallback(() => {
     navigator.clipboard
@@ -120,68 +109,50 @@ export const Header: React.FC<CommentHeaderProps> = ({
   }, [commentUrl])
 
   const handleMenuClick = useCallback(
-    (event: InlineCommentEvent) => {
+    (event: CommentEvent) => {
       onEventTrigger?.(event)
     },
     [onEventTrigger],
   )
 
-  const draftOptions: MenuProps = useMemo(
-    () => ({
-      items: isAuthor
-        ? [
-            {
-              key: 'edit',
-              label: 'Edit',
-              onClick: () => {
-                handleMenuClick(InlineCommentEvent.EDIT_DRAFT)
-              },
-            },
-            {
-              key: 'delete',
-              label: 'Delete',
-              onClick: () => handleMenuClick(InlineCommentEvent.DELETE_DRAFT),
-            },
-          ]
-        : [],
-    }),
-    [handleMenuClick, isAuthor],
-  )
+  const options: MenuProps = useMemo(() => {
+    const copy: ItemType = {
+      key: 'copy-link',
+      label: 'Copy link',
+      onClick: handleCopyLink,
+    }
 
-  const publishedOptions: MenuProps = useMemo(
-    () => ({
-      items: [
-        {
-          key: 'copy-link',
-          label: 'Copy link',
-          onClick: handleCopyLink,
-        },
-        ...(isAuthor
-          ? [
-              {
-                key: 'edit',
-                label: 'Edit',
-                onClick: () => handleMenuClick(InlineCommentEvent.EDIT_PUBLISHED),
-              },
-              {
-                key: 'delete',
-                label: 'Delete',
-                onClick: () => handleMenuClick(InlineCommentEvent.DELETE_PUBLISHED),
-              },
-              {
-                type: 'divider' as const,
-              },
-            ]
-          : []),
-        {
-          key: 'resolve',
-          label: 'Resolve',
-          onClick: () => handleMenuClick(InlineCommentEvent.RESOLVE_PUBLISHED),
-        },
-      ],
-    }),
-    [handleCopyLink, handleMenuClick, isAuthor],
-  )
+    const edit: ItemType = {
+      key: 'edit',
+      label: 'Edit',
+      onClick: () => handleMenuClick(CommentEvent.EDIT),
+    }
+
+    const _delete: ItemType = {
+      key: 'delete',
+      label: 'Delete',
+      onClick: () => handleMenuClick(CommentEvent.DELETE),
+    }
+
+    const resolve: ItemType = {
+      key: 'resolve',
+      label: 'Resolve',
+      onClick: () => handleMenuClick(CommentEvent.RESOLVE),
+    }
+
+    const getOptions = (): ItemType[] => {
+      switch (state) {
+        case CommentState.DRAFT:
+          return []
+        case CommentState.PENDING:
+          return isAuthor ? [edit, _delete] : []
+        case CommentState.PUBLISHED:
+          return [copy, ...(isAuthor ? [edit, _delete] : []), resolve]
+      }
+    }
+
+    return { items: getOptions() }
+  }, [state, isAuthor, handleCopyLink, handleMenuClick])
 
   return (
     <div css={styles.container}>
@@ -194,16 +165,18 @@ export const Header: React.FC<CommentHeaderProps> = ({
       >
         {author.login}
       </Link>
+
       <Text css={styles.timestamp} data-testid="comment-timestamp">
         {formatTimestamp(createdAt)}
       </Text>
-      <Dropdown
-        menu={state === CommentState.SAVED_DRAFT ? draftOptions : publishedOptions}
-        trigger={['click']}
-        placement="bottomRight"
-      >
-        <MoreOutlined css={styles.menuButton} data-testid="comment-menu-button" />
-      </Dropdown>
+
+      <div css={styles.actions}>
+        {isAuthor && <Tag color="default">Author</Tag>}
+
+        <Dropdown menu={options} trigger={['click']} placement="bottomRight">
+          <MoreOutlined css={styles.menuButton} data-testid="comment-menu-button" />
+        </Dropdown>
+      </div>
     </div>
   )
 }

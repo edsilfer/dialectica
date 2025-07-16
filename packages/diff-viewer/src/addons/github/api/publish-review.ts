@@ -37,7 +37,7 @@ export async function publishReview(params: PublishReviewRequest): Promise<Publi
         ...buildHeaders(authToken),
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ body, event, comments }),
+      body: JSON.stringify({ body, event, comments, commit_id: params.commitId }),
     })
 
     if (!res.ok) {

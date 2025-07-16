@@ -15,10 +15,29 @@ import { useDiffViewerConfig } from '../../../../components/diff-viewer/provider
 import { MarkdownText } from '../../../MarkdownText'
 import { HeaderIcon, MarkdownIcon, QuotingIcon } from '../../../ui/icons'
 import { useEditorViewModel } from '../hooks/use-editor-view-model'
-import { CustomTabs } from './tabs'
+import { CustomTabs } from './CustomTabs'
 import { TabActionButton, TabItem } from './types'
 
 const { TextArea } = Input
+
+/**
+ * Metadata for a button in the editor footer
+ */
+export interface ButtonMetadata {
+  /** The label text for the button */
+  label: string
+  /** The key to identify the button action (save, cancel, custom) */
+  key: 'save' | 'cancel' | 'custom'
+  /** Whether the button should be disabled */
+  disabled?: boolean
+  /** Whether the button should show loading state */
+  loading?: boolean
+  /** The button type (primary, default, etc.) */
+  type?: 'primary' | 'default' | 'dashed' | 'link' | 'text'
+
+  /** Callback function when the button is clicked (only for custom buttons) */
+  onClick?: () => void
+}
 
 const useStyles = () => {
   const { theme } = useDiffViewerConfig()
@@ -81,8 +100,8 @@ export interface CommentEditorProps {
   placeholder?: string
   /** Whether the editor is visible */
   isVisible?: boolean
-  /** Whether there are saved drafts in the current context indicating review mode */
-  isReviewing?: boolean
+  /** Array of buttons to display in the footer */
+  buttons?: ButtonMetadata[]
 
   /** Optional callback when edit is saved */
   onSave?: (newText: string) => void
@@ -110,11 +129,11 @@ export const Editor: React.FC<CommentEditorProps> = ({
   initialText,
   placeholder,
   isVisible = true,
+  buttons,
   onSave,
   onCancel,
   onTabHeaderAction,
   onTextChange,
-  isReviewing = false,
 }) => {
   const styles = useStyles()
   const {
@@ -131,8 +150,6 @@ export const Editor: React.FC<CommentEditorProps> = ({
     handleLinePrefix,
     handleTabClick,
     handleHeaderAction,
-    hasChanges,
-    isValid,
   } = useEditorViewModel({
     initialText,
     onSave,
@@ -260,25 +277,33 @@ export const Editor: React.FC<CommentEditorProps> = ({
       <div css={styles.innerContainer}>
         <CustomTabs tabs={tabs} actions={actions} activeTab={activeTab} onTabChange={handleTabClick} />
 
-        {(onSave || onCancel) && (
+        {buttons && buttons.length > 0 && (
           <div css={styles.footer}>
-            {onCancel && (
-              <Button onClick={handleCancel} size="middle" data-testid="cancel-button" disabled={isSubmitting}>
-                Cancel
-              </Button>
-            )}
+            {buttons.map((button, index) => {
+              const handleClick = () => {
+                if (button.key === 'save') {
+                  handleSave()
+                } else if (button.key === 'cancel') {
+                  handleCancel()
+                } else if (button.key === 'custom' && button.onClick) {
+                  button.onClick()
+                }
+              }
 
-            {onSave && (
-              <Button
-                type="primary"
-                size="middle"
-                onClick={handleSave}
-                disabled={!isValid || !hasChanges || isSubmitting}
-                loading={isSubmitting}
-              >
-                {isReviewing ? 'Add review comment' : 'Start a review'}
-              </Button>
-            )}
+              return (
+                <Button
+                  key={index}
+                  type={button.type || 'default'}
+                  size="middle"
+                  onClick={handleClick}
+                  disabled={button.disabled || isSubmitting}
+                  loading={button.loading || isSubmitting}
+                  data-testid={`editor-button-${index}`}
+                >
+                  {button.label}
+                </Button>
+              )
+            })}
           </div>
         )}
       </div>

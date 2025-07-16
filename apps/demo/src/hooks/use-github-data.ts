@@ -14,10 +14,11 @@ import { useAsync } from './use-async'
 /**
  * Hook that fetches the pull request data and returns the metadata, raw diff, and comments.
  *
- * @param prKey - The pull request key.
- * @returns       The pull request data.
+ * @param prKey          - The pull request key.
+ * @param refetchTrigger - Optional trigger to force refetch comments (increment to refetch).
+ * @returns                The pull request data.
  */
-export function usePullRequestData(prKey?: PrKey) {
+export function usePullRequestData(prKey?: PrKey, refetchTrigger = 0) {
   const { githubPat: token, useMocks, setCurrentUser } = useSettings()
 
   const userReq = useAsync<GitHubUser>(true, [token, useMocks], async () => {
@@ -26,7 +27,7 @@ export function usePullRequestData(prKey?: PrKey) {
       setCurrentUser({
         id: data.id,
         name: data.name || undefined,
-        username: data.login,
+        login: data.login,
         avatar_url: data.avatar_url,
       })
     }
@@ -44,7 +45,7 @@ export function usePullRequestData(prKey?: PrKey) {
   )
   const commentsRq = useAsync<GitHubInlineComment[]>(
     !!prKey && !!metadataRq.data && !!diffRq.data,
-    [prKey, metadataRq.data, diffRq.data, token, useMocks],
+    [prKey, metadataRq.data, diffRq.data, token, useMocks, refetchTrigger],
     () => getInlineComments({ prKey: prKey!, token, useMocks }),
   )
 
