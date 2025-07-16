@@ -54,6 +54,30 @@ export interface GetInlineCommentsResponse extends BaseGitHubResponse<GitHubInli
   refetch: () => void
 }
 
+// EDIT INLINE COMMENT
+export interface EditInlineCommentRequest extends BaseGitHubRequest {
+  /** The unique identifier of the comment to edit */
+  commentId: number
+  /** The new body/text content for the comment */
+  body: string
+}
+
+export interface EditInlineCommentResponse extends BaseGitHubResponse<GitHubInlineComment> {
+  /** Manually trigger a refetch */
+  refetch: () => void
+}
+
+// DELETE INLINE COMMENT
+export interface DeleteInlineCommentRequest extends BaseGitHubRequest {
+  /** The unique identifier of the comment to delete */
+  commentId: number
+}
+
+export interface DeleteInlineCommentResponse extends BaseGitHubResponse<void> {
+  /** Manually trigger a refetch */
+  refetch: () => void
+}
+
 // GET PR MORE LINES
 export interface GetMoreLinesRequest extends BaseGitHubRequest {
   /** The base commit SHA (for old file version) */
