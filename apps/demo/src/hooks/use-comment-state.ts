@@ -3,7 +3,7 @@ import { useCallback } from 'react'
 import { CommentMetadataFactory } from '../models/CommentMetadataFactory'
 import { EventHandler } from '../models/WidgetFactory'
 import { useCommentContext } from '../provider/comment-provider'
-import { CURRENT_USER } from './comment-utils'
+import { useSettings } from '../provider/setttings-provider'
 
 /**
  * Hook that provides comment state management functions and data from the comment context.
@@ -12,6 +12,7 @@ import { CURRENT_USER } from './comment-utils'
  */
 export function useCommentState() {
   const { comments, handle } = useCommentContext()
+  const { currentUser } = useSettings()
 
   /**
    * Handle events from inline comments (both existing and authored).
@@ -30,7 +31,7 @@ export function useCommentState() {
                 content: undefined,
                 filepath: metadata.path,
               },
-              CURRENT_USER,
+              currentUser,
             ),
           )
           break

@@ -1,12 +1,13 @@
 import React, { createContext, ReactNode, useContext, useState } from 'react'
 import { getStorageValue, setStorageValue } from './provider-utils'
-import { Settings, SettingsContextType } from './types'
+import { Settings, SettingsContextType, User } from './types'
 
 const SETTINGS_STORAGE_KEY = 'demo_app_settings'
 
 const DEFAULT_SETTINGS: Settings = {
   githubPat: '',
   useMocks: true,
+  currentUser: undefined,
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined)
@@ -26,11 +27,19 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
     setStorageValue(SETTINGS_STORAGE_KEY, newSettings)
   }
 
+  const setCurrentUser = (user?: User) => {
+    const newSettings = { ...settings, currentUser: user }
+    setSettings(newSettings)
+    setStorageValue(SETTINGS_STORAGE_KEY, newSettings)
+  }
+
   const value: SettingsContextType = {
     githubPat: settings.githubPat,
     useMocks: settings.useMocks,
+    currentUser: settings.currentUser,
     setGithubPat,
     setUseMocks,
+    setCurrentUser,
   }
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>

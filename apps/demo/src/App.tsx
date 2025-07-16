@@ -75,10 +75,8 @@ export default function App() {
   // RENDER --------------------------------------------------------------------------------------------
   const content = () => {
     if (errors.metadata || errors.diff) {
-      // Return an error card if failed to fetch critical data
-      return <ErrorCard error={errors.metadata || errors.diff} />
+      return <ErrorCard error={errors.user || errors.metadata || errors.diff} />
     } else if (!loading.metadata && !metadata) {
-      // Tell the user to load a pull request
       return (
         <InfoCard
           title="Load a Pull Request"

@@ -5,6 +5,7 @@ import { Button, Typography } from 'antd'
 import React, { useState } from 'react'
 import SearchForm from './search-form/SearchForm'
 import SettingsModal from './settings/SettingsModal'
+import { useSettings } from '../provider/setttings-provider'
 
 const { Title, Text } = Typography
 
@@ -45,18 +46,18 @@ const useStyles = (theme: ThemeTokens) => ({
 
 const AppToolbar: React.FC<{ onSearch: (pr: PrKey) => void }> = ({ onSearch }) => {
   const { theme } = useDiffViewerConfig()
+  const { currentUser } = useSettings()
   const styles = useStyles(theme)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const username = currentUser ? currentUser.username : 'unknown'
 
   return (
     <div css={styles.container}>
       <div css={styles.titleContainer}>
         <Title level={4} css={styles.headers}>
-          Awesome Diff Viewer
+          Hello <code>{username}</code>,
         </Title>
-        <Text css={styles.headers}>
-          Demo app for the <code>DiffViewer</code> component.
-        </Text>
+        <Text css={styles.headers}>Welcome to the Diff Viewer Demo app!</Text>
       </div>
 
       <div css={styles.settings}>

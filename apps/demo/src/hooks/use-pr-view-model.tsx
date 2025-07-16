@@ -12,12 +12,11 @@ import { CommentMetadataFactory } from '../models/CommentMetadataFactory'
 import { WidgetFactory } from '../models/WidgetFactory'
 import { useCommentContext } from '../provider/comment-provider'
 import { useSettings } from '../provider/setttings-provider'
-import { CURRENT_USER } from './comment-utils'
 import { useCommentState } from './use-comment-state'
-import { usePullRequestData } from './use-pull-request-data'
+import { usePullRequestData } from './use-github-data'
 
 export function usePrViewModel(prKey?: PrKey) {
-  const { githubPat: token, useMocks } = useSettings()
+  const { githubPat: token, useMocks, currentUser } = useSettings()
 
   const [dockedLine, setDockedLine] = useState<LineMetadata | undefined>()
   const { metadata, rawDiff, comments: existingComments, loading, errors } = usePullRequestData(prKey)
@@ -44,8 +43,8 @@ export function usePrViewModel(prKey?: PrKey) {
    * Determine if the current user is the author of the pull request.
    */
   const isPrAuthor = useMemo(() => {
-    return metadata?.user?.login === CURRENT_USER.login
-  }, [metadata?.user?.login])
+    return metadata?.user?.login === currentUser?.username
+  }, [metadata?.user?.login, currentUser?.username])
 
   /**
    * Build the comment widgets from all managed comments.
@@ -56,8 +55,8 @@ export function usePrViewModel(prKey?: PrKey) {
     if (comments.size === 0) return []
     const groupedComments = handle.getCommentsGroupedByLocation()
     const isReviewing = handle.getComments(CommentState.SAVED_DRAFT).size > 0
-    return WidgetFactory.build(groupedComments, CURRENT_USER, onCommentEvent, isReviewing)
-  }, [comments, handle, onCommentEvent])
+    return WidgetFactory.build(groupedComments, currentUser, onCommentEvent, isReviewing)
+  }, [comments, handle, onCommentEvent, currentUser])
 
   /**
    * Handle the dock event from the DiffViewer overlay.
@@ -75,8 +74,8 @@ export function usePrViewModel(prKey?: PrKey) {
    */
   const onAddButton = useCallback(() => {
     if (!dockedLine || !dockedLine.lineNumber || !dockedLine.side || !dockedLine.filepath) return
-    handle.addComment(CommentMetadataFactory.createDraft(dockedLine, CURRENT_USER))
-  }, [dockedLine, handle])
+    handle.addComment(CommentMetadataFactory.createDraft(dockedLine, currentUser))
+  }, [dockedLine, handle, currentUser])
 
   /**
    * Load more lines from the pull request.
