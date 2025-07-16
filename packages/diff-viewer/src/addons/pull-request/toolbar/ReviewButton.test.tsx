@@ -1,12 +1,13 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
-import React, { type ChangeEvent } from 'react'
+import { type ChangeEvent } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useDiffViewerConfig } from '../../../components/diff-viewer/providers/diff-viewer-context'
 import { Themes } from '../../../themes/themes'
 import { createPropsFactory } from '../../../utils/test/generic-test-utils'
 import { render } from '../../../utils/test/render'
+import { ReviewStatus } from '../../github/models'
 import { CommentMetadata, CommentState } from '../models/CommentMetadata'
-import { ReviewButton, ReviewButtonProps, ReviewStatus } from './ReviewButton'
+import { ReviewButton, ReviewButtonProps } from './ReviewButton'
 
 vi.mock('../../../components/diff-viewer/providers/diff-viewer-context', () => ({
   useDiffViewerConfig: vi.fn(),
@@ -84,31 +85,13 @@ const setupThemeMock = () => {
 }
 
 // HELPER FUNCTIONS
-const expectSubmitButtonToBeDisabled = () => {
+const expectSubmitButtonToBeDisabled = () =>
   expect(screen.getByRole('button', { name: /submit review/i })).toBeDisabled()
-}
-
-const expectSubmitButtonToBeEnabled = () => {
-  expect(screen.getByRole('button', { name: /submit review/i })).toBeEnabled()
-}
-
-const clickReviewButton = () => {
-  fireEvent.click(screen.getByRole('button'))
-}
-
-const selectReviewType = (type: 'comment' | 'approve' | 'request_changes') => {
-  // Find the radio input by its value attribute
-  const radioInput = screen.getByDisplayValue(type)
-  fireEvent.click(radioInput)
-}
-
-const enterReviewText = (text: string) => {
-  fireEvent.change(screen.getByTestId('editor'), { target: { value: text } })
-}
-
-const clickSubmitReview = () => {
-  fireEvent.click(screen.getByRole('button', { name: /submit review/i }))
-}
+const expectSubmitButtonToBeEnabled = () => expect(screen.getByRole('button', { name: /submit review/i })).toBeEnabled()
+const clickReviewButton = () => fireEvent.click(screen.getByRole('button'))
+const selectReviewType = (type: ReviewStatus) => fireEvent.click(screen.getByDisplayValue(type))
+const enterReviewText = (text: string) => fireEvent.change(screen.getByTestId('editor'), { target: { value: text } })
+const clickSubmitReview = () => fireEvent.click(screen.getByRole('button', { name: /submit review/i }))
 
 describe('ReviewButton', () => {
   beforeEach(() => {
@@ -160,7 +143,7 @@ describe('ReviewButton', () => {
       // EXPECT
       await waitFor(() => {
         expect(screen.getByTestId('editor')).toBeInTheDocument()
-        expect(screen.getByDisplayValue('comment')).toBeInTheDocument()
+        expect(screen.getByDisplayValue(ReviewStatus.COMMENT)).toBeInTheDocument()
       })
     })
 
@@ -172,7 +155,7 @@ describe('ReviewButton', () => {
       await waitFor(() => expect(screen.getByTestId('editor')).toBeInTheDocument())
 
       enterReviewText('test comment')
-      selectReviewType('approve')
+      selectReviewType(ReviewStatus.APPROVE)
 
       // WHEN – click outside to request close
       fireEvent.click(document.body)
@@ -195,7 +178,7 @@ describe('ReviewButton', () => {
       clickReviewButton()
       await waitFor(() => {
         expect(screen.getByTestId('editor')).toHaveValue('')
-        expect(screen.getByDisplayValue('comment')).toBeChecked()
+        expect(screen.getByDisplayValue(ReviewStatus.COMMENT)).toBeChecked()
       })
     })
   })
@@ -211,9 +194,9 @@ describe('ReviewButton', () => {
 
       // EXPECT
       await waitFor(() => {
-        expect(screen.getByDisplayValue('comment')).toBeEnabled()
-        expect(screen.getByDisplayValue('approve')).toBeDisabled()
-        expect(screen.getByDisplayValue('request_changes')).toBeDisabled()
+        expect(screen.getByDisplayValue(ReviewStatus.COMMENT)).toBeEnabled()
+        expect(screen.getByDisplayValue(ReviewStatus.APPROVE)).toBeDisabled()
+        expect(screen.getByDisplayValue(ReviewStatus.REQUEST_CHANGES)).toBeDisabled()
       })
     })
 
@@ -227,9 +210,9 @@ describe('ReviewButton', () => {
 
       // EXPECT
       await waitFor(() => {
-        expect(screen.getByDisplayValue('comment')).toBeEnabled()
-        expect(screen.getByDisplayValue('approve')).toBeEnabled()
-        expect(screen.getByDisplayValue('request_changes')).toBeEnabled()
+        expect(screen.getByDisplayValue(ReviewStatus.COMMENT)).toBeEnabled()
+        expect(screen.getByDisplayValue(ReviewStatus.APPROVE)).toBeEnabled()
+        expect(screen.getByDisplayValue(ReviewStatus.REQUEST_CHANGES)).toBeEnabled()
       })
     })
   })
@@ -299,7 +282,7 @@ describe('ReviewButton', () => {
 
       // WHEN
       await waitFor(() => expect(screen.getByRole('radio', { name: /approve/i })).toBeInTheDocument())
-      selectReviewType('approve')
+      selectReviewType(ReviewStatus.APPROVE)
 
       // EXPECT
       expectSubmitButtonToBeEnabled()
@@ -313,7 +296,7 @@ describe('ReviewButton', () => {
 
       // WHEN
       await waitFor(() => expect(screen.getByRole('radio', { name: /request changes/i })).toBeInTheDocument())
-      selectReviewType('request_changes')
+      selectReviewType(ReviewStatus.REQUEST_CHANGES)
 
       // EXPECT
       expectSubmitButtonToBeEnabled()
@@ -349,7 +332,7 @@ describe('ReviewButton', () => {
       clickReviewButton()
 
       await waitFor(() => expect(screen.getByRole('radio', { name: /approve/i })).toBeInTheDocument())
-      selectReviewType('approve')
+      selectReviewType(ReviewStatus.APPROVE)
       enterReviewText('looks good!')
 
       // WHEN
@@ -370,7 +353,7 @@ describe('ReviewButton', () => {
       clickReviewButton()
 
       await waitFor(() => expect(screen.getByRole('radio', { name: /request changes/i })).toBeInTheDocument())
-      selectReviewType('request_changes')
+      selectReviewType(ReviewStatus.REQUEST_CHANGES)
 
       // WHEN
       clickSubmitReview()
@@ -408,7 +391,7 @@ describe('ReviewButton', () => {
 
       await waitFor(() => expect(screen.getByTestId('editor')).toBeInTheDocument())
       enterReviewText('test comment')
-      selectReviewType('approve')
+      selectReviewType(ReviewStatus.APPROVE)
 
       // WHEN
       clickSubmitReview()

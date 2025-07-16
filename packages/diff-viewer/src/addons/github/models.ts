@@ -230,3 +230,15 @@ export interface GitHubInlineComment {
   /** Type of subject (usually "line") */
   subject_type: string
 }
+
+/**
+ * The status of a review.
+ */
+export enum ReviewStatus {
+  /** A comment review */
+  COMMENT = 'COMMENT',
+  /** An approve review */
+  APPROVE = 'APPROVE',
+  /** A request changes review */
+  REQUEST_CHANGES = 'REQUEST_CHANGES',
+}

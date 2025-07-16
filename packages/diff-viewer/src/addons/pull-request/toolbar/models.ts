@@ -10,6 +10,11 @@ export interface StatTagProps {
   color: string
 }
 
+/**
+ * - This is mean to be different from the GitHubPullRequest model.
+ * - It is a generic model that can be used to display pull request metadata.
+ * - It decouples from GitHub and could be used with other providers.
+ */
 export interface PullRequestMetadata {
   /** Pull request number */
   number: number

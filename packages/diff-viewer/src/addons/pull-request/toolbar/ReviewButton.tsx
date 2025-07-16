@@ -3,14 +3,9 @@ import { Button, Divider, Popover, Radio, Space } from 'antd'
 import React, { useState } from 'react'
 import { useDiffViewerConfig } from '../../../components/diff-viewer/providers/diff-viewer-context'
 import ChevronDown from '../../../components/ui/icons/ChevronDown'
+import { ReviewStatus } from '../../github/models'
 import { Editor } from '../comments/components/Editor'
 import { CommentMetadata } from '../models/CommentMetadata'
-
-export enum ReviewStatus {
-  COMMENT = 'comment',
-  APPROVE = 'approve',
-  REQUEST_CHANGES = 'request_changes',
-}
 
 export interface ReviewPayload {
   /** The status of the review */
@@ -18,8 +13,6 @@ export interface ReviewPayload {
   /** The comment of the review */
   comment?: string
 }
-
-export type ReviewType = 'comment' | 'approve' | 'request_changes'
 
 const useStyles = () => {
   const { theme } = useDiffViewerConfig()
@@ -88,7 +81,7 @@ export interface ReviewButtonProps {
 export const ReviewButton: React.FC<ReviewButtonProps> = ({ comments, isAuthor, onSubmitReview }) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   const [reviewText, setReviewText] = useState('')
-  const [reviewType, setReviewType] = useState<ReviewType>('comment')
+  const [reviewType, setReviewType] = useState<ReviewStatus>(ReviewStatus.COMMENT)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const styles = useStyles()
 
@@ -100,7 +93,7 @@ export const ReviewButton: React.FC<ReviewButtonProps> = ({ comments, isAuthor, 
     if (!open) {
       // Reset form when closing popover
       setReviewText('')
-      setReviewType('comment')
+      setReviewType(ReviewStatus.COMMENT)
     }
   }
 
@@ -110,13 +103,13 @@ export const ReviewButton: React.FC<ReviewButtonProps> = ({ comments, isAuthor, 
     setIsSubmitting(true)
     try {
       const payload: ReviewPayload = {
-        reviewStatus: reviewType as ReviewStatus,
+        reviewStatus: reviewType,
         comment: reviewText.trim() || undefined,
       }
       onSubmitReview(payload)
       setIsPopoverOpen(false)
       setReviewText('')
-      setReviewType('comment')
+      setReviewType(ReviewStatus.COMMENT)
     } finally {
       setIsSubmitting(false)
     }
@@ -124,7 +117,9 @@ export const ReviewButton: React.FC<ReviewButtonProps> = ({ comments, isAuthor, 
 
   // Updated submit disabled logic
   const isSubmitDisabled =
-    !onSubmitReview || isSubmitting || (reviewType === 'comment' && !reviewText.trim() && comments.length === 0)
+    !onSubmitReview ||
+    isSubmitting ||
+    (reviewType === ReviewStatus.COMMENT && !reviewText.trim() && comments.length === 0)
 
   const popoverContent = (
     <div css={styles.popoverContainer}>
@@ -133,21 +128,21 @@ export const ReviewButton: React.FC<ReviewButtonProps> = ({ comments, isAuthor, 
       <Radio.Group
         css={styles.radioGroup}
         value={reviewType}
-        onChange={(e) => setReviewType(e.target.value as ReviewType)}
+        onChange={(e) => setReviewType(e.target.value as ReviewStatus)}
       >
-        <Radio value="comment">
+        <Radio value={ReviewStatus.COMMENT}>
           <Space direction="vertical" size={0}>
             <strong>Comment</strong>
             <span css={styles.radioDescription}>Submit general feedback without explicit approval.</span>
           </Space>
         </Radio>
-        <Radio value="approve" disabled={isAuthor}>
+        <Radio value={ReviewStatus.APPROVE} disabled={isAuthor}>
           <Space direction="vertical" size={0}>
             <strong>Approve</strong>
             <span css={styles.radioDescription}>Submit feedback and approve merging these changes.</span>
           </Space>
         </Radio>
-        <Radio value="request_changes" disabled={isAuthor}>
+        <Radio value={ReviewStatus.REQUEST_CHANGES} disabled={isAuthor}>
           <Space direction="vertical" size={0}>
             <strong>Request changes</strong>
             <span css={styles.radioDescription}>Submit feedback that must be addressed before merging.</span>

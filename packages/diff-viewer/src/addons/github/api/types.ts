@@ -1,5 +1,5 @@
 import { LineRequest, LoadMoreLinesResult } from '../../../components/diff-viewer/types'
-import type { GitHubInlineComment, GitHubPullRequest, GitHubUser } from '../models'
+import type { GitHubInlineComment, GitHubPullRequest, GitHubUser, ReviewStatus } from '../models'
 
 // BASE GITHUB REQUEST/RESPONSE TYPE ____________________________________________________
 export interface PrKey {
@@ -34,27 +34,26 @@ export interface BaseGitHubResponse<T> {
   error: Error | undefined
 }
 
-// GET PR METADATA
+// GET PR METADATA ______________________________________________________________________
 export type GetPrMetadataRequest = BaseGitHubRequest
 export interface GetPrMetadataResponse extends BaseGitHubResponse<GitHubPullRequest> {
   refetch: () => void
 }
 
-// GET PR DIFF
+// GET PR DIFF __________________________________________________________________________
 export type GetPrDiffRequest = BaseGitHubRequest
 export interface GetPrDiffResponse extends BaseGitHubResponse<string> {
   refetch: () => void
 }
 
-// GET PR INLINE COMMENTS
+// GET PR INLINE COMMENTS _______________________________________________________________
 export type GetMoreLineRequest = BaseGitHubRequest
-
 export interface GetInlineCommentsResponse extends BaseGitHubResponse<GitHubInlineComment[]> {
   /** Manually trigger a refetch */
   refetch: () => void
 }
 
-// EDIT INLINE COMMENT
+// EDIT INLINE COMMENT __________________________________________________________________
 export interface EditInlineCommentRequest extends BaseGitHubRequest {
   /** The unique identifier of the comment to edit */
   commentId: number
@@ -67,18 +66,17 @@ export interface EditInlineCommentResponse extends BaseGitHubResponse<GitHubInli
   refetch: () => void
 }
 
-// DELETE INLINE COMMENT
+// DELETE INLINE COMMENT ________________________________________________________________
 export interface DeleteInlineCommentRequest extends BaseGitHubRequest {
   /** The unique identifier of the comment to delete */
   commentId: number
 }
-
 export interface DeleteInlineCommentResponse extends BaseGitHubResponse<void> {
   /** Manually trigger a refetch */
   refetch: () => void
 }
 
-// GET PR MORE LINES
+// GET PR MORE LINES _____________________________________________________________________
 export interface GetMoreLinesRequest extends BaseGitHubRequest {
   /** The base commit SHA (for old file version) */
   baseSha: string
@@ -92,7 +90,7 @@ export interface GetMoreLinesResponse
   fetchLines: (request: LineRequest) => Promise<LoadMoreLinesResult>
 }
 
-// GET FILE CONTENT
+// GET FILE CONTENT _____________________________________________________________________
 export interface GetFileContentRequest extends BaseGitHubRequest {
   /** The file path to fetch content for */
   filePath: string
@@ -100,63 +98,69 @@ export interface GetFileContentRequest extends BaseGitHubRequest {
   sha: string
 }
 
+export interface GitHubFileContentResponse {
+  /** The file content in base64 encoding */
+  content: string
+  /** The encoding type (usually 'base64') */
+  encoding: string
+  /** The file size in bytes */
+  size: number
+  /** The file name */
+  name: string
+  /** The file path */
+  path: string
+  /** The file SHA */
+  sha: string
+  /** The API URL for the file */
+  url: string
+  /** The Git blob URL */
+  git_url: string
+  /** The HTML URL for viewing the file */
+  html_url: string
+  /** The download URL for the raw file */
+  download_url: string
+  /** The type of the item (file, dir, etc.) */
+  type: string
+}
+
 export interface GetFileContentResponse extends BaseGitHubResponse<string> {
   /** Function to fetch file content for a given file path and SHA */
   fetchFileContent: (filePath: string, sha: string) => Promise<string>
 }
 
-// GET USER DATA
+// GET USER DATA ________________________________________________________________________
 export interface GetUserDataResponse extends BaseGitHubResponse<GitHubUser> {
   /** Manually trigger a refetch */
   refetch: () => void
 }
 
-// USE GITHUB REQUEST HOOK TYPES ____________________________________________________
-export interface UseGithubRequestOptions {
-  /** Whether to fetch immediately when the hook is called */
-  immediate?: boolean
-  /** The type of request for mock data resolution */
-  requestType?: string
+// PUBLISH REVIEW _______________________________________________________________________
+export interface PublishReviewRequest extends GetPrMetadataRequest {
+  /** The body of the review. */
+  body?: string
+  /** The review event type. */
+  event: ReviewStatus
+  /** The comments to include in the review. */
+  comments?: {
+    /** The path of the file to comment on. */
+    path: string
+    /** The position in the diff to comment on. */
+    position: number
+    /** The text of the comment. */
+    body: string
+  }[]
 }
-
-export interface UseGithubRequestFetcher<P extends BaseGitHubRequest, R> {
-  (params: P, signal?: AbortSignal): Promise<R>
-}
-
-export interface UseGithubRequestReturn<R, P extends BaseGitHubRequest = BaseGitHubRequest> {
-  /** The response data. Undefined while loading for the first time or when an error occurs. */
-  data: R | undefined
-  /** True while an API call is in flight */
-  loading: boolean
-  /** Any error thrown by the request. Reset to undefined on subsequent successful fetches. */
-  error: Error | undefined
-  /** Re-executes the request with the latest parameters */
-  refetch: () => void
-  /** Executes the request with optional parameter overrides */
-  execute: (override?: Partial<P>, signal?: AbortSignal) => Promise<R>
-}
-
-export interface GitHubFileContentResponse {
-  /** The base64-encoded content of the file. */
-  content: string
-  /** The encoding of the file. */
-  encoding: string
-  /** The size of the file. */
-  size: number
-  /** The name of the file. */
-  name: string
-  /** The path of the file. */
-  path: string
-  /** The SHA of the file. */
-  sha: string
-  /** The URL of the file. */
-  url: string
-  /** The Git URL of the file. */
-  git_url: string
-  /** The HTML URL of the file. */
+export interface PublishReviewResponse {
+  /** The ID of the review. */
+  id: number
+  /** The user who submitted the review. */
+  user: GitHubUser
+  /** The body of the review. */
+  body: string
+  /** The state of the review. */
+  state: string
+  /** The URL of the review. */
   html_url: string
-  /** The download URL of the file. */
-  download_url: string
-  /** The type of the file. */
-  type: string
+  /** The commit ID the review was submitted on. */
+  commit_id: string
 }

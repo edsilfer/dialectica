@@ -19,7 +19,8 @@ export async function getFileContent(params: GetFileContentRequest): Promise<str
     // Handle 404s gracefully for new/deleted files
     if (!fileRes.ok) {
       if (fileRes.status === 404) return ''
-      throw new Error(await getGithubError(fileRes))
+      const errorMessage = await getGithubError(fileRes)
+      throw new Error(errorMessage)
     }
 
     const fileJson = (await fileRes.json()) as GitHubFileContentResponse

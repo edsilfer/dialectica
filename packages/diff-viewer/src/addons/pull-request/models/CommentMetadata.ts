@@ -2,8 +2,11 @@
  * Author information for the comment
  */
 export interface CommentAuthor {
+  /** GitHub username */
   login: string
+  /** URL to user's avatar image */
   avatar_url: string
+  /** URL to user's GitHub profile */
   html_url: string
 }
 
@@ -11,8 +14,11 @@ export interface CommentAuthor {
  * State of the comment in its lifecycle
  */
 export enum CommentState {
+  /** A draft comment */
   DRAFT = 'DRAFT',
+  /** A saved draft comment */
   SAVED_DRAFT = 'SAVED_DRAFT',
+  /** A published comment */
   PUBLISHED = 'PUBLISHED',
 }
 
