@@ -1,12 +1,14 @@
-export { default as getFileContent } from './fetchers/get-file-content'
-export { default as getInlineComments } from './fetchers/get-inline-comments'
-export { default as getMoreLines } from './fetchers/get-more-lines'
-export { default as getPrDiff } from './fetchers/get-pr-diff'
-export { default as getPrMetadata } from './fetchers/get-pr-metadata'
-export { default as githubRequest } from './fetchers/github-request'
+export { default as getFileContent } from './api/get-file-content'
+export { default as getInlineComments } from './api/get-inline-comments'
+export { default as getMoreLines } from './api/get-more-lines'
+export { default as getPrDiff } from './api/get-pr-diff'
+export { default as getPrMetadata } from './api/get-pr-metadata'
+export { default as githubRequest } from './api/github-request'
+export { getUserData } from './api/get-user-data'
 
 export type {
   PrKey,
+  BaseRequest,
   BaseGitHubRequest,
   BaseGitHubResponse,
   GetFileContentRequest,
@@ -19,11 +21,18 @@ export type {
   GetPrDiffResponse,
   GetPrMetadataRequest,
   GetPrMetadataResponse,
-  UseGithubRequestFetcher,
+  GetUserDataResponse,
   UseGithubRequestOptions,
   UseGithubRequestReturn,
-} from './fetchers/types'
+  UseGithubRequestFetcher,
+} from './api/types'
 
-export type { GitHubInlineComment, GitHubPullRequest } from './models'
+export type {
+  GitHubUser,
+  GitHubPullRequest,
+  GitHubInlineComment,
+  GitHubCommentLinks,
+  GitHubCommentReactions,
+} from './models'
 
-export { buildHeaders, decodeBase64, getGithubError, GITHUB_API_HOST } from './fetchers/request-utils'
+export { buildHeaders, decodeBase64, getGithubError, GITHUB_API_HOST } from './api/request-utils'

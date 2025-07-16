@@ -81,6 +81,55 @@ export interface GitHubUser {
   events_url: string
   /** URL for received events */
   received_events_url: string
+  /** User's display name */
+  name?: string | null
+  /** User's company */
+  company?: string | null
+  /** User's blog URL */
+  blog?: string | null
+  /** User's location */
+  location?: string | null
+  /** User's public email address */
+  email?: string | null
+  /** User's notification email (for authenticated user only) */
+  notification_email?: string | null
+  /** Whether the user is available for hire */
+  hireable?: boolean | null
+  /** User's biography */
+  bio?: string | null
+  /** User's Twitter username */
+  twitter_username?: string | null
+  /** Number of public repositories */
+  public_repos?: number
+  /** Number of public gists */
+  public_gists?: number
+  /** Number of followers */
+  followers?: number
+  /** Number of people the user is following */
+  following?: number
+  /** When the account was created */
+  created_at?: string
+  /** When the account was last updated */
+  updated_at?: string
+  /** Private gists count (for authenticated user) */
+  private_gists?: number
+  /** Total private repositories (for authenticated user) */
+  total_private_repos?: number
+  /** Owned private repositories (for authenticated user) */
+  owned_private_repos?: number
+  /** Disk usage in bytes (for authenticated user) */
+  disk_usage?: number
+  /** Number of collaborators (for authenticated user) */
+  collaborators?: number
+  /** Whether two-factor authentication is enabled (for authenticated user) */
+  two_factor_authentication?: boolean
+  /** GitHub plan information (for authenticated user) */
+  plan?: {
+    name: string
+    space: number
+    private_repos: number
+    collaborators: number
+  }
 }
 
 /**

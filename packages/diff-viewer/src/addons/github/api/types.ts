@@ -1,5 +1,5 @@
 import { LineRequest, LoadMoreLinesResult } from '../../../components/diff-viewer/types'
-import type { GitHubInlineComment, GitHubPullRequest } from '../models'
+import type { GitHubInlineComment, GitHubPullRequest, GitHubUser } from '../models'
 
 // BASE GITHUB REQUEST/RESPONSE TYPE ____________________________________________________
 export interface PrKey {
@@ -11,15 +11,18 @@ export interface PrKey {
   pullNumber: number
 }
 
-export interface BaseGitHubRequest {
-  /** The pull request key */
-  prKey: PrKey
+export interface BaseRequest {
   /** GitHub personal access token for authentication */
   token?: string
   /** Whether to use mock data instead of making API calls */
   useMocks?: boolean
   /** Artificial delay in milliseconds to wait before resolving the request. Useful for demo/testing purposes. */
   forceDelayMs?: number
+}
+
+export interface BaseGitHubRequest extends BaseRequest {
+  /** The pull request key */
+  prKey: PrKey
 }
 
 export interface BaseGitHubResponse<T> {
@@ -76,6 +79,12 @@ export interface GetFileContentRequest extends BaseGitHubRequest {
 export interface GetFileContentResponse extends BaseGitHubResponse<string> {
   /** Function to fetch file content for a given file path and SHA */
   fetchFileContent: (filePath: string, sha: string) => Promise<string>
+}
+
+// GET USER DATA
+export interface GetUserDataResponse extends BaseGitHubResponse<GitHubUser> {
+  /** Manually trigger a refetch */
+  refetch: () => void
 }
 
 // USE GITHUB REQUEST HOOK TYPES ____________________________________________________
