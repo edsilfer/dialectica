@@ -5,7 +5,7 @@ export { default as getPrDiff } from './api/get-pr-diff'
 export { default as getPrMetadata } from './api/get-pr-metadata'
 export { getUserData } from './api/get-user-data'
 export { default as githubRequest } from './api/github-request'
-export { publishReview } from './api/publish-review'
+export { publishReview, InlineCommentsFetchError } from './api/publish-review'
 export { editInlineComment } from './api/edit-inline-comment'
 export { deleteInlineComment } from './api/delete-inline-comment'
 
@@ -25,6 +25,8 @@ export type {
   GetPrMetadataResponse,
   GetUserDataResponse,
   PrKey,
+  PublishReviewRequest,
+  PublishReviewResponse,
 } from './api/types'
 
 export type {

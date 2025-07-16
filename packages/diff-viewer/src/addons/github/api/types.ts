@@ -1,5 +1,6 @@
 import { LineRequest, LoadMoreLinesResult } from '../../../components/diff-viewer/types'
 import type { GitHubInlineComment, GitHubPullRequest, GitHubUser, ReviewStatus } from '../models'
+import type { CommentMetadata } from '../../pull-request/models/CommentMetadata'
 
 // BASE GITHUB REQUEST/RESPONSE TYPE ____________________________________________________
 export interface PrKey {
@@ -141,21 +142,20 @@ export interface PublishReviewRequest extends GetPrMetadataRequest {
   /** The review event type. */
   event: ReviewStatus
   /** The commit SHA of the head or base commit to comment on. Required when using line/side. */
-  commitId?: string
+  commitId: string
   /** The comments to include in the review. */
-  comments?: {
+  comments: {
     /** The path of the file to comment on. */
     path: string
-    /** The position in the diff to comment on (mutually exclusive with line/side). */
-    position?: number
     /** The line number in the file to comment on (used with side). */
-    line?: number
+    line: number
     /** The side of the diff this line is on ("LEFT" or "RIGHT"). Required when using line. */
-    side?: 'LEFT' | 'RIGHT'
+    side: 'LEFT' | 'RIGHT'
     /** The text of the comment. */
     body: string
   }[]
 }
+
 export interface PublishReviewResponse {
   /** The ID of the review. */
   id: number
@@ -169,4 +169,6 @@ export interface PublishReviewResponse {
   html_url: string
   /** The commit ID the review was submitted on. */
   commit_id: string
+  /** The updated comments after publishing the review. */
+  updatedComments: Set<CommentMetadata>
 }

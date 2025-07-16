@@ -60,7 +60,7 @@ export const InlineComment: React.FC<InlineCommentProps> = ({ thread, currentUse
     if (pendingStatic.length) {
       nodes.push(
         <DisplayComment
-          key={`static-${pendingStatic[0].id}`}
+          key={`static-${pendingStatic[0].serverId}`}
           thread={[...pendingStatic]}
           currentUser={currentUser}
           onEventTrigger={onEventTrigger}
@@ -71,11 +71,11 @@ export const InlineComment: React.FC<InlineCommentProps> = ({ thread, currentUse
   }
 
   ordered.forEach((comment) => {
-    if (comment.currentState === CommentState.DRAFT) {
+    if (comment.state === CommentState.DRAFT) {
       flushStatic()
       nodes.push(
         <DraftComment
-          key={`draft-${comment.id}`}
+          key={`draft-${comment.serverId}`}
           comment={comment}
           isReviewing={isReviewing}
           onEventTrigger={onEventTrigger}
@@ -91,7 +91,7 @@ export const InlineComment: React.FC<InlineCommentProps> = ({ thread, currentUse
   const last = ordered[ordered.length - 1]
   let replyComponent: React.ReactNode | null = null
 
-  if (last.currentState !== CommentState.DRAFT) {
+  if (last.state !== CommentState.DRAFT) {
     replyComponent = (
       <Reply
         key="reply"
@@ -102,7 +102,7 @@ export const InlineComment: React.FC<InlineCommentProps> = ({ thread, currentUse
     )
   }
 
-  const hasStatic = ordered.some((c) => c.currentState !== CommentState.DRAFT)
+  const hasStatic = ordered.some((c) => c.state !== CommentState.DRAFT)
 
   // Add dividers between comment nodes (but not before reply)
   const nodesWithDividers = nodes.map((node, index) => (

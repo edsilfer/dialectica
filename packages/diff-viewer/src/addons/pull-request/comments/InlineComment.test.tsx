@@ -53,8 +53,8 @@ vi.mock('./DisplayComment', () => ({
       <div data-testid="mock-display-comment">
         {props.thread.map((comment: CommentMetadata) => (
           <button
-            key={comment.id}
-            data-testid={`mock-display-reaction-${comment.id}`}
+            key={comment.serverId}
+            data-testid={`mock-display-reaction-${comment.serverId}`}
             onClick={() => props.onEventTrigger?.(comment, CommentEvent.REACT, 'heart')}
           >
             react
@@ -69,15 +69,15 @@ vi.mock('./DraftComment', () => ({
   DraftComment: (props: DraftCommentProps) => {
     mockDraftComment(props)
     return (
-      <div data-testid={`mock-draft-comment-${props.comment.id}`}>
+      <div data-testid={`mock-draft-comment-${props.comment.serverId}`}>
         <button
-          data-testid={`mock-draft-save-${props.comment.id}`}
+          data-testid={`mock-draft-save-${props.comment.serverId}`}
           onClick={() => props.onEventTrigger?.(props.comment, CommentEvent.SAVE, 'new-body')}
         >
           save
         </button>
         <button
-          data-testid={`mock-draft-cancel-${props.comment.id}`}
+          data-testid={`mock-draft-cancel-${props.comment.serverId}`}
           onClick={() => props.onEventTrigger?.(props.comment, CommentEvent.CANCEL)}
         >
           cancel
@@ -99,7 +99,7 @@ const createCommentAuthor = createPropsFactory<CommentAuthor>({
 })
 
 const baseCommentData = {
-  id: 1,
+  serverId: 1,
   author: createCommentAuthor(),
   createdAt: '2024-01-01T12:00:00Z',
   updatedAt: undefined,
@@ -185,8 +185,8 @@ describe('InlineComment component', () => {
 
   it('given published and draft comments when rendered expect both components shown in order', () => {
     // GIVEN
-    const published = createComment({ id: 1, state: CommentState.PUBLISHED })
-    const draft = createComment({ id: 2, state: CommentState.DRAFT })
+    const published = createComment({ serverId: 1, state: CommentState.PUBLISHED })
+    const draft = createComment({ serverId: 2, state: CommentState.DRAFT })
     const props = createInlineProps({ thread: [published, draft] })
     render(<InlineComment {...props} />)
 
@@ -213,8 +213,8 @@ describe('InlineComment component', () => {
 
   it('given multiple published comments when rendered expect all shown with reply', () => {
     // GIVEN
-    const published1 = createComment({ id: 1, state: CommentState.PUBLISHED })
-    const published2 = createComment({ id: 2, state: CommentState.PUBLISHED })
+    const published1 = createComment({ serverId: 1, state: CommentState.PUBLISHED })
+    const published2 = createComment({ serverId: 2, state: CommentState.PUBLISHED })
     const props = createInlineProps({ thread: [published1, published2] })
     render(<InlineComment {...props} />)
 
@@ -289,8 +289,8 @@ describe('InlineComment component', () => {
 
   it('given published and draft comments when draft save clicked expect SAVE event triggered', () => {
     // GIVEN
-    const published = createComment({ id: 1, state: CommentState.PUBLISHED })
-    const draft = createComment({ id: 2, state: CommentState.DRAFT })
+    const published = createComment({ serverId: 1, state: CommentState.PUBLISHED })
+    const draft = createComment({ serverId: 2, state: CommentState.DRAFT })
     const onTrigger = vi.fn()
     const props = createInlineProps({ thread: [published, draft], onEventTrigger: onTrigger })
     render(<InlineComment {...props} />)
@@ -304,8 +304,8 @@ describe('InlineComment component', () => {
 
   it('given published and draft comments when draft cancel clicked expect CANCEL event triggered', () => {
     // GIVEN
-    const published = createComment({ id: 1, state: CommentState.PUBLISHED })
-    const draft = createComment({ id: 2, state: CommentState.DRAFT })
+    const published = createComment({ serverId: 1, state: CommentState.PUBLISHED })
+    const draft = createComment({ serverId: 2, state: CommentState.DRAFT })
     const onTrigger = vi.fn()
     const props = createInlineProps({ thread: [published, draft], onEventTrigger: onTrigger })
     render(<InlineComment {...props} />)

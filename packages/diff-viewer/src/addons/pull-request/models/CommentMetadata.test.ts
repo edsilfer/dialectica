@@ -1,15 +1,27 @@
 import { describe, expect, it } from 'vitest'
-import { createPropsFactory } from '../../../utils/test/generic-test-utils'
 import { CommentMetadata, CommentState } from './CommentMetadata'
+import { createPropsFactory } from '../../../utils/test/generic-test-utils'
 
-// -----------------------------------------------------------------------------
-// Helpers
-// -----------------------------------------------------------------------------
-
-type CommentMetadataParams = ConstructorParameters<typeof CommentMetadata>[0]
+type CommentMetadataParams = {
+  serverId?: number
+  author: {
+    login: string
+    avatar_url: string
+    html_url: string
+  }
+  createdAt: string
+  updatedAt?: string
+  url: string
+  body: string
+  reactions: Map<string, number>
+  path: string
+  line: number
+  side: 'LEFT' | 'RIGHT'
+  state: CommentState
+  wasPublished: boolean
+}
 
 const createCommentMetadataArgs = createPropsFactory<CommentMetadataParams>({
-  id: 1,
   author: {
     login: 'alice',
     avatar_url: 'https://example.com/avatar.png',
@@ -35,43 +47,69 @@ const createCommentMetadata = (overrides: Partial<CommentMetadataParams> = {}): 
 // -----------------------------------------------------------------------------
 
 describe('CommentMetadata model', () => {
-  it('given identical metadata, when getKey called, expect same key', () => {
+  it('given no id provided, when constructed, expect serverId to be undefined', () => {
     // GIVEN
-    const meta1 = createCommentMetadata()
-    const meta2 = createCommentMetadata()
+    const data = createCommentMetadataArgs()
 
     // WHEN
-    const key1 = meta1.getKey()
-    const key2 = meta2.getKey()
+    const metadata = new CommentMetadata(data)
 
     // EXPECT
-    expect(key1).toBe(key2)
+    expect(metadata.serverId).toBeUndefined()
   })
 
-  it('given body updated, when getKey called, expect same key', () => {
+  it('given id provided, when constructed, expect provided id', () => {
     // GIVEN
-    const original = createCommentMetadata()
-    const updated = original.withBody('updated body')
+    const providedId = 12345
+    const data = createCommentMetadataArgs({ serverId: providedId })
 
     // WHEN
-    const originalKey = original.getKey()
-    const updatedKey = updated.getKey()
+    const metadata = new CommentMetadata(data)
 
     // EXPECT
-    expect(updatedKey).toBe(originalKey)
+    expect(metadata.serverId).toBe(providedId)
   })
 
-  it('given line number changed, when getKey called, expect different key', () => {
+  it('given identical content, when constructed multiple times, expect both serverIds to be undefined', () => {
     // GIVEN
-    const original = createCommentMetadata({ line: 5 })
-    const moved = original.with({ line: 6 })
+    const data1 = createCommentMetadataArgs()
+    const data2 = createCommentMetadataArgs()
 
     // WHEN
-    const originalKey = original.getKey()
-    const movedKey = moved.getKey()
+    const meta1 = new CommentMetadata(data1)
+    const meta2 = new CommentMetadata(data2)
 
     // EXPECT
-    expect(movedKey).not.toBe(originalKey)
+    expect(meta1.serverId).toBeUndefined()
+    expect(meta2.serverId).toBeUndefined()
+  })
+
+  it('given different body, when constructed, expect both serverIds to be undefined', () => {
+    // GIVEN
+    const data1 = createCommentMetadataArgs({ body: 'comment 1' })
+    const data2 = createCommentMetadataArgs({ body: 'comment 2' })
+
+    // WHEN
+    const meta1 = new CommentMetadata(data1)
+    const meta2 = new CommentMetadata(data2)
+
+    // EXPECT
+    expect(meta1.serverId).toBeUndefined()
+    expect(meta2.serverId).toBeUndefined()
+  })
+
+  it('given different path, when constructed, expect both serverIds to be undefined', () => {
+    // GIVEN
+    const data1 = createCommentMetadataArgs({ path: 'src/file1.ts' })
+    const data2 = createCommentMetadataArgs({ path: 'src/file2.ts' })
+
+    // WHEN
+    const meta1 = new CommentMetadata(data1)
+    const meta2 = new CommentMetadata(data2)
+
+    // EXPECT
+    expect(meta1.serverId).toBeUndefined()
+    expect(meta2.serverId).toBeUndefined()
   })
 
   it('given with called, when property updated, expect new instance and original untouched', () => {
@@ -88,7 +126,7 @@ describe('CommentMetadata model', () => {
     expect(updated.body).toBe('new comment text')
   })
 
-  it('given withReactions called, when new map provided, expect reactions replaced', () => {
+  it('given with called with reactions, when new map provided, expect reactions replaced', () => {
     // GIVEN
     const original = createCommentMetadata()
     const newReactions = new Map<string, number>([
@@ -97,23 +135,23 @@ describe('CommentMetadata model', () => {
     ])
 
     // WHEN
-    const updated = original.withReactions(newReactions)
+    const updated = original.with({ reactions: newReactions })
 
     // EXPECT
     expect(updated.reactions).toBe(newReactions)
     expect(original.reactions).not.toBe(newReactions)
   })
 
-  it('given withState called, when state updated, expect state changed in new instance only', () => {
+  it('given with called with state, when state updated, expect state changed in new instance only', () => {
     // GIVEN
     const original = createCommentMetadata({ state: CommentState.DRAFT })
 
     // WHEN
-    const published = original.withState(CommentState.PUBLISHED)
+    const published = original.with({ state: CommentState.PUBLISHED })
 
     // EXPECT
-    expect(published.currentState).toBe(CommentState.PUBLISHED)
-    expect(original.currentState).toBe(CommentState.DRAFT)
+    expect(published.state).toBe(CommentState.PUBLISHED)
+    expect(original.state).toBe(CommentState.DRAFT)
   })
 
   it('given partial update via with, when path updated, expect only path changed', () => {

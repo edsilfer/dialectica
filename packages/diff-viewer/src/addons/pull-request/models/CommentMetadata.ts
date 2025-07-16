@@ -1,3 +1,5 @@
+import { hashString } from '../../string-utils'
+
 /**
  * Author information for the comment
  */
@@ -46,7 +48,7 @@ export type EventHandler = (comment: CommentMetadata, event: CommentEvent, data?
  */
 export class CommentMetadata {
   /** Unique identifier for the comment */
-  id: number
+  serverId?: number
   /** The author of the comment */
   author: CommentAuthor
   /** ISO timestamp when comment was created */
@@ -66,12 +68,12 @@ export class CommentMetadata {
   /** Which side of the diff the comment is on */
   side: 'LEFT' | 'RIGHT'
   /** The current state of the comment (draft, saved draft, or published) */
-  currentState: CommentState
+  state: CommentState
   /** True if the comment was ever published to the server at any point*/
   wasPublished: boolean
 
   constructor(data: {
-    id: number
+    serverId?: number
     author: CommentAuthor
     createdAt: string
     updatedAt?: string
@@ -84,7 +86,6 @@ export class CommentMetadata {
     state: CommentState
     wasPublished: boolean
   }) {
-    this.id = data.id
     this.author = data.author
     this.createdAt = data.createdAt
     this.updatedAt = data.updatedAt
@@ -94,26 +95,26 @@ export class CommentMetadata {
     this.path = data.path
     this.line = data.line
     this.side = data.side
-    this.currentState = data.state
+    this.state = data.state
     this.wasPublished = data.wasPublished
+    this.serverId = data.serverId
   }
 
   /**
-   * Generate a unique key for this comment.
-   * Uses stable identifiers that don't change when content is updated.
+   * A good-enough heuristic to identify the comment in the local context.
    */
-  getKey(): string {
-    const rawKey = `${this.author.login}:${this.path}:${this.line}:${this.side}:${this.createdAt}:${this.id}`
-    return this.hashString(rawKey)
+  get localId(): number {
+    const rawKey = `${this.path}:${this.author.login}:${this.line}:${this.side}:${this.body.trim()}`
+    const hashKey = hashString(rawKey)
+    return hashKey
   }
 
   /**
-   * Create a new CommentMetadata instance with updated properties.
-   * Uses the immutable "with" pattern for clean updates.
+   * Utility to clone this comment with updated properties.
    */
   with(
     updates: Partial<{
-      id: number
+      serverId: number
       author: CommentAuthor
       createdAt: string
       updatedAt?: string
@@ -128,7 +129,7 @@ export class CommentMetadata {
     }>,
   ): CommentMetadata {
     return new CommentMetadata({
-      id: updates.id ?? this.id,
+      serverId: updates.serverId ?? this.serverId,
       author: updates.author ?? this.author,
       createdAt: updates.createdAt ?? this.createdAt,
       updatedAt: updates.updatedAt ?? this.updatedAt,
@@ -138,49 +139,8 @@ export class CommentMetadata {
       path: updates.path ?? this.path,
       line: updates.line ?? this.line,
       side: updates.side ?? this.side,
-      state: updates.state ?? this.currentState,
+      state: updates.state ?? this.state,
       wasPublished: updates.wasPublished ?? this.wasPublished,
     })
-  }
-
-  /**
-   * Create a new CommentMetadata instance with updated body content.
-   */
-  withBody(body: string): CommentMetadata {
-    return this.with({ body })
-  }
-
-  /**
-   * Create a new CommentMetadata instance with updated reactions.
-   */
-  withReactions(reactions: Map<string, number>): CommentMetadata {
-    return this.with({ reactions })
-  }
-
-  /**
-   * Create a new CommentMetadata instance with updated state.
-   */
-  withState(state: CommentState): CommentMetadata {
-    return this.with({ state })
-  }
-
-  /**
-   * Create a new CommentMetadata instance with updated wasPublished state.
-   */
-  withWasPublished(wasPublished: boolean): CommentMetadata {
-    return this.with({ wasPublished })
-  }
-
-  /**
-   * Simple hash function to convert long strings into shorter, consistent hashes.
-   */
-  private hashString(str: string): string {
-    let hash = 0
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i)
-      hash = (hash << 5) - hash + char
-      hash = hash & hash // Convert to 32-bit integer
-    }
-    return Math.abs(hash).toString(36)
   }
 }

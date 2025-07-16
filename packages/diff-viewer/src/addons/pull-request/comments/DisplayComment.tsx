@@ -56,8 +56,8 @@ export const DisplayComment: React.FC<StaticCommentProps> = ({ thread, currentUs
   return (
     <>
       {thread.map((comment, idx) => (
-        <div key={comment.id}>
-          <Item comment={comment} user={currentUser} onEvent={onEventTrigger} styles={styles} />
+        <div key={comment.localId}>
+          <Item comment={comment} user={currentUser} onEvent={onEventTrigger} />
           {idx < thread.length - 1 && <Divider css={styles.divider} />}
         </div>
       ))}
@@ -75,13 +75,13 @@ const Item: React.FC<{ comment: CommentMetadata; user: CommentAuthor; onEvent: E
         src={comment.author.avatar_url}
         size={24}
         alt={comment.author.login}
-        data-testid={`comment-author-avatar-${comment.id}`}
+        data-testid={`comment-author-avatar-${comment.serverId}`}
         css={styles.avatar}
       />
 
       <div style={{ flex: 1 }}>
         <Header
-          state={comment.currentState}
+          state={comment.state}
           author={comment.author}
           currentUser={user}
           createdAt={comment.createdAt}

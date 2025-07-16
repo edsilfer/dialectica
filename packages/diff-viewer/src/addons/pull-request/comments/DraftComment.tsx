@@ -38,7 +38,7 @@ export const DraftComment: React.FC<DraftCommentProps> = ({ comment, isReviewing
   const styles = useStyles()
 
   const getSaveButtonLabel = () => {
-    switch (comment.currentState) {
+    switch (comment.state) {
       case CommentState.DRAFT:
         return comment.wasPublished ? 'Save edit' : isReviewing ? 'Add review comment' : 'Start a review'
       case CommentState.PENDING:
@@ -65,7 +65,7 @@ export const DraftComment: React.FC<DraftCommentProps> = ({ comment, isReviewing
     <div css={styles.container}>
       <Editor
         initialText={comment.body}
-        placeholder={comment.currentState === CommentState.DRAFT ? 'Add a comment...' : 'Edit your comment...'}
+        placeholder={comment.state === CommentState.DRAFT ? 'Add a comment...' : 'Edit your comment...'}
         isVisible={true}
         buttons={buttons}
         onSave={(commentText) => onEventTrigger?.(comment, CommentEvent.SAVE, commentText)}

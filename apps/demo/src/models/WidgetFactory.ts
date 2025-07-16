@@ -1,10 +1,10 @@
 import {
   CommentAuthor,
+  CommentEvent,
+  CommentFactory,
   CommentMetadata,
-  CommentState,
   GitHubInlineComment,
   InlineComment,
-  CommentEvent,
   Widget,
 } from '@diff-viewer'
 import React from 'react'
@@ -84,7 +84,7 @@ class Builder {
     return Array.from(commentGroups.entries()).map(([key, groupComments]) => {
       const [filepath, lineStr, side] = key.split(':')
       const line = parseInt(lineStr, 10)
-      const convertedComments = groupComments.map((comment) => this.toMetadata(comment))
+      const convertedComments = groupComments.map((comment) => CommentFactory.fromGitHubComment(comment))
 
       return {
         content: React.createElement(InlineComment, {
@@ -137,39 +137,5 @@ class Builder {
         filepath: comment.path,
       } as Widget
     })
-  }
-
-  private toMetadata(comment: GitHubInlineComment): CommentMetadata {
-    return new CommentMetadata({
-      id: comment.id,
-      author: {
-        login: comment.user.login,
-        avatar_url: comment.user.avatar_url,
-        html_url: comment.user.html_url,
-      },
-      createdAt: comment.created_at,
-      updatedAt: comment.updated_at,
-      url: comment.html_url,
-      body: comment.body,
-      reactions: this.buildReactions(comment),
-      path: comment.path,
-      line: comment.line || 0,
-      side: comment.side || 'RIGHT',
-      state: CommentState.PUBLISHED, // GitHub comments are always published
-      wasPublished: true,
-    })
-  }
-
-  private buildReactions(comment: GitHubInlineComment) {
-    const reactions = new Map<string, number>()
-    reactions.set('+1', comment.reactions['+1'])
-    reactions.set('-1', comment.reactions['-1'])
-    reactions.set('laugh', comment.reactions.laugh)
-    reactions.set('hooray', comment.reactions.hooray)
-    reactions.set('confused', comment.reactions.confused)
-    reactions.set('heart', comment.reactions.heart)
-    reactions.set('rocket', comment.reactions.rocket)
-    reactions.set('eyes', comment.reactions.eyes)
-    return reactions
   }
 }

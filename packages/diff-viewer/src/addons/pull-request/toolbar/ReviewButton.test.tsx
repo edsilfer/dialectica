@@ -65,7 +65,7 @@ const createMockCommentMetadata = (
   }> = {},
 ): CommentMetadata => {
   return new CommentMetadata({
-    id: 1,
+    serverId: 1,
     author: {
       login: 'testuser',
       avatar_url: 'https://example.com/avatar.jpg',

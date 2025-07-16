@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 
 export type AsyncState<T> = {
   /** The data returned by the fetcher. */
@@ -7,6 +7,8 @@ export type AsyncState<T> = {
   loading: boolean
   /** The error returned by the fetcher. */
   error: Error | undefined
+  /** Function to trigger a refetch */
+  refetch: () => void
 }
 
 /**
@@ -15,12 +17,17 @@ export type AsyncState<T> = {
  * @param enabled - Whether the fetcher should run.
  * @param deps    - The dependencies to watch for changes.
  * @param fetcher - The function to fetch the data.
- * @returns         The data, loading state, and error state.
+ * @returns         The data, loading state, error state, and refetch function.
  */
 export function useAsync<T>(enabled: boolean, deps: React.DependencyList, fetcher: () => Promise<T>): AsyncState<T> {
   const [data, setData] = useState<T | undefined>(undefined)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error | undefined>(undefined)
+  const [refetchTrigger, setRefetchTrigger] = useState(0)
+
+  const refetch = useCallback(() => {
+    setRefetchTrigger((prev) => prev + 1)
+  }, [])
 
   useEffect(() => {
     if (!enabled) return
@@ -43,7 +50,7 @@ export function useAsync<T>(enabled: boolean, deps: React.DependencyList, fetche
     return () => {
       cancelled = true
     }
-  }, deps)
+  }, [...deps, refetchTrigger])
 
-  return { data, loading, error }
+  return { data, loading, error, refetch }
 }

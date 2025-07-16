@@ -1,19 +1,25 @@
-import { CommentState, CommentMetadata, CommentAuthor, GitHubInlineComment, LineMetadata } from '@diff-viewer'
+import { LineMetadata } from '../../../components/diff-viewer/types'
+import { GitHubInlineComment } from '../../github'
+import { CommentAuthor, CommentMetadata, CommentState } from './CommentMetadata'
 
 /**
  * Factory class for creating CommentMetadata instances with proper defaults and conversions
  */
-export class CommentMetadataFactory {
+export class CommentFactory {
   /**
-   * Create a new draft comment from line metadata.
+   * Create a new comment from line metadata.
    *
    * @param dockedLine - The line metadata where the comment should be placed
    * @param author - The author of the comment
-   * @returns A new CommentMetadata instance in DRAFT state
+   * @param state - The initial state of the comment (defaults to DRAFT)
+   * @returns A new CommentMetadata instance
    */
-  static createDraft(dockedLine: LineMetadata, author: CommentAuthor): CommentMetadata {
+  static create(
+    dockedLine: LineMetadata,
+    author: CommentAuthor,
+    state: CommentState = CommentState.DRAFT,
+  ): CommentMetadata {
     return new CommentMetadata({
-      id: Date.now(), // Temporary ID for new comments
       author,
       createdAt: new Date().toISOString(),
       updatedAt: undefined,
@@ -23,7 +29,7 @@ export class CommentMetadataFactory {
       path: dockedLine.filepath!,
       line: dockedLine.lineNumber!,
       side: dockedLine.side! === 'left' ? 'LEFT' : 'RIGHT',
-      state: CommentState.DRAFT,
+      state,
       wasPublished: false,
     })
   }
@@ -36,7 +42,7 @@ export class CommentMetadataFactory {
    */
   static fromGitHubComment(githubComment: GitHubInlineComment): CommentMetadata {
     return new CommentMetadata({
-      id: githubComment.id,
+      serverId: githubComment.id,
       author: {
         login: githubComment.user.login,
         avatar_url: githubComment.user.avatar_url,
@@ -46,7 +52,7 @@ export class CommentMetadataFactory {
       updatedAt: githubComment.updated_at,
       url: githubComment.html_url,
       body: githubComment.body,
-      reactions: CommentMetadataFactory.buildReactions(githubComment),
+      reactions: CommentFactory.buildReactions(githubComment),
       path: githubComment.path,
       line: githubComment.line || 0,
       side: githubComment.side || 'RIGHT',

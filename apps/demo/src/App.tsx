@@ -9,18 +9,24 @@ import {
   AddButton,
   DefaultToolbar,
   DiffViewer,
+  ParsedDiff,
   PrKey,
   PullRequestHeader,
   ReviewButton,
   useDiffViewerConfig,
+  ReviewPayload,
 } from '@diff-viewer'
 
 import ErrorCard from './components/ErrorCard'
 import InfoCard from './components/InfoCard'
 import { mapPullRequestMetadata } from './components/mappers'
-import { usePrViewModel } from './hooks/use-pr-view-model'
-import { useReview } from './hooks/use-review'
+import { useReview } from './hooks/state/use-review-state'
+import { useCommentState } from './hooks/state/use-comment-state'
 import { useSettings } from './provider/setttings-provider'
+import { useCommentDatastore } from './hooks/data/use-comment-datastore'
+import { usePrData } from './hooks/data/use-pr-datastore'
+import { useWidgetDatastore } from './hooks/data/use-widget-datastore'
+import { useReviewDatastore } from './hooks/data/use-review-datastore'
 import { parseURL } from './utils'
 
 function useStyles({ theme }: ReturnType<typeof useDiffViewerConfig>) {
@@ -48,13 +54,24 @@ function useStyles({ theme }: ReturnType<typeof useDiffViewerConfig>) {
 export default function App() {
   const config = useDiffViewerConfig()
   const styles = useStyles(config)
-  const { useMocks } = useSettings()
+  const { useMocks, currentUser } = useSettings()
 
   // STATE ---------------------------------------------------------------------------------------------
   const [prKey, setPrKey] = useState<PrKey | undefined>(parseURL())
-  const { isPosting, comments, onSubmitReview } = useReview(prKey)
-  const { metadata, loading, errors, diff, commentWidgets, isPrAuthor, loadMore, onDock, onAddButton } =
-    usePrViewModel(prKey)
+  const { handle: commentDatastore } = useCommentDatastore(prKey)
+  const { handle: reviewDatastore } = useReviewDatastore(prKey)
+  const { isPosting, comments, onSubmitReview } = useReview(reviewDatastore, commentDatastore)
+  const { newComment, onDock, onCommentEvent } = useCommentState(commentDatastore)
+  const { metadata, rawDiff, loading, errors, loadMore } = usePrData(prKey)
+  const diff = useMemo(() => (rawDiff ? ParsedDiff.build(rawDiff) : undefined), [rawDiff])
+  const widgetDatastore = useWidgetDatastore(commentDatastore, onCommentEvent)
+
+  /**
+   * Determine if the current user is the author of the pull request.
+   */
+  const isPrAuthor = useMemo(() => {
+    return metadata?.user?.login === currentUser?.login
+  }, [metadata?.user?.login, currentUser?.login])
 
   // ERRORS --------------------------------------------------------------------------------------------
   useEffect(() => {
@@ -97,10 +114,13 @@ export default function App() {
                   key: 'review-button',
                   component: (
                     <ReviewButton
+                      commitId={metadata?.head?.sha}
                       isPosting={isPosting}
                       comments={comments}
                       isAuthor={isPrAuthor}
-                      onSubmitReview={onSubmitReview}
+                      onSubmitReview={(payload: ReviewPayload) => {
+                        void onSubmitReview(payload)
+                      }}
                     />
                   ),
                   side: 'right',
@@ -116,11 +136,11 @@ export default function App() {
             {
               unifiedDockIdx: 2,
               splitDockIdx: 1,
-              content: <AddButton key="add-button" onClick={onAddButton} />,
+              content: <AddButton key="add-button" onClick={newComment} />,
               onDock,
             },
           ]}
-          widgets={commentWidgets}
+          widgets={widgetDatastore.handle.list()}
         />
       )
     } else {

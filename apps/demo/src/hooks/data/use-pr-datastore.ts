@@ -3,22 +3,25 @@ import {
   getPrDiff,
   getPrMetadata,
   getUserData,
+  getMoreLines,
   GitHubInlineComment,
   GitHubPullRequest,
   GitHubUser,
+  LineRequest,
+  LoadMoreLinesResult,
   PrKey,
 } from '@diff-viewer'
-import { useSettings } from '../provider/setttings-provider'
-import { useAsync } from './use-async'
+import { useCallback } from 'react'
+import { useSettings } from '../../provider/setttings-provider'
+import { useAsync } from '../use-async'
 
 /**
- * Hook that fetches the pull request data and returns the metadata, raw diff, and comments.
+ * Hook that fetches the pull request data and returns the metadata and raw diff.
  *
- * @param prKey          - The pull request key.
- * @param refetchTrigger - Optional trigger to force refetch comments (increment to refetch).
- * @returns                The pull request data.
+ * @param prKey - The pull request key.
+ * @returns      The pull request data.
  */
-export function usePullRequestData(prKey?: PrKey, refetchTrigger = 0) {
+export function usePrData(prKey?: PrKey) {
   const { githubPat: token, useMocks, setCurrentUser } = useSettings()
 
   const userReq = useAsync<GitHubUser>(true, [token, useMocks], async () => {
@@ -45,7 +48,7 @@ export function usePullRequestData(prKey?: PrKey, refetchTrigger = 0) {
   )
   const commentsRq = useAsync<GitHubInlineComment[]>(
     !!prKey && !!metadataRq.data && !!diffRq.data,
-    [prKey, metadataRq.data, diffRq.data, token, useMocks, refetchTrigger],
+    [prKey, metadataRq.data, diffRq.data, token, useMocks],
     () => getInlineComments({ prKey: prKey!, token, useMocks }),
   )
 
@@ -63,6 +66,31 @@ export function usePullRequestData(prKey?: PrKey, refetchTrigger = 0) {
     comments: commentsRq.error,
   }
 
+  /**
+   * Load more lines from the pull request.
+   *
+   * @param request - The request to load more lines.
+   * @returns         The result of the load more lines request.
+   */
+  const loadMore = useCallback(
+    async (request: LineRequest): Promise<LoadMoreLinesResult> => {
+      if (!metadataRq.data?.base?.sha || !metadataRq.data?.head?.sha || !prKey) {
+        throw new Error('Cannot load more lines: missing commit SHAs or PR key')
+      }
+      return getMoreLines(
+        {
+          prKey,
+          token,
+          useMocks,
+          baseSha: metadataRq.data.base.sha,
+          headSha: metadataRq.data.head.sha,
+        },
+        request,
+      )
+    },
+    [metadataRq.data?.base?.sha, metadataRq.data?.head?.sha, prKey, token, useMocks],
+  )
+
   return {
     user: userReq.data,
     metadata: metadataRq.data,
@@ -70,5 +98,6 @@ export function usePullRequestData(prKey?: PrKey, refetchTrigger = 0) {
     comments: commentsRq.data,
     loading,
     errors,
+    loadMore,
   }
 }

@@ -1,6 +1,22 @@
+import { CommentFactory } from '../../pull-request/models/CommentFactory'
+import type { CommentMetadata } from '../../pull-request/models/CommentMetadata'
+import getInlineComments from './get-inline-comments'
 import githubRequest from './github-request'
 import { buildHeaders, getGithubError, GITHUB_API_HOST } from './request-utils'
 import type { PublishReviewRequest, PublishReviewResponse } from './types'
+
+/**
+ * Error thrown when inline comments fetch fails after successful review submission
+ */
+export class InlineCommentsFetchError extends Error {
+  constructor(
+    message: string,
+    public readonly originalError: Error,
+  ) {
+    super(message)
+    this.name = 'InlineCommentsFetchError'
+  }
+}
 
 /**
  * Publishes a review to a GitHub Pull Request.
@@ -30,6 +46,7 @@ export async function publishReview(params: PublishReviewRequest): Promise<Publi
 
     const url = `${GITHUB_API_HOST}/repos/${prKey.owner}/${prKey.repo}/pulls/${prKey.pullNumber}/reviews`
     const authToken = token && token.trim() !== '' ? token : undefined
+    const payload = { body, event, comments, commit_id: params.commitId }
 
     const res = await fetch(url, {
       method: 'POST',
@@ -37,14 +54,34 @@ export async function publishReview(params: PublishReviewRequest): Promise<Publi
         ...buildHeaders(authToken),
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ body, event, comments, commit_id: params.commitId }),
+      body: JSON.stringify(payload),
     })
 
     if (!res.ok) {
       throw new Error(`GitHub API error (${res.status}): ${await getGithubError(res)}`)
     }
 
-    return (await res.json()) as PublishReviewResponse
+    const response = (await res.json()) as PublishReviewResponse
+
+    /*
+     * After successfully submitting a review, we need to refetch the inline comments
+     * to ensure the local context is updated with the latest comments (the server ID)
+     */
+    let updatedComments: Set<CommentMetadata>
+    try {
+      const inlineComments = await getInlineComments({ prKey, token })
+      updatedComments = new Set(inlineComments.map((comment) => CommentFactory.fromGitHubComment(comment)))
+    } catch (error) {
+      throw new InlineCommentsFetchError(
+        'Failed to fetch updated comments after publishing review',
+        error instanceof Error ? error : new Error('Unknown error'),
+      )
+    }
+
+    return {
+      ...response,
+      updatedComments,
+    }
   }
 
   return githubRequest<PublishReviewRequest, PublishReviewResponse>(params, fetcher, { requestType: 'publish-review' })

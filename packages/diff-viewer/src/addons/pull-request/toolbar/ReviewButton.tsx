@@ -68,6 +68,8 @@ const useStyles = () => {
 }
 
 export interface ReviewButtonProps {
+  /** The commit SHA associated with the review (injected by parent). */
+  commitId?: string
   /** Array of CommentMetadata for pending review comments */
   comments: CommentMetadata[]
   /** Whether the current user is the PR author */
@@ -83,6 +85,7 @@ export interface ReviewButtonProps {
  * The button label changes based on whether there are pending review comments.
  */
 export const ReviewButton: React.FC<ReviewButtonProps> = ({
+  commitId,
   comments,
   isAuthor,
   isPosting = false,
@@ -93,7 +96,7 @@ export const ReviewButton: React.FC<ReviewButtonProps> = ({
   const [reviewType, setReviewType] = useState<ReviewStatus>(ReviewStatus.COMMENT)
   const styles = useStyles()
 
-  const commentCount = comments.filter((c) => c.currentState === CommentState.PENDING).length
+  const commentCount = comments.filter((c) => c.state === CommentState.PENDING).length
   const buttonLabel = commentCount === 0 ? 'Review changes' : `Finish your review (${commentCount})`
 
   const handleOpenChange = (open: boolean) => {
@@ -110,6 +113,7 @@ export const ReviewButton: React.FC<ReviewButtonProps> = ({
     onSubmitReview({
       reviewStatus: reviewType,
       comment: reviewText.trim() || undefined,
+      commitId: commitId,
     })
     setIsPopoverOpen(false)
     setReviewText('')

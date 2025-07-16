@@ -64,8 +64,8 @@ const useStyles = () => {
       /* Blockquote styling */
       & blockquote {
         display: flex;
-        margin: 0 !important;
-        padding: ${theme.spacing.sm} 0 ${theme.spacing.sm} ${theme.spacing.sm};
+        margin: ${theme.spacing.md} 0 !important;
+        padding: ${theme.spacing.xs} 0 ${theme.spacing.sm} ${theme.spacing.sm};
         border-left: 4px solid ${theme.colors.border};
       }
 

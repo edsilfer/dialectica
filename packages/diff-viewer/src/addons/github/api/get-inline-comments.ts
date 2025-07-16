@@ -10,7 +10,7 @@ export async function getInlineComments(params: GetMoreLineRequest): Promise<Git
   const fetcher = async ({ prKey, token }: GetMoreLineRequest): Promise<GitHubInlineComment[]> => {
     const url = `${GITHUB_API_HOST}/repos/${prKey.owner}/${prKey.repo}/pulls/${prKey.pullNumber}/comments`
     const githubToken = token && token.trim() !== '' ? token : undefined
-    const res = await fetch(url, { headers: buildHeaders(githubToken) })
+    const res = await fetch(url, { cache: 'no-store', headers: buildHeaders(githubToken) })
 
     if (!res.ok) {
       throw new Error(`GitHub API error (${res.status}): ${await getGithubError(res)}`)
