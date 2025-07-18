@@ -51,7 +51,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               label: 'Color Theme',
               description: 'Application-wide color theme.',
               value: theme.name,
-              onChange: (value: string) => setTheme(Themes[value as keyof typeof Themes]),
+              onChange: (value: string) => setTheme(Themes[value]),
               options: [
                 { value: 'light', label: 'Light' },
                 { value: 'dark', label: 'Dark' },

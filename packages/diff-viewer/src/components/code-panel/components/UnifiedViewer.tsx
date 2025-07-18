@@ -5,10 +5,12 @@ import { useOverlayDocking } from '../hooks/use-overlay-docking'
 import { DiffRow } from './DiffRow'
 import { getViewerStyles } from './shared-styles'
 import { UnifiedViewerProps } from './types'
+import { theme as antTheme } from 'antd'
 
 const UnifiedViewer: React.FC<UnifiedViewerProps> = (props) => {
   const theme = useContext(ThemeContext)
-  const styles = useMemo(() => getViewerStyles(theme), [theme])
+  const { token: antdThemeToken } = antTheme.useToken()
+  const styles = useMemo(() => getViewerStyles(theme, antdThemeToken), [theme, antdThemeToken])
 
   const { overlayGroups, handleRowEnter, handleRowLeave } = useOverlayDocking({
     overlays: props.overlays,
@@ -42,8 +44,9 @@ const UnifiedViewer: React.FC<UnifiedViewerProps> = (props) => {
                 isHunk={isHunk}
                 overlays={filteredOverlayGroups}
                 widgets={props.widgets}
-                loadLines={props.onLoadMoreLines}
                 unified={true}
+                highlightedLines={props.highlightedLines}
+                loadLines={props.onLoadMoreLines}
                 onMouseEnter={handleRowEnter}
                 onMouseLeave={handleRowLeave}
               />,

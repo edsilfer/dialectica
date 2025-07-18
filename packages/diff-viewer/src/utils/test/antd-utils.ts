@@ -568,4 +568,11 @@ const _mockDivider = () => {
 const _mockTheme = () => ({
   darkAlgorithm: 'dark-algorithm',
   defaultAlgorithm: 'default-algorithm',
+  useToken: vi.fn().mockReturnValue({
+    token: {
+      colorBgContainer: '#ffffff',
+      colorText: '#000000',
+      borderRadius: 6,
+    },
+  }),
 })

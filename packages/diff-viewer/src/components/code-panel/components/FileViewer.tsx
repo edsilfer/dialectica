@@ -47,7 +47,7 @@ const useStyles = () => {
 }
 
 const FileViewer: React.FC<FileViewerProps> = (props) => {
-  const { file, maxLinesToFetch, onLoadMoreLines, id, overlays, widgets } = props
+  const { file, maxLinesToFetch, onLoadMoreLines, id, overlays, widgets, highlightedLines } = props
   const styles = useStyles()
   const config = useContextSelector(CodePanelConfigContext, (ctx) => {
     if (!ctx) throw new Error('FileViewer must be inside CodePanelConfigProvider')
@@ -112,6 +112,7 @@ const FileViewer: React.FC<FileViewerProps> = (props) => {
               loadMoreLinesCount={maxLinesToFetch ?? 10}
               overlays={overlays}
               widgets={fileWidgets}
+              highlightedLines={highlightedLines}
             />
           )}
           {config.mode === 'unified' && (
@@ -124,6 +125,7 @@ const FileViewer: React.FC<FileViewerProps> = (props) => {
               loadMoreLinesCount={maxLinesToFetch ?? 10}
               overlays={overlays}
               widgets={fileWidgets}
+              highlightedLines={highlightedLines}
             />
           )}
         </div>

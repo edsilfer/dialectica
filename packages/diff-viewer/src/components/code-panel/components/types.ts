@@ -1,4 +1,4 @@
-import { LoadMoreLinesHandler, Overlay, Widget } from '../../diff-viewer/types'
+import { LoadMoreLinesHandler, Overlay, Widget, LineRange } from '../../diff-viewer/types'
 import { FileDiff } from '../../../models/FileDiff'
 import { DiffLineViewModel } from '../models/DiffLineViewModel'
 
@@ -19,6 +19,8 @@ export interface FileViewerProps {
   overlays?: Overlay[]
   /** Array of widgets to display at specific line positions. */
   widgets?: Widget[]
+  /** The line range to highlight. */
+  highlightedLines?: LineRange
 
   /** Called when user requests to load (expand) more lines around a hunk. */
   onLoadMoreLines?: LoadMoreLinesHandler
@@ -48,6 +50,8 @@ export interface UnifiedViewerProps {
   overlays?: Overlay[]
   /** Array of widgets to display at specific line positions. */
   widgets?: Widget[]
+  /** The line range to highlight. */
+  highlightedLines?: LineRange
 
   /** Called when user requests to load (expand) more lines around a hunk. */
   onLoadMoreLines?: (line: DiffLineViewModel, direction: HunkDirection) => void
@@ -64,6 +68,8 @@ export interface SplitViewerProps {
   overlays?: Overlay[]
   /** Array of widgets to display at specific line positions. */
   widgets?: Widget[]
+  /** The line range to highlight. */
+  highlightedLines?: LineRange
 
   /** Called when user requests to load (expand) more lines around a hunk. */
   onLoadMoreLines?: (line: DiffLineViewModel, direction: HunkDirection) => void

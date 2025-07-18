@@ -103,6 +103,7 @@ export default function App() {
           isDiffLoading={loading.diff}
           maxLinesToFetch={10}
           onLoadMoreLines={loadMore}
+          highlightedLines={{ side: 'left', start: 72, end: 73 }}
           overlays={[
             {
               unifiedDockIdx: 2,

@@ -106,6 +106,7 @@ vi.mock('./DiffRow', () => ({
 
 const makeSplitViewerProps = createPropsFactory<SplitViewerProps>({
   lines: [],
+  filepath: 'test.ts',
   loadMoreLinesCount: 5,
   overlays: [],
   widgets: [],
@@ -319,6 +320,7 @@ describe('SplitViewer', () => {
         overlays,
         lines: [line],
         viewMode: 'split',
+        filepath: 'test.ts',
       })
       const row = screen.getByTestId('diff-row-0')
       expect(row).toHaveAttribute('data-overlays-count', '2')

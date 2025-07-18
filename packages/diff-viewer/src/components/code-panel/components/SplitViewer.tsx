@@ -5,10 +5,12 @@ import { useOverlayDocking } from '../hooks/use-overlay-docking'
 import { DiffRow } from './DiffRow'
 import { getViewerStyles } from './shared-styles'
 import { SplitViewerProps } from './types'
+import { theme as antTheme } from 'antd'
 
 const SplitViewer: React.FC<SplitViewerProps> = (props) => {
   const theme = useContext(ThemeContext)
-  const styles = useMemo(() => getViewerStyles(theme), [theme])
+  const { token: antdThemeToken } = antTheme.useToken()
+  const styles = useMemo(() => getViewerStyles(theme, antdThemeToken), [theme, antdThemeToken])
   const containerRef = useRef<HTMLDivElement>(null)
   const rafIdRef = useRef<number | null>(null)
 
@@ -84,6 +86,7 @@ const SplitViewer: React.FC<SplitViewerProps> = (props) => {
                 unified={false}
                 onMouseEnter={handleRowEnter}
                 onMouseLeave={handleRowLeave}
+                highlightedLines={props.highlightedLines}
               />
             )
           })}

@@ -68,6 +68,12 @@ export interface LoadMoreLinesResult {
 
 export type LoadMoreLinesHandler = (request: LineRequest) => Promise<LoadMoreLinesResult>
 
+export interface LineRange {
+  side: 'left' | 'right'
+  start: number
+  end: number
+}
+
 export interface DiffViewerProps {
   /** The parsed diff to visualize. */
   diff: ParsedDiff
@@ -87,7 +93,11 @@ export interface DiffViewerProps {
   overlays?: Overlay[]
   /** Array of widgets to display at specific line positions. */
   widgets?: Widget[]
+  /** The line number to highlight. */
+  highlightedLines?: LineRange
 
   /** Called when the user requests to load (expand) more lines for a specific file. */
   onLoadMoreLines?: LoadMoreLinesHandler
+  /** Called when the user selects a line range. */
+  onLineSelection?: (lineRange: LineRange) => void
 }

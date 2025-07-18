@@ -1,4 +1,5 @@
 import { css, SerializedStyles } from '@emotion/react'
+import { GlobalToken } from 'antd'
 import { DiffLineType } from '../../../models/LineDiff'
 import { ThemeTokens } from '../../../themes'
 
@@ -11,7 +12,7 @@ import { ThemeTokens } from '../../../themes'
  * needs to happen during the diff rendering loop.
  */
 
-export const getViewerStyles = (theme: ThemeTokens) => {
+export const getViewerStyles = (theme: ThemeTokens, antdTheme: GlobalToken) => {
   const backgroundByType: Record<DiffLineType, string> = {
     add: theme.colors.hunkViewerLineAddedBg,
     delete: theme.colors.hunkViewerLineRemovedBg,
@@ -191,11 +192,60 @@ export const getViewerStyles = (theme: ThemeTokens) => {
     height: 1.5rem !important;
   `
 
+  const HIGHLIGHTED_ROW_BORDER = `1px solid ${antdTheme.colorWarning}`
+  const HIGHLIGHTED_ROW_RADIUS = `${theme.spacing.xs}`
+
   const table = css`
     width: 100%;
-    border-collapse: collapse;
-    /* Fixed layout is noticeably faster than auto for large diffs */
+    border-collapse: separate;
+    border-spacing: 0;
     table-layout: fixed;
+
+    tr.highlighted-row > td {
+      background: ${antdTheme.colorWarningBg};
+    }
+
+    tr.highlighted-row > td:first-child {
+      border-left: ${HIGHLIGHTED_ROW_BORDER};
+    }
+
+    tr.highlighted-row > td:last-child {
+      border-right: ${HIGHLIGHTED_ROW_BORDER};
+    }
+
+    /* Top border (first in block) */
+    tr:not(.highlighted-row) + tr.highlighted-row > td,
+    tr.highlighted-row:first-child > td {
+      border-top: ${HIGHLIGHTED_ROW_BORDER};
+    }
+
+    /* Bottom border (last in block) */
+    tr.highlighted-row:has(+ tr:not(.highlighted-row)) > td,
+    tr.highlighted-row:last-child > td {
+      border-bottom: ${HIGHLIGHTED_ROW_BORDER};
+    }
+
+    /* Rounded top corners */
+    tr:not(.highlighted-row) + tr.highlighted-row > td:first-child,
+    tr.highlighted-row:first-child > td:first-child {
+      border-top-left-radius: ${HIGHLIGHTED_ROW_RADIUS};
+    }
+
+    tr:not(.highlighted-row) + tr.highlighted-row > td:last-child,
+    tr.highlighted-row:first-child > td:last-child {
+      border-top-right-radius: ${HIGHLIGHTED_ROW_RADIUS};
+    }
+
+    /* Rounded bottom corners */
+    tr.highlighted-row:has(+ tr:not(.highlighted-row)) > td:first-child,
+    tr.highlighted-row:last-child > td:first-child {
+      border-bottom-left-radius: ${HIGHLIGHTED_ROW_RADIUS};
+    }
+
+    tr.highlighted-row:has(+ tr:not(.highlighted-row)) > td:last-child,
+    tr.highlighted-row:last-child > td:last-child {
+      border-bottom-right-radius: ${HIGHLIGHTED_ROW_RADIUS};
+    }
   `
 
   const lineType = css`
@@ -209,6 +259,7 @@ export const getViewerStyles = (theme: ThemeTokens) => {
     left: 0;
     top: 50%;
     opacity: 0;
+    z-index: 1000;
   `
 
   return {

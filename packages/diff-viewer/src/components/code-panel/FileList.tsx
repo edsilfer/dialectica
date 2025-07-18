@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useMemo } from 'react'
 import { FileDiff } from '../../models/FileDiff'
 import { ThemeContext } from '../../themes/providers/theme-context'
 import { useDiffViewerConfig } from '../diff-viewer/providers/diff-viewer-context'
-import { LoadMoreLinesHandler, Overlay, Widget } from '../diff-viewer/types'
+import { LoadMoreLinesHandler, Overlay, Widget, LineRange } from '../diff-viewer/types'
 import { ActionButtons, CustomButton } from '../ui/ActionButtons'
 import { ProgressIndicator } from '../ui/ProgressIndicator'
 import FileViewer from './components/FileViewer'
@@ -62,6 +62,8 @@ export type FileListProps = {
   overlays?: Overlay[]
   /** Array of widgets to display at specific line positions. */
   widgets?: Widget[]
+  /** The line range to highlight. */
+  highlightedLines?: LineRange
 
   /** Called when the user requests to load (expand) more lines for a specific file. */
   onLoadMoreLines?: LoadMoreLinesHandler
@@ -182,6 +184,7 @@ const CodePanelContent: React.FC<FileListProps> = (props) => {
             maxLinesToFetch={props.maxLinesToFetch}
             overlays={props.overlays}
             widgets={props.widgets}
+            highlightedLines={props.highlightedLines}
           />
         ))}
       </div>

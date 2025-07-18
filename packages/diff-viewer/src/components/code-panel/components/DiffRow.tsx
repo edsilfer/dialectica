@@ -1,11 +1,13 @@
 import { Interpolation, Theme } from '@emotion/react'
 import React, { useContext, useMemo } from 'react'
 import { ThemeContext } from '../../../themes/providers/theme-context'
+import { LineRange } from '../../diff-viewer/types'
 import LoadMoreButton from '../../ui/buttons/LoadMoreButton'
 import { DiffLineViewModel } from '../models/DiffLineViewModel'
 import { DiffRowViewModel } from '../models/DiffRowViewModel'
 import { getViewerStyles } from './shared-styles'
 import { DiffLineType, HunkDirection, Widget } from './types'
+import { theme as antTheme } from 'antd'
 
 const PREFIX: Record<DiffLineType, string> = {
   add: '+',
@@ -34,6 +36,9 @@ export interface DiffRowProps {
   css?: Interpolation<Theme>
   /** Children elements */
   children?: React.ReactNode
+  /** The line range to highlight */
+  highlightedLines?: LineRange
+
   /** Function to load more lines */
   loadLines?: (line: DiffLineViewModel, direction: HunkDirection) => void
   /** Function to handle mouse enter */
@@ -46,12 +51,27 @@ export const DiffRow: React.FC<DiffRowProps> = (props) => {
   const viewModel = useMemo(() => new DiffRowViewModel(props.line, props.widgets ?? []), [props.line, props.widgets])
   const Row = props.unified ? (props.isHunk ? UnifiedHunkRow : UnifiedRow) : props.isHunk ? SplitHunkRow : SplitRow
 
+  // Check if this line should be highlighted
+  const isHighlighted = useMemo(() => {
+    if (!props.highlightedLines) return false
+
+    const lineNumber = props.unified
+      ? (props.line.lineNumberRight ?? props.line.lineNumberLeft)
+      : props.highlightedLines.side === 'left'
+        ? props.line.lineNumberLeft
+        : props.line.lineNumberRight
+
+    if (!lineNumber) return false
+
+    return lineNumber >= props.highlightedLines.start && lineNumber <= props.highlightedLines.end
+  }, [props.highlightedLines, props.line, props.unified])
+
   return (
     <>
       {/* widgets *above* the diff line */}
       <WidgetRow viewModel={viewModel} pos="top" unified={props.unified ?? false} />
 
-      <Row {...props} viewModel={viewModel} />
+      <Row {...props} viewModel={viewModel} isHighlighted={isHighlighted} />
 
       {/* widgets *below* the diff line */}
       <WidgetRow viewModel={viewModel} pos="bottom" unified={props.unified ?? false} />
@@ -62,7 +82,8 @@ export const DiffRow: React.FC<DiffRowProps> = (props) => {
 const WidgetRow: React.FC<{ viewModel: DiffRowViewModel; pos: 'top' | 'bottom'; unified: boolean }> = (props) => {
   const widgets = props.pos === 'top' ? props.viewModel.topWidgets : props.viewModel.bottomWidgets
   const theme = useContext(ThemeContext)
-  const styles = useMemo(() => getViewerStyles(theme), [theme])
+  const { token: antdThemeToken } = antTheme.useToken()
+  const styles = useMemo(() => getViewerStyles(theme, antdThemeToken), [theme, antdThemeToken])
 
   return (
     <>
@@ -105,9 +126,10 @@ const WidgetRow: React.FC<{ viewModel: DiffRowViewModel; pos: 'top' | 'bottom'; 
 }
 
 // UNIFIED VIEWER _________________________________________________________________________________
-const UnifiedHunkRow: React.FC<DiffRowProps & { viewModel: DiffRowViewModel }> = (props) => {
+const UnifiedHunkRow: React.FC<DiffRowProps & { viewModel: DiffRowViewModel; isHighlighted?: boolean }> = (props) => {
   const theme = useContext(ThemeContext)
-  const styles = useMemo(() => getViewerStyles(theme), [theme])
+  const { token: antdThemeToken } = antTheme.useToken()
+  const styles = useMemo(() => getViewerStyles(theme, antdThemeToken), [theme, antdThemeToken])
 
   return (
     <tr
@@ -132,18 +154,19 @@ const UnifiedHunkRow: React.FC<DiffRowProps & { viewModel: DiffRowViewModel }> =
   )
 }
 
-const UnifiedRow: React.FC<DiffRowProps & { viewModel: DiffRowViewModel }> = (props) => {
+const UnifiedRow: React.FC<DiffRowProps & { viewModel: DiffRowViewModel; isHighlighted?: boolean }> = (props) => {
   const theme = useContext(ThemeContext)
-  const styles = useMemo(() => getViewerStyles(theme), [theme])
+  const { token: antdThemeToken } = antTheme.useToken()
+  const styles = useMemo(() => getViewerStyles(theme, antdThemeToken), [theme, antdThemeToken])
 
   return (
     <tr
       key={props.idx}
-      className={props.className}
+      className={[props.className, props.isHighlighted && 'highlighted-row'].filter(Boolean).join(' ')}
       onMouseEnter={props.onMouseEnter}
       onMouseLeave={props.onMouseLeave}
       data-idx={props.idx}
-      css={styles.row}
+      css={[styles.row]}
     >
       <td css={styles.leftNumberCell[props.viewModel.getLineType()]}>
         {props.viewModel.getLineNumber()}
@@ -171,9 +194,10 @@ const UnifiedRow: React.FC<DiffRowProps & { viewModel: DiffRowViewModel }> = (pr
 }
 
 // SPLIT VIEWER ___________________________________________________________________________________
-const SplitHunkRow: React.FC<DiffRowProps & { viewModel: DiffRowViewModel }> = (props) => {
+const SplitHunkRow: React.FC<DiffRowProps & { viewModel: DiffRowViewModel; isHighlighted?: boolean }> = (props) => {
   const theme = useContext(ThemeContext)
-  const styles = useMemo(() => getViewerStyles(theme), [theme])
+  const { token: antdThemeToken } = antTheme.useToken()
+  const styles = useMemo(() => getViewerStyles(theme, antdThemeToken), [theme, antdThemeToken])
 
   return (
     <tr
@@ -206,9 +230,10 @@ const SplitHunkRow: React.FC<DiffRowProps & { viewModel: DiffRowViewModel }> = (
   )
 }
 
-const SplitRow: React.FC<DiffRowProps & { viewModel: DiffRowViewModel }> = (props) => {
+const SplitRow: React.FC<DiffRowProps & { viewModel: DiffRowViewModel; isHighlighted?: boolean }> = (props) => {
   const theme = useContext(ThemeContext)
-  const styles = useMemo(() => getViewerStyles(theme), [theme])
+  const { token: antdThemeToken } = antTheme.useToken()
+  const styles = useMemo(() => getViewerStyles(theme, antdThemeToken), [theme, antdThemeToken])
   const leftType: DiffLineType = props.line.typeLeft ?? 'empty'
   const rightType: DiffLineType = props.line.typeRight ?? 'empty'
   const isHunk = leftType === 'hunk' && rightType === 'hunk'
@@ -216,13 +241,14 @@ const SplitRow: React.FC<DiffRowProps & { viewModel: DiffRowViewModel }> = (prop
   if (isHunk) {
     return <SplitHunkRow {...props} viewModel={props.viewModel} />
   }
+
   return (
     <tr
-      className={props.className}
+      className={[props.className, props.isHighlighted && `highlighted-row`].filter(Boolean).join(' ')}
       onMouseEnter={props.onMouseEnter}
       onMouseLeave={props.onMouseLeave}
       data-idx={props.idx}
-      css={styles.row}
+      css={[styles.row]}
     >
       {/* Left side */}
       <td
