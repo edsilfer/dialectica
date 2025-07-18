@@ -3,7 +3,7 @@ import { Hunk, HunkRelation } from '../../../models/Hunk'
 import { LineDiff } from '../../../models/LineDiff'
 import { LoadMoreLinesResult, Range } from '../../diff-viewer/types'
 import { LineParser, LineParserFactory } from '../parser/parser'
-import { DisplayType, HunkDirection } from '../components/types'
+import { DisplayType, HunkDirection } from '../components/viewers/types'
 import { DiffLineViewModel } from './DiffLineViewModel'
 
 interface HunkInfo {

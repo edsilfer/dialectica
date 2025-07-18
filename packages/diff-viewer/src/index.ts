@@ -15,6 +15,7 @@ export * from './components/diff-viewer/providers/diff-viewer-context'
 export type {
   LineMetadata,
   LineRequest,
+  LineRange,
   LoadMoreLinesHandler,
   LoadMoreLinesResult,
   Overlay,

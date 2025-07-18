@@ -2,12 +2,12 @@ import { css } from '@emotion/react'
 import { Checkbox, Typography } from 'antd'
 import React, { useCallback, useContext, useMemo } from 'react'
 
-import { ThemeContext } from '../../../themes/providers/theme-context'
-import FileActivitySummary from '../../ui/activity-summary/FileActivitySummary'
-import CopyButton from '../../ui/buttons/CopyButton'
-import ExpandButton from '../../ui/buttons/ExpandButton'
-import WrapLinesButton from '../../ui/buttons/LineWrapButton'
-import { useCodePanelSettings, useFileState } from '../providers/code-panel-context'
+import { ThemeContext } from '../../../../themes/providers/theme-context'
+import FileActivitySummary from '../../../ui/activity-summary/FileActivitySummary'
+import CopyButton from '../../../ui/buttons/CopyButton'
+import ExpandButton from '../../../ui/buttons/ExpandButton'
+import WrapLinesButton from '../../../ui/buttons/LineWrapButton'
+import { useCodePanelSettings, useFileState } from '../../providers/code-panel-context'
 import { FileViewerHeaderProps } from './types'
 
 const { Text } = Typography

@@ -5,7 +5,7 @@ import { createMockFileDiff, createMockHunk, createLineDiff } from '../../../uti
 import { SAMPLE_FILE_DIFFS } from '../../../utils/test/__fixtures__/file-diff-fixtures'
 import { useHunkListViewModel } from './use-hunk-list-view-model'
 import type { HunkListViewModelProps } from './use-hunk-list-view-model'
-import type { HunkDirection } from '../components/types'
+import type { HunkDirection } from '../components/viewers/types'
 import type { LoadMoreLinesResult } from '../../diff-viewer/types'
 import { DiffLineViewModel } from '../models/DiffLineViewModel'
 

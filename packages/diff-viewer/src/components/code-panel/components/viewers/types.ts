@@ -1,30 +1,12 @@
-import { LoadMoreLinesHandler, Overlay, Widget, LineRange } from '../../diff-viewer/types'
-import { FileDiff } from '../../../models/FileDiff'
-import { DiffLineViewModel } from '../models/DiffLineViewModel'
+import { FileDiff } from '../../../../models/FileDiff'
+import { Overlay, Widget } from '../../../diff-viewer/types'
+import { DiffLineViewModel } from '../../models/DiffLineViewModel'
 
 export type DiffLineType = 'add' | 'delete' | 'context' | 'hunk' | 'empty'
 export { Widget }
 export type DisplayType = 'split' | 'unified'
 export type Side = 'left' | 'right'
 export type HunkDirection = 'up' | 'down' | 'out' | 'in' | 'in_up' | 'in_down'
-
-export interface FileViewerProps {
-  /** A unique identifier for the file viewer. */
-  id?: string
-  /** The file diff object. */
-  file: FileDiff
-  /** Number of lines to request when user clicks "load more". Defaults to 5. */
-  maxLinesToFetch?: number
-  /** Array of overlays to display on top of line columns when hovered. */
-  overlays?: Overlay[]
-  /** Array of widgets to display at specific line positions. */
-  widgets?: Widget[]
-  /** The line range to highlight. */
-  highlightedLines?: LineRange
-
-  /** Called when user requests to load (expand) more lines around a hunk. */
-  onLoadMoreLines?: LoadMoreLinesHandler
-}
 
 export interface FileViewerHeaderProps {
   /* The file diff */
@@ -50,11 +32,17 @@ export interface UnifiedViewerProps {
   overlays?: Overlay[]
   /** Array of widgets to display at specific line positions. */
   widgets?: Widget[]
-  /** The line range to highlight. */
-  highlightedLines?: LineRange
+  /** The currently selected row indices. */
+  selectedRows?: Set<number>
 
   /** Called when user requests to load (expand) more lines around a hunk. */
   onLoadMoreLines?: (line: DiffLineViewModel, direction: HunkDirection) => void
+  /** Called when user starts selecting rows (mouse down). */
+  onRowSelectionStart?: (index: number, side: 'left' | 'right') => void
+  /** Called when user continues selecting rows (mouse enter during drag). */
+  onRowSelectionUpdate?: (index: number) => void
+  /** Called when user ends row selection (mouse up). */
+  onRowSelectionEnd?: () => void
 }
 
 export interface SplitViewerProps {
@@ -68,9 +56,15 @@ export interface SplitViewerProps {
   overlays?: Overlay[]
   /** Array of widgets to display at specific line positions. */
   widgets?: Widget[]
-  /** The line range to highlight. */
-  highlightedLines?: LineRange
+  /** The currently selected row indices. */
+  selectedRows?: Set<number>
 
   /** Called when user requests to load (expand) more lines around a hunk. */
   onLoadMoreLines?: (line: DiffLineViewModel, direction: HunkDirection) => void
+  /** Called when user starts selecting rows (mouse down). */
+  onRowSelectionStart?: (index: number, side: 'left' | 'right') => void
+  /** Called when user continues selecting rows (mouse enter during drag). */
+  onRowSelectionUpdate?: (index: number) => void
+  /** Called when user ends row selection (mouse up). */
+  onRowSelectionEnd?: () => void
 }

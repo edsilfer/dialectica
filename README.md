@@ -72,6 +72,8 @@ Run from the root directory:
 
 ### Rendering Layer
 
+- [ ] P0 - Move addons to its own package
+- [ ] P0 - Recognize file type (BIN) and properly render it
 - [ ] P2 - Add max lines to display a diff
 - [ ] P2 - Add max files to display
 - [ ] P3 - Implement proper highlighting for partial changes in a line

@@ -7,7 +7,7 @@ import {
 } from '../../../utils/test/components/ui/buttons/test-utils'
 import { createPropsFactory } from '../../../utils/test/generic-test-utils'
 import { render } from '../../../utils/test/render'
-import type { HunkDirection } from '../../code-panel/components/types'
+import type { HunkDirection } from '../../code-panel/components/viewers/types'
 import LoadMoreButton from './LoadMoreButton'
 import type { LoadMoreButtonProps } from './types'
 

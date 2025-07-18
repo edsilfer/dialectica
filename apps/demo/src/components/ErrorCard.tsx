@@ -1,8 +1,10 @@
-import { ExclamationCircleOutlined } from '@ant-design/icons'
+import { ExclamationCircleOutlined, SettingOutlined } from '@ant-design/icons'
 import { useDiffViewerConfig } from '@diff-viewer'
 import { css } from '@emotion/react'
-import { theme as antdTheme, Card, Typography } from 'antd'
+import { theme as antdTheme, Card, Typography, Button } from 'antd'
+import { useState } from 'react'
 import { ErrorCardProps } from './types'
+import SettingsModal from './settings/modals/SettingsModal'
 
 const { Title, Paragraph, Text } = Typography
 
@@ -47,11 +49,28 @@ const useStyles = () => {
       margin: 0 !important;
       padding: 0 !important;
     `,
+
+    settingsButton: css`
+      display: flex;
+      align-items: center;
+      margin-top: ${theme.spacing.sm};
+
+      /* Smooth rotation animation for the icon */
+      .anticon {
+        transition: transform 0.3s ease;
+      }
+
+      /* Rotate the cog when the button is hovered */
+      &:hover .anticon {
+        transform: rotate(90deg);
+      }
+    `,
   }
 }
 
 export default function ErrorCard({ error, title = 'Failed to load Pull Request', description }: ErrorCardProps) {
   const styles = useStyles()
+  const [settingsOpen, setSettingsOpen] = useState(false)
 
   const descriptionContent = description ?? error?.message
 
@@ -69,9 +88,19 @@ export default function ErrorCard({ error, title = 'Failed to load Pull Request'
                 {typeof descriptionContent === 'string' ? <Text>{descriptionContent}</Text> : descriptionContent}
               </Paragraph>
             )}
+            <Button
+              css={styles.settingsButton}
+              type="default"
+              icon={<SettingOutlined />}
+              onClick={() => setSettingsOpen(true)}
+            >
+              Settings
+            </Button>
           </div>
         </div>
       </Card>
+
+      <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </div>
   )
 }

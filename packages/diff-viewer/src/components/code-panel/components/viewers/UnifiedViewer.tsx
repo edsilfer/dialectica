@@ -1,8 +1,8 @@
 import React, { useContext, useMemo } from 'react'
-import { DiffLineType } from '../../../models/LineDiff'
-import { ThemeContext } from '../../../themes/providers/theme-context'
-import { useOverlayDocking } from '../hooks/use-overlay-docking'
-import { DiffRow } from './DiffRow'
+import { DiffLineType } from '../../../../models/LineDiff'
+import { ThemeContext } from '../../../../themes/providers/theme-context'
+import { useOverlayDocking } from '../../hooks/use-overlay-docking'
+import { DiffRow } from '../rows/DiffRow'
 import { getViewerStyles } from './shared-styles'
 import { UnifiedViewerProps } from './types'
 import { theme as antTheme } from 'antd'
@@ -45,10 +45,13 @@ const UnifiedViewer: React.FC<UnifiedViewerProps> = (props) => {
                 overlays={filteredOverlayGroups}
                 widgets={props.widgets}
                 unified={true}
-                highlightedLines={props.highlightedLines}
                 loadLines={props.onLoadMoreLines}
                 onMouseEnter={handleRowEnter}
                 onMouseLeave={handleRowLeave}
+                onRowSelectionStart={props.onRowSelectionStart}
+                onRowSelectionUpdate={props.onRowSelectionUpdate}
+                onRowSelectionEnd={props.onRowSelectionEnd}
+                selectedRows={props.selectedRows}
               />,
             )
 

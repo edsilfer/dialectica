@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { HunkDirection } from '../components/code-panel/components/types'
+import type { HunkDirection } from '../components/code-panel/components/viewers/types'
 import {
   createMockHunk,
   createMockLineDiff,

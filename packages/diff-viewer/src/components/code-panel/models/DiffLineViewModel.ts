@@ -1,6 +1,6 @@
 import { DiffLineType, LineDiff } from '../../../models/LineDiff'
 import { highlightContent } from '../../../utils/highlight-utils'
-import { HunkDirection } from '../components/types'
+import { HunkDirection } from '../components/viewers/types'
 
 /**
  * - For the unified viewer only the "left" fields are populated

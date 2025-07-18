@@ -1,12 +1,13 @@
 import { css } from '@emotion/react'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { Alert, notification } from 'antd'
-import Toolbar from './components/Toolbar'
 import Footer from './components/Footer'
+import Toolbar from './components/Toolbar'
 
 import { AddButton, DiffViewer, ParsedDiff, PrKey, useDiffViewerConfig } from '@diff-viewer'
 
+import { LineRange } from '@diff-viewer/src/components/diff-viewer/types'
 import ErrorCard from './components/ErrorCard'
 import InfoCard from './components/InfoCard'
 import SearchForm from './components/search-form'
@@ -16,7 +17,7 @@ import { useReviewDatastore } from './hooks/data/use-review-datastore'
 import { useWidgetDatastore } from './hooks/data/use-widget-datastore'
 import { useCommentState } from './hooks/state/use-comment-state'
 import { useSettings } from './provider/setttings-provider'
-import { parseURL } from './utils'
+import { parseURL, setLineURL, parseLineURL } from './utils'
 
 function useStyles({ theme }: ReturnType<typeof useDiffViewerConfig>) {
   return useMemo(
@@ -46,6 +47,7 @@ export default function App() {
 
   // STATE ---------------------------------------------------------------------------------------------
   const [prKey, setPrKey] = useState<PrKey | undefined>(parseURL())
+  const [fileNames, setFileNames] = useState<string[]>([])
   const { handle: commentDatastore } = useCommentDatastore(prKey)
   const { handle: reviewDatastore } = useReviewDatastore(prKey)
   const { newComment, onDock, onCommentEvent } = useCommentState(commentDatastore)
@@ -68,6 +70,22 @@ export default function App() {
       document.title = metadata.title ?? 'Diff Viewer Demo'
     }
   }, [metadata])
+
+  useEffect(() => {
+    if (diff) {
+      const names = diff.files.map((file) => file.newPath || file.oldPath)
+      setFileNames(names)
+    } else {
+      setFileNames([])
+    }
+  }, [diff])
+
+  const onLineSelection = useCallback(
+    (lineRange: LineRange) => {
+      setLineURL(lineRange, fileNames)
+    },
+    [fileNames],
+  )
 
   // RENDER --------------------------------------------------------------------------------------------
   const content = () => {
@@ -103,7 +121,8 @@ export default function App() {
           isDiffLoading={loading.diff}
           maxLinesToFetch={10}
           onLoadMoreLines={loadMore}
-          highlightedLines={{ side: 'left', start: 72, end: 73 }}
+          onLineSelection={onLineSelection}
+          highlightedLines={parseLineURL(fileNames)}
           overlays={[
             {
               unifiedDockIdx: 2,

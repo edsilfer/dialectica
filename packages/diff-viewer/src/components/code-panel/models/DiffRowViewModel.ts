@@ -1,5 +1,5 @@
 import { DiffLineType } from '../../../models/LineDiff'
-import { Widget } from '../components/types'
+import { Widget } from '../components/viewers/types'
 import { DiffLineViewModel } from './DiffLineViewModel'
 
 /**

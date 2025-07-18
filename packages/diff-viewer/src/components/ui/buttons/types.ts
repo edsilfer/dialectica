@@ -1,6 +1,6 @@
 import { SerializedStyles } from '@emotion/react'
 import React from 'react'
-import { HunkDirection } from '../../code-panel/components/types'
+import { HunkDirection } from '../../code-panel/components/viewers/types'
 
 export interface ExpandButtonProps {
   /** Whether the section is currently collapsed */

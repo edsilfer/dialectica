@@ -6,7 +6,7 @@ const SETTINGS_STORAGE_KEY = 'demo_app_settings'
 
 const DEFAULT_SETTINGS: Settings = {
   githubPat: '',
-  useMocks: true,
+  useMocks: false,
   currentUser: undefined,
 }
 

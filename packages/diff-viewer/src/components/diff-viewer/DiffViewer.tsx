@@ -161,6 +161,7 @@ const DiffViewerContent: React.FC<DiffViewerProps> = (props) => {
         isLoading={!!(props.isDiffLoading ?? false) || !panelReady}
         css={styles.diffViewer}
         onLoadMoreLines={props.onLoadMoreLines}
+        onRangeSelected={props.onLineSelection}
         maxLinesToFetch={props.maxLinesToFetch}
         overlays={props.overlays}
         widgets={props.widgets}
@@ -168,16 +169,17 @@ const DiffViewerContent: React.FC<DiffViewerProps> = (props) => {
       />
     ),
     [
-      props.diff.files,
       scrollToFile,
-      props.isDiffLoading,
       panelReady,
       styles.diffViewer,
-      props.onLoadMoreLines,
+      props.diff.files,
+      props.isDiffLoading,
       props.maxLinesToFetch,
       props.overlays,
       props.widgets,
       props.highlightedLines,
+      props.onLoadMoreLines,
+      props.onLineSelection,
     ],
   )
 

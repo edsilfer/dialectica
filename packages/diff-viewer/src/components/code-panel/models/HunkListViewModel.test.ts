@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createMockFileDiff, createMockHunk } from '../../../utils/test/models/test-utils'
-import type { HunkDirection } from '../components/types'
+import type { HunkDirection } from '../components/viewers/types'
 import { DiffLineViewModel } from './DiffLineViewModel'
 import { HunkListViewModel } from './HunkListViewModel'
 import type { LineDiff } from '../../../models/LineDiff'

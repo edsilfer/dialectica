@@ -1,6 +1,6 @@
 import { LineDiff } from '../../../models/LineDiff'
 import { DiffLineViewModel } from '../models/DiffLineViewModel'
-import { DisplayType } from '../components/types'
+import { DisplayType } from '../components/viewers/types'
 import { SplitLineParser } from './split-parser'
 import { UnifiedLineParser } from './unified-parser'
 

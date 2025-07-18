@@ -7,7 +7,7 @@ import { useDiffViewerConfig } from '../diff-viewer/providers/diff-viewer-contex
 import { LoadMoreLinesHandler, Overlay, Widget, LineRange } from '../diff-viewer/types'
 import { ActionButtons, CustomButton } from '../ui/ActionButtons'
 import { ProgressIndicator } from '../ui/ProgressIndicator'
-import FileViewer from './components/FileViewer'
+import FileViewer from './components/viewers/FileViewer'
 import { CodePanelConfigProvider, useCodePanelConfig } from './providers/code-panel-context'
 
 const useStyles = () => {
@@ -67,6 +67,8 @@ export type FileListProps = {
 
   /** Called when the user requests to load (expand) more lines for a specific file. */
   onLoadMoreLines?: LoadMoreLinesHandler
+  /** Called when the user selects a line range. */
+  onRangeSelected?: (range: LineRange) => void
 }
 
 export const CodePanel: React.FC<FileListProps> = (props) => {
@@ -185,6 +187,7 @@ const CodePanelContent: React.FC<FileListProps> = (props) => {
             overlays={props.overlays}
             widgets={props.widgets}
             highlightedLines={props.highlightedLines}
+            onRangeSelected={props.onRangeSelected}
           />
         ))}
       </div>

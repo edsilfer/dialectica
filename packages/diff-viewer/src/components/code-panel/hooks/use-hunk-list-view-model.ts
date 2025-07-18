@@ -1,7 +1,7 @@
 import { useEffect, useReducer } from 'react'
 import { FileDiff } from '../../../models/FileDiff'
 import { LoadMoreLinesResult } from '../../diff-viewer/types'
-import { HunkDirection } from '../components/types'
+import { HunkDirection } from '../components/viewers/types'
 import { HunkListViewModel } from '../models/HunkListViewModel'
 import { DiffLineViewModel } from '../models/DiffLineViewModel'
 

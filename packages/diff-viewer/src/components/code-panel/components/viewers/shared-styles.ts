@@ -1,7 +1,8 @@
 import { css, SerializedStyles } from '@emotion/react'
 import { GlobalToken } from 'antd'
-import { DiffLineType } from '../../../models/LineDiff'
-import { ThemeTokens } from '../../../themes'
+import { DiffLineType } from '../../../../models/LineDiff'
+import { ThemeTokens } from '../../../../themes'
+import { transparentize } from '../../../../utils/color-utils'
 
 /**
  * Generates the full style map required by both `UnifiedViewer` and `SplitViewer`.
@@ -44,7 +45,7 @@ export const getViewerStyles = (theme: ThemeTokens, antdTheme: GlobalToken) => {
     css`
       text-align: center;
       user-select: none;
-      pointer-events: none;
+      cursor: pointer;
     `,
   ]
 
@@ -192,59 +193,54 @@ export const getViewerStyles = (theme: ThemeTokens, antdTheme: GlobalToken) => {
     height: 1.5rem !important;
   `
 
-  const HIGHLIGHTED_ROW_BORDER = `1px solid ${antdTheme.colorWarning}`
-  const HIGHLIGHTED_ROW_RADIUS = `${theme.spacing.xs}`
-
   const table = css`
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     table-layout: fixed;
 
-    tr.highlighted-row > td {
-      background: ${antdTheme.colorWarningBg};
+    // reserv space for the borders to avoid shifting the rows when highlighting
+    td {
+      border: 1px solid transparent;
+      box-sizing: border-box;
     }
 
-    tr.highlighted-row > td:first-child {
-      border-left: ${HIGHLIGHTED_ROW_BORDER};
+    // Actual highlighting logic
+    td.diff-cell.highlighted {
+      background: ${transparentize(antdTheme.colorWarningBg, 1)};
     }
 
-    tr.highlighted-row > td:last-child {
-      border-right: ${HIGHLIGHTED_ROW_BORDER};
+    .highlighted-row > td:first-child {
+      border-left: 1px solid ${antdTheme.colorWarningBorder} !important;
     }
 
-    /* Top border (first in block) */
-    tr:not(.highlighted-row) + tr.highlighted-row > td,
-    tr.highlighted-row:first-child > td {
-      border-top: ${HIGHLIGHTED_ROW_BORDER};
+    .highlighted-row > td:last-child {
+      border-right: 1px solid ${antdTheme.colorWarningBorder} !important;
     }
 
-    /* Bottom border (last in block) */
-    tr.highlighted-row:has(+ tr:not(.highlighted-row)) > td,
-    tr.highlighted-row:last-child > td {
-      border-bottom: ${HIGHLIGHTED_ROW_BORDER};
+    .first-highlighted-row > td {
+      border-top: 1px solid ${antdTheme.colorWarningBorder} !important;
     }
 
-    /* Rounded top corners */
-    tr:not(.highlighted-row) + tr.highlighted-row > td:first-child,
-    tr.highlighted-row:first-child > td:first-child {
-      border-top-left-radius: ${HIGHLIGHTED_ROW_RADIUS};
+    .last-highlighted-row > td {
+      border-bottom: 1px solid ${antdTheme.colorWarningBorder} !important;
     }
 
-    tr:not(.highlighted-row) + tr.highlighted-row > td:last-child,
-    tr.highlighted-row:first-child > td:last-child {
-      border-top-right-radius: ${HIGHLIGHTED_ROW_RADIUS};
+    // border rounding
+    .first-highlighted-row > td:first-child {
+      border-top-left-radius: ${theme.spacing.xs};
     }
 
-    /* Rounded bottom corners */
-    tr.highlighted-row:has(+ tr:not(.highlighted-row)) > td:first-child,
-    tr.highlighted-row:last-child > td:first-child {
-      border-bottom-left-radius: ${HIGHLIGHTED_ROW_RADIUS};
+    .first-highlighted-row > td:last-child {
+      border-top-right-radius: ${theme.spacing.xs};
     }
 
-    tr.highlighted-row:has(+ tr:not(.highlighted-row)) > td:last-child,
-    tr.highlighted-row:last-child > td:last-child {
-      border-bottom-right-radius: ${HIGHLIGHTED_ROW_RADIUS};
+    .last-highlighted-row > td:first-child {
+      border-bottom-left-radius: ${theme.spacing.xs};
+    }
+
+    .last-highlighted-row > td:last-child {
+      border-bottom-right-radius: ${theme.spacing.xs};
     }
   `
 

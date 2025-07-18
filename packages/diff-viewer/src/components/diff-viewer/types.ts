@@ -72,6 +72,7 @@ export interface LineRange {
   side: 'left' | 'right'
   start: number
   end: number
+  filepath: string
 }
 
 export interface DiffViewerProps {
