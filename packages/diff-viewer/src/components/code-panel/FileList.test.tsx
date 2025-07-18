@@ -373,7 +373,9 @@ describe('CodePanel', () => {
       render(<CodePanel {...props} />)
 
       // EXPECT
-      const container = screen.getByTestId('hunk-list-src/components/Button.tsx').parentElement
+      // Find the main container that has the className applied
+      const container = screen.getByTestId('hunk-list-src/components/Button.tsx').closest('[class*="custom-class"]')
+      expect(container).toBeInTheDocument()
       expect(container).toHaveClass('custom-class')
     })
   })

@@ -1,6 +1,5 @@
 import { css } from '@emotion/react'
 import React, { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
-import { Toolbar as DefaultToolbar } from '../../addons/toolbar/DefaultToolbar'
 import { Themes } from '../../themes'
 import { CodePanel } from '../code-panel/FileList'
 import { FileExplorer } from '../file-explorer/FileExplorer'
@@ -19,7 +18,7 @@ const getStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) => ({
   container: css`
     display: flex;
     flex-direction: column;
-    gap: ${theme.spacing.xs};
+    gap: ${theme.spacing.sm};
     height: 100%;
     width: 100%;
   `,
@@ -67,7 +66,6 @@ const getStyles = (theme: ReturnType<typeof useDiffViewerConfig>['theme']) => ({
   diffViewer: css`
     flex: 1;
     border-radius: ${theme.spacing.xs};
-    overflow: auto;
   `,
 })
 
@@ -183,7 +181,7 @@ const DiffViewerContent: React.FC<DiffViewerProps> = (props) => {
 
   return (
     <div css={styles.container}>
-      {props.toolbar ? props.toolbar : <DefaultToolbar loading={!!(props.isMetadataLoading ?? false)} />}
+      {props.toolbar && props.toolbar}
 
       <div css={styles.content} ref={containerRef} style={dynamicStyles as React.CSSProperties}>
         {(props.enableFileExplorer ?? true) && (

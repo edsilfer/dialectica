@@ -3,7 +3,7 @@ export type { GitHubInlineComment, GitHubUser, GitHubCommentLinks, GitHubComment
 
 export interface StatTagProps {
   /** The value to display */
-  value: number
+  value: number | string
   /** The label to display */
   label: string
   /** The color of the tag */

@@ -98,6 +98,8 @@ export interface TypographyTokens {
 }
 
 export interface ThemeTokens {
+  /** The flavor of the theme */
+  flavor: 'light' | 'dark'
   /** The name of the theme */
   name: string
   /** The colors of the theme */

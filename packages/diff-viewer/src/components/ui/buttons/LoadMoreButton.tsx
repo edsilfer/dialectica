@@ -64,13 +64,13 @@ const LoadMoreButton: React.FC<LoadMoreButtonProps> = (props) => {
     <div css={[styles.container, props.css]}>
       <Tooltip title={tooltip('down')} placement="left">
         <div css={styles.icon} onClick={(e) => props.onClick?.(e, 'in_down')}>
-          <LoadMoreLines css={[props.css]} width={props.width ?? 24} height={props.height ?? 16} direction={'down'} />
+          <LoadMoreLines css={[props.css]} width={props.width ?? 24} height={props.height ?? 13} direction={'down'} />
         </div>
       </Tooltip>
 
       <Tooltip title={tooltip('up')} placement="left">
         <div css={styles.icon} onClick={(e) => props.onClick?.(e, 'in_up')}>
-          <LoadMoreLines css={[props.css]} width={props.width ?? 24} height={props.height ?? 16} direction={'up'} />
+          <LoadMoreLines css={[props.css]} width={props.width ?? 24} height={props.height ?? 13} direction={'up'} />
         </div>
       </Tooltip>
     </div>

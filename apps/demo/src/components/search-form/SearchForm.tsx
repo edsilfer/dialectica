@@ -1,10 +1,32 @@
+import { css } from '@emotion/react'
 import { Form, Input, message } from 'antd'
+import debounce from 'lodash/debounce'
 import React, { useEffect } from 'react'
 import { parse as parsePR } from './search-utils'
 import { SearchFormProps } from './types'
-import debounce from 'lodash/debounce'
 
-const SearchForm: React.FC<SearchFormProps> = ({ width = 300, onSearch }) => {
+const useStyles = () => {
+  return {
+    container: css`
+      display: flex;
+      width: 100%;
+    `,
+
+    formItem: css`
+      flex: 1;
+      width: 100%;
+    `,
+
+    search: css`
+      width: 100%;
+    `,
+  }
+}
+
+const { Search } = Input
+
+const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
+  const styles = useStyles()
   const [form] = Form.useForm()
   const placeholderHelp = 'Enter a GitHub PR URL'
   const [helpMessage, setHelpMessage] = React.useState<string>(placeholderHelp)
@@ -55,8 +77,9 @@ const SearchForm: React.FC<SearchFormProps> = ({ width = 300, onSearch }) => {
   }, [form, placeholderHelp])
 
   return (
-    <Form form={form} layout="inline" onFieldsChange={handleFieldsChange}>
+    <Form css={styles.container} form={form} layout="inline" onFieldsChange={handleFieldsChange}>
       <Form.Item
+        css={styles.formItem}
         name="search"
         rules={[
           { required: true, message: 'Please enter a GitHub PR URL' },
@@ -76,12 +99,12 @@ const SearchForm: React.FC<SearchFormProps> = ({ width = 300, onSearch }) => {
           </span>
         }
       >
-        <Input.Search
+        <Search
+          css={styles.search}
           placeholder="Load Pull Request"
           allowClear
           enterButton="Load"
           onSearch={onSearchForm}
-          style={{ width }}
         />
       </Form.Item>
     </Form>

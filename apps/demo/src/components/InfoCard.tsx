@@ -1,7 +1,7 @@
+import React from 'react'
 import { useDiffViewerConfig } from '@diff-viewer'
 import { css } from '@emotion/react'
 import { Card, Typography } from 'antd'
-import { InfoCardProps } from './types'
 
 const { Title, Paragraph, Text } = Typography
 
@@ -21,6 +21,13 @@ const useStyles = () => {
       border: 1px solid ${theme.colors.border};
     `,
   }
+}
+
+export interface InfoCardProps {
+  /** Title displayed using Typography.Title level 3 */
+  title: React.ReactNode
+  /** Additional descriptive text below the title */
+  description?: React.ReactNode
 }
 
 export default function InfoCard({ title, description }: InfoCardProps) {

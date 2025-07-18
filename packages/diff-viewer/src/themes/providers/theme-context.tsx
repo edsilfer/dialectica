@@ -9,7 +9,7 @@ import { ThemeTokens } from '../types'
 export const ThemeContext = createContext<ThemeTokens>(Themes.light)
 
 export const ThemeProvider = ({ children, theme }: { children: React.ReactNode; theme: ThemeTokens }) => {
-  const isDarkTheme = ['dark', 'dracula', 'solarizedDark', 'vscodeDark'].includes(theme.name)
+  const isDarkTheme = theme.flavor === 'dark'
   document.documentElement.setAttribute('data-hljs-theme', isDarkTheme ? 'dark' : 'light')
 
   const antdThemeConfig: ThemeConfig = {

@@ -16,7 +16,6 @@ import type { DiffViewerProps } from './types'
  * - **FileList/CodePanel**: Mocked to isolate component integration from complex file rendering logic
  * - **FileExplorer**: Mocked to test file selection and navigation without tree rendering complexity
  * - **Drawer**: Mocked to test drawer state management and content switching without UI complexity
- * - **DefaultToolbar**: Mocked to test toolbar integration without external toolbar dependencies
  * - **useResizablePanel**: Mocked to provide predictable panel sizing without mouse interaction complexity
  * - **DiffViewerConfigProvider**: Mocked to provide consistent theme and config without external context
  *
@@ -30,7 +29,7 @@ import type { DiffViewerProps } from './types'
  * - **Empty diff**: Component handles gracefully with 0 file counts displayed
  * - **Loading states**: Metadata and diff loading states properly propagated to child components
  * - **Disabled file explorer**: Drawer not rendered, only code panel visible
- * - **Custom toolbar**: Default toolbar hidden, custom toolbar rendered
+ * - **Custom toolbar**: Custom toolbar rendered when provided
  * - **Additional drawer contents**: Built-in + custom contents available in drawer
  * - **Undefined callbacks**: No errors when optional handlers are not provided
  * - **State transitions**: Loading to ready state transitions handled smoothly
@@ -120,14 +119,6 @@ vi.mock('./components/Drawer', () => ({
   ),
 }))
 
-vi.mock('../../addons/toolbar/DefaultToolbar', () => ({
-  Toolbar: ({ loading }: { loading: boolean }) => (
-    <div data-testid="default-toolbar">
-      <div data-testid="toolbar-loading">{loading ? 'true' : 'false'}</div>
-    </div>
-  ),
-}))
-
 vi.mock('./hooks/use-resizable-panel', () => ({
   useResizablePanel: () => ({
     width: 30,
@@ -201,8 +192,6 @@ type LoadingTestCase = {
   expectedExplorerLoading: string
   /* The expected loading state of the code panel */
   expectedPanelLoading: string
-  /* The expected loading state of the toolbar */
-  expectedToolbarLoading: string
 }
 
 const renderingTestMatrix: RenderingTestCase[] = [
@@ -210,7 +199,6 @@ const renderingTestMatrix: RenderingTestCase[] = [
     name: 'default props',
     props: {},
     expectations: [
-      { testId: 'default-toolbar', assertion: 'toBeInTheDocument' },
       { testId: 'drawer', assertion: 'toBeInTheDocument' },
       { testId: 'code-panel', assertion: 'toBeInTheDocument' },
     ],
@@ -226,10 +214,7 @@ const renderingTestMatrix: RenderingTestCase[] = [
   {
     name: 'custom toolbar',
     props: { toolbar: <div data-testid="custom-toolbar">Custom Toolbar</div> },
-    expectations: [
-      { testId: 'custom-toolbar', assertion: 'toBeInTheDocument', content: 'Custom Toolbar' },
-      { testId: 'default-toolbar', assertion: 'not.toBeInTheDocument' },
-    ],
+    expectations: [{ testId: 'custom-toolbar', assertion: 'toBeInTheDocument', content: 'Custom Toolbar' }],
   },
   {
     name: 'additional drawer contents',
@@ -257,7 +242,6 @@ const loadingTestMatrix: LoadingTestCase[] = [
     diffLoading: false,
     expectedExplorerLoading: 'false',
     expectedPanelLoading: 'false',
-    expectedToolbarLoading: 'false',
   },
   {
     name: 'metadata loading only',
@@ -265,7 +249,6 @@ const loadingTestMatrix: LoadingTestCase[] = [
     diffLoading: false,
     expectedExplorerLoading: 'true',
     expectedPanelLoading: 'false',
-    expectedToolbarLoading: 'true',
   },
   {
     name: 'diff loading only',
@@ -273,7 +256,6 @@ const loadingTestMatrix: LoadingTestCase[] = [
     diffLoading: true,
     expectedExplorerLoading: 'false',
     expectedPanelLoading: 'true',
-    expectedToolbarLoading: 'false',
   },
   {
     name: 'both loading states',
@@ -281,7 +263,6 @@ const loadingTestMatrix: LoadingTestCase[] = [
     diffLoading: true,
     expectedExplorerLoading: 'true',
     expectedPanelLoading: 'true',
-    expectedToolbarLoading: 'true',
   },
 ]
 
@@ -296,7 +277,6 @@ describe('DiffViewer', () => {
 
       // EXPECT
       // The provider is mocked and should be present in the rendered output
-      expect(screen.getByTestId('default-toolbar')).toBeInTheDocument()
       expect(screen.getByTestId('drawer')).toBeInTheDocument()
     })
   })
@@ -327,14 +307,7 @@ describe('DiffViewer', () => {
 
   describe('Loading States', () => {
     loadingTestMatrix.forEach(
-      ({
-        name,
-        metadataLoading,
-        diffLoading,
-        expectedExplorerLoading,
-        expectedPanelLoading,
-        expectedToolbarLoading,
-      }) => {
+      ({ name, metadataLoading, diffLoading, expectedExplorerLoading, expectedPanelLoading }) => {
         it(`given ${name}, when rendered, expect correct loading states`, () => {
           // GIVEN
           const props = createDiffViewerProps({
@@ -348,7 +321,6 @@ describe('DiffViewer', () => {
           // EXPECT
           expect(screen.getByTestId('drawer-loading')).toHaveTextContent(expectedExplorerLoading)
           expect(screen.getByTestId('loading')).toHaveTextContent(expectedPanelLoading)
-          expect(screen.getByTestId('toolbar-loading')).toHaveTextContent(expectedToolbarLoading)
         })
       },
     )

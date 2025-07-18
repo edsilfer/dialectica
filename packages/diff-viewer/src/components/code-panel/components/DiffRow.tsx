@@ -116,7 +116,7 @@ const UnifiedHunkRow: React.FC<DiffRowProps & { viewModel: DiffRowViewModel }> =
       onMouseEnter={props.onMouseEnter}
       onMouseLeave={props.onMouseLeave}
       data-idx={props.idx}
-      css={styles.row}
+      css={[styles.row, styles.hunkRow]}
     >
       <td css={styles.leftNumberCell['hunk']} colSpan={2}>
         <LoadMoreButton
@@ -181,7 +181,7 @@ const SplitHunkRow: React.FC<DiffRowProps & { viewModel: DiffRowViewModel }> = (
       onMouseEnter={props.onMouseEnter}
       onMouseLeave={props.onMouseLeave}
       data-idx={props.idx}
-      css={styles.row}
+      css={[styles.row, styles.hunkRow]}
     >
       {/* LEFT NUMBER CELL */}
       <td css={styles.leftNumberCell['hunk']} className={props.className} style={{ userSelect: 'none' }}>

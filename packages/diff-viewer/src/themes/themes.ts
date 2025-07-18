@@ -1,5 +1,5 @@
 import { blend, darken, ensureContrast, lighten, transparentize } from '../utils/color-utils'
-import { ColorTokens, SpacingTokens, TypographyTokens } from './types'
+import { ColorTokens, SpacingTokens, ThemeTokens, TypographyTokens } from './types'
 
 export const spacing: SpacingTokens = {
   xxs: '0.125rem', // 2px
@@ -15,8 +15,8 @@ export const typography: TypographyTokens = {
   regularFontSize: 13,
   regularFontSizeSM: 11,
   codeFontFamily: 'Menlo, Monaco, Consolas, "Courier New", monospace',
-  codeFontSize: 13,
-  codeLineHeight: 1.2,
+  codeFontSize: 12,
+  codeLineHeight: 1.1,
 }
 
 const LEAD_THEME_COLORS = {
@@ -160,38 +160,44 @@ const createThemeColors = (palette: ThemePalette): ColorTokens => {
   }
 }
 
-export const Themes = {
+export const Themes: Record<string, ThemeTokens> = {
   light: {
+    flavor: 'light',
     name: 'light',
     colors: createThemeColors(LEAD_THEME_COLORS.light),
     spacing,
     typography,
   },
   dark: {
+    flavor: 'dark',
     name: 'dark',
     colors: createThemeColors(LEAD_THEME_COLORS.dark),
     spacing,
     typography,
   },
   dracula: {
+    flavor: 'dark',
     name: 'dracula',
     colors: createThemeColors(LEAD_THEME_COLORS.dracula),
     spacing,
     typography,
   },
   solarizedDark: {
+    flavor: 'dark',
     name: 'solarizedDark',
     colors: createThemeColors(LEAD_THEME_COLORS.solarizedDark),
     spacing,
     typography,
   },
   solarizedLight: {
+    flavor: 'light',
     name: 'solarizedLight',
     colors: createThemeColors(LEAD_THEME_COLORS.solarizedLight),
     spacing,
     typography,
   },
   vscodeDark: {
+    flavor: 'dark',
     name: 'vscodeDark',
     colors: createThemeColors(LEAD_THEME_COLORS.vscodeDark),
     spacing,

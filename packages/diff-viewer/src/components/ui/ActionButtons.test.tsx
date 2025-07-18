@@ -2,8 +2,7 @@ import { fireEvent, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { createButtonMatrix, createCustomButton } from '../../utils/test/antd-utils'
 import { render } from '../../utils/test/render'
-import { ActionButtons } from './ActionButtons'
-import type { CustomButton } from './types'
+import { ActionButtons, CustomButton } from './ActionButtons'
 
 describe('ActionButtons', () => {
   describe('button configuration scenarios', () => {

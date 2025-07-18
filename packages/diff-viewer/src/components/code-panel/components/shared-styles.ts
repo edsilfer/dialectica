@@ -187,6 +187,10 @@ export const getViewerStyles = (theme: ThemeTokens) => {
     }
   `
 
+  const hunkRow = css`
+    height: 1.5rem !important;
+  `
+
   const table = css`
     width: 100%;
     border-collapse: collapse;
@@ -211,6 +215,7 @@ export const getViewerStyles = (theme: ThemeTokens) => {
     container,
     table,
     row,
+    hunkRow,
     leftNumberCell,
     rightNumberCell,
     codeCell,

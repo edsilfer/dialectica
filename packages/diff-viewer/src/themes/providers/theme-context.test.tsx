@@ -66,11 +66,15 @@ describe('ThemeProvider', () => {
     { theme: Themes.dark, expectedHljsTheme: 'dark', description: 'dark theme' },
     { theme: Themes.dracula, expectedHljsTheme: 'dark', description: 'dracula theme' },
     {
-      theme: { ...Themes.light, name: 'solarizedDark' },
+      theme: { ...Themes.light, name: 'solarizedDark', flavor: 'dark' as const },
       expectedHljsTheme: 'dark',
       description: 'solarizedDark theme',
     },
-    { theme: { ...Themes.light, name: 'vscodeDark' }, expectedHljsTheme: 'dark', description: 'vscodeDark theme' },
+    {
+      theme: { ...Themes.light, name: 'vscodeDark', flavor: 'dark' as const },
+      expectedHljsTheme: 'dark',
+      description: 'vscodeDark theme',
+    },
     {
       theme: { ...Themes.light, name: 'solarizedLight' },
       expectedHljsTheme: 'light',

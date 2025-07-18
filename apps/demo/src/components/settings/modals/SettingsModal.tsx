@@ -2,9 +2,9 @@ import { Themes, ThemeTokens, useCodePanelConfig, useDiffViewerConfig, useFileEx
 import { css } from '@emotion/react'
 import { Divider, Modal } from 'antd'
 import React from 'react'
-import { useSettings } from '../../provider/setttings-provider'
-import SettingsSection from './Section'
-import { SettingsModalProps } from './types'
+import { useSettings } from '../../../provider/setttings-provider'
+import SettingsSection from '../Section'
+import { SettingsModalProps } from '../types'
 
 const useStyles = (theme: ThemeTokens) => ({
   container: css`

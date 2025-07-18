@@ -5,7 +5,7 @@ import { Themes } from '../../../themes/themes'
 import { createPropsFactory } from '../../../utils/test/generic-test-utils'
 import { render } from '../../../utils/test/render'
 import type { PullRequestMetadata } from './models'
-import { PullRequestHeader } from './PullRequestHeader'
+import { PrHeader } from './PrHeader'
 
 vi.mock('../../../components/diff-viewer/providers/diff-viewer-context', () => ({
   useDiffViewerConfig: vi.fn(),
@@ -20,7 +20,7 @@ vi.mock('antd', async () => {
 const createMockPullRequestMetadata = (overrides: Partial<PullRequestMetadata> = {}): PullRequestMetadata => ({
   number: 123,
   title: 'Add new feature',
-  body: 'This PR adds a new feature',
+  body: null,
   user: {
     login: 'testuser',
     avatar_url: 'https://example.com/avatar.jpg',
@@ -31,13 +31,13 @@ const createMockPullRequestMetadata = (overrides: Partial<PullRequestMetadata> =
   merged_at: null,
   commits: 5,
   changed_files: 3,
-  additions: 150,
-  deletions: 50,
+  additions: 0,
+  deletions: 0,
   html_url: 'https://github.com/owner/repo/pull/123',
   head_ref: 'feature-branch',
   base_ref: 'main',
-  head_sha: 'abc123',
-  base_sha: 'def456',
+  head_sha: '',
+  base_sha: '',
   ...overrides,
 })
 
@@ -71,6 +71,12 @@ const expectLinkToBePresent = (text: string, href: string) => {
 }
 
 const expectStatTagToBePresent = (value: number, label: string, color: string) => {
+  const tag = screen.getByText(`${value} ${label}`)
+  expect(tag).toBeInTheDocument()
+  expect(tag.closest('[data-testid="tag"]')).toHaveAttribute('data-color', color)
+}
+
+const expectBranchTagToBePresent = (value: string, label: string, color: string) => {
   const tag = screen.getByText(`${value} ${label}`)
   expect(tag).toBeInTheDocument()
   expect(tag.closest('[data-testid="tag"]')).toHaveAttribute('data-color', color)
@@ -111,7 +117,7 @@ describe('PullRequestHeader', () => {
         })
 
         // WHEN
-        render(<PullRequestHeader {...props} />)
+        render(<PrHeader {...props} />)
 
         // EXPECT
         expectStateTagToBePresent(expectedText, expectedColor)
@@ -129,7 +135,7 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PullRequestHeader {...props} />)
+      render(<PrHeader {...props} />)
 
       // EXPECT
       expectLinkToBePresent('Fix critical bug', 'https://github.com/owner/repo/pull/456')
@@ -147,7 +153,7 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PullRequestHeader {...props} />)
+      render(<PrHeader {...props} />)
 
       // EXPECT
       expectLinkToBePresent('developer123', 'https://github.com/developer123')
@@ -164,7 +170,7 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PullRequestHeader {...props} />)
+      render(<PrHeader {...props} />)
 
       // EXPECT
       expectStatTagToBePresent(12, 'commits', 'blue')
@@ -180,7 +186,7 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PullRequestHeader {...props} />)
+      render(<PrHeader {...props} />)
 
       // EXPECT
       expectStatTagToBePresent(0, 'commits', 'blue')
@@ -195,7 +201,7 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PullRequestHeader {...props} />)
+      render(<PrHeader {...props} />)
 
       // EXPECT
       expectStatTagToBePresent(0, 'files', 'geekblue')
@@ -212,15 +218,11 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PullRequestHeader {...props} />)
+      render(<PrHeader {...props} />)
 
       // EXPECT
-      const headTag = screen.getByText('feature/new-ui')
-      const baseTag = screen.getByText('develop')
-      expect(headTag).toBeInTheDocument()
-      expect(baseTag).toBeInTheDocument()
-      expect(headTag.closest('[data-testid="tag"]')).toHaveAttribute('data-color', 'gold')
-      expect(baseTag.closest('[data-testid="tag"]')).toHaveAttribute('data-color', 'gold')
+      expectBranchTagToBePresent('feature/new-ui', 'head', 'gold')
+      expectBranchTagToBePresent('develop', 'base', 'gold')
     })
 
     it('given pull request with long branch names, when rendered, expect branch names to be displayed', () => {
@@ -232,11 +234,11 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PullRequestHeader {...props} />)
+      render(<PrHeader {...props} />)
 
       // EXPECT
-      expect(screen.getByText('very-long-feature-branch-name-that-might-wrap')).toBeInTheDocument()
-      expect(screen.getByText('main')).toBeInTheDocument()
+      expectBranchTagToBePresent('very-long-feature-branch-name-that-might-wrap', 'head', 'gold')
+      expectBranchTagToBePresent('main', 'base', 'gold')
     })
   })
 
@@ -249,7 +251,7 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PullRequestHeader {...props} />)
+      render(<PrHeader {...props} />)
 
       // EXPECT
       expect(screen.getByText('#789')).toBeInTheDocument()
@@ -263,7 +265,7 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PullRequestHeader {...props} />)
+      render(<PrHeader {...props} />)
 
       // EXPECT
       expect(screen.getByText('#1')).toBeInTheDocument()
@@ -283,7 +285,7 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PullRequestHeader {...props} />)
+      render(<PrHeader {...props} />)
 
       // EXPECT
       const avatar = screen.getByTestId('avatar')
@@ -306,7 +308,7 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PullRequestHeader {...props} />)
+      render(<PrHeader {...props} />)
 
       // EXPECT
       const avatar = screen.getByTestId('avatar')
@@ -322,7 +324,7 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps()
 
       // WHEN
-      render(<PullRequestHeader {...props} />)
+      render(<PrHeader {...props} />)
 
       // EXPECT
       expect(screen.getByText('opened')).toBeInTheDocument()
@@ -354,7 +356,7 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PullRequestHeader {...props} />)
+      render(<PrHeader {...props} />)
 
       // EXPECT
       // State tag
@@ -381,9 +383,9 @@ describe('PullRequestHeader', () => {
 
       // Branch information
       expect(screen.getByText('from')).toBeInTheDocument()
-      expect(screen.getByText('feature/dark-mode')).toBeInTheDocument()
+      expectBranchTagToBePresent('feature/dark-mode', 'head', 'gold')
       expect(screen.getByText('into')).toBeInTheDocument()
-      expect(screen.getByText('main')).toBeInTheDocument()
+      expectBranchTagToBePresent('main', 'base', 'gold')
     })
   })
 
@@ -398,7 +400,7 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PullRequestHeader {...props} />)
+      render(<PrHeader {...props} />)
 
       // EXPECT
       expect(screen.getByText(longTitle)).toBeInTheDocument()
@@ -413,7 +415,7 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PullRequestHeader {...props} />)
+      render(<PrHeader {...props} />)
 
       // EXPECT
       expect(screen.getByText(specialTitle)).toBeInTheDocument()
@@ -429,7 +431,7 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PullRequestHeader {...props} />)
+      render(<PrHeader {...props} />)
 
       // EXPECT
       expect(screen.getByText('#999999')).toBeInTheDocument()
