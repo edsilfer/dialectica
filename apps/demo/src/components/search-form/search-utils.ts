@@ -1,4 +1,4 @@
-import { PrKey } from '@diff-viewer'
+import { PrKey } from '@diff-viewer-addons'
 
 const PR_URL_REGEX = /^(?:https?:\/\/)?github\.com\/([\w.-]+)\/([\w.-]+)\/pull\/(\d+)/
 

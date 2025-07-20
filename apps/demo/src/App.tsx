@@ -5,7 +5,8 @@ import { Alert, notification } from 'antd'
 import Footer from './components/Footer'
 import Toolbar from './components/Toolbar'
 
-import { AddButton, DiffViewer, ParsedDiff, PrKey, useDiffViewerConfig } from '@diff-viewer'
+import { DiffViewer, ParsedDiff, useDiffViewerConfig } from '@diff-viewer'
+import { AddButton, PrKey } from '@diff-viewer-addons'
 
 import { LineRange } from '@diff-viewer/src/components/diff-viewer/types'
 import ErrorCard from './components/ErrorCard'
@@ -17,7 +18,7 @@ import { useReviewDatastore } from './hooks/data/use-review-datastore'
 import { useWidgetDatastore } from './hooks/data/use-widget-datastore'
 import { useCommentState } from './hooks/state/use-comment-state'
 import { useSettings } from './provider/setttings-provider'
-import { parseURL, setLineURL, parseLineURL } from './utils'
+import { parseLineURL, parseURL, setLineURL } from './utils'
 
 function useStyles({ theme }: ReturnType<typeof useDiffViewerConfig>) {
   return useMemo(

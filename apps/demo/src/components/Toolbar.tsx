@@ -1,13 +1,6 @@
 import { SearchOutlined, SettingOutlined } from '@ant-design/icons'
-import {
-  GitHubPullRequest,
-  GitHubToolbar,
-  PrHeader,
-  PrKey,
-  ReviewButton,
-  ReviewPayload,
-  useDiffViewerConfig,
-} from '@diff-viewer'
+import { useDiffViewerConfig } from '@diff-viewer'
+import { GitHubPullRequest, GitHubToolbar, PrHeader, PrKey, ReviewButton, ReviewPayload } from '@diff-viewer-addons'
 import { css } from '@emotion/react'
 import { Button } from 'antd'
 import React, { useMemo, useState } from 'react'

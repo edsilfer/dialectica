@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "pnpm --filter @diff-viewer build",
+    "build": "pnpm --filter './packages/**' build",
     "build:watch": "pnpm --filter @diff-viewer build:watch",
     "demo": "pnpm --filter demo dev",
     "format": "prettier . --write",

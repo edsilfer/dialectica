@@ -1,3 +1,4 @@
+import { Widget } from '@diff-viewer'
 import {
   CommentAuthor,
   CommentEvent,
@@ -5,8 +6,7 @@ import {
   CommentMetadata,
   GitHubInlineComment,
   InlineComment,
-  Widget,
-} from '@diff-viewer'
+} from '@diff-viewer-addons'
 import React from 'react'
 
 /**

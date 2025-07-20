@@ -1,4 +1,4 @@
-import { PrKey, publishReview, PublishReviewRequest, PublishReviewResponse, ReviewPayload } from '@diff-viewer'
+import { PrKey, publishReview, PublishReviewRequest, PublishReviewResponse, ReviewPayload } from '@diff-viewer-addons'
 import { useCallback } from 'react'
 import { useSettings } from '../../provider/setttings-provider'
 

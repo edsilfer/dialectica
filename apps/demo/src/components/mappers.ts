@@ -1,5 +1,5 @@
-import { PullRequestMetadata } from '@diff-viewer/src/addons/pull-request'
-import type { GitHubPullRequest, GitHubInlineComment } from '@diff-viewer/src/addons/github/models'
+import type { GitHubInlineComment, GitHubPullRequest } from '@diff-viewer-addons'
+import { PullRequestMetadata } from '@diff-viewer-addons'
 
 /**
  * @param pr - The raw payload returned by GitHub's `GET /repos/:owner/:repo/pulls/:number` endpoint.

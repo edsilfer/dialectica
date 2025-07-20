@@ -30,4 +30,5 @@ export type { FileExplorerConfig } from './components/file-explorer/types'
 export type { FileDiff } from './models/FileDiff'
 export { ParsedDiff } from './models/ParsedDiff'
 export * from './themes'
-export * from './addons'
+
+export { default as ChevronDown } from './components/ui/icons/ChevronDown'

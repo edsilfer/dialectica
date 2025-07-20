@@ -1,16 +1,15 @@
+import { LineRequest, LoadMoreLinesResult } from '@diff-viewer'
 import {
   getInlineComments,
+  getMoreLines,
   getPrDiff,
   getPrMetadata,
   getUserData,
-  getMoreLines,
   GitHubInlineComment,
   GitHubPullRequest,
   GitHubUser,
-  LineRequest,
-  LoadMoreLinesResult,
   PrKey,
-} from '@diff-viewer'
+} from '@diff-viewer-addons'
 import { useCallback } from 'react'
 import { useSettings } from '../../provider/setttings-provider'
 import { useAsync } from '../use-async'

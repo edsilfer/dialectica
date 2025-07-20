@@ -1,4 +1,4 @@
-import { CommentState, ReviewPayload } from '@diff-viewer'
+import { CommentState, ReviewPayload } from '@diff-viewer-addons'
 import { useCallback, useMemo, useState } from 'react'
 import { useCommentsContext } from '../../provider/comments-provider'
 import { CommentDatastore } from '../data/use-comment-datastore'

@@ -1,3 +1,4 @@
+import { LineMetadata } from '@diff-viewer'
 import {
   CommentFactory,
   CommentMetadata,
@@ -6,9 +7,8 @@ import {
   editInlineComment,
   getInlineComments,
   GitHubInlineComment,
-  LineMetadata,
   PrKey,
-} from '@diff-viewer'
+} from '@diff-viewer-addons'
 import { useCallback, useEffect } from 'react'
 import { useCommentsContext } from '../../provider/comments-provider'
 import { useSettings } from '../../provider/setttings-provider'
