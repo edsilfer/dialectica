@@ -6,7 +6,7 @@ import Footer from './components/Footer'
 import Toolbar from './components/Toolbar'
 
 import { DiffViewer, ParsedDiff, useDiffViewerConfig } from '@diff-viewer'
-import { AddButton, PrKey } from '@diff-viewer-addons'
+import { AddButton, PrKey } from '@github'
 
 import { LineRange } from '@diff-viewer/src/components/diff-viewer/types'
 import ErrorCard from './components/ErrorCard'

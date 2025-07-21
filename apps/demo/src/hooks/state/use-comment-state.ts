@@ -1,5 +1,5 @@
 import { LineMetadata } from '@diff-viewer'
-import { CommentAuthor, CommentEvent, CommentMetadata, CommentState } from '@diff-viewer-addons'
+import { CommentAuthor, CommentEvent, CommentMetadata, CommentState } from '@github'
 import { useCallback, useEffect, useState } from 'react'
 import { EventHandler } from '../../models/WidgetFactory'
 import { useSettings } from '../../provider/setttings-provider'

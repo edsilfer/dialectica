@@ -18,7 +18,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@diff-viewer': path.resolve(__dirname, '../../packages/diff-viewer/dist'),
-      '@diff-viewer-addons': path.resolve(__dirname, '../../packages/addons/dist'),
+      '@github': path.resolve(__dirname, '../../packages/github/dist'),
     },
   },
 })

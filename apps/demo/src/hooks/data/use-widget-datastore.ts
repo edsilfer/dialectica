@@ -1,5 +1,5 @@
 import { Widget } from '@diff-viewer'
-import { CommentState } from '@diff-viewer-addons'
+import { CommentState } from '@github'
 import { useMemo } from 'react'
 import { EventHandler, WidgetFactory } from '../../models/WidgetFactory'
 import { useSettings } from '../../provider/setttings-provider'

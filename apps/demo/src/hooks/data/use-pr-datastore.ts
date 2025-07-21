@@ -9,7 +9,7 @@ import {
   GitHubPullRequest,
   GitHubUser,
   PrKey,
-} from '@diff-viewer-addons'
+} from '@github'
 import { useCallback } from 'react'
 import { useSettings } from '../../provider/setttings-provider'
 import { useAsync } from '../use-async'

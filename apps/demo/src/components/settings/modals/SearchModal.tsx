@@ -1,4 +1,4 @@
-import { PrKey } from '@diff-viewer-addons'
+import { PrKey } from '@github'
 import { Modal } from 'antd'
 import React from 'react'
 import SearchForm from '../../search-form'

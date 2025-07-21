@@ -1,0 +1,68 @@
+{
+    "name": "@github",
+    "version": "0.1.0",
+    "description": "Utitilities for dealing with GitHub",
+    "main": "dist/index.js",
+    "module": "dist/index.mjs",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.js"
+        },
+        "./package.json": "./package.json"
+    },
+    "scripts": {
+        "build": "tsup",
+        "build:watch": "tsup --watch",
+        "test": "vitest"
+    },
+    "keywords": [
+        "git",
+        "diff",
+        "react",
+        "typescript",
+        "viewer",
+        "addons"
+    ],
+    "author": "",
+    "license": "MIT",
+    "peerDependencies": {
+        "react": "^19.1.0",
+        "react-dom": "^19.1.0"
+    },
+    "devDependencies": {
+        "@testing-library/jest-dom": "^6.6.3",
+        "@testing-library/react": "^16.3.0",
+        "@testing-library/user-event": "^14.6.1",
+        "@types/lodash": "^4.17.19",
+        "@types/react": "^19.1.8",
+        "@types/react-dom": "^19.1.6",
+        "@vitest/coverage-v8": "3.2.4",
+        "jsdom": "^26.1.0",
+        "react": "^19.1.0",
+        "react-dom": "^19.1.0",
+        "tsup": "^8.5.0",
+        "typescript": "^5.8.3",
+        "vitest": "^3.2.4"
+    },
+    "dependencies": {
+        "@ant-design/colors": "^7.2.1",
+        "@ant-design/icons": "^6.0.0",
+        "@ant-design/md-editor": "^1.25.55",
+        "@emotion/react": "^11.14.0",
+        "@emotion/styled": "^11.14.0",
+        "antd": "^5.26.2",
+        "diffparser": "^2.0.1",
+        "dompurify": "^3.2.6",
+        "highlight.js": "^11.11.1",
+        "lodash": "^4.17.21",
+        "react-markdown": "^10.1.0",
+        "rehype-highlight": "^7.0.2",
+        "remark-gfm": "^4.0.1",
+        "tiny-invariant": "^1.3.3",
+        "tiny-warning": "^1.0.3",
+        "use-context-selector": "^2.0.0"
+    }
+}

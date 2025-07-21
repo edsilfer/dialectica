@@ -1,4 +1,4 @@
-import { PrKey } from '@diff-viewer-addons'
+import { PrKey } from '@github'
 
 export interface SearchFormProps {
   /** Width of the search input */

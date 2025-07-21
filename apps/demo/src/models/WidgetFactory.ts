@@ -6,7 +6,7 @@ import {
   CommentMetadata,
   GitHubInlineComment,
   InlineComment,
-} from '@diff-viewer-addons'
+} from '@github'
 import React from 'react'
 
 /**

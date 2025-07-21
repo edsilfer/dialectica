@@ -14,7 +14,7 @@
     "dependencies": {
         "@ant-design/icons": "~5.6.1",
         "@diff-viewer": "workspace:*",
-        "@diff-viewer-addons": "workspace:*",
+        "@github": "workspace:*",
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.0",
         "@types/lodash": "^4.17.19",

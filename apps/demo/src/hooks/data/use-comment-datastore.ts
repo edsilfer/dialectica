@@ -8,7 +8,7 @@ import {
   getInlineComments,
   GitHubInlineComment,
   PrKey,
-} from '@diff-viewer-addons'
+} from '@github'
 import { useCallback, useEffect } from 'react'
 import { useCommentsContext } from '../../provider/comments-provider'
 import { useSettings } from '../../provider/setttings-provider'

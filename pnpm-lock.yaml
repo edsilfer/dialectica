@@ -53,15 +53,15 @@ importers:
       '@diff-viewer':
         specifier: workspace:*
         version: link:../../packages/diff-viewer
-      '@diff-viewer-addons':
-        specifier: workspace:*
-        version: link:../../packages/addons
       '@emotion/react':
         specifier: ^11.14.0
         version: 11.14.0(@types/react@19.1.8)(react@19.1.0)
       '@emotion/styled':
         specifier: ^11.14.0
         version: 11.14.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0)
+      '@github':
+        specifier: workspace:*
+        version: link:../../packages/github
       '@types/lodash':
         specifier: ^4.17.19
         version: 4.17.19
@@ -118,7 +118,7 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@types/debug@4.1.12)(@types/node@20.19.1)(jsdom@26.1.0)
 
-  packages/addons:
+  packages/diff-viewer:
     dependencies:
       '@ant-design/colors':
         specifier: ^7.2.1
@@ -137,7 +137,7 @@ importers:
         version: 11.14.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0)
       antd:
         specifier: ^5.26.2
-        version: 5.26.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 5.26.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       diffparser:
         specifier: ^2.0.1
         version: 2.0.1
@@ -209,7 +209,7 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@types/debug@4.1.12)(@types/node@20.19.1)(jsdom@26.1.0)
 
-  packages/diff-viewer:
+  packages/github:
     dependencies:
       '@ant-design/colors':
         specifier: ^7.2.1
@@ -228,7 +228,7 @@ importers:
         version: 11.14.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0)
       antd:
         specifier: ^5.26.2
-        version: 5.26.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 5.26.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       diffparser:
         specifier: ^2.0.1
         version: 2.0.1
