@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-import { createPropsFactory } from '../../../../../commons/src/test/generic-test-utils'
-import { render } from '../../../../../test-lib/src/render'
+import { createPropsFactory } from '@test-lib'
+import { render } from '@test-lib'
 import { IconRail } from './IconRail'
 import type { DrawerContent, IconRailProps } from './types'
 

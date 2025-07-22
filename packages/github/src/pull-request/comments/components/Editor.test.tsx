@@ -1,11 +1,11 @@
-import { fireEvent, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
 import {
   createPropsFactory,
   expectElementNotToBeInTheDocument,
   expectElementToBeInTheDocument,
-} from '../../../../utils/test/generic-test-utils'
-import { render } from '../../../../utils/test/render'
+  render,
+} from '@test-lib'
+import { fireEvent, screen } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
 import type { CommentEditorProps } from './Editor'
 import { Editor } from './Editor'
 
@@ -34,7 +34,7 @@ vi.mock('../../../../components/diff-viewer/providers/diff-viewer-context', () =
 }))
 
 vi.mock('antd', async () => {
-  const { createAntdMocks } = await import('../../../../utils/test/antd-utils')
+  const { createAntdMocks } = await import('@test-lib')
   return createAntdMocks()
 })
 

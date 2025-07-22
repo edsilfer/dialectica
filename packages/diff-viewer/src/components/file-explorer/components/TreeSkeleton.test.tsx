@@ -1,7 +1,6 @@
+import { createPropsFactory, mockElementProperty, render } from '@test-lib'
 import { RefObject } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createPropsFactory, mockElementProperty } from '../../../../../commons/src/test/generic-test-utils'
-import { render } from '../../../../../test-lib/src/render'
 import { useFileExplorerContext } from '../providers/fstree-context'
 import TreeSkeleton from './TreeSkeleton'
 import { buildNodeMap, getConnectorPaths } from './tree-utils'

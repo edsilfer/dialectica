@@ -63,7 +63,7 @@ export const setupAntdMocks = () => {
 // Abstracted test element creation for all mocks
 function _createTestDiv(type: string, props: Record<string, unknown> = {}, children?: React.ReactNode) {
   // Simulated useStyles system (no real styling in test)
-  const { style, ...rest } = props
+  const { ...rest } = props
   return React.createElement(type, { ...rest }, children)
 }
 
@@ -205,7 +205,7 @@ const _antdMocks = {
       const { children, ['data-testid']: dataTestId = 'textarea', ...rest } = props
       return _createTestDiv('textarea', { 'data-testid': dataTestId, ...rest }, children)
     }
-    ;(InputComponent as any).TextArea = TextAreaComponent
+    ;(InputComponent as { TextArea?: typeof TextAreaComponent }).TextArea = TextAreaComponent
     return InputComponent
   })(),
 
@@ -387,7 +387,7 @@ const _antdMocks = {
         }),
       )
     }
-    ;(RadioComponent as any).Group = RadioGroupComponent
+    ;(RadioComponent as { Group?: typeof RadioGroupComponent }).Group = RadioGroupComponent
     return RadioComponent
   })(),
 

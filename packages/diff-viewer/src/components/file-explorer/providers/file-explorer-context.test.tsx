@@ -1,10 +1,8 @@
-import React from 'react'
+import { Themes } from '@commons'
+import { createPropsFactory, render, renderWithContext } from '@test-lib'
 import { act, screen } from '@testing-library/react'
+import React from 'react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import { render } from '../../../../../test-lib/src/render'
-import { renderWithContext } from '../../../../../commons/src/test/context-test-utils'
-import { createPropsFactory } from '../../../../../commons/src/test/generic-test-utils'
-import { Themes } from '../../../../../commons/src/themes'
 import type { FileExplorerConfig } from '../types'
 import {
   DEFAULT_FILE_EXPLORER_CONFIG,

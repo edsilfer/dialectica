@@ -1,15 +1,15 @@
-import { fireEvent, screen } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   createPropsFactory,
   expectElementNotToBeInTheDocument,
   expectElementToBeInTheDocument,
-} from '../../../utils/test/generic-test-utils'
-import { render } from '@diff-viewer/test-utils'
+  render,
+} from '@test-lib'
+import { fireEvent, screen } from '@testing-library/react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { CommentAuthor, CommentEvent, CommentMetadata, CommentState } from '../models/CommentMetadata'
-import { InlineComment, type InlineCommentProps } from './InlineComment'
 import type { StaticCommentProps } from './DisplayComment'
 import type { DraftCommentProps } from './DraftComment'
+import { InlineComment, type InlineCommentProps } from './InlineComment'
 import type { CommentReplyProps } from './components/Reply'
 
 // MOCK ---------------------------------------------------------------
@@ -38,7 +38,7 @@ vi.mock('../../../components/diff-viewer/providers/diff-viewer-context', () => (
 }))
 
 vi.mock('antd', async () => {
-  const { createAntdMocks } = await import('../../../utils/test/antd-utils')
+  const { createAntdMocks } = await import('@test-lib')
   return createAntdMocks()
 })
 

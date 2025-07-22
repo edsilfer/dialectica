@@ -1,5 +1,5 @@
+import { LineMetadata } from '@diff-viewer'
 import { describe, expect, it } from 'vitest'
-import { LineMetadata } from '../../../components/diff-viewer/types'
 import { GitHubInlineComment, GitHubUser } from '../../api/models'
 import { CommentFactory } from './CommentFactory'
 import { CommentAuthor, CommentMetadata, CommentState } from './CommentMetadata'

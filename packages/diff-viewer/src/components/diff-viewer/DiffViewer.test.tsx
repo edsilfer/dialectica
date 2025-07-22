@@ -1,10 +1,9 @@
-import React from 'react'
+import { createPropsFactory, render as customRender } from '@test-lib'
 import { fireEvent, screen } from '@testing-library/react'
+import React from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import { ParsedDiff } from '../../models/ParsedDiff'
 import { createMockFileDiff } from '../../utils/test/models/test-utils'
-import { createPropsFactory } from '../../../../commons/src/test/generic-test-utils'
-import { render as customRender } from '../../../../test-lib/src/render'
 import { DiffViewer } from './DiffViewer'
 import type { DiffViewerProps } from './types'
 

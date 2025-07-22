@@ -1,6 +1,6 @@
+import { createPropsFactory } from '@test-lib'
 import { describe, expect, it } from 'vitest'
 import { CommentMetadata, CommentState } from './CommentMetadata'
-import { createPropsFactory } from '../../../utils/test/generic-test-utils'
 
 type CommentMetadataParams = {
   serverId?: number

@@ -1,11 +1,6 @@
-import React from 'react'
+import { createPropsFactory, expectElementNotToBeInTheDocument, expectElementToBeInTheDocument } from '@test-lib'
 import { fireEvent, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-import {
-  createPropsFactory,
-  expectElementToBeInTheDocument,
-  expectElementNotToBeInTheDocument,
-} from '../../../../../commons/src/test/generic-test-utils'
 import { render } from '../../../../../test-lib/src/render'
 import { Drawer } from './Drawer'
 import type { DrawerContent, DrawerProps } from './types'

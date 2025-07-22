@@ -1,7 +1,6 @@
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '../../../../test-lib/src/render'
-import { createPropsFactory, expectElementToBeInTheDocument } from '../../../../../commons/src/test/generic-test-utils'
-import { createFileActivitySummaryProps } from '../../utils/test/components/ui/activity-summary/test-utils'
+import { createPropsFactory, expectElementToBeInTheDocument, render } from '@test-lib'
+import { screen } from '@testing-library/react'
+import { describe, expect, it } from 'vitest'
 import { SAMPLE_FILE_DIFFS } from '../../utils/test/__fixtures__/file-diff-fixtures'
 import FileActivitySummary from './FileActivitySummary'
 import type { FileActivitySummaryProps } from './types'
@@ -9,6 +8,10 @@ import type { FileActivitySummaryProps } from './types'
 // ====================
 // TEST UTILITIES
 // ====================
+const createFileActivitySummaryProps = createPropsFactory<FileActivitySummaryProps>({
+  file: SAMPLE_FILE_DIFFS[0],
+})
+
 const createTestProps = createPropsFactory<Partial<FileActivitySummaryProps>>({
   maxSquares: 5,
 })

@@ -49,7 +49,7 @@ export interface LoadMoreButtonProps {
   onClick?: (event: React.MouseEvent, direction: Direction) => void
 }
 
-const LoadMoreButton: React.FC<LoadMoreButtonProps> = (props) => {
+export const LoadMoreButton: React.FC<LoadMoreButtonProps> = (props) => {
   const styles = useStyles()
   const tooltip = (direction: 'up' | 'down' | 'out') => {
     if (direction === 'up') return 'Expand up'
@@ -91,5 +91,3 @@ const LoadMoreButton: React.FC<LoadMoreButtonProps> = (props) => {
     </div>
   )
 }
-
-export default LoadMoreButton

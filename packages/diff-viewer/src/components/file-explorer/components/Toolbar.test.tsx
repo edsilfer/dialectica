@@ -5,14 +5,13 @@ vi.mock('../providers/fstree-context', () => ({
   useFileExplorerContext: vi.fn(),
 }))
 
+import { createPropsFactory, expectElementToBeInTheDocument, render } from '@test-lib'
 import { fireEvent, screen } from '@testing-library/react'
-import { describe, expect, it, beforeEach } from 'vitest'
-import { createPropsFactory, expectElementToBeInTheDocument } from '../../../../../commons/src/test/generic-test-utils'
-import { render } from '../../../../../test-lib/src/render'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { SAMPLE_FILE_DIFFS } from '../../../utils/test/__fixtures__/file-diff-fixtures'
 import { useFileExplorerContext } from '../providers/fstree-context'
-import { ExplorerBar } from './Toolbar'
 import type { FSTreeContextState } from '../providers/types'
+import { ExplorerBar } from './Toolbar'
 
 const mockUseFileExplorerContext = vi.mocked(useFileExplorerContext)
 

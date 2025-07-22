@@ -41,7 +41,7 @@ export interface ExpandButtonProps {
   onClick?: (event: React.MouseEvent<SVGSVGElement>) => void
 }
 
-const ExpandButton: React.FC<ExpandButtonProps> = (props) => {
+export const ExpandButton: React.FC<ExpandButtonProps> = (props) => {
   const {
     collapsed,
     onClick,
@@ -56,5 +56,3 @@ const ExpandButton: React.FC<ExpandButtonProps> = (props) => {
   const button = <ChevronDown size={size} css={chevronStyle} onClick={onClick} className="expand-button" />
   return <RichTooltip tooltipText={tooltipText}>{button}</RichTooltip>
 }
-
-export default ExpandButton

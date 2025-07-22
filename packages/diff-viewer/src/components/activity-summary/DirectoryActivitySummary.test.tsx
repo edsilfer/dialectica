@@ -1,7 +1,16 @@
+import { createPropsFactory, render } from '@test-lib'
+import { screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import { render, screen } from '../../../../test-lib/src/render'
+import { SAMPLE_FILE_DIFFS } from '../../utils/test/__fixtures__/file-diff-fixtures'
 import DirectoryActivitySummary from './DirectoryActivitySummary'
-import { createDirectoryActivitySummaryProps } from '../../utils/test/components/ui/activity-summary/test-utils'
+import type { DirectoryActivitySummaryProps } from './types'
+
+// ====================
+// TEST UTILITIES
+// ====================
+const createDirectoryActivitySummaryProps = createPropsFactory<DirectoryActivitySummaryProps>({
+  files: SAMPLE_FILE_DIFFS,
+})
 
 describe('DirectoryActivitySummary', () => {
   it('renders the correct number of squares when maxSquares is provided', () => {

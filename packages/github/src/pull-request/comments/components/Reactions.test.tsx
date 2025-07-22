@@ -1,11 +1,11 @@
-import { fireEvent, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
 import {
   createPropsFactory,
   expectElementNotToBeInTheDocument,
   expectElementToBeInTheDocument,
-} from '../../../../utils/test/generic-test-utils'
-import { render } from '../../../../utils/test/render'
+  render,
+} from '@test-lib'
+import { fireEvent, screen } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
 import type { CommentReactionsProps } from './Reactions'
 import { Reactions } from './Reactions'
 

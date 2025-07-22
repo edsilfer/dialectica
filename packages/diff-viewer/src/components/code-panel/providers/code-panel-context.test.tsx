@@ -1,19 +1,16 @@
-import React from 'react'
+import { readStorageValue, Themes, writeStorageValue } from '@commons'
+import { createPropsFactory, render, renderWithContext } from '@test-lib'
 import { act, screen } from '@testing-library/react'
+import React from 'react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import { render } from '../../../../../test-lib/src/render'
-import { renderWithContext } from '../../../../../commons/src/test/context-test-utils'
-import { createPropsFactory } from '../../../../../commons/src/test/generic-test-utils'
-import { Themes } from '../../../../../commons/src/themes/themes'
-import { readStorageValue, writeStorageValue } from '../../../utils/storage-utils'
-import type { CodePanelConfig, CodePanelConfigContextProps } from './types'
 import {
-  DEFAULT_CODE_PANEL_CONFIG,
   CodePanelConfigProvider,
+  DEFAULT_CODE_PANEL_CONFIG,
   useCodePanelConfig,
-  useFileState,
   useCodePanelSettings,
+  useFileState,
 } from './code-panel-context'
+import type { CodePanelConfig, CodePanelConfigContextProps } from './types'
 
 /**
  * # CodePanelConfigProvider Testing Strategy

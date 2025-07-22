@@ -1,15 +1,15 @@
+import { renderWithContext } from '@test-lib'
 import { act, waitFor } from '@testing-library/react'
 import React from 'react'
 import { describe, expect, it, vi } from 'vitest'
+import { render } from '../../../../../test-lib/src/render'
+import { ParsedDiff } from '../../../models/ParsedDiff'
 import { buildTree, listDirPaths } from '../../../utils/node-utils'
 import { SAMPLE_FILE_DIFFS } from '../../../utils/test/__fixtures__/file-diff-fixtures'
-import { render } from '../../../../../test-lib/src/render'
 import { FileExplorerConfig } from '../types'
 import { filterFiles, listExpandedDirs } from './context-utils'
 import { FileExplorerConfigProvider } from './file-explorer-context'
 import { FSTreeContextProvider, useFileExplorerContext } from './fstree-context'
-import { renderWithContext } from '../../../../../commons/src/test/context-test-utils'
-import { ParsedDiff } from '../../../models/ParsedDiff'
 
 const DIFF: ParsedDiff = { files: SAMPLE_FILE_DIFFS, rawContent: '' }
 

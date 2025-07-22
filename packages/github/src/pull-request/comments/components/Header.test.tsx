@@ -1,9 +1,8 @@
-import { fireEvent, screen, act } from '@testing-library/react'
+import { createPropsFactory, expectElementToBeInTheDocument, render } from '@test-lib'
+import { act, fireEvent, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { createPropsFactory, expectElementToBeInTheDocument } from '../../../../utils/test/generic-test-utils'
-import { render } from '../../../../utils/test/render'
 import type { CommentAuthor } from '../../models/CommentMetadata'
-import { CommentState, CommentEvent } from '../../models/CommentMetadata'
+import { CommentEvent, CommentState } from '../../models/CommentMetadata'
 import type { HeaderProps } from './Header'
 import { Header } from './Header'
 
@@ -35,7 +34,7 @@ vi.mock('../../../../components/diff-viewer/providers/diff-viewer-context', () =
 }))
 
 vi.mock('antd', async () => {
-  const { createAntdMocks } = await import('../../../../utils/test/antd-utils')
+  const { createAntdMocks } = await import('@test-lib')
   return {
     ...createAntdMocks(),
     message: {

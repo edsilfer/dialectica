@@ -419,7 +419,7 @@ describe('DiffLineViewModel', () => {
   describe('integration with highlight utils', () => {
     it('given build method called, when content provided, expect highlightContent called', async () => {
       // GIVEN
-      const { highlightContent } = await import('../../../utils/highlight-utils')
+      const { highlightContent } = await import('@commons')
       const mockHighlightContent = vi.mocked(highlightContent)
 
       // WHEN
@@ -437,7 +437,7 @@ describe('DiffLineViewModel', () => {
 
     it('given build method called, when no content provided, expect highlightContent still called for change content', async () => {
       // GIVEN
-      const { highlightContent } = await import('../../../utils/highlight-utils')
+      const { highlightContent } = await import('@commons')
       const mockHighlightContent = vi.mocked(highlightContent)
 
       // WHEN

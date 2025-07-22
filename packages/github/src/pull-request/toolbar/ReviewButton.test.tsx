@@ -1,5 +1,5 @@
-import { createPropsFactory, render } from '@commons'
 import { Themes, useDiffViewerConfig } from '@diff-viewer'
+import { createPropsFactory, render } from '@test-lib'
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { type ChangeEvent } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -13,7 +13,7 @@ vi.mock('../../../components/diff-viewer/providers/diff-viewer-context', () => (
 
 vi.mock('antd', async (importOriginal: () => Promise<typeof import('antd')>) => {
   const actual = await importOriginal()
-  const { createAntdMocks } = await import('../../../utils/test/antd-utils')
+  const { createAntdMocks } = await import('@test-lib')
   // Use generic mocks but keep critical components real
   const mocks: Record<string, unknown> = createAntdMocks()
   return {

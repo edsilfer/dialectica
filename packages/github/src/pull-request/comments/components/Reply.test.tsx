@@ -1,3 +1,15 @@
+import {
+  createPropsFactory,
+  expectElementNotToBeInTheDocument,
+  expectElementToBeInTheDocument,
+  render,
+} from '@test-lib'
+import { fireEvent, screen } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
+import type { CommentAuthor } from '../../models/CommentMetadata'
+import type { CommentReplyProps } from './Reply'
+import { Reply } from './Reply'
+
 // MOCK
 vi.mock('../../../../components/diff-viewer/providers/diff-viewer-context', () => ({
   useDiffViewerConfig: () => ({
@@ -14,18 +26,6 @@ vi.mock('../../../../components/diff-viewer/providers/diff-viewer-context', () =
     },
   }),
 }))
-
-import { fireEvent, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
-import {
-  createPropsFactory,
-  expectElementNotToBeInTheDocument,
-  expectElementToBeInTheDocument,
-} from '../../../../utils/test/generic-test-utils'
-import { render } from '../../../../utils/test/render'
-import type { CommentAuthor } from '../../models/CommentMetadata'
-import type { CommentReplyProps } from './Reply'
-import { Reply } from './Reply'
 
 // Helpers --------------------------------------------------------------
 const createCommentAuthor = createPropsFactory<CommentAuthor>({

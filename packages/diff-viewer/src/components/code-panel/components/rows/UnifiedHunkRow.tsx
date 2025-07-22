@@ -1,8 +1,8 @@
 import { theme as antTheme } from 'antd'
 import React, { useContext, useMemo } from 'react'
-import { LoadMoreButton, ThemeContext } from '@commons'
 import { getViewerStyles } from '../viewers/shared-styles'
 import { UnifiedHunkRowProps } from './types'
+import { ThemeContext, LoadMoreButton } from '@commons'
 
 export const UnifiedHunkRow: React.FC<UnifiedHunkRowProps> = (props) => {
   const theme = useContext(ThemeContext)

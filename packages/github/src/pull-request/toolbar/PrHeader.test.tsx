@@ -1,9 +1,8 @@
+import { Themes } from '@commons'
+import { useDiffViewerConfig } from '@diff-viewer'
+import { createPropsFactory, render } from '@test-lib'
 import { screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { useDiffViewerConfig } from '../../../components/diff-viewer/providers/diff-viewer-context'
-import { Themes } from '../../../themes/themes'
-import { createPropsFactory } from '../../../utils/test/generic-test-utils'
-import { render } from '../../../utils/test/render'
 import type { PullRequestMetadata } from './models'
 import { PrHeader } from './PrHeader'
 
@@ -12,7 +11,7 @@ vi.mock('../../../components/diff-viewer/providers/diff-viewer-context', () => (
 }))
 
 vi.mock('antd', async () => {
-  const { createAntdMocks } = await import('../../../utils/test/antd-utils')
+  const { createAntdMocks } = await import('@test-lib')
   return createAntdMocks()
 })
 

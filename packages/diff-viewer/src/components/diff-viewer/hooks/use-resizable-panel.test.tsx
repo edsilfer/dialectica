@@ -1,11 +1,6 @@
-import React from 'react'
-import { render, fireEvent, screen } from '@testing-library/react'
-import { describe, it, vi, beforeEach } from 'vitest'
-import {
-  createPropsFactory,
-  mockElementProperty,
-  expectElementToHaveTextContent,
-} from '../../../../../commons/src/test/generic-test-utils'
+import { createPropsFactory, expectElementToHaveTextContent, mockElementProperty } from '@test-lib'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { beforeEach, describe, it, vi } from 'vitest'
 import { useResizablePanel } from './use-resizable-panel'
 
 /*

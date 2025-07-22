@@ -1,5 +1,5 @@
-import { PrKey } from '@diff-viewer'
 import { LineRange } from '@diff-viewer'
+import { PrKey } from '@github'
 
 /**
  * Set the URL to the given PR.

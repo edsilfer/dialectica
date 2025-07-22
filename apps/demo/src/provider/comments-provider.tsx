@@ -1,4 +1,4 @@
-import { CommentMetadata, CommentState } from '@diff-viewer'
+import { CommentMetadata, CommentState } from '@github'
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react'
 
 interface ReviewHandle {

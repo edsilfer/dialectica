@@ -48,7 +48,7 @@ export default function App() {
   const { useMocks } = useSettings()
 
   // STATE ---------------------------------------------------------------------------------------------
-  const [prKey, setPrKey] = useState<PrKey | undefined>(parseURL())
+  const [prKey, setPrKey] = useState<PrKey | undefined>(() => parseURL())
   const [fileNames, setFileNames] = useState<string[]>([])
   const { handle: commentDatastore } = useCommentDatastore(prKey)
   const { handle: reviewDatastore } = useReviewDatastore(prKey)

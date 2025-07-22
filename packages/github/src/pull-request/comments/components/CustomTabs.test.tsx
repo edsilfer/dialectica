@@ -1,10 +1,6 @@
+import { createPropsFactory, expectElementToBeInTheDocument, render } from '@test-lib'
 import { fireEvent, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-
-// TODO: needs to go to commons
-import { createPropsFactory, expectElementToBeInTheDocument } from '../../../../utils/test/generic-test-utils'
-import { render } from '../../../../utils/test/render'
-
 import type { CustomTabsProps } from './CustomTabs'
 import { CustomTabs } from './CustomTabs'
 import type { TabActionButton, TabItem } from './types'
