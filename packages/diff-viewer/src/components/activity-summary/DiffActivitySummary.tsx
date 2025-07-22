@@ -1,7 +1,6 @@
+import { RichTooltip, ThemeContext } from '@commons'
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
-import { ThemeContext } from '../../../../commons/src/themes/providers/theme-context'
-import { RichTooltip } from '@commons'
 import { DiffActivitySummaryProps } from './types'
 
 const useStyles = () => {

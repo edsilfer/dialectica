@@ -1,7 +1,7 @@
+import { ThemeContext } from '@commons'
 import { css } from '@emotion/react'
 import { Skeleton } from 'antd'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
-import { ThemeContext } from '../../../../../commons/src/themes/providers/theme-context'
 import { IconRail } from './IconRail'
 import { DrawerProps, DrawerState } from './types'
 

@@ -1,6 +1,6 @@
+import { ThemeContext } from '@commons'
 import { theme as antTheme } from 'antd'
 import React, { useContext, useMemo } from 'react'
-import { ThemeContext } from '../../../../../../commons/src/themes/providers/theme-context'
 import { getViewerStyles } from '../viewers/shared-styles'
 import { PREFIX } from './constants'
 import { classes } from './row-utils'

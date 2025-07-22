@@ -1,16 +1,15 @@
+import { ThemeProvider, Themes, ThemeTokens } from '@commons'
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import {
-  CodePanelConfigProvider,
-  DEFAULT_CODE_PANEL_CONFIG,
-  useCodePanelConfig,
-} from '../../file-list/providers/code-panel-context'
 import {
   DEFAULT_FILE_EXPLORER_CONFIG,
   FileExplorerConfigProvider,
   useFileExplorerConfig,
 } from '../../file-explorer/providers/file-explorer-context'
-import { ThemeProvider } from '../../../../../commons/src/themes/providers/theme-context'
-import { Themes, ThemeTokens } from '../../../../../commons/src/themes'
+import {
+  CodePanelConfigProvider,
+  DEFAULT_CODE_PANEL_CONFIG,
+  useCodePanelConfig,
+} from '../../file-list/providers/code-panel-context'
 import { DiffViewerConfigContextProps, DiffViewerThemeContextState } from './types'
 
 const STORAGE_KEY = '__diff_viewer_config__'

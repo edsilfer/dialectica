@@ -1,11 +1,11 @@
+import { ThemeContext } from '@commons'
+import { theme as antTheme } from 'antd'
 import React, { useContext, useMemo } from 'react'
 import { DiffLineType } from '../../../../models/LineDiff'
-import { ThemeContext } from '../../../../../../commons/src/themes/providers/theme-context'
 import { useOverlayDocking } from '../../hooks/use-overlay-docking'
 import { DiffRow } from '../rows/DiffRow'
 import { getViewerStyles } from './shared-styles'
 import { UnifiedViewerProps } from './types'
-import { theme as antTheme } from 'antd'
 
 const UnifiedViewer: React.FC<UnifiedViewerProps> = (props) => {
   const theme = useContext(ThemeContext)

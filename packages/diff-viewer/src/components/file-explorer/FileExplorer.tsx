@@ -1,15 +1,15 @@
+import { ThemeContext } from '@commons'
 import { css } from '@emotion/react'
 import React, { useContext, useRef } from 'react'
+import { FileDiff } from '../../models/FileDiff'
+import { listDirPaths, nodeComparator } from '../../utils/node-utils'
 import { useDiffViewerConfig } from '../diff-viewer/providers/diff-viewer-context'
-import { ThemeContext } from '../../../../commons/src/themes/providers/theme-context'
 import FSNode from './components/FSNode'
 import { ExplorerBar } from './components/Toolbar'
 import TreeSkeleton from './components/TreeSkeleton'
-import { listDirPaths, nodeComparator } from '../../utils/node-utils'
 import { FileExplorerConfigProvider, useFileExplorerConfig } from './providers/file-explorer-context'
 import { FSTreeContextProvider, useFileExplorerContext } from './providers/fstree-context'
 import { FileExplorerProps } from './types'
-import { FileDiff } from '../../models/FileDiff'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)

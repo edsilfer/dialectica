@@ -1,7 +1,7 @@
+import { ThemeContext } from '@commons'
 import { css } from '@emotion/react'
 import { Button, Input, Tag } from 'antd'
 import React, { useContext } from 'react'
-import { ThemeContext } from '../../../../../commons/src/themes/providers/theme-context'
 import { useFileExplorerContext } from '../providers/fstree-context'
 
 const { Search } = Input

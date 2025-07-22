@@ -1,8 +1,8 @@
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
+import { ThemeContext } from '@commons'
 import { css, keyframes } from '@emotion/react'
 import { Tooltip } from 'antd'
 import React, { useContext } from 'react'
-import { ThemeContext } from '../../../../../commons/src/themes/providers/theme-context'
 import { IconRailProps } from './types'
 
 const slideInFromLeft = keyframes`

@@ -210,7 +210,7 @@ export const getViewerStyles = (theme: ThemeTokens, antdTheme: GlobalToken) => {
       background: ${transparentize(antdTheme.colorWarningBg, 1)};
     }
 
-    .highlighted-row > td:first-child {
+    .highlighted-row > td:first-of-type {
       border-left: 1px solid ${antdTheme.colorWarningBorder} !important;
     }
 
@@ -227,7 +227,7 @@ export const getViewerStyles = (theme: ThemeTokens, antdTheme: GlobalToken) => {
     }
 
     // border rounding
-    .first-highlighted-row > td:first-child {
+    .first-highlighted-row > td:first-of-type {
       border-top-left-radius: ${theme.spacing.xs};
     }
 
@@ -235,7 +235,7 @@ export const getViewerStyles = (theme: ThemeTokens, antdTheme: GlobalToken) => {
       border-top-right-radius: ${theme.spacing.xs};
     }
 
-    .last-highlighted-row > td:first-child {
+    .last-highlighted-row > td:first-of-type {
       border-bottom-left-radius: ${theme.spacing.xs};
     }
 
