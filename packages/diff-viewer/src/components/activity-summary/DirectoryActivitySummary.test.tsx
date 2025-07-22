@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { render, screen } from '../../../utils/test/render'
+import { render, screen } from '../../../../test-lib/src/render'
 import DirectoryActivitySummary from './DirectoryActivitySummary'
-import { createDirectoryActivitySummaryProps } from '../../../utils/test/components/ui/activity-summary/test-utils'
+import { createDirectoryActivitySummaryProps } from '../../utils/test/components/ui/activity-summary/test-utils'
 
 describe('DirectoryActivitySummary', () => {
   it('renders the correct number of squares when maxSquares is provided', () => {

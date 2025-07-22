@@ -1,6 +1,6 @@
 import React from 'react'
 
-const ChevronDown = React.forwardRef<SVGSVGElement, { size?: number } & React.SVGProps<SVGSVGElement>>(
+export const ChevronDown = React.forwardRef<SVGSVGElement, { size?: number } & React.SVGProps<SVGSVGElement>>(
   ({ size = 24, ...props }, ref) => (
     <svg
       ref={ref}
@@ -18,7 +18,3 @@ const ChevronDown = React.forwardRef<SVGSVGElement, { size?: number } & React.SV
     </svg>
   ),
 )
-
-ChevronDown.displayName = 'ChevronDown'
-
-export default ChevronDown

@@ -1,7 +1,7 @@
 import React from 'react'
 import { act, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import { render } from '../../../utils/test/render'
+import { render } from '../../../../../test-lib/src/render'
 import { renderWithContext } from '../../../../../commons/src/test/context-test-utils'
 import { createPropsFactory } from '../../../../../commons/src/test/generic-test-utils'
 import { Themes } from '../../../../../commons/src/themes'

@@ -1,7 +1,7 @@
 import React from 'react'
 import { fireEvent, screen } from '@testing-library/react'
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
-import { render } from '../../../utils/test/render'
+import { render } from '../../../../../test-lib/src/render'
 import { useOverlayDocking } from './use-overlay-docking'
 import { DiffLineViewModel } from '../models/DiffLineViewModel'
 import type { Overlay } from '../../diff-viewer/types'

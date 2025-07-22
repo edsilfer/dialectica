@@ -1,9 +1,8 @@
-import { css } from '@emotion/react'
+import { css, SerializedStyles } from '@emotion/react'
 import { Tooltip } from 'antd'
 import React, { useContext } from 'react'
-import { ThemeContext } from '../../../../../commons/src/themes/providers/theme-context'
+import { ThemeContext } from '../../themes/providers/theme-context'
 import LoadMoreLines from '../icons/LoadMoreLines'
-import { LoadMoreButtonProps } from './types'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -32,6 +31,22 @@ const useStyles = () => {
       }
     `,
   }
+}
+
+type Direction = 'up' | 'down' | 'out' | 'in' | 'in_up' | 'in_down'
+
+export interface LoadMoreButtonProps {
+  /** The direction of the load more arrows */
+  direction: Direction
+  /** Optional custom styles to apply to the icons */
+  css?: SerializedStyles
+  /** The width of the icons */
+  width?: number
+  /** The height of the icons */
+  height?: number
+
+  /** The function to call when the load more button is clicked */
+  onClick?: (event: React.MouseEvent, direction: Direction) => void
 }
 
 const LoadMoreButton: React.FC<LoadMoreButtonProps> = (props) => {

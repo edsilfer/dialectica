@@ -12,10 +12,10 @@ export interface RichTooltipProps {
   children: React.ReactElement
 }
 
-const RichTooltip: React.FC<RichTooltipProps> = ({ tooltipText, toastText, toastTimeSeconds = 2, children }) => {
+export const RichTooltip: React.FC<RichTooltipProps> = ({ tooltipText, toastText, toastTimeSeconds = 2, children }) => {
   const [isToastVisible, setIsToastVisible] = useState(false)
   const [tooltipTitle, setTooltipTitle] = useState(tooltipText)
-  const timeoutRef = useRef<number>()
+  const timeoutRef = useRef<number | null>(null)
 
   useEffect(() => {
     // When the component unmounts, clear the timeout
@@ -80,5 +80,3 @@ const RichTooltip: React.FC<RichTooltipProps> = ({ tooltipText, toastText, toast
 
   return children
 }
-
-export default RichTooltip

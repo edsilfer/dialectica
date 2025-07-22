@@ -1,4 +1,5 @@
-import { ChevronDown, useDiffViewerConfig } from '@diff-viewer'
+import { ChevronDown } from '@commons'
+import { useDiffViewerConfig } from '@diff-viewer'
 import { css } from '@emotion/react'
 import { Button, Divider, Popover, Radio, Space } from 'antd'
 import React, { useState } from 'react'

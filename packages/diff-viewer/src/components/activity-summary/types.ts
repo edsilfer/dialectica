@@ -1,4 +1,4 @@
-import { FileDiff } from '../../../models/FileDiff'
+import { FileDiff } from '../../models/FileDiff'
 
 export interface DiffActivitySummaryProps {
   /** The number of additions */

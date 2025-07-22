@@ -1,3 +1,5 @@
 export * from './buttons'
 export * from './icons'
 export { MarkdownText } from './MarkdownText'
+export { ProgressIndicator } from './ProgressIndicator'
+export { RichTooltip } from './RichTooltip'

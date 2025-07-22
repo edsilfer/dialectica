@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen } from '../../../utils/test/render'
+import { render, screen } from '../../../../test-lib/src/render'
 import { createPropsFactory, expectElementToBeInTheDocument } from '../../../../../commons/src/test/generic-test-utils'
-import { createFileActivitySummaryProps } from '../../../utils/test/components/ui/activity-summary/test-utils'
-import { SAMPLE_FILE_DIFFS } from '../../../utils/test/__fixtures__/file-diff-fixtures'
+import { createFileActivitySummaryProps } from '../../utils/test/components/ui/activity-summary/test-utils'
+import { SAMPLE_FILE_DIFFS } from '../../utils/test/__fixtures__/file-diff-fixtures'
 import FileActivitySummary from './FileActivitySummary'
 import type { FileActivitySummaryProps } from './types'
 

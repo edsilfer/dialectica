@@ -2,11 +2,8 @@ import { css } from '@emotion/react'
 import { Checkbox, Typography } from 'antd'
 import React, { useCallback, useContext, useMemo } from 'react'
 
-import { ThemeContext } from '../../../../../../commons/src/themes/providers/theme-context'
-import FileActivitySummary from '../../../ui/activity-summary/FileActivitySummary'
-import CopyButton from '../../../ui/buttons/CopyButton'
-import ExpandButton from '../../../ui/buttons/ExpandButton'
-import WrapLinesButton from '../../../ui/buttons/LineWrapButton'
+import FileActivitySummary from '../../../activity-summary/FileActivitySummary'
+import { CopyButton, ExpandButton, LineWrapButton, ThemeContext } from '@commons'
 import { useCodePanelSettings, useFileState } from '../../providers/code-panel-context'
 import { FileViewerHeaderProps } from './types'
 
@@ -87,7 +84,7 @@ const FileViewerHeader: React.FC<FileViewerHeaderProps> = (props) => {
 
       <CopyButton onClick={handleCopyFilePath} tooltip="Copy file path" toastText="File path copied to clipboard" />
       {mode === 'unified' && (
-        <WrapLinesButton isWrapped={wrapLines} onClick={() => onWrapLinesChange(!wrapLines)} size={16} />
+        <LineWrapButton isWrapped={wrapLines} onClick={() => onWrapLinesChange(!wrapLines)} size={16} />
       )}
 
       <Text className="file-path" ellipsis={{ tooltip: file.key }}>

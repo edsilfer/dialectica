@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import { Progress, Typography } from 'antd'
 import React, { useContext } from 'react'
-import { ThemeContext } from '../../../../commons/src/themes/providers/theme-context'
+import { ThemeContext } from '../themes/providers/theme-context'
 
 const { Text } = Typography
 

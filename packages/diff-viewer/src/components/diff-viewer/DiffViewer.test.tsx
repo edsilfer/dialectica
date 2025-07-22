@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { ParsedDiff } from '../../models/ParsedDiff'
 import { createMockFileDiff } from '../../utils/test/models/test-utils'
 import { createPropsFactory } from '../../../../commons/src/test/generic-test-utils'
-import { render as customRender } from '../../utils/test/render'
+import { render as customRender } from '../../../../test-lib/src/render'
 import { DiffViewer } from './DiffViewer'
 import type { DiffViewerProps } from './types'
 

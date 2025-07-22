@@ -15,7 +15,8 @@
     "paths": {
       "@diff-viewer": ["packages/diff-viewer/src"],
       "@commons": ["packages/commons/src"],
-      "@github": ["packages/github/src"]
+      "@github": ["packages/github/src"],
+      "@test-lib": ["packages/test-lib/src"]
     }
   }
 }

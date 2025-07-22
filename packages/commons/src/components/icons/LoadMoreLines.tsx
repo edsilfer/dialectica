@@ -1,5 +1,4 @@
 import React from 'react'
-import { LoadMoreLinesProps } from './types'
 
 /* Constants */
 const VIEWBOX = 24
@@ -14,6 +13,19 @@ const ARROW_WIDTH = 4
 
 const CONTENT_HEIGHT = ARROW_GAP + ARROW_LENGTH + 2 * DOT_RADIUS
 const VERTICAL_OFFSET = (VIEWBOX - CONTENT_HEIGHT) / 2
+
+export interface LoadMoreLinesProps extends React.SVGProps<SVGSVGElement> {
+  /** Icon dimension in pixels (width & height). Defaults to 24. */
+  width?: number
+  /** Icon dimension in pixels (width & height). Defaults to 24. */
+  height?: number
+  /** Amount of dots rendered in the horizontal line. Defaults to 5. */
+  numDots?: number
+  /** Arrow orientation */
+  direction?: 'up' | 'down' | 'out'
+  /** Optional additional class names */
+  className?: string
+}
 
 /* Public component */
 const LoadMoreLines = React.forwardRef<SVGSVGElement, LoadMoreLinesProps>((props, ref) => {

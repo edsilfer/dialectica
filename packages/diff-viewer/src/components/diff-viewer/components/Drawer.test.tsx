@@ -6,7 +6,7 @@ import {
   expectElementToBeInTheDocument,
   expectElementNotToBeInTheDocument,
 } from '../../../../../commons/src/test/generic-test-utils'
-import { render } from '../../../utils/test/render'
+import { render } from '../../../../../test-lib/src/render'
 import { Drawer } from './Drawer'
 import type { DrawerContent, DrawerProps } from './types'
 

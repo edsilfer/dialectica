@@ -1,14 +1,13 @@
+import { createPropsFactory } from '@test-lib'
 import { fireEvent, screen } from '@testing-library/react'
 import React from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createPropsFactory } from '../../../../../../commons/src/test/generic-test-utils'
-import { render } from '../../../../utils/test/render'
+import { render } from '../../../../../../test-lib/src/render'
 import { DiffLineViewModel } from '../../models/DiffLineViewModel'
 import { DiffRowViewModel } from '../../models/DiffRowViewModel'
-import type { HunkDirection } from '../viewers/types'
+import type { HunkDirection, Widget } from '../viewers/types'
 import { SplitHunkRow } from './SplitHunkRow'
 import type { SplitHunkRowProps } from './types'
-import type { Widget } from '../viewers/types'
 
 // MOCKS
 vi.mock('../../../ui/buttons/LoadMoreButton', () => ({

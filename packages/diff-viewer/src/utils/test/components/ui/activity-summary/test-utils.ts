@@ -1,7 +1,7 @@
 import {
   DirectoryActivitySummaryProps,
   FileActivitySummaryProps,
-} from '../../../../../components/ui/activity-summary/types'
+} from '../../../../../components/activity-summary/types'
 import { SAMPLE_FILE_DIFFS } from '../../../../test/__fixtures__/file-diff-fixtures'
 import { createPropsFactory } from '../../../../../../../commons/src/test/generic-test-utils'
 

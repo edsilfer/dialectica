@@ -7,6 +7,7 @@
  */
 import '../../commons/src/themes/styles/highlight-themes.css'
 
+export * from '../../commons/src/themes'
 export * from './components/code-panel/FileList'
 export { CodePanelConfigProvider, useCodePanelConfig } from './components/code-panel/providers/code-panel-context'
 export type { CodePanelConfig } from './components/code-panel/providers/types'
@@ -14,8 +15,8 @@ export * from './components/diff-viewer/DiffViewer'
 export * from './components/diff-viewer/providers/diff-viewer-context'
 export type {
   LineMetadata,
-  LineRequest,
   LineRange,
+  LineRequest,
   LoadMoreLinesHandler,
   LoadMoreLinesResult,
   Overlay,
@@ -29,6 +30,3 @@ export {
 export type { FileExplorerConfig } from './components/file-explorer/types'
 export type { FileDiff } from './models/FileDiff'
 export { ParsedDiff } from './models/ParsedDiff'
-export * from '../../commons/src/themes'
-
-export { default as ChevronDown } from './components/ui/icons/ChevronDown'
