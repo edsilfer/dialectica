@@ -1,4 +1,5 @@
-import { Themes, ThemeTokens, useCodePanelConfig, useDiffViewerConfig, useFileExplorerConfig } from '@diff-viewer'
+import { Themes, ThemeTokens } from '@commons'
+import { useCodePanelConfig, useDiffViewerConfig, useFileExplorerConfig } from '@diff-viewer'
 import { css } from '@emotion/react'
 import { Divider, Modal } from 'antd'
 import React from 'react'

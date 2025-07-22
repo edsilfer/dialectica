@@ -1,5 +1,5 @@
 import { Interpolation, Theme } from '@emotion/react'
-import { ThemeTokens } from '../../themes'
+import { ThemeTokens } from '../../../../commons/src/themes'
 import { ParsedDiff } from '../../models/ParsedDiff'
 import { FileDiff } from '../../models/FileDiff'
 

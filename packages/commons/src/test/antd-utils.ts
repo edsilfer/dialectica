@@ -1,8 +1,6 @@
 import React from 'react'
 import { vi } from 'vitest'
-import { ToolbarWidget } from '../../addons/pull-request/toolbar/GitHubToolbar'
-import type { CodePanelConfigContextState } from '../../components/code-panel/providers/types'
-import { CustomButton } from '../../components/ui/ActionButtons'
+import { CustomButton } from '../components/buttons/ActionButtons'
 
 export const createAntdMocks = () => ({
   Progress: _mockProgress(),
@@ -40,45 +38,6 @@ export const createCustomButton = (overrides: Partial<CustomButton> = {}): Custo
     tooltipText: 'Test tooltip',
     side: 'left',
     onClick: vi.fn(),
-  }
-
-  return { ...defaults, ...overrides }
-}
-
-/**
- * Creates a mock ToolbarWidget with default values and optional overrides
- *
- * @param overrides - Optional overrides for the default values
- * @returns           A mock ToolbarWidget with default values and optional overrides
- */
-export const createToolbarWidget = (overrides: Partial<ToolbarWidget> = {}): ToolbarWidget => {
-  const defaults: ToolbarWidget = {
-    key: 'test-widget',
-    component: React.createElement('div', { 'data-testid': 'test-widget' }, 'Widget'),
-    side: 'left',
-  }
-
-  return { ...defaults, ...overrides }
-}
-
-/**
- * Creates a mock code panel configuration with default values and optional overrides
- *
- * @param overrides - Optional overrides for the default values
- * @returns           A mock code panel configuration with default values and optional overrides
- */
-export const createMockCodePanelConfig = (
-  overrides: Partial<CodePanelConfigContextState> = {},
-): CodePanelConfigContextState => {
-  const defaults: CodePanelConfigContextState = {
-    config: { mode: 'unified' as const, ignoreWhitespace: false },
-    fileStateMap: new Map(),
-    allFileKeys: [],
-    getFileState: vi.fn().mockReturnValue({ isCollapsed: false, isViewed: false }),
-    setViewed: vi.fn(),
-    setCollapsed: vi.fn(),
-    setAllFileKeys: vi.fn(),
-    setConfig: vi.fn(),
   }
 
   return { ...defaults, ...overrides }

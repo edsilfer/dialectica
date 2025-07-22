@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react'
 import { CodePanelConfig } from '../../code-panel/providers/types'
 import { FileExplorerConfig } from '../../file-explorer/types'
-import { ThemeTokens } from '../../../themes'
+import { ThemeTokens } from '../../../../../commons/src/themes'
 
 export interface DiffViewerConfigContextProps {
   /** The children of the diff viewer config provider */

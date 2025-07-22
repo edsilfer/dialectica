@@ -3,7 +3,7 @@ import {
   FileActivitySummaryProps,
 } from '../../../../../components/ui/activity-summary/types'
 import { SAMPLE_FILE_DIFFS } from '../../../../test/__fixtures__/file-diff-fixtures'
-import { createPropsFactory } from '../../../generic-test-utils'
+import { createPropsFactory } from '../../../../../../../commons/src/test/generic-test-utils'
 
 /**
  * Creates a mock FileActivitySummaryProps with default values and optional overrides

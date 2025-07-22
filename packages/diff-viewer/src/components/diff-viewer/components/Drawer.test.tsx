@@ -5,7 +5,7 @@ import {
   createPropsFactory,
   expectElementToBeInTheDocument,
   expectElementNotToBeInTheDocument,
-} from '../../../utils/test/generic-test-utils'
+} from '../../../../../commons/src/test/generic-test-utils'
 import { render } from '../../../utils/test/render'
 import { Drawer } from './Drawer'
 import type { DrawerContent, DrawerProps } from './types'

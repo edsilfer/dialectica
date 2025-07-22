@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import React, { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
-import { Themes } from '../../themes'
+import { Themes } from '../../../../commons/src/themes'
 import { CodePanel } from '../code-panel/FileList'
 import { FileExplorer } from '../file-explorer/FileExplorer'
 import DirectoryIcon from '../ui/icons/Directory'

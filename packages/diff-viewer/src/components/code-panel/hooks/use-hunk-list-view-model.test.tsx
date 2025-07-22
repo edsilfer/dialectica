@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { createPropsFactory } from '../../../utils/test/generic-test-utils'
+import { createPropsFactory } from '../../../../../commons/src/test/generic-test-utils'
 import { createMockFileDiff, createMockHunk, createLineDiff } from '../../../utils/test/models/test-utils'
 import { SAMPLE_FILE_DIFFS } from '../../../utils/test/__fixtures__/file-diff-fixtures'
 import { useHunkListViewModel } from './use-hunk-list-view-model'

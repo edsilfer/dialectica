@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { screen } from '@testing-library/react'
 import { render } from '../../../utils/test/render'
-import { createPropsFactory } from '../../../utils/test/generic-test-utils'
+import { createPropsFactory } from '../../../../../commons/src/test/generic-test-utils'
 import { SAMPLE_FILE_DIFFS } from '../../../utils/test/__fixtures__/file-diff-fixtures'
 import { MOCKED_NODE_TREE } from '../../../utils/test/__fixtures__/fstree-fixtures'
 import { DirectoryNode, FileNode } from '../types'

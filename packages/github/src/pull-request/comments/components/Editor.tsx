@@ -8,12 +8,11 @@ import {
   SettingOutlined,
   UnorderedListOutlined,
 } from '@ant-design/icons'
+import { HeaderIcon, MarkdownIcon, MarkdownText, QuotingIcon } from '@commons'
+import { useDiffViewerConfig } from '@diff-viewer'
 import { css } from '@emotion/react'
 import { Button, Input, Tag } from 'antd'
 import React from 'react'
-import { useDiffViewerConfig } from '@diff-viewer'
-import { MarkdownText } from '../../../MarkdownText'
-import { HeaderIcon, MarkdownIcon, QuotingIcon } from '../../../ui/icons'
 import { useEditorViewModel } from '../hooks/use-editor-view-model'
 import { CustomTabs } from './CustomTabs'
 import { TabActionButton, TabItem } from './types'

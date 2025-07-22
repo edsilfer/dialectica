@@ -1,7 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons'
 import { css, Interpolation, Theme } from '@emotion/react'
-import React, { useContext } from 'react'
-import { ThemeContext } from '@diff-viewer'
+import React from 'react'
 
 export interface AddButtonProps {
   className?: string
@@ -14,8 +13,6 @@ export interface AddButtonProps {
 }
 
 const useStyles = () => {
-  const theme = useContext(ThemeContext)
-
   return {
     button: css`
       width: 18px;
@@ -27,7 +24,6 @@ const useStyles = () => {
       align-items: center;
       justify-content: center;
       font-size: 12px;
-      background-color: ${theme.colors.hunkViewerAddCommentBg};
       cursor: pointer;
 
       /* Smooth scaling animation */

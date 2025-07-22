@@ -9,6 +9,6 @@ export default defineConfig({
   },
   sourcemap: true,
   clean: true,
-  external: ['react', '@diff-viewer'],
+  external: ['react', '@diff-viewer', '@commons'],
   loader: { '.css': 'file' },
 })

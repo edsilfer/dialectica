@@ -9,8 +9,8 @@ import {
   FileExplorerConfigProvider,
   useFileExplorerConfig,
 } from '../../file-explorer/providers/file-explorer-context'
-import { ThemeProvider } from '../../../themes/providers/theme-context'
-import { Themes, ThemeTokens } from '../../../themes'
+import { ThemeProvider } from '../../../../../commons/src/themes/providers/theme-context'
+import { Themes, ThemeTokens } from '../../../../../commons/src/themes'
 import { DiffViewerConfigContextProps, DiffViewerThemeContextState } from './types'
 
 const STORAGE_KEY = '__diff_viewer_config__'

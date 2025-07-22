@@ -8,5 +8,5 @@
     "esModuleInterop": true,
     "moduleResolution": "node"
   },
-  "include": ["src", "../../packages/github/src", "../../packages/diff-viewer/src"]
+  "include": ["src", "../../packages/github/src", "../../packages/diff-viewer/src", "../../packages/commons/src"]
 }

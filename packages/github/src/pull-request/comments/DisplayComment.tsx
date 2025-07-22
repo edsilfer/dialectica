@@ -1,14 +1,13 @@
+import { MarkdownText, ThemeContext } from '@commons'
 import { css } from '@emotion/react'
 import { Avatar, Divider } from 'antd'
-import React from 'react'
-import { useDiffViewerConfig } from '@diff-viewer'
-import { MarkdownText } from '../../MarkdownText'
+import React, { useContext } from 'react'
 import { CommentAuthor, CommentEvent, CommentMetadata, EventHandler } from '../models/CommentMetadata'
 import { Header } from './components/Header'
 import { Reactions } from './components/Reactions'
 
 const useStyles = () => {
-  const { theme } = useDiffViewerConfig()
+  const theme = useContext(ThemeContext)
 
   return {
     content: css`

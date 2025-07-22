@@ -4,7 +4,7 @@ import { Dropdown, MenuProps, message, Tag, Typography } from 'antd'
 import { ItemType } from 'antd/es/menu/interface'
 import React, { useCallback, useMemo } from 'react'
 import { useDiffViewerConfig } from '@diff-viewer'
-import { formatTimestamp } from '../../../time-utils'
+import { formatTimestamp } from '../../../../../commons/src/utils/time-utils'
 import { CommentAuthor, CommentEvent, CommentState } from '../../models/CommentMetadata'
 
 const { Text, Link } = Typography

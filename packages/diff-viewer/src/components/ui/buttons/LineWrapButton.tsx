@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
 import { WrapLinesButtonProps } from './types'
-import { ThemeContext } from '../../../themes/providers/theme-context'
+import { ThemeContext } from '../../../../../commons/src/themes/providers/theme-context'
 import WrappedLines from '../icons/WrapLines'
 import UnwrappedLines from '../icons/UnwrappedLine'
 import RichTooltip from '../RichTooltip'

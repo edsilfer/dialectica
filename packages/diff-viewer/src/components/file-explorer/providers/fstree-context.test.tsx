@@ -8,7 +8,7 @@ import { FileExplorerConfig } from '../types'
 import { filterFiles, listExpandedDirs } from './context-utils'
 import { FileExplorerConfigProvider } from './file-explorer-context'
 import { FSTreeContextProvider, useFileExplorerContext } from './fstree-context'
-import { renderWithContext } from '../../../utils/test/context-test-utils'
+import { renderWithContext } from '../../../../../commons/src/test/context-test-utils'
 import { ParsedDiff } from '../../../models/ParsedDiff'
 
 const DIFF: ParsedDiff = { files: SAMPLE_FILE_DIFFS, rawContent: '' }

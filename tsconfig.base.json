@@ -14,7 +14,8 @@
     "baseUrl": ".",
     "paths": {
       "@diff-viewer": ["packages/diff-viewer/src"],
-      "@diff-viewer/addons": ["packages/addons/src"]
+      "@commons": ["packages/commons/src"],
+      "@github": ["packages/github/src"]
     }
   }
 }

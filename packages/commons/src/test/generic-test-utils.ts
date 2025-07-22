@@ -1,6 +1,7 @@
+import '@testing-library/jest-dom'
 import { screen } from '@testing-library/react'
-import { expect } from 'vitest'
 import React from 'react'
+import { expect } from 'vitest'
 
 /**
  * Creates a factory function for generating props with optional overrides.

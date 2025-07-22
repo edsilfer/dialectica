@@ -5,7 +5,7 @@ import {
   expectClickHandlerToBeCalled,
   expectTooltipToAppear,
 } from '../../../utils/test/components/ui/buttons/test-utils'
-import { createPropsFactory } from '../../../utils/test/generic-test-utils'
+import { createPropsFactory } from '../../../../../commons/src/test/generic-test-utils'
 import { render } from '../../../utils/test/render'
 import type { HunkDirection } from '../../code-panel/components/viewers/types'
 import LoadMoreButton from './LoadMoreButton'

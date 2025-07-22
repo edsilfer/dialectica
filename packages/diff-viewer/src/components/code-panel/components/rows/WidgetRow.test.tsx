@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createPropsFactory } from '../../../../utils/test/generic-test-utils'
+import { createPropsFactory } from '../../../../../../commons/src/test/generic-test-utils'
 import { render } from '../../../../utils/test/render'
 import { Widget } from '../../../diff-viewer/types'
 import { DiffLineViewModel } from '../../models/DiffLineViewModel'

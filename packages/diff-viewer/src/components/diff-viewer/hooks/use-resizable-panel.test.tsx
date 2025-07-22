@@ -5,7 +5,7 @@ import {
   createPropsFactory,
   mockElementProperty,
   expectElementToHaveTextContent,
-} from '../../../utils/test/generic-test-utils'
+} from '../../../../../commons/src/test/generic-test-utils'
 import { useResizablePanel } from './use-resizable-panel'
 
 /*

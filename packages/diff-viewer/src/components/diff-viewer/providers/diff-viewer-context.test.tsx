@@ -2,10 +2,10 @@ import { render } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import React, { PropsWithChildren } from 'react'
 
-import { Themes } from '../../../themes'
+import { Themes } from '../../../../../commons/src/themes'
 import { DEFAULT_CODE_PANEL_CONFIG } from '../../code-panel/providers/code-panel-context'
 import { DEFAULT_FILE_EXPLORER_CONFIG } from '../../file-explorer/providers/file-explorer-context'
-import { renderWithContext } from '../../../utils/test/context-test-utils'
+import { renderWithContext } from '../../../../../commons/src/test/context-test-utils'
 import { DiffViewerConfigProvider, useDiffViewerConfig } from './diff-viewer-context'
 import type { DiffViewerConfigContextProps } from './types'
 

@@ -1,24 +1,12 @@
 import React from 'react'
-import { useDiffViewerConfig } from '@diff-viewer'
 import { SVGIcon } from './types'
 
 const MarkdownIcon: SVGIcon = React.forwardRef<
   SVGSVGElement,
   { size?: number; inverted?: boolean } & React.SVGProps<SVGSVGElement>
 >(({ size = 16, inverted = false, ...props }, ref) => {
-  const { theme } = useDiffViewerConfig()
-  const fillColor = inverted ? theme.colors.textPrimary : theme.colors.backgroundPrimary
-
   return (
-    <svg
-      ref={ref}
-      xmlns="http://www.w3.org/2000/svg"
-      width={size}
-      height={size}
-      fill={fillColor}
-      viewBox="0 0 15 15"
-      {...props}
-    >
+    <svg ref={ref} xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 15 15" {...props}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"

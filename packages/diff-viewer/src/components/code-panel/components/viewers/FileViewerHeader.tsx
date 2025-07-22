@@ -2,7 +2,7 @@ import { css } from '@emotion/react'
 import { Checkbox, Typography } from 'antd'
 import React, { useCallback, useContext, useMemo } from 'react'
 
-import { ThemeContext } from '../../../../themes/providers/theme-context'
+import { ThemeContext } from '../../../../../../commons/src/themes/providers/theme-context'
 import FileActivitySummary from '../../../ui/activity-summary/FileActivitySummary'
 import CopyButton from '../../../ui/buttons/CopyButton'
 import ExpandButton from '../../../ui/buttons/ExpandButton'

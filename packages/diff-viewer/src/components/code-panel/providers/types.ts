@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import { ThemeTokens } from '../../../themes'
+import { ThemeTokens } from '../../../../../commons/src/themes'
 import { DisplayType } from '../components/viewers/types'
 
 export interface CodePanelConfigContextProps {

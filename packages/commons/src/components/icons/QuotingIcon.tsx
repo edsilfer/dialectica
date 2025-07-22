@@ -1,21 +1,11 @@
 import React from 'react'
-import { useDiffViewerConfig } from '@diff-viewer'
 
 const QuotingIcon = React.forwardRef<SVGSVGElement, { size?: number } & React.SVGProps<SVGSVGElement>>(
   ({ size = 24, ...props }, ref) => {
-    const { theme } = useDiffViewerConfig()
     const strokeThickness = 1
 
     return (
-      <svg
-        ref={ref}
-        xmlns="http://www.w3.org/2000/svg"
-        width={size}
-        height={size}
-        fill={theme.colors.textPrimary}
-        viewBox="0 0 16 16"
-        {...props}
-      >
+      <svg ref={ref} xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 16 16" {...props}>
         {/* First line - 75% width */}
         <rect x="2" y="4" width="8.25" height={strokeThickness} rx={strokeThickness / 2} />
 

@@ -1,6 +1,6 @@
 import { render, screen, waitFor, act, fireEvent } from '../../utils/test/render'
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { createPropsFactory } from '../../utils/test/generic-test-utils'
+import { createPropsFactory } from '../../../../commons/src/test/generic-test-utils'
 import RichTooltip from './RichTooltip'
 import type { RichTooltipProps } from './RichTooltip'
 

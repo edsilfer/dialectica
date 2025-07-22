@@ -9,14 +9,14 @@ import scala from 'highlight.js/lib/languages/scala'
 import typescript from 'highlight.js/lib/languages/typescript'
 import xml from 'highlight.js/lib/languages/xml'
 import 'highlight.js/styles/github.css'
-import React from 'react'
+import React, { useContext } from 'react'
 import Markdown from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
 import remarkGfm from 'remark-gfm'
-import { useDiffViewerConfig } from '@diff-viewer'
+import { ThemeContext } from '../themes'
 
 const useStyles = () => {
-  const { theme } = useDiffViewerConfig()
+  const theme = useContext(ThemeContext)
 
   return {
     content: css`

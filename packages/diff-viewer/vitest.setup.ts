@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest'
-import { setupGlobalTestMocks, setupBeforeEach } from './src/utils/test/setup'
+import { setupBeforeEach, setupGlobalTestMocks } from './src/test/setup'
 
 // Run global setup before all tests
 setupGlobalTestMocks()

@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react'
 import { describe, expect, it, vi, beforeEach, test } from 'vitest'
 import { SAMPLE_FILE_DIFFS } from '../../../../utils/test/__fixtures__/file-diff-fixtures'
-import { createPropsFactory } from '../../../../utils/test/generic-test-utils'
+import { createPropsFactory } from '../../../../../../commons/src/test/generic-test-utils'
 import { render } from '../../../../utils/test/render'
 import { CodePanelConfigProvider } from '../../providers/code-panel-context'
 import FileViewerHeader from './FileViewerHeader'

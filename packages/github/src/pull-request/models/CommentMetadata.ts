@@ -1,4 +1,4 @@
-import { hashString } from '../../string-utils'
+import { hashString } from '../../../../commons/src/utils/string-utils'
 
 /**
  * Author information for the comment

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
-import { ThemeContext, ThemeProvider } from '../../../themes/providers/theme-context'
-import { Themes } from '../../../themes'
+import { ThemeContext, ThemeProvider } from '../../../../../commons/src/themes/providers/theme-context'
+import { Themes } from '../../../../../commons/src/themes'
 import { FileExplorerConfig } from '../types'
 import { FileExplorerConfigContextProps, FileExplorerConfigState } from './types'
 

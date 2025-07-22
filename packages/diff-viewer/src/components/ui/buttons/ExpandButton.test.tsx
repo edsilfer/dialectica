@@ -1,13 +1,13 @@
 import { fireEvent, screen } from '@testing-library/react'
 import type React from 'react'
 import { describe, expect, it, vi } from 'vitest'
-import { createAntdMocks } from '../../../utils/test/antd-utils'
+import { createAntdMocks } from '../../../../../commons/src/test/antd-utils'
 import {
   expectClickEventToBePassed,
   expectClickHandlerToBeCalled,
   expectTooltipToAppear,
 } from '../../../utils/test/components/ui/buttons/test-utils'
-import { createPropsFactory } from '../../../utils/test/generic-test-utils'
+import { createPropsFactory } from '../../../../../commons/src/test/generic-test-utils'
 import { render } from '../../../utils/test/render'
 import ExpandButton from './ExpandButton'
 import type { ExpandButtonProps } from './types'

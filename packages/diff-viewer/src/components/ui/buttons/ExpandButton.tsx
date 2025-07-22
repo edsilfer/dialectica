@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import React, { useContext, useMemo } from 'react'
-import { ThemeContext } from '../../../themes/providers/theme-context'
+import { ThemeContext } from '../../../../../commons/src/themes/providers/theme-context'
 import ChevronDown from '../icons/ChevronDown'
 import { ExpandButtonProps } from './types'
 import RichTooltip from '../RichTooltip'

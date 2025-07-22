@@ -1,6 +1,6 @@
 import { theme as antTheme } from 'antd'
 import React, { useContext, useMemo } from 'react'
-import { ThemeContext } from '../../../../themes/providers/theme-context'
+import { ThemeContext } from '../../../../../../commons/src/themes/providers/theme-context'
 import LoadMoreButton from '../../../ui/buttons/LoadMoreButton'
 import { getViewerStyles } from '../viewers/shared-styles'
 import { UnifiedHunkRowProps } from './types'

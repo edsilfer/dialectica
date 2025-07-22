@@ -1,9 +1,7 @@
 import { css } from '@emotion/react'
 import { Progress, Typography } from 'antd'
 import React, { useContext } from 'react'
-import warning from 'tiny-warning'
-import { ThemeContext } from '../../themes/providers/theme-context'
-import { isProduction } from '../../utils/env-utils'
+import { ThemeContext } from '../../../../commons/src/themes/providers/theme-context'
 
 const { Text } = Typography
 
@@ -40,12 +38,6 @@ export interface ProgressIndicatorProps {
  */
 export const ProgressIndicator: React.FC<ProgressIndicatorProps> = (props) => {
   const styles = useStyles()
-
-  if (!isProduction()) {
-    warning(props.total >= 0, 'ProgressIndicator: `total` < 0; treating as 0.')
-    warning(props.current >= 0, 'ProgressIndicator: `current` < 0; clamping to 0.')
-    warning(props.total === 0 || props.current <= props.total, 'ProgressIndicator: `current` > `total`; clamping.')
-  }
 
   // Handle total = 0 as special case (infinite progress)
   if (props.total <= 0) {

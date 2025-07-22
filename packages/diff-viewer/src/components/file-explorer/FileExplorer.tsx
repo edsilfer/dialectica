@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import React, { useContext, useRef } from 'react'
 import { useDiffViewerConfig } from '../diff-viewer/providers/diff-viewer-context'
-import { ThemeContext } from '../../themes/providers/theme-context'
+import { ThemeContext } from '../../../../commons/src/themes/providers/theme-context'
 import FSNode from './components/FSNode'
 import { ExplorerBar } from './components/Toolbar'
 import TreeSkeleton from './components/TreeSkeleton'

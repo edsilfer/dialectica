@@ -7,7 +7,7 @@ vi.mock('../providers/fstree-context', () => ({
 
 import { fireEvent, screen } from '@testing-library/react'
 import { describe, expect, it, beforeEach } from 'vitest'
-import { createPropsFactory, expectElementToBeInTheDocument } from '../../../utils/test/generic-test-utils'
+import { createPropsFactory, expectElementToBeInTheDocument } from '../../../../../commons/src/test/generic-test-utils'
 import { render } from '../../../utils/test/render'
 import { SAMPLE_FILE_DIFFS } from '../../../utils/test/__fixtures__/file-diff-fixtures'
 import { useFileExplorerContext } from '../providers/fstree-context'

@@ -1,7 +1,7 @@
 import { theme as antTheme } from 'antd'
 import React, { useContext, useMemo } from 'react'
 import { DiffLineType } from '../../../../models/LineDiff'
-import { ThemeContext } from '../../../../themes/providers/theme-context'
+import { ThemeContext } from '../../../../../../commons/src/themes/providers/theme-context'
 import { useOverlayDocking } from '../../hooks/use-overlay-docking'
 
 import { DiffRow } from '../rows/DiffRow'

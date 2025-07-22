@@ -1,5 +1,5 @@
 import { DiffLineType, LineDiff } from '../../../models/LineDiff'
-import { highlightContent } from '../../../utils/highlight-utils'
+import { highlightContent } from '../../../../../commons/src/utils/highlight-utils'
 import { HunkDirection } from '../components/viewers/types'
 
 /**

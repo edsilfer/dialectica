@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import { Dropdown, MenuProps, message, theme } from 'antd'
 import React, { useCallback, useContext, useMemo } from 'react'
-import { ThemeContext } from '../../../themes/providers/theme-context'
+import { ThemeContext } from '../../../../../commons/src/themes/providers/theme-context'
 import RichTooltip from '../../ui/RichTooltip'
 import ExpandButton from '../../ui/buttons/ExpandButton'
 import { highlightText, nodeComparator } from '../../../utils/node-utils'
