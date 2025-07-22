@@ -2,8 +2,8 @@ import { css } from '@emotion/react'
 import { Checkbox, Typography } from 'antd'
 import React, { useCallback, useContext, useMemo } from 'react'
 
-import FileActivitySummary from '../../../activity-summary/FileActivitySummary'
 import { CopyButton, ExpandButton, LineWrapButton, ThemeContext } from '@commons'
+import FileActivitySummary from '../../../activity-summary/FileActivitySummary'
 import { useCodePanelSettings, useFileState } from '../../providers/code-panel-context'
 import { FileViewerHeaderProps } from './types'
 
@@ -14,7 +14,7 @@ const useStyles = () => {
 
   return useMemo(
     () => ({
-      headerBase: css`
+      container: css`
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -24,7 +24,6 @@ const useStyles = () => {
         color: ${theme.colors.textPrimary};
         font-family: ${theme.typography.codeFontFamily};
         border: 1px solid ${theme.colors.border};
-        border-bottom: 1px solid ${theme.colors.border};
         background-color: ${theme.colors.fileViewerHeaderBg};
         position: sticky;
         top: 0;
@@ -41,10 +40,7 @@ const useStyles = () => {
       `,
 
       headerCollapsed: css`
-        border-top-left-radius: ${theme.spacing.xs};
-        border-top-right-radius: ${theme.spacing.xs};
-        border-bottom-left-radius: ${theme.spacing.xs};
-        border-bottom-right-radius: ${theme.spacing.xs};
+        border-radius: ${theme.spacing.xs};
       `,
 
       rightContainer: css`
@@ -78,7 +74,7 @@ const FileViewerHeader: React.FC<FileViewerHeaderProps> = (props) => {
   }, [file.key])
 
   return (
-    <div css={[styles.headerBase, isCollapsed || isViewed ? styles.headerCollapsed : styles.headerExpanded]}>
+    <div css={[styles.container, isCollapsed || isViewed ? styles.headerCollapsed : styles.headerExpanded]}>
       <ExpandButton collapsed={isCollapsed} size={16} onClick={() => toggleCollapsed(!isCollapsed)} />
       <FileActivitySummary file={file} />
 
