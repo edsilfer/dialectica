@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import React, { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
 import { Themes } from '../../../../commons/src/themes'
-import { CodePanel } from '../code-panel/FileList'
+import { CodePanel } from '../file-list/FileList'
 import { FileExplorer } from '../file-explorer/FileExplorer'
 import { DirectoryIcon, HandleIcon } from '@commons'
 import { Drawer } from './components/Drawer'

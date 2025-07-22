@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import { CodePanelConfig } from '../../code-panel/providers/types'
+import { CodePanelConfig } from '../../file-list/providers/types'
 import { FileExplorerConfig } from '../../file-explorer/types'
 import { ThemeTokens } from '../../../../../commons/src/themes'
 

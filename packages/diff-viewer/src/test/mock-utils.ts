@@ -1,5 +1,5 @@
 import { vi } from 'vitest'
-import type { CodePanelConfigContextState } from '../components/code-panel/providers/types'
+import type { CodePanelConfigContextState } from '../components/file-list/providers/types'
 
 export const createMockCodePanelConfig = (
   overrides: Partial<CodePanelConfigContextState> = {},

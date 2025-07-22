@@ -1,5 +1,5 @@
 import type { RawChunk, RawFile } from 'diffparser'
-import { HunkDirection } from '../components/code-panel/components/viewers/types'
+import { HunkDirection } from '../components/file-list/components/viewers/types'
 import { detectLanguage } from '../../../commons/src/utils/language-utils'
 import { Hunk } from './Hunk'
 import { LineDiff } from './LineDiff'

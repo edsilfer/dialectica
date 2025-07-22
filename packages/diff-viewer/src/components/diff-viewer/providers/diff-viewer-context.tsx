@@ -3,7 +3,7 @@ import {
   CodePanelConfigProvider,
   DEFAULT_CODE_PANEL_CONFIG,
   useCodePanelConfig,
-} from '../../code-panel/providers/code-panel-context'
+} from '../../file-list/providers/code-panel-context'
 import {
   DEFAULT_FILE_EXPLORER_CONFIG,
   FileExplorerConfigProvider,

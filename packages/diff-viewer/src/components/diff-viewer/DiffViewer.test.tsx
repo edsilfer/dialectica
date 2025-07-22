@@ -40,7 +40,7 @@ import type { DiffViewerProps } from './types'
  */
 
 // MOCKS
-vi.mock('../code-panel/FileList', () => ({
+vi.mock('../file-list/FileList', () => ({
   CodePanel: ({
     files,
     scrollTo,
