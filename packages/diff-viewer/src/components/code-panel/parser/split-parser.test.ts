@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { describe, expect, it, beforeEach } from 'vitest'
 import { LineParserFactory } from './parser'
 import { createLineDiff } from '../../../utils/test/models/test-utils'
 import { DiffLineViewModel } from '../models/DiffLineViewModel'
@@ -33,11 +33,6 @@ import { SplitLineParser } from './split-parser'
  * ## Assertions
  * - Verify factory behavior, line type mapping, content assignment, highlighting integration, line number preservation, and inheritance patterns
  */
-
-// MOCK
-vi.mock('../../../utils/highlight-utils', () => ({
-  highlightContent: vi.fn((content: string) => `highlighted-${content}`),
-}))
 
 describe('SplitLineParser', () => {
   let parser: ReturnType<typeof LineParserFactory.build>
@@ -336,9 +331,12 @@ describe('SplitLineParser', () => {
 
       // EXPECT
       expect(result).toHaveLength(2)
-      expect(result[0].highlightedContentLeft).toBe('highlighted-function test() {')
-      expect(result[0].highlightedContentRight).toBe('highlighted-function test() {')
-      expect(result[1].highlightedContentRight).toBe('highlighted-  return true')
+      expect(result[0].highlightedContentLeft).toContain('<span')
+      expect(result[0].highlightedContentLeft).toContain('function')
+      expect(result[0].highlightedContentRight).toContain('<span')
+      expect(result[0].highlightedContentRight).toContain('function')
+      expect(result[1].highlightedContentRight).toContain('<span')
+      expect(result[1].highlightedContentRight).toContain('return')
     })
 
     it('given different language, when parsed, expect language passed to highlighting', () => {
@@ -352,7 +350,9 @@ describe('SplitLineParser', () => {
       // The mock will be called with the correct language parameter
       // We verify this by checking the highlighted content matches the expected pattern
       const result = parser.parse([line], 'typescript')
-      expect(result[0].highlightedContentLeft).toBe('highlighted-const x = 1')
+      expect(result[0].highlightedContentLeft).toContain('<span')
+      expect(result[0].highlightedContentLeft).toContain('const')
+      expect(result[0].highlightedContentLeft).toContain('1')
     })
   })
 

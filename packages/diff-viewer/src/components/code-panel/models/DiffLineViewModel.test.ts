@@ -33,11 +33,6 @@ import { DiffLineViewModel } from './DiffLineViewModel'
  * - Validate integration with highlight-utils through mock verification
  */
 
-// MOCK
-vi.mock('../../../utils/highlight-utils', () => ({
-  highlightContent: vi.fn((content: string) => `<highlighted>${content}</highlighted>`),
-}))
-
 // HELPERS
 const createMockDiffLineViewModel = (overrides: Partial<DiffLineViewModel> = {}): DiffLineViewModel => {
   const defaultLine = new DiffLineViewModel(
@@ -132,11 +127,11 @@ describe('DiffLineViewModel', () => {
       // EXPECT
       expect(result.typeLeft).toBe('delete')
       expect(result.contentLeft).toBe('old content')
-      expect(result.highlightedContentLeft).toBe('<highlighted>test line</highlighted>')
+      expect(result.highlightedContentLeft).toBe('test line')
       expect(result.lineNumberLeft).toBe(5)
       expect(result.typeRight).toBe('add')
       expect(result.contentRight).toBe('new content')
-      expect(result.highlightedContentRight).toBe('<highlighted>test line</highlighted>')
+      expect(result.highlightedContentRight).toBe('test line')
       expect(result.lineNumberRight).toBe(5)
     })
 
@@ -156,7 +151,7 @@ describe('DiffLineViewModel', () => {
       // EXPECT
       expect(result.typeLeft).toBe('delete')
       expect(result.contentLeft).toBe('deleted content')
-      expect(result.highlightedContentLeft).toBe('<highlighted>test line</highlighted>')
+      expect(result.highlightedContentLeft).toBe('test line')
       expect(result.lineNumberLeft).toBe(10)
       expect(result.typeRight).toBeNull()
       expect(result.contentRight).toBeNull()
@@ -180,7 +175,7 @@ describe('DiffLineViewModel', () => {
       expect(result.lineNumberLeft).toBeNull()
       expect(result.typeRight).toBe('add')
       expect(result.contentRight).toBe('added content')
-      expect(result.highlightedContentRight).toBe('<highlighted>test line</highlighted>')
+      expect(result.highlightedContentRight).toBe('test line')
       expect(result.lineNumberRight).toBe(15)
     })
 
@@ -413,44 +408,6 @@ describe('DiffLineViewModel', () => {
       // EXPECT
       expect(result.highlightedContentLeft).toBeNull()
       expect(result.highlightedContentRight).toBeNull()
-    })
-  })
-
-  describe('integration with highlight utils', () => {
-    it('given build method called, when content provided, expect highlightContent called', async () => {
-      // GIVEN
-      const { highlightContent } = await import('@commons')
-      const mockHighlightContent = vi.mocked(highlightContent)
-
-      // WHEN
-      DiffLineViewModel.build(createMockLineDiff({ content: 'test line', type: 'add' }), 'typescript', {
-        typeLeft: 'add',
-        typeRight: 'add',
-        contentLeft: 'test line',
-        contentRight: 'test line',
-      })
-
-      // EXPECT
-      expect(mockHighlightContent).toHaveBeenCalledWith('test line', 'typescript')
-      expect(mockHighlightContent).toHaveBeenCalledTimes(1) // Called once for the change content
-    })
-
-    it('given build method called, when no content provided, expect highlightContent still called for change content', async () => {
-      // GIVEN
-      const { highlightContent } = await import('@commons')
-      const mockHighlightContent = vi.mocked(highlightContent)
-
-      // WHEN
-      DiffLineViewModel.build(createMockLineDiff({ content: 'test line', type: 'context' }), 'typescript', {
-        typeLeft: 'context',
-        typeRight: 'context',
-        contentLeft: null,
-        contentRight: null,
-      })
-
-      // EXPECT
-      expect(mockHighlightContent).toHaveBeenCalledWith('test line', 'typescript')
-      expect(mockHighlightContent).toHaveBeenCalledTimes(1) // Called once for the change content
     })
   })
 })

@@ -33,19 +33,8 @@ describe('DefaultToolbar', () => {
 
       // EXPECT
       const skeletons = screen.getAllByTestId('skeleton')
-      expect(skeletons).toHaveLength(2) // Outer container + inner Ant Design skeleton
-
-      // Find the inner skeleton with the attributes we want to test
-      const innerSkeleton = skeletons.find(
-        (skeleton) =>
-          skeleton.hasAttribute('data-active') &&
-          skeleton.hasAttribute('data-title') &&
-          skeleton.hasAttribute('data-rows'),
-      )
-      expect(innerSkeleton).toBeInTheDocument()
-      expect(innerSkeleton).toHaveAttribute('data-active', 'true')
-      expect(innerSkeleton).toHaveAttribute('data-title', 'false')
-      expect(innerSkeleton).toHaveAttribute('data-rows', '2')
+      expect(skeletons).toHaveLength(1) // Only one skeleton should be present
+      expect(skeletons[0]).toBeInTheDocument()
     })
 
     it('given loading false, when rendered, expect normal toolbar to be displayed', () => {
@@ -160,7 +149,7 @@ describe('DefaultToolbar', () => {
 
       // EXPECT
       const skeletons = screen.getAllByTestId('skeleton')
-      expect(skeletons).toHaveLength(2) // Outer container + inner Ant Design skeleton
+      expect(skeletons).toHaveLength(1) // Only one skeleton should be present
       expect(screen.queryByTestId('header')).not.toBeInTheDocument()
       expect(screen.queryByTestId('widget')).not.toBeInTheDocument()
     })

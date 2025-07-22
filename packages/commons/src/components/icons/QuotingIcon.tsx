@@ -1,7 +1,7 @@
 import React from 'react'
 
-const QuotingIcon = React.forwardRef<SVGSVGElement, { size?: number } & React.SVGProps<SVGSVGElement>>(
-  ({ size = 24, ...props }, ref) => {
+export const QuotingIcon = React.forwardRef<SVGSVGElement, { size?: number } & React.SVGProps<SVGSVGElement>>(
+  function QuotingIcon({ size = 24, ...props }, ref) {
     const strokeThickness = 1
 
     return (
@@ -21,7 +21,3 @@ const QuotingIcon = React.forwardRef<SVGSVGElement, { size?: number } & React.SV
     )
   },
 )
-
-QuotingIcon.displayName = 'QuotingIcon'
-
-export { QuotingIcon }

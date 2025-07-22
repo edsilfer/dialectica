@@ -1,8 +1,7 @@
-import { ChevronDown } from '@commons'
-import { useDiffViewerConfig } from '@diff-viewer'
+import { ChevronDownIcon, ThemeContext } from '@commons'
 import { css } from '@emotion/react'
 import { Button, Divider, Popover, Radio, Space } from 'antd'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { ReviewStatus } from '../../api/models'
 import { Editor } from '../comments/components/Editor'
 import { CommentMetadata, CommentState } from '../models/CommentMetadata'
@@ -17,7 +16,7 @@ export interface ReviewPayload {
 }
 
 const useStyles = () => {
-  const { theme } = useDiffViewerConfig()
+  const theme = useContext(ThemeContext)
 
   return {
     popoverContainer: css`
@@ -177,7 +176,7 @@ export const ReviewButton: React.FC<ReviewButtonProps> = ({
           <div css={styles.buttonContent}>
             <>
               {buttonLabel}
-              <ChevronDown size={16} css={styles.chevron} className={isPopoverOpen ? 'open' : ''} />
+              <ChevronDownIcon size={16} css={styles.chevron} className={isPopoverOpen ? 'open' : ''} />
             </>
           </div>
         </Button>

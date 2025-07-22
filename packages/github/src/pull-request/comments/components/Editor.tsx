@@ -8,11 +8,10 @@ import {
   SettingOutlined,
   UnorderedListOutlined,
 } from '@ant-design/icons'
-import { HeaderIcon, MarkdownIcon, MarkdownText, QuotingIcon } from '@commons'
-import { useDiffViewerConfig } from '@diff-viewer'
+import { HeaderIcon, MarkdownIcon, MarkdownText, QuotingIcon, ThemeContext } from '@commons'
 import { css } from '@emotion/react'
 import { Button, Input, Tag } from 'antd'
-import React from 'react'
+import React, { useContext } from 'react'
 import { useEditorViewModel } from '../hooks/use-editor-view-model'
 import { CustomTabs } from './CustomTabs'
 import { TabActionButton, TabItem } from './types'
@@ -39,7 +38,7 @@ export interface ButtonMetadata {
 }
 
 const useStyles = () => {
-  const { theme } = useDiffViewerConfig()
+  const theme = useContext(ThemeContext)
 
   return {
     outerContainer: css`

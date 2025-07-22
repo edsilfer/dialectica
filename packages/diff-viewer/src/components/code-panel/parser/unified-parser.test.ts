@@ -1,7 +1,7 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { LineParserFactory } from './parser'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { createLineDiff, createMockLineDiff } from '../../../utils/test/models/test-utils'
 import { DiffLineViewModel } from '../models/DiffLineViewModel'
+import { LineParserFactory } from './parser'
 
 /**
  * # UnifiedLineParser Testing Strategy
@@ -30,11 +30,6 @@ import { DiffLineViewModel } from '../models/DiffLineViewModel'
  * ## Assertions
  * - Verify factory behavior, line type mapping, content assignment, highlighting integration, line number preservation, and inheritance patterns
  */
-
-// MOCK
-vi.mock('../../../utils/highlight-utils', () => ({
-  highlightContent: vi.fn((content: string) => `highlighted-${content}`),
-}))
 
 describe('UnifiedLineParser', () => {
   let parser: ReturnType<typeof LineParserFactory.build>
@@ -266,9 +261,12 @@ describe('UnifiedLineParser', () => {
       const result = parser.parse(lines, 'typescript')
 
       // EXPECT
-      expect(result[0].highlightedContentLeft).toBe('highlighted-function test() {')
-      expect(result[0].highlightedContentRight).toBe('highlighted-function test() {')
-      expect(result[1].highlightedContentLeft).toBe('highlighted-  return true;')
+      expect(result[0].highlightedContentLeft).toContain('<span')
+      expect(result[0].highlightedContentLeft).toContain('function')
+      expect(result[0].highlightedContentRight).toContain('<span')
+      expect(result[0].highlightedContentRight).toContain('function')
+      expect(result[1].highlightedContentLeft).toContain('<span')
+      expect(result[1].highlightedContentLeft).toContain('return')
       expect(result[1].highlightedContentRight).toBeNull()
     })
 
@@ -283,7 +281,9 @@ describe('UnifiedLineParser', () => {
       // The mock will be called with 'javascript' as the language parameter
       // We can verify this by checking the result contains the expected highlighted content
       const result = parser.parse([line], 'javascript')
-      expect(result[0].highlightedContentLeft).toBe('highlighted-const x = 1;')
+      expect(result[0].highlightedContentLeft).toContain('<span')
+      expect(result[0].highlightedContentLeft).toContain('const')
+      expect(result[0].highlightedContentLeft).toContain('1')
     })
   })
 

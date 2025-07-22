@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import React, { useContext, useMemo } from 'react'
 import { ThemeContext } from '../../themes/providers/theme-context'
-import { ChevronDown } from '../icons/ChevronDown'
+import { ChevronDownIcon } from '../icons/ChevronDownIcon'
 import { RichTooltip } from '../RichTooltip'
 
 const useStyles = () => {
@@ -41,18 +41,28 @@ export interface ExpandButtonProps {
   onClick?: (event: React.MouseEvent<SVGSVGElement>) => void
 }
 
-export const ExpandButton: React.FC<ExpandButtonProps> = (props) => {
+export const ExpandButton: React.FC<ExpandButtonProps & React.HTMLAttributes<SVGSVGElement>> = (props) => {
   const {
     collapsed,
     onClick,
     size = 16,
     tooltipTextExpand = 'Show file content',
     tooltipTextCollapse = 'Hide file content',
+    ...rest
   } = props
 
   const styles = useStyles()
   const tooltipText = collapsed ? tooltipTextExpand : tooltipTextCollapse
   const chevronStyle = collapsed ? styles.chevronCollapsed : styles.chevronExpanded
-  const button = <ChevronDown size={size} css={chevronStyle} onClick={onClick} className="expand-button" />
+  const button = (
+    <ChevronDownIcon
+      size={size}
+      css={chevronStyle}
+      onClick={onClick}
+      className="expand-button"
+      data-collapsed={collapsed}
+      {...rest}
+    />
+  )
   return <RichTooltip tooltipText={tooltipText}>{button}</RichTooltip>
 }

@@ -1,8 +1,8 @@
-import { Themes, useDiffViewerConfig } from '@diff-viewer'
+import { ThemeProvider, Themes } from '@commons'
 import { createPropsFactory, render } from '@test-lib'
 import { fireEvent, screen, waitFor } from '@testing-library/react'
-import { type ChangeEvent } from 'react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import React, { type ChangeEvent } from 'react'
+import { describe, expect, it, vi } from 'vitest'
 import { ReviewStatus } from '../../api/models'
 import { CommentMetadata, CommentState } from '../models/CommentMetadata'
 import { ReviewButton, ReviewButtonProps } from './ReviewButton'
@@ -90,17 +90,6 @@ const createReviewButtonProps = createPropsFactory<ReviewButtonProps>({
   onSubmitReview: vi.fn(),
 })
 
-const setupThemeMock = () => {
-  vi.mocked(useDiffViewerConfig).mockReturnValue({
-    theme: Themes.light,
-    setTheme: vi.fn(),
-    codePanelConfig: { mode: 'unified' as const, ignoreWhitespace: false },
-    setCodePanelConfig: vi.fn(),
-    fileExplorerConfig: undefined,
-    setFileExplorerConfig: undefined,
-  })
-}
-
 // HELPER FUNCTIONS
 const expectSubmitButtonToBeDisabled = () =>
   expect(screen.getByRole('button', { name: /submit review/i })).toBeDisabled()
@@ -110,11 +99,12 @@ const selectReviewType = (type: ReviewStatus) => fireEvent.click(screen.getByDis
 const enterReviewText = (text: string) => fireEvent.change(screen.getByTestId('editor'), { target: { value: text } })
 const clickSubmitReview = () => fireEvent.click(screen.getByRole('button', { name: /submit review/i }))
 
-describe('ReviewButton', () => {
-  beforeEach(() => {
-    setupThemeMock()
-  })
+// Helper function to render with theme context
+const renderWithTheme = (ui: React.ReactElement) => {
+  return render(<ThemeProvider theme={Themes.light}>{ui}</ThemeProvider>)
+}
 
+describe('ReviewButton', () => {
   describe('button label scenarios', () => {
     const testCases = [
       {
@@ -143,7 +133,7 @@ describe('ReviewButton', () => {
         const props = createReviewButtonProps({ comments })
 
         // WHEN
-        render(<ReviewButton {...props} />)
+        renderWithTheme(<ReviewButton {...props} />)
 
         // EXPECT
         expect(screen.getByText(expectedLabel)).toBeInTheDocument()
@@ -155,7 +145,7 @@ describe('ReviewButton', () => {
     it('given closed popover, when button clicked, expect popover to open', async () => {
       // GIVEN
       const props = createReviewButtonProps()
-      render(<ReviewButton {...props} />)
+      renderWithTheme(<ReviewButton {...props} />)
 
       // WHEN
       clickReviewButton()
@@ -170,7 +160,7 @@ describe('ReviewButton', () => {
     it('given open popover, when clicked outside, expect form to reset', async () => {
       // GIVEN
       const props = createReviewButtonProps()
-      render(<ReviewButton {...props} />)
+      renderWithTheme(<ReviewButton {...props} />)
       clickReviewButton()
       await waitFor(() => expect(screen.getByTestId('editor')).toBeInTheDocument())
 
@@ -207,7 +197,7 @@ describe('ReviewButton', () => {
     it('given user is author, when popover opened, expect approve and request changes disabled', async () => {
       // GIVEN
       const props = createReviewButtonProps({ isAuthor: true })
-      render(<ReviewButton {...props} />)
+      renderWithTheme(<ReviewButton {...props} />)
 
       // WHEN
       clickReviewButton()
@@ -223,7 +213,7 @@ describe('ReviewButton', () => {
     it('given user is not author, when popover opened, expect all options enabled', async () => {
       // GIVEN
       const props = createReviewButtonProps({ isAuthor: false })
-      render(<ReviewButton {...props} />)
+      renderWithTheme(<ReviewButton {...props} />)
 
       // WHEN
       clickReviewButton()
@@ -241,7 +231,7 @@ describe('ReviewButton', () => {
     it('given no callback provided, when rendered, expect submit button disabled', async () => {
       // GIVEN
       const props = createReviewButtonProps({ onSubmitReview: undefined })
-      render(<ReviewButton {...props} />)
+      renderWithTheme(<ReviewButton {...props} />)
 
       // WHEN
       clickReviewButton()
@@ -255,7 +245,7 @@ describe('ReviewButton', () => {
     it('given comment type with no text and no pending comments, when rendered, expect submit button disabled', async () => {
       // GIVEN
       const props = createReviewButtonProps({ comments: [] })
-      render(<ReviewButton {...props} />)
+      renderWithTheme(<ReviewButton {...props} />)
 
       // WHEN
       clickReviewButton()
@@ -269,7 +259,7 @@ describe('ReviewButton', () => {
     it('given comment type with text, when rendered, expect submit button enabled', async () => {
       // GIVEN
       const props = createReviewButtonProps()
-      render(<ReviewButton {...props} />)
+      renderWithTheme(<ReviewButton {...props} />)
       clickReviewButton()
 
       // WHEN
@@ -283,7 +273,7 @@ describe('ReviewButton', () => {
     it('given comment type with pending comments but no text, when rendered, expect submit button enabled', async () => {
       // GIVEN
       const props = createReviewButtonProps({ comments: [createMockCommentMetadata({ state: CommentState.PENDING })] })
-      render(<ReviewButton {...props} />)
+      renderWithTheme(<ReviewButton {...props} />)
 
       // WHEN
       clickReviewButton()
@@ -297,7 +287,7 @@ describe('ReviewButton', () => {
     it('given approve type, when selected, expect submit button enabled', async () => {
       // GIVEN
       const props = createReviewButtonProps()
-      render(<ReviewButton {...props} />)
+      renderWithTheme(<ReviewButton {...props} />)
       clickReviewButton()
 
       // WHEN
@@ -311,7 +301,7 @@ describe('ReviewButton', () => {
     it('given request changes type, when selected, expect submit button enabled', async () => {
       // GIVEN
       const props = createReviewButtonProps()
-      render(<ReviewButton {...props} />)
+      renderWithTheme(<ReviewButton {...props} />)
       clickReviewButton()
 
       // WHEN
@@ -325,7 +315,7 @@ describe('ReviewButton', () => {
     it('given isPosting is true, when rendered, expect main button disabled', () => {
       // GIVEN
       const props = createReviewButtonProps({ isPosting: true })
-      render(<ReviewButton {...props} />)
+      renderWithTheme(<ReviewButton {...props} />)
 
       // EXPECT
       const mainButton = screen.getByRole('button')
@@ -338,7 +328,7 @@ describe('ReviewButton', () => {
       // GIVEN
       const mockOnSubmit = vi.fn()
       const props = createReviewButtonProps({ onSubmitReview: mockOnSubmit })
-      render(<ReviewButton {...props} />)
+      renderWithTheme(<ReviewButton {...props} />)
       clickReviewButton()
 
       await waitFor(() => expect(screen.getByTestId('editor')).toBeInTheDocument())
@@ -358,7 +348,7 @@ describe('ReviewButton', () => {
       // GIVEN
       const mockOnSubmit = vi.fn()
       const props = createReviewButtonProps({ onSubmitReview: mockOnSubmit })
-      render(<ReviewButton {...props} />)
+      renderWithTheme(<ReviewButton {...props} />)
       clickReviewButton()
 
       await waitFor(() => expect(screen.getByRole('radio', { name: /approve/i })).toBeInTheDocument())
@@ -379,7 +369,7 @@ describe('ReviewButton', () => {
       // GIVEN
       const mockOnSubmit = vi.fn()
       const props = createReviewButtonProps({ onSubmitReview: mockOnSubmit })
-      render(<ReviewButton {...props} />)
+      renderWithTheme(<ReviewButton {...props} />)
       clickReviewButton()
 
       await waitFor(() => expect(screen.getByRole('radio', { name: /request changes/i })).toBeInTheDocument())
@@ -399,7 +389,7 @@ describe('ReviewButton', () => {
       // GIVEN
       const mockOnSubmit = vi.fn()
       const props = createReviewButtonProps({ onSubmitReview: mockOnSubmit })
-      render(<ReviewButton {...props} />)
+      renderWithTheme(<ReviewButton {...props} />)
       clickReviewButton()
 
       await waitFor(() => expect(screen.getByTestId('editor')).toBeInTheDocument())
@@ -416,7 +406,7 @@ describe('ReviewButton', () => {
       // GIVEN
       const mockOnSubmit = vi.fn()
       const props = createReviewButtonProps({ onSubmitReview: mockOnSubmit })
-      render(<ReviewButton {...props} />)
+      renderWithTheme(<ReviewButton {...props} />)
       clickReviewButton()
 
       await waitFor(() => expect(screen.getByTestId('editor')).toBeInTheDocument())
@@ -445,7 +435,7 @@ describe('ReviewButton', () => {
     it('given isPosting is true, when rendered, expect main button disabled and shows loading state', () => {
       // GIVEN
       const props = createReviewButtonProps({ isPosting: true })
-      render(<ReviewButton {...props} />)
+      renderWithTheme(<ReviewButton {...props} />)
 
       // EXPECT
       const mainButton = screen.getByRole('button')
@@ -456,7 +446,7 @@ describe('ReviewButton', () => {
     it('given isPosting is true, when button clicked, expect popover does not open', () => {
       // GIVEN
       const props = createReviewButtonProps({ isPosting: true })
-      render(<ReviewButton {...props} />)
+      renderWithTheme(<ReviewButton {...props} />)
 
       // WHEN
       clickReviewButton()
@@ -468,7 +458,7 @@ describe('ReviewButton', () => {
     it('given isPosting is false, when rendered, expect normal button state', () => {
       // GIVEN
       const props = createReviewButtonProps({ isPosting: false })
-      render(<ReviewButton {...props} />)
+      renderWithTheme(<ReviewButton {...props} />)
 
       // EXPECT
       const mainButton = screen.getByRole('button')
@@ -479,7 +469,7 @@ describe('ReviewButton', () => {
     it('given isPosting is false, when button clicked, expect popover opens normally', async () => {
       // GIVEN
       const props = createReviewButtonProps({ isPosting: false })
-      render(<ReviewButton {...props} />)
+      renderWithTheme(<ReviewButton {...props} />)
 
       // WHEN
       clickReviewButton()
@@ -496,7 +486,7 @@ describe('ReviewButton', () => {
     it('given no onSubmitReview callback, when submit clicked, expect no error', async () => {
       // GIVEN
       const props = createReviewButtonProps({ onSubmitReview: undefined })
-      render(<ReviewButton {...props} />)
+      renderWithTheme(<ReviewButton {...props} />)
       clickReviewButton()
 
       // WHEN & EXPECT
@@ -508,7 +498,7 @@ describe('ReviewButton', () => {
     it('given isPosting is true and no onSubmitReview, when rendered, expect button still disabled', () => {
       // GIVEN
       const props = createReviewButtonProps({ isPosting: true, onSubmitReview: undefined })
-      render(<ReviewButton {...props} />)
+      renderWithTheme(<ReviewButton {...props} />)
 
       // EXPECT
       const mainButton = screen.getByRole('button')

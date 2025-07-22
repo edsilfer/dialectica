@@ -1,3 +1,4 @@
+import { ThemeProvider, Themes } from '@commons'
 import {
   createPropsFactory,
   expectElementNotToBeInTheDocument,
@@ -8,30 +9,6 @@ import { fireEvent, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import type { CommentEditorProps } from './Editor'
 import { Editor } from './Editor'
-
-// MOCK
-vi.mock('../../../../components/diff-viewer/providers/diff-viewer-context', () => ({
-  useDiffViewerConfig: () => ({
-    theme: {
-      spacing: {
-        sm: '0.5rem',
-        xs: '0.25rem',
-        xxs: '0.125rem',
-      },
-      colors: {
-        backgroundPrimary: '#ffffff',
-        backgroundContainer: '#f6f8fa',
-        textPrimary: '#24292f',
-        accent: '#0969da',
-        border: '#d0d7de',
-      },
-      typography: {
-        regularFontFamily: '-apple-system, BlinkMacSystemFont',
-        regularFontSize: 14,
-      },
-    },
-  }),
-}))
 
 vi.mock('antd', async () => {
   const { createAntdMocks } = await import('@test-lib')
@@ -83,7 +60,11 @@ describe('Editor component', () => {
     })
 
     // WHEN
-    render(<Editor {...props} />)
+    render(
+      <ThemeProvider theme={Themes.light}>
+        <Editor {...props} />
+      </ThemeProvider>,
+    )
 
     // EXPECT
     expectElementToBeInTheDocument('editor-textarea')
@@ -94,7 +75,11 @@ describe('Editor component', () => {
     const props = createEditorProps({ isVisible: false })
 
     // WHEN
-    render(<Editor {...props} />)
+    render(
+      <ThemeProvider theme={Themes.light}>
+        <Editor {...props} />
+      </ThemeProvider>,
+    )
 
     // EXPECT
     expectElementNotToBeInTheDocument('editor-textarea')
@@ -112,7 +97,11 @@ describe('Editor component', () => {
     })
 
     // WHEN
-    render(<Editor {...props} />)
+    render(
+      <ThemeProvider theme={Themes.light}>
+        <Editor {...props} />
+      </ThemeProvider>,
+    )
 
     // EXPECT
     const textarea = screen.getByTestId('editor-textarea')
@@ -127,7 +116,11 @@ describe('Editor component', () => {
         { key: 'cancel', label: 'Cancel' },
       ],
     })
-    render(<Editor {...props} />)
+    render(
+      <ThemeProvider theme={Themes.light}>
+        <Editor {...props} />
+      </ThemeProvider>,
+    )
 
     // WHEN
     typeInTextarea('updated')
@@ -147,7 +140,11 @@ describe('Editor component', () => {
         { key: 'cancel', label: 'Cancel' },
       ],
     })
-    render(<Editor {...props} />)
+    render(
+      <ThemeProvider theme={Themes.light}>
+        <Editor {...props} />
+      </ThemeProvider>,
+    )
     typeInTextarea('  updated comment  ')
 
     // WHEN
@@ -168,7 +165,11 @@ describe('Editor component', () => {
         { key: 'cancel', label: 'Cancel' },
       ],
     })
-    render(<Editor {...props} />)
+    render(
+      <ThemeProvider theme={Themes.light}>
+        <Editor {...props} />
+      </ThemeProvider>,
+    )
 
     // WHEN
     clickSaveButton()
@@ -188,7 +189,11 @@ describe('Editor component', () => {
         { key: 'cancel', label: 'Cancel' },
       ],
     })
-    render(<Editor {...props} />)
+    render(
+      <ThemeProvider theme={Themes.light}>
+        <Editor {...props} />
+      </ThemeProvider>,
+    )
     typeInTextarea('modified')
 
     // WHEN
@@ -212,7 +217,11 @@ describe('Editor component', () => {
         { key: 'cancel', label: 'Cancel' },
       ],
     })
-    render(<Editor {...props} />)
+    render(
+      <ThemeProvider theme={Themes.light}>
+        <Editor {...props} />
+      </ThemeProvider>,
+    )
     typeInTextarea('hotkey save')
 
     // WHEN
@@ -233,7 +242,11 @@ describe('Editor component', () => {
         { key: 'cancel', label: 'Cancel' },
       ],
     })
-    render(<Editor {...props} />)
+    render(
+      <ThemeProvider theme={Themes.light}>
+        <Editor {...props} />
+      </ThemeProvider>,
+    )
 
     // WHEN
     pressKey('Escape')
@@ -250,7 +263,11 @@ describe('Editor component', () => {
         { key: 'cancel', label: 'Cancel' },
       ],
     })
-    render(<Editor {...props} />)
+    render(
+      <ThemeProvider theme={Themes.light}>
+        <Editor {...props} />
+      </ThemeProvider>,
+    )
     typeInTextarea('preview text')
 
     // WHEN
@@ -271,7 +288,11 @@ describe('Editor component', () => {
         { key: 'cancel', label: 'Cancel' },
       ],
     })
-    render(<Editor {...props} />)
+    render(
+      <ThemeProvider theme={Themes.light}>
+        <Editor {...props} />
+      </ThemeProvider>,
+    )
 
     // WHEN
     fireEvent.click(screen.getByTestId('tab-action-help'))
@@ -286,7 +307,11 @@ describe('Editor component', () => {
     const props = createEditorProps({ buttons: undefined })
 
     // WHEN
-    render(<Editor {...props} />)
+    render(
+      <ThemeProvider theme={Themes.light}>
+        <Editor {...props} />
+      </ThemeProvider>,
+    )
 
     // EXPECT
     expect(screen.queryByTestId('editor-button-0')).not.toBeInTheDocument()

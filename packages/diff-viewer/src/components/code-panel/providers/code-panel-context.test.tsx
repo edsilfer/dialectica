@@ -48,10 +48,14 @@ import type { CodePanelConfig, CodePanelConfigContextProps } from './types'
  */
 
 // MOCKS
-vi.mock('../../../utils/storage-utils', () => ({
-  readStorageValue: vi.fn(),
-  writeStorageValue: vi.fn(),
-}))
+vi.mock('@commons', async () => {
+  const actual = await vi.importActual<typeof import('@commons')>('@commons')
+  return {
+    ...actual,
+    readStorageValue: vi.fn(),
+    writeStorageValue: vi.fn(),
+  }
+})
 
 const mockReadStorageValue = vi.mocked(readStorageValue)
 const mockWriteStorageValue = vi.mocked(writeStorageValue)

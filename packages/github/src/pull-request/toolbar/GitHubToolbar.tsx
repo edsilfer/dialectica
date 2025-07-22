@@ -1,7 +1,7 @@
+import { ThemeContext } from '@commons'
 import { css } from '@emotion/react'
 import { Skeleton } from 'antd'
 import React, { useContext } from 'react'
-import { ThemeContext } from '@diff-viewer'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)

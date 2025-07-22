@@ -1,3 +1,4 @@
+import { ThemeProvider, Themes } from '@commons'
 import {
   createPropsFactory,
   expectElementNotToBeInTheDocument,
@@ -5,29 +6,11 @@ import {
   render,
 } from '@test-lib'
 import { fireEvent, screen } from '@testing-library/react'
+import React from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import type { CommentReactionsProps } from './Reactions'
 import { Reactions } from './Reactions'
 
-// MOCK ---------------------------------------------------------------
-vi.mock('../../../../components/diff-viewer/providers/diff-viewer-context', () => ({
-  useDiffViewerConfig: () => ({
-    theme: {
-      spacing: {
-        xs: '0.25rem',
-      },
-      colors: {
-        border: '#d0d7de',
-        backgroundPrimary: '#ffffff',
-        backgroundContainer: '#f6f8fa',
-        textPrimaryPlaceholder: '#656d76',
-        accent: '#0969da',
-      },
-    },
-  }),
-}))
-
-// Helpers --------------------------------------------------------------
 const createReactionsProps = createPropsFactory<CommentReactionsProps>({
   reactions: new Map([
     ['+1', 5],
@@ -64,7 +47,11 @@ describe('Reactions component', () => {
     const props = createReactionsProps({ reactions })
 
     // WHEN
-    render(<Reactions {...props} />)
+    render(
+      <ThemeProvider theme={Themes.light}>
+        <Reactions {...props} />
+      </ThemeProvider>,
+    )
 
     // EXPECT
     expectElementToBeInTheDocument('comment-reactions')
@@ -78,7 +65,11 @@ describe('Reactions component', () => {
     const props = createReactionsProps({ reactions })
 
     // WHEN
-    render(<Reactions {...props} />)
+    render(
+      <ThemeProvider theme={Themes.light}>
+        <Reactions {...props} />
+      </ThemeProvider>,
+    )
 
     // EXPECT
     expectElementNotToBeInTheDocument('comment-reactions')
@@ -94,7 +85,11 @@ describe('Reactions component', () => {
     const props = createReactionsProps({ reactions })
 
     // WHEN
-    render(<Reactions {...props} />)
+    render(
+      <ThemeProvider theme={Themes.light}>
+        <Reactions {...props} />
+      </ThemeProvider>,
+    )
 
     // EXPECT
     expectElementToBeInTheDocument('reaction-+1')
@@ -112,7 +107,11 @@ describe('Reactions component', () => {
     const props = createReactionsProps({ reactions })
 
     // WHEN
-    render(<Reactions {...props} />)
+    render(
+      <ThemeProvider theme={Themes.light}>
+        <Reactions {...props} />
+      </ThemeProvider>,
+    )
 
     // EXPECT
     expectElementToBeInTheDocument('reaction-+1')
@@ -129,7 +128,11 @@ describe('Reactions component', () => {
     const props = createReactionsProps({ reactions })
 
     // WHEN
-    render(<Reactions {...props} />)
+    render(
+      <ThemeProvider theme={Themes.light}>
+        <Reactions {...props} />
+      </ThemeProvider>,
+    )
 
     // EXPECT
     expectElementNotToBeInTheDocument('comment-reactions')
@@ -140,7 +143,11 @@ describe('Reactions component', () => {
     const mockClick = vi.fn()
     const reactions = createReactionsMap([['+1', 3]])
     const props = createReactionsProps({ reactions, onReactionClick: mockClick })
-    render(<Reactions {...props} />)
+    render(
+      <ThemeProvider theme={Themes.light}>
+        <Reactions {...props} />
+      </ThemeProvider>,
+    )
 
     // WHEN
     fireEvent.click(screen.getByTestId('reaction-+1'))
@@ -154,7 +161,11 @@ describe('Reactions component', () => {
     // GIVEN
     const reactions = createReactionsMap([['+1', 3]])
     const props = createReactionsProps({ reactions, onReactionClick: undefined })
-    render(<Reactions {...props} />)
+    render(
+      <ThemeProvider theme={Themes.light}>
+        <Reactions {...props} />
+      </ThemeProvider>,
+    )
 
     // WHEN & EXPECT
     expect(() => {
@@ -171,7 +182,11 @@ describe('Reactions component', () => {
     const props = createReactionsProps({ reactions })
 
     // WHEN
-    render(<Reactions {...props} />)
+    render(
+      <ThemeProvider theme={Themes.light}>
+        <Reactions {...props} />
+      </ThemeProvider>,
+    )
 
     // EXPECT
     const thumbsUpButton = screen.getByTestId('reaction-+1')
@@ -186,7 +201,11 @@ describe('Reactions component', () => {
     const props = createReactionsProps({ reactions })
 
     // WHEN
-    render(<Reactions {...props} />)
+    render(
+      <ThemeProvider theme={Themes.light}>
+        <Reactions {...props} />
+      </ThemeProvider>,
+    )
 
     // EXPECT
     const rocketButton = screen.getByTestId('reaction-rocket')
@@ -200,7 +219,11 @@ describe('Reactions component', () => {
       const props = createReactionsProps({ reactions })
 
       // WHEN
-      render(<Reactions {...props} />)
+      render(
+        <ThemeProvider theme={Themes.light}>
+          <Reactions {...props} />
+        </ThemeProvider>,
+      )
 
       // EXPECT
       const button = screen.getByTestId(`reaction-${reactionType}`)
@@ -217,8 +240,11 @@ describe('Reactions component', () => {
       ['rocket', 3],
     ])
     const props = createReactionsProps({ reactions, onReactionClick: mockClick })
-    render(<Reactions {...props} />)
-
+    render(
+      <ThemeProvider theme={Themes.light}>
+        <Reactions {...props} />
+      </ThemeProvider>,
+    )
     // WHEN
     fireEvent.click(screen.getByTestId('reaction-+1'))
     fireEvent.click(screen.getByTestId('reaction-heart'))

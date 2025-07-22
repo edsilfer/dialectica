@@ -5,7 +5,8 @@
     "declaration": true,
     "declarationDir": "dist/types",
     "jsxImportSource": "@emotion/react",
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "baseUrl": "."
   },
   "include": ["src", "vitest.setup.ts", "src/**/*.test.ts", "src/**/*.test.tsx"]
 }

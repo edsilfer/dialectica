@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Widget } from '../../../diff-viewer/types'
 import { DiffLineViewModel } from '../../models/DiffLineViewModel'
 import { DiffRowViewModel } from '../../models/DiffRowViewModel'
-import { WidgetRow } from './WidgetRow'
+import { WidgetRow, WidgetRowProps } from './WidgetRow'
 
 // MOCKS
 vi.mock('../viewers/shared-styles', () => ({
@@ -23,6 +23,16 @@ vi.mock('../viewers/shared-styles', () => ({
 }))
 
 // HELPERS
+const renderWidgetRow = (props: WidgetRowProps) => {
+  return render(
+    <table>
+      <tbody>
+        <WidgetRow {...props} />
+      </tbody>
+    </table>,
+  )
+}
+
 const createMockDiffLineViewModel = (overrides: Partial<DiffLineViewModel> = {}): DiffLineViewModel => {
   return new DiffLineViewModel(
     overrides.typeLeft ?? 'context',
@@ -79,7 +89,7 @@ describe('WidgetRow', () => {
       const props = createWidgetRowProps({ viewModel, pos: 'top', unified: true })
 
       // WHEN
-      render(<WidgetRow {...props} />)
+      renderWidgetRow(props)
 
       // EXPECT
       const row = screen.getByRole('row')
@@ -96,7 +106,7 @@ describe('WidgetRow', () => {
       const props = createWidgetRowProps({ viewModel, pos: 'bottom', unified: true })
 
       // WHEN
-      render(<WidgetRow {...props} />)
+      renderWidgetRow(props)
 
       // EXPECT
       const row = screen.getByRole('row')
@@ -114,7 +124,7 @@ describe('WidgetRow', () => {
       const props = createWidgetRowProps({ viewModel, pos: 'top', unified: true })
 
       // WHEN
-      render(<WidgetRow {...props} />)
+      renderWidgetRow(props)
 
       // EXPECT
       const rows = screen.getAllByRole('row')
@@ -134,7 +144,7 @@ describe('WidgetRow', () => {
       const props = createWidgetRowProps({ viewModel, pos: 'top', unified: false })
 
       // WHEN
-      render(<WidgetRow {...props} />)
+      renderWidgetRow(props)
 
       // EXPECT
       const row = screen.getByRole('row')
@@ -153,7 +163,7 @@ describe('WidgetRow', () => {
       const props = createWidgetRowProps({ viewModel, pos: 'bottom', unified: false })
 
       // WHEN
-      render(<WidgetRow {...props} />)
+      renderWidgetRow(props)
 
       // EXPECT
       const row = screen.getByRole('row')
@@ -173,7 +183,7 @@ describe('WidgetRow', () => {
       const props = createWidgetRowProps({ viewModel, pos: 'top', unified: false })
 
       // WHEN
-      render(<WidgetRow {...props} />)
+      renderWidgetRow(props)
 
       // EXPECT
       const row = screen.getByRole('row')
@@ -193,7 +203,7 @@ describe('WidgetRow', () => {
       const props = createWidgetRowProps({ viewModel, pos: 'bottom', unified: false })
 
       // WHEN
-      render(<WidgetRow {...props} />)
+      renderWidgetRow(props)
 
       // EXPECT
       const row = screen.getByRole('row')
@@ -214,7 +224,7 @@ describe('WidgetRow', () => {
       const props = createWidgetRowProps({ viewModel, pos: 'top', unified: false })
 
       // WHEN
-      render(<WidgetRow {...props} />)
+      renderWidgetRow(props)
 
       // EXPECT
       const rows = screen.getAllByRole('row')
@@ -241,7 +251,7 @@ describe('WidgetRow', () => {
       const props = createWidgetRowProps({ viewModel, pos: 'top', unified: false })
 
       // WHEN
-      render(<WidgetRow {...props} />)
+      renderWidgetRow(props)
 
       // EXPECT
       const rows = screen.getAllByRole('row')
@@ -257,7 +267,7 @@ describe('WidgetRow', () => {
       const props = createWidgetRowProps({ viewModel, pos: 'bottom', unified: false })
 
       // WHEN
-      render(<WidgetRow {...props} />)
+      renderWidgetRow(props)
 
       // EXPECT
       const rows = screen.getAllByRole('row')
@@ -278,7 +288,7 @@ describe('WidgetRow', () => {
       const props = createWidgetRowProps({ viewModel, pos: 'top', unified: false })
 
       // WHEN
-      render(<WidgetRow {...props} />)
+      renderWidgetRow(props)
 
       // EXPECT
       const rows = screen.getAllByRole('row')
@@ -296,7 +306,7 @@ describe('WidgetRow', () => {
       const props = createWidgetRowProps({ viewModel, pos: 'top', unified: false })
 
       // WHEN
-      render(<WidgetRow {...props} />)
+      renderWidgetRow(props)
 
       // EXPECT
       const rows = screen.getAllByRole('row')
@@ -314,7 +324,7 @@ describe('WidgetRow', () => {
       const props = createWidgetRowProps({ viewModel, pos: 'top', unified: false })
 
       // WHEN
-      render(<WidgetRow {...props} />)
+      renderWidgetRow(props)
 
       // EXPECT
       expect(screen.queryByRole('row')).not.toBeInTheDocument()
@@ -328,7 +338,7 @@ describe('WidgetRow', () => {
       const props = createWidgetRowProps({ viewModel, pos: 'top', unified: false })
 
       // WHEN
-      render(<WidgetRow {...props} />)
+      renderWidgetRow(props)
 
       // EXPECT
       expect(screen.queryByRole('row')).not.toBeInTheDocument()
@@ -341,7 +351,7 @@ describe('WidgetRow', () => {
       const props = createWidgetRowProps({ viewModel, pos: 'top', unified: false })
 
       // WHEN
-      render(<WidgetRow {...props} />)
+      renderWidgetRow(props)
 
       // EXPECT
       expect(screen.queryByRole('row')).not.toBeInTheDocument()
@@ -357,7 +367,7 @@ describe('WidgetRow', () => {
       const props = createWidgetRowProps({ viewModel, pos: 'top', unified: true })
 
       // WHEN
-      render(<WidgetRow {...props} />)
+      renderWidgetRow(props)
 
       // EXPECT
       const row = screen.getByRole('row')
@@ -372,7 +382,7 @@ describe('WidgetRow', () => {
       const props = createWidgetRowProps({ viewModel, pos: 'top', unified: false })
 
       // WHEN
-      render(<WidgetRow {...props} />)
+      renderWidgetRow(props)
 
       // EXPECT
       const row = screen.getByRole('row')
@@ -387,7 +397,7 @@ describe('WidgetRow', () => {
       const props = createWidgetRowProps({ viewModel, pos: 'top', unified: false })
 
       // WHEN
-      render(<WidgetRow {...props} />)
+      renderWidgetRow(props)
 
       // EXPECT
       const row = screen.getByRole('row')
@@ -403,7 +413,7 @@ describe('WidgetRow', () => {
       const props = createWidgetRowProps({ viewModel, pos: 'top', unified: false })
 
       // WHEN
-      render(<WidgetRow {...props} />)
+      renderWidgetRow(props)
 
       // EXPECT
       const row = screen.getByRole('row')

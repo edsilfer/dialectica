@@ -1,13 +1,13 @@
+import { ThemeContext } from '@commons'
 import { css } from '@emotion/react'
 import { Avatar, Tag, Typography } from 'antd'
-import React from 'react'
-import { useDiffViewerConfig } from '@diff-viewer'
+import React, { useContext } from 'react'
 import type { PullRequestMetadata, StatTagProps } from './models'
 
 const { Title, Text, Link } = Typography
 
 const useStyles = () => {
-  const { theme } = useDiffViewerConfig()
+  const theme = useContext(ThemeContext)
 
   return {
     container: css`

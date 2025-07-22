@@ -1,7 +1,7 @@
 import { Tooltip } from 'antd'
 import React, { useEffect, useRef, useState } from 'react'
 
-export interface RichTooltipProps {
+export interface RichTooltipProps extends React.HTMLAttributes<HTMLDivElement> {
   /** The content to display in the tooltip */
   tooltipText?: React.ReactNode
   /** The content to display in the toast message after an action */
@@ -12,7 +12,13 @@ export interface RichTooltipProps {
   children: React.ReactElement
 }
 
-export const RichTooltip: React.FC<RichTooltipProps> = ({ tooltipText, toastText, toastTimeSeconds = 2, children }) => {
+export const RichTooltip: React.FC<RichTooltipProps> = ({
+  tooltipText,
+  toastText,
+  toastTimeSeconds = 2,
+  children,
+  ...rest
+}) => {
   const [isToastVisible, setIsToastVisible] = useState(false)
   const [tooltipTitle, setTooltipTitle] = useState(tooltipText)
   const timeoutRef = useRef<number | null>(null)
@@ -72,11 +78,17 @@ export const RichTooltip: React.FC<RichTooltipProps> = ({ tooltipText, toastText
 
   if (tooltipText || toastText) {
     return (
-      <Tooltip title={tooltipTitle} open={isToastVisible || undefined} placement={isToastVisible ? 'bottom' : 'top'}>
-        {childWithClickHandler}
-      </Tooltip>
+      <div data-tooltip={tooltipText} {...rest}>
+        <Tooltip title={tooltipTitle} open={isToastVisible || undefined} placement={isToastVisible ? 'bottom' : 'top'}>
+          {childWithClickHandler}
+        </Tooltip>
+      </div>
     )
   }
 
-  return children
+  return (
+    <div data-tooltip={tooltipText} {...rest}>
+      {React.cloneElement(children)}
+    </div>
+  )
 }

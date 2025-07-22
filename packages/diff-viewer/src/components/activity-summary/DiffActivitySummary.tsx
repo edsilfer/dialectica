@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
 import { ThemeContext } from '../../../../commons/src/themes/providers/theme-context'
-import RichTooltip from '@commons'
+import { RichTooltip } from '@commons'
 import { DiffActivitySummaryProps } from './types'
 
 const useStyles = () => {
@@ -98,7 +98,7 @@ const DiffActivitySummary: React.FC<DiffActivitySummaryProps> = ({ additions, de
       <RichTooltip tooltipText={tooltipText}>
         <div css={styles.squaresContainer}>
           {squares.map((type, index) => (
-            <div key={index} css={styles.square(getColor(type))} data-testid="diff-activity-square" />
+            <div key={`${type}-${index}`} css={styles.square(getColor(type))} data-testid="diff-activity-square" />
           ))}
         </div>
       </RichTooltip>

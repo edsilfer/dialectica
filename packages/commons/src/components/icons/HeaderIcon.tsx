@@ -1,7 +1,7 @@
 import React from 'react'
 
-const HeaderIcon = React.forwardRef<SVGSVGElement, { size?: number } & React.SVGProps<SVGSVGElement>>(
-  ({ size = 18, ...props }, ref) => {
+export const HeaderIcon = React.forwardRef<SVGSVGElement, { size?: number } & React.SVGProps<SVGSVGElement>>(
+  function HeaderIcon({ size = 18, ...props }, ref) {
     const thickness = 1.5
 
     return (
@@ -18,7 +18,3 @@ const HeaderIcon = React.forwardRef<SVGSVGElement, { size?: number } & React.SVG
     )
   },
 )
-
-HeaderIcon.displayName = 'HeaderIcon'
-
-export { HeaderIcon }

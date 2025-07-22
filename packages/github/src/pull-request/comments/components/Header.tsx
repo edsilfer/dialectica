@@ -1,9 +1,9 @@
 import { MoreOutlined } from '@ant-design/icons'
+import { ThemeContext } from '@commons'
 import { css } from '@emotion/react'
 import { Dropdown, MenuProps, message, Tag, Typography } from 'antd'
 import { ItemType } from 'antd/es/menu/interface'
-import React, { useCallback, useMemo } from 'react'
-import { useDiffViewerConfig } from '@diff-viewer'
+import React, { useCallback, useContext, useMemo } from 'react'
 import { formatTimestamp } from '../../../../../commons/src/utils/time-utils'
 import { CommentAuthor, CommentEvent, CommentState } from '../../models/CommentMetadata'
 
@@ -25,7 +25,7 @@ export interface HeaderProps {
 }
 
 const useStyles = () => {
-  const { theme } = useDiffViewerConfig()
+  const theme = useContext(ThemeContext)
 
   return {
     container: css`

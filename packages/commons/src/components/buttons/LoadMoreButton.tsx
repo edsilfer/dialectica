@@ -2,7 +2,7 @@ import { css, SerializedStyles } from '@emotion/react'
 import { Tooltip } from 'antd'
 import React, { useContext } from 'react'
 import { ThemeContext } from '../../themes/providers/theme-context'
-import LoadMoreLines from '../icons/LoadMoreLines'
+import LoadMoreLinesIcon from '../icons/LoadMoreLinesIcon'
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
@@ -61,10 +61,11 @@ export const LoadMoreButton: React.FC<LoadMoreButtonProps> = (props) => {
     return (
       <Tooltip title={tooltip(props.direction)} placement="left">
         <div
+          data-testid="load-more-button"
           css={[styles.icon, props.css]}
           onClick={(e) => props.onClick?.(e, props.direction as 'up' | 'down' | 'out')}
         >
-          <LoadMoreLines
+          <LoadMoreLinesIcon
             css={[props.css]}
             width={props.width ?? 24}
             height={props.height ?? 16}
@@ -78,14 +79,19 @@ export const LoadMoreButton: React.FC<LoadMoreButtonProps> = (props) => {
   return (
     <div css={[styles.container, props.css]}>
       <Tooltip title={tooltip('down')} placement="left">
-        <div css={styles.icon} onClick={(e) => props.onClick?.(e, 'in_down')}>
-          <LoadMoreLines css={[props.css]} width={props.width ?? 24} height={props.height ?? 13} direction={'down'} />
+        <div data-testid="load-more-button-down" css={styles.icon} onClick={(e) => props.onClick?.(e, 'in_down')}>
+          <LoadMoreLinesIcon
+            css={[props.css]}
+            width={props.width ?? 24}
+            height={props.height ?? 13}
+            direction={'down'}
+          />
         </div>
       </Tooltip>
 
       <Tooltip title={tooltip('up')} placement="left">
-        <div css={styles.icon} onClick={(e) => props.onClick?.(e, 'in_up')}>
-          <LoadMoreLines css={[props.css]} width={props.width ?? 24} height={props.height ?? 13} direction={'up'} />
+        <div data-testid="load-more-button-up" css={styles.icon} onClick={(e) => props.onClick?.(e, 'in_up')}>
+          <LoadMoreLinesIcon css={[props.css]} width={props.width ?? 24} height={props.height ?? 13} direction={'up'} />
         </div>
       </Tooltip>
     </div>

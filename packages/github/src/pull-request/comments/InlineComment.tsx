@@ -1,14 +1,14 @@
+import { ThemeContext } from '@commons'
 import { css } from '@emotion/react'
 import { Divider } from 'antd'
-import React from 'react'
-import { useDiffViewerConfig } from '@diff-viewer'
+import React, { useContext } from 'react'
 import { CommentAuthor, CommentEvent, CommentMetadata, CommentState, EventHandler } from '../models/CommentMetadata'
 import { Reply } from './components/Reply'
 import { DisplayComment } from './DisplayComment'
 import { DraftComment } from './DraftComment'
 
 const useStyles = () => {
-  const { theme } = useDiffViewerConfig()
+  const theme = useContext(ThemeContext)
 
   return {
     container: css`

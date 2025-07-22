@@ -1,8 +1,7 @@
-import { ExpandButton, RichTooltip } from '@commons'
+import { ExpandButton, RichTooltip, ThemeContext } from '@commons'
 import { css } from '@emotion/react'
 import { Dropdown, MenuProps, message, theme } from 'antd'
 import React, { useCallback, useContext, useMemo } from 'react'
-import { ThemeContext } from '../../../../../commons/src/themes/providers/theme-context'
 import { highlightText, nodeComparator } from '../../../utils/node-utils'
 import { useFileExplorerContext } from '../providers/fstree-context'
 import NodeMetadata from './NodeMetadata'
@@ -234,11 +233,12 @@ const FSNode: React.FC<FSNodeProps> = ({
                   e.stopPropagation()
                   toggleDirectory()
                 }}
+                data-testid="expand-button"
               />
             )}
 
-            <RichTooltip tooltipText={isDirectory ? currentPath : filePath || ''}>
-              <span>{highlightedName}</span>
+            <RichTooltip tooltipText={isDirectory ? currentPath : filePath || ''} data-testid="rich-tooltip">
+              <span data-testid="node-name">{highlightedName}</span>
             </RichTooltip>
           </div>
         </div>

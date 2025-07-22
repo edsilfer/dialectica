@@ -1,8 +1,7 @@
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
 import { ThemeContext } from '../../themes/providers/theme-context'
-import UnwrappedLines from '../icons/UnwrappedLine'
-import WrappedLines from '../icons/WrapLines'
+import { UnwrappedLineIcon, WrapLinesIcon } from '../icons'
 import { RichTooltip } from '../RichTooltip'
 
 const useStyles = () => {
@@ -29,17 +28,15 @@ export interface LineWrapButtonProps {
   onClick: (event: React.MouseEvent<SVGSVGElement>) => void
 }
 
-const LineWrapButton: React.FC<LineWrapButtonProps> = ({ isWrapped, onClick, size = 16 }) => {
+export const LineWrapButton: React.FC<LineWrapButtonProps> = ({ isWrapped, onClick, size = 16 }) => {
   const styles = useStyles()
   const tooltipText = isWrapped ? 'Unwrap lines' : 'Wrap lines'
 
   const icon = isWrapped ? (
-    <WrappedLines css={styles.icon} size={size} onClick={onClick} />
+    <WrapLinesIcon css={styles.icon} size={size} onClick={onClick} />
   ) : (
-    <UnwrappedLines css={styles.icon} size={size} onClick={onClick} />
+    <UnwrappedLineIcon css={styles.icon} size={size} onClick={onClick} />
   )
 
   return <RichTooltip tooltipText={tooltipText}>{icon}</RichTooltip>
 }
-
-export default LineWrapButton

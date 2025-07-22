@@ -27,22 +27,6 @@ vi.mock('../../../utils/node-utils', () => ({
   ),
 }))
 
-vi.mock('../../ui/RichTooltip', () => ({
-  default: ({ children, tooltipText }: { children: React.ReactNode; tooltipText: string }) => (
-    <div data-testid="rich-tooltip" data-tooltip={tooltipText}>
-      {children}
-    </div>
-  ),
-}))
-
-vi.mock('../../ui/buttons/ExpandButton', () => ({
-  default: ({ collapsed, onClick }: { collapsed: boolean; onClick: (e: React.MouseEvent) => void }) => (
-    <button data-testid="expand-button" data-collapsed={collapsed} onClick={onClick}>
-      {collapsed ? 'expand' : 'collapse'}
-    </button>
-  ),
-}))
-
 vi.mock('./NodeMetadata', () => ({
   default: ({ isDirectory }: { node: unknown; isDirectory: boolean }) => (
     <div data-testid="node-metadata" data-is-directory={isDirectory}>
@@ -131,7 +115,9 @@ describe('FSNode', () => {
       render(<FSNode {...props} />)
 
       // EXPECT
-      expect(screen.getByText('Component.tsx')).toBeInTheDocument()
+      const componentNode = screen.getAllByTestId('node-name').find((el) => el.textContent === 'Component.tsx')
+      if (!componentNode) throw new Error('Node with text "Component.tsx" not found')
+      expect(componentNode).toBeInTheDocument()
       expect(screen.queryByTestId('expand-button')).not.toBeInTheDocument()
       expect(screen.getByTestId('node-metadata')).toHaveAttribute('data-is-directory', 'false')
     })
@@ -147,7 +133,9 @@ describe('FSNode', () => {
       render(<FSNode {...props} />)
 
       // EXPECT
-      const row = screen.getByText('selected-file.ts').closest('[data-depth]')
+      const selectedFileNode = screen.getAllByTestId('node-name').find((el) => el.textContent === 'selected-file.ts')
+      if (!selectedFileNode) throw new Error('Node with text "selected-file.ts" not found')
+      const row = selectedFileNode.closest('[data-depth]')
       expect(row).toHaveAttribute('data-depth', '0')
     })
 
@@ -177,7 +165,9 @@ describe('FSNode', () => {
       render(<FSNode {...props} />)
 
       // EXPECT
-      expect(screen.getByText('components')).toBeInTheDocument()
+      const componentsNode = screen.getAllByTestId('node-name').find((el) => el.textContent === 'components')
+      if (!componentsNode) throw new Error('Node with text "components" not found')
+      expect(componentsNode).toBeInTheDocument()
       expect(screen.getByTestId('expand-button')).toBeInTheDocument()
       expect(screen.getByTestId('node-metadata')).toHaveAttribute('data-is-directory', 'true')
     })
@@ -217,9 +207,15 @@ describe('FSNode', () => {
       render(<FSNode {...props} />)
 
       // EXPECT
-      expect(screen.getByText('parent-dir')).toBeInTheDocument()
-      expect(screen.getByText('child.ts')).toBeInTheDocument()
-      expect(screen.getByText('child-dir')).toBeInTheDocument()
+      const parentDirNode = screen.getAllByTestId('node-name').find((el) => el.textContent === 'parent-dir')
+      if (!parentDirNode) throw new Error('Node with text "parent-dir" not found')
+      expect(parentDirNode).toBeInTheDocument()
+      const childTsNode = screen.getAllByTestId('node-name').find((el) => el.textContent === 'child.ts')
+      if (!childTsNode) throw new Error('Node with text "child.ts" not found')
+      expect(childTsNode).toBeInTheDocument()
+      const childDirNode = screen.getAllByTestId('node-name').find((el) => el.textContent === 'child-dir')
+      if (!childDirNode) throw new Error('Node with text "child-dir" not found')
+      expect(childDirNode).toBeInTheDocument()
     })
   })
 
@@ -234,7 +230,11 @@ describe('FSNode', () => {
       render(<FSNode {...props} />)
 
       // EXPECT
-      expect(screen.getByText('highlighted-SearchableComponent.tsx')).toBeInTheDocument()
+      const highlightedNode = screen
+        .getAllByTestId('node-name')
+        .find((el) => el.textContent === 'highlighted-SearchableComponent.tsx')
+      if (!highlightedNode) throw new Error('Node with text "highlighted-SearchableComponent.tsx" not found')
+      expect(highlightedNode).toBeInTheDocument()
     })
 
     it('given empty search query, when rendered, expect no highlighting', () => {
@@ -247,7 +247,9 @@ describe('FSNode', () => {
       render(<FSNode {...props} />)
 
       // EXPECT
-      expect(screen.getByText('NormalComponent.tsx')).toBeInTheDocument()
+      const normalNode = screen.getAllByTestId('node-name').find((el) => el.textContent === 'NormalComponent.tsx')
+      if (!normalNode) throw new Error('Node with text "NormalComponent.tsx" not found')
+      expect(normalNode).toBeInTheDocument()
     })
   })
 
@@ -267,7 +269,9 @@ describe('FSNode', () => {
 
       // WHEN
       render(<FSNode {...props} />)
-      fireEvent.click(screen.getByText('clickable-file.ts'))
+      const clickableFileNode = screen.getAllByTestId('node-name').find((el) => el.textContent === 'clickable-file.ts')
+      if (!clickableFileNode) throw new Error('Node with text "clickable-file.ts" not found')
+      fireEvent.click(clickableFileNode)
 
       // EXPECT
       expect(mockOnFileClick).toHaveBeenCalledWith(fileNode.file)
@@ -292,7 +296,9 @@ describe('FSNode', () => {
 
       // WHEN
       render(<FSNode {...props} />)
-      fireEvent.click(screen.getByText('clickable-dir'))
+      const clickableDirNode = screen.getAllByTestId('node-name').find((el) => el.textContent === 'clickable-dir')
+      if (!clickableDirNode) throw new Error('Node with text "clickable-dir" not found')
+      fireEvent.click(clickableDirNode)
 
       // EXPECT
       expect(mockOnDirectoryToggle).toHaveBeenCalledWith('clickable-dir', true)
@@ -439,7 +445,9 @@ describe('FSNode', () => {
 
       // EXPECT - no errors thrown
       expect(() => {
-        fireEvent.click(screen.getByText('no-callback-dir'))
+        const noCallbackDirNode = screen.getAllByTestId('node-name').find((el) => el.textContent === 'no-callback-dir')
+        if (!noCallbackDirNode) throw new Error('Node with text "no-callback-dir" not found')
+        fireEvent.click(noCallbackDirNode)
       }).not.toThrow()
     })
   })

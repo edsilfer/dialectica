@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
 import { ThemeContext } from '../../themes/providers/theme-context'
-import { Copy } from '../icons/Copy'
+import { CopyIcon } from '../icons/CopyIcon'
 import { RichTooltip } from '../RichTooltip'
 
 const useStyles = () => {
@@ -27,10 +27,10 @@ export interface CopyButtonProps {
   onClick: (event: React.MouseEvent<SVGSVGElement>) => void
 }
 
-const CopyButton: React.FC<CopyButtonProps> = ({ onClick, size = 16, tooltip, toastText }) => {
+export const CopyButton: React.FC<CopyButtonProps> = ({ onClick, size = 16, tooltip, toastText }) => {
   const styles = useStyles()
 
-  const button = <Copy size={size} css={styles.copyIcon} onClick={onClick} />
+  const button = <CopyIcon size={size} css={styles.copyIcon} onClick={onClick} />
 
   if (tooltip || toastText) {
     return (
@@ -42,5 +42,3 @@ const CopyButton: React.FC<CopyButtonProps> = ({ onClick, size = 16, tooltip, to
 
   return button
 }
-
-export default CopyButton

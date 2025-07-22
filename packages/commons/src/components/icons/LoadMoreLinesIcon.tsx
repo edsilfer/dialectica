@@ -14,7 +14,7 @@ const ARROW_WIDTH = 4
 const CONTENT_HEIGHT = ARROW_GAP + ARROW_LENGTH + 2 * DOT_RADIUS
 const VERTICAL_OFFSET = (VIEWBOX - CONTENT_HEIGHT) / 2
 
-export interface LoadMoreLinesProps extends React.SVGProps<SVGSVGElement> {
+export interface LoadMoreLinesIconProps extends React.SVGProps<SVGSVGElement> {
   /** Icon dimension in pixels (width & height). Defaults to 24. */
   width?: number
   /** Icon dimension in pixels (width & height). Defaults to 24. */
@@ -28,7 +28,7 @@ export interface LoadMoreLinesProps extends React.SVGProps<SVGSVGElement> {
 }
 
 /* Public component */
-const LoadMoreLines = React.forwardRef<SVGSVGElement, LoadMoreLinesProps>((props, ref) => {
+const LoadMoreLinesIcon = React.forwardRef<SVGSVGElement, LoadMoreLinesIconProps>((props, ref) => {
   const { width = 24, height = 24, numDots = 5, direction = 'up', ...rest } = props
 
   const midX = VIEWBOX / 2
@@ -56,8 +56,8 @@ const LoadMoreLines = React.forwardRef<SVGSVGElement, LoadMoreLinesProps>((props
   )
 })
 
-LoadMoreLines.displayName = 'LoadMoreLines'
-export default LoadMoreLines
+LoadMoreLinesIcon.displayName = 'LoadMoreLines'
+export default LoadMoreLinesIcon
 
 /**
  * Returns the vertical position for the row of dots to center the icon.

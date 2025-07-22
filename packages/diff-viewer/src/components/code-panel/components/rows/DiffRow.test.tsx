@@ -7,6 +7,17 @@ import { DiffLineViewModel } from '../../models/DiffLineViewModel'
 import { Widget } from '../viewers/types'
 import { DiffRow, type DiffRowProps } from './DiffRow'
 
+// Helper function to render DiffRow in a proper table structure
+const renderDiffRow = (props: DiffRowProps) => {
+  return render(
+    <table>
+      <tbody>
+        <DiffRow {...props} />
+      </tbody>
+    </table>,
+  )
+}
+
 // MOCKS
 vi.mock('./SplitRow', () => ({
   SplitRow: vi.fn(
@@ -240,7 +251,7 @@ describe('DiffRow', () => {
         const props = createDiffRowProps({ unified, isHunk })
 
         // WHEN
-        render(<DiffRow {...props} />)
+        renderDiffRow(props)
 
         // EXPECT
         expect(screen.getByTestId(expectedRow)).toBeInTheDocument()
@@ -252,7 +263,7 @@ describe('DiffRow', () => {
       const props = createDiffRowProps({ unified: false, isHunk: false })
 
       // WHEN
-      render(<DiffRow {...props} />)
+      renderDiffRow(props)
 
       // EXPECT
       expect(screen.getByTestId('widget-row-top')).toBeInTheDocument()
@@ -264,7 +275,7 @@ describe('DiffRow', () => {
       const props = createDiffRowProps({ unified: true, isHunk: false })
 
       // WHEN
-      render(<DiffRow {...props} />)
+      renderDiffRow(props)
 
       // EXPECT
       expect(screen.getByTestId('widget-row-top')).toBeInTheDocument()
@@ -279,7 +290,7 @@ describe('DiffRow', () => {
       const props = createDiffRowProps({ selectedRows })
 
       // WHEN
-      render(<DiffRow {...props} />)
+      renderDiffRow(props)
 
       // EXPECT
       expect(screen.getByTestId('split-row')).toHaveClass('highlighted-row')
@@ -291,7 +302,7 @@ describe('DiffRow', () => {
       const props = createDiffRowProps({ selectedRows })
 
       // WHEN
-      render(<DiffRow {...props} />)
+      renderDiffRow(props)
 
       // EXPECT
       expect(screen.getByTestId('split-row')).toHaveClass('first-highlighted-row')
@@ -303,7 +314,7 @@ describe('DiffRow', () => {
       const props = createDiffRowProps({ idx: 3, selectedRows })
 
       // WHEN
-      render(<DiffRow {...props} />)
+      renderDiffRow(props)
 
       // EXPECT
       expect(screen.getByTestId('split-row')).toHaveClass('last-highlighted-row')
@@ -315,7 +326,7 @@ describe('DiffRow', () => {
       const props = createDiffRowProps({ idx: 1, selectedRows })
 
       // WHEN
-      render(<DiffRow {...props} />)
+      renderDiffRow(props)
 
       // EXPECT
       expect(screen.getByTestId('split-row')).toHaveClass('first-highlighted-row')
@@ -328,7 +339,7 @@ describe('DiffRow', () => {
       const props = createDiffRowProps({ idx: 0, selectedRows })
 
       // WHEN
-      render(<DiffRow {...props} />)
+      renderDiffRow(props)
 
       // EXPECT
       expect(screen.getByTestId('split-row')).not.toHaveClass('highlighted-row')
@@ -343,7 +354,7 @@ describe('DiffRow', () => {
       const props = createDiffRowProps({ className: 'custom-row-class' })
 
       // WHEN
-      render(<DiffRow {...props} />)
+      renderDiffRow(props)
 
       // EXPECT
       expect(screen.getByTestId('split-row')).toHaveClass('custom-row-class')
@@ -354,7 +365,7 @@ describe('DiffRow', () => {
       const props = createDiffRowProps({ className: undefined })
 
       // WHEN
-      render(<DiffRow {...props} />)
+      renderDiffRow(props)
 
       // EXPECT
       expect(screen.getByTestId('split-row')).not.toHaveClass('test-class')
@@ -369,7 +380,7 @@ describe('DiffRow', () => {
       const props = createDiffRowProps({ onMouseEnter, onMouseLeave })
 
       // WHEN
-      render(<DiffRow {...props} />)
+      renderDiffRow(props)
       fireEvent.mouseEnter(screen.getByTestId('split-row'))
       fireEvent.mouseLeave(screen.getByTestId('split-row'))
 
@@ -386,7 +397,7 @@ describe('DiffRow', () => {
       const props = createDiffRowProps({ onRowSelectionStart, onRowSelectionUpdate, onRowSelectionEnd })
 
       // WHEN
-      render(<DiffRow {...props} />)
+      renderDiffRow(props)
       fireEvent.mouseDown(screen.getByTestId('split-row'))
       fireEvent.mouseUp(screen.getByTestId('split-row'))
 
@@ -401,7 +412,7 @@ describe('DiffRow', () => {
       const props = createDiffRowProps({ onRowSelectionUpdate })
 
       // WHEN
-      render(<DiffRow {...props} />)
+      renderDiffRow(props)
       fireEvent.mouseEnter(screen.getByTestId('split-row'))
 
       // EXPECT
@@ -416,7 +427,7 @@ describe('DiffRow', () => {
       const props = createDiffRowProps({ widgets })
 
       // WHEN
-      render(<DiffRow {...props} />)
+      renderDiffRow(props)
 
       // EXPECT
       expect(screen.getByTestId('widget-row-top')).toBeInTheDocument()
@@ -428,7 +439,7 @@ describe('DiffRow', () => {
       const props = createDiffRowProps({ widgets: undefined })
 
       // WHEN
-      render(<DiffRow {...props} />)
+      renderDiffRow(props)
 
       // EXPECT
       expect(screen.getByTestId('widget-row-top')).toBeInTheDocument()
@@ -444,7 +455,7 @@ describe('DiffRow', () => {
       const props = createDiffRowProps({ line, widgets })
 
       // WHEN
-      render(<DiffRow {...props} />)
+      renderDiffRow(props)
 
       // EXPECT
       expect(screen.getByTestId('split-row')).toBeInTheDocument()
@@ -460,8 +471,14 @@ describe('DiffRow', () => {
       const props2 = createDiffRowProps({ line: line2 })
 
       // WHEN
-      const { rerender } = render(<DiffRow {...props1} />)
-      rerender(<DiffRow {...props2} />)
+      const { rerender } = renderDiffRow(props1)
+      rerender(
+        <table>
+          <tbody>
+            <DiffRow {...props2} />
+          </tbody>
+        </table>,
+      )
 
       // EXPECT
       expect(screen.getByTestId('split-row')).toBeInTheDocument()
@@ -474,7 +491,7 @@ describe('DiffRow', () => {
       const props = createDiffRowProps({ selectedRows: new Set() })
 
       // WHEN
-      render(<DiffRow {...props} />)
+      renderDiffRow(props)
 
       // EXPECT
       expect(screen.getByTestId('split-row')).not.toHaveClass('highlighted-row')
@@ -485,7 +502,7 @@ describe('DiffRow', () => {
       const props = createDiffRowProps({ selectedRows: undefined })
 
       // WHEN
-      render(<DiffRow {...props} />)
+      renderDiffRow(props)
 
       // EXPECT
       expect(screen.getByTestId('split-row')).not.toHaveClass('highlighted-row')
@@ -497,7 +514,7 @@ describe('DiffRow', () => {
       const props = createDiffRowProps({ line: hunkLine, isHunk: true })
 
       // WHEN
-      render(<DiffRow {...props} />)
+      renderDiffRow(props)
 
       // EXPECT
       expect(screen.getByTestId('split-hunk-row')).toBeInTheDocument()
@@ -509,7 +526,7 @@ describe('DiffRow', () => {
       const props = createDiffRowProps({ line: hunkLine, isHunk: true, unified: true })
 
       // WHEN
-      render(<DiffRow {...props} />)
+      renderDiffRow(props)
 
       // EXPECT
       expect(screen.getByTestId('unified-hunk-row')).toBeInTheDocument()
@@ -532,7 +549,7 @@ describe('DiffRow', () => {
       })
 
       // WHEN
-      render(<DiffRow {...props} />)
+      renderDiffRow(props)
 
       // EXPECT
       expect(screen.getByTestId('split-row')).toHaveAttribute('data-idx', '5')
@@ -544,7 +561,7 @@ describe('DiffRow', () => {
       const props = createDiffRowProps({ css })
 
       // WHEN
-      render(<DiffRow {...props} />)
+      renderDiffRow(props)
 
       // EXPECT
       expect(screen.getByTestId('split-row')).toBeInTheDocument()

@@ -1,6 +1,6 @@
+import { ThemeContext } from '@commons'
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
-import { ThemeContext } from '@diff-viewer'
 import { CommentEvent, CommentMetadata, CommentState } from '../models/CommentMetadata'
 import { ButtonMetadata, Editor } from './components/Editor'
 

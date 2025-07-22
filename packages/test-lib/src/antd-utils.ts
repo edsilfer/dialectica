@@ -224,12 +224,14 @@ const _antdMocks = {
     }) =>
       _createTestDiv('label', { 'data-testid': 'checkbox-wrapper', ...props }, [
         _createTestDiv('input', {
+          key: 'checkbox-input',
           type: 'checkbox',
           checked: props.checked,
           onChange: props.onChange,
           'data-testid': 'checkbox-input',
         }),
-        props.children && _createTestDiv('span', { 'data-testid': 'checkbox-label' }, props.children),
+        props.children &&
+          _createTestDiv('span', { key: 'checkbox-label', 'data-testid': 'checkbox-label' }, props.children),
       ])
   )(),
 

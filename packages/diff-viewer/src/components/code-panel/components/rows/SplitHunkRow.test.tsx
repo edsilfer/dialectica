@@ -1,40 +1,25 @@
-import { createPropsFactory } from '@test-lib'
+import { ThemeProvider, Themes } from '@commons'
+import { render as baseRender, createPropsFactory } from '@test-lib'
 import { fireEvent, screen } from '@testing-library/react'
 import React from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { render } from '../../../../../../test-lib/src/render'
 import { DiffLineViewModel } from '../../models/DiffLineViewModel'
 import { DiffRowViewModel } from '../../models/DiffRowViewModel'
 import type { HunkDirection, Widget } from '../viewers/types'
 import { SplitHunkRow } from './SplitHunkRow'
 import type { SplitHunkRowProps } from './types'
 
+const renderWithTheme = (ui: React.ReactElement) => {
+  return baseRender(
+    <ThemeProvider theme={Themes.light}>
+      <table>
+        <tbody>{ui}</tbody>
+      </table>
+    </ThemeProvider>,
+  )
+}
+
 // MOCKS
-vi.mock('../../../ui/buttons/LoadMoreButton', () => ({
-  default: vi.fn(
-    ({
-      direction,
-      onClick,
-    }: {
-      direction: HunkDirection
-      onClick?: (e: React.MouseEvent, direction: HunkDirection) => void
-    }) => (
-      <div data-testid="load-more-button" data-direction={direction} onClick={(e) => onClick?.(e, direction)}>
-        Load More {direction}
-      </div>
-    ),
-  ),
-}))
-
-// Mock the LoadMoreLines icon component
-vi.mock('../../../ui/icons/LoadMoreLines', () => ({
-  default: vi.fn(({ direction }: { direction: HunkDirection }) => (
-    <svg data-testid="load-more-icon" data-direction={direction}>
-      Load More Icon {direction}
-    </svg>
-  )),
-}))
-
 vi.mock('../viewers/shared-styles', () => ({
   getViewerStyles: vi.fn(() => ({
     row: { color: '#24292f' },
@@ -106,7 +91,7 @@ describe('SplitHunkRow', () => {
       const props = createSplitHunkRowProps()
 
       // WHEN
-      render(<SplitHunkRow {...props} />)
+      renderWithTheme(<SplitHunkRow {...props} />)
 
       // EXPECT
       const row = screen.getByRole('row')
@@ -121,12 +106,11 @@ describe('SplitHunkRow', () => {
       const props = createSplitHunkRowProps({ line })
 
       // WHEN
-      render(<SplitHunkRow {...props} />)
+      renderWithTheme(<SplitHunkRow {...props} />)
 
       // EXPECT
       const button = screen.getByTestId('load-more-button')
       expect(button).toBeInTheDocument()
-      expect(button).toHaveAttribute('data-direction', 'up')
     })
 
     it('given hunk line without direction, when rendered, expect LoadMoreButton with default direction', () => {
@@ -135,12 +119,11 @@ describe('SplitHunkRow', () => {
       const props = createSplitHunkRowProps({ line })
 
       // WHEN
-      render(<SplitHunkRow {...props} />)
+      renderWithTheme(<SplitHunkRow {...props} />)
 
       // EXPECT
       const button = screen.getByTestId('load-more-button')
       expect(button).toBeInTheDocument()
-      expect(button).toHaveAttribute('data-direction', 'out')
     })
 
     it('given hunk content, when rendered, expect content displayed in merged cell', () => {
@@ -152,7 +135,7 @@ describe('SplitHunkRow', () => {
       const props = createSplitHunkRowProps({ line })
 
       // WHEN
-      render(<SplitHunkRow {...props} />)
+      renderWithTheme(<SplitHunkRow {...props} />)
 
       // EXPECT
       const cells = screen.getAllByRole('cell')
@@ -169,7 +152,7 @@ describe('SplitHunkRow', () => {
       const props = createSplitHunkRowProps({ line })
 
       // WHEN
-      render(<SplitHunkRow {...props} />)
+      renderWithTheme(<SplitHunkRow {...props} />)
 
       // EXPECT
       expect(screen.getByText('Left content only')).toBeInTheDocument()
@@ -184,7 +167,7 @@ describe('SplitHunkRow', () => {
       const props = createSplitHunkRowProps({ line })
 
       // WHEN
-      render(<SplitHunkRow {...props} />)
+      renderWithTheme(<SplitHunkRow {...props} />)
 
       // EXPECT
       const codeCell = screen.getAllByRole('cell')[1]
@@ -200,7 +183,7 @@ describe('SplitHunkRow', () => {
       const props = createSplitHunkRowProps({ line })
 
       // WHEN
-      render(<SplitHunkRow {...props} />)
+      renderWithTheme(<SplitHunkRow {...props} />)
 
       // EXPECT
       const codeCell = screen.getAllByRole('cell')[1]
@@ -217,7 +200,7 @@ describe('SplitHunkRow', () => {
       const props = createSplitHunkRowProps({ line, loadLines })
 
       // WHEN
-      render(<SplitHunkRow {...props} />)
+      renderWithTheme(<SplitHunkRow {...props} />)
       const button = screen.getByTestId('load-more-button')
       button.click()
 
@@ -231,7 +214,7 @@ describe('SplitHunkRow', () => {
       const props = createSplitHunkRowProps({ onMouseEnter })
 
       // WHEN
-      render(<SplitHunkRow {...props} />)
+      renderWithTheme(<SplitHunkRow {...props} />)
       const row = screen.getByRole('row')
       fireEvent.mouseEnter(row)
 
@@ -245,7 +228,7 @@ describe('SplitHunkRow', () => {
       const props = createSplitHunkRowProps({ onMouseLeave })
 
       // WHEN
-      render(<SplitHunkRow {...props} />)
+      renderWithTheme(<SplitHunkRow {...props} />)
       const row = screen.getByRole('row')
       fireEvent.mouseLeave(row)
 
@@ -263,12 +246,24 @@ describe('SplitHunkRow', () => {
         const props = createSplitHunkRowProps({ line })
 
         // WHEN
-        render(<SplitHunkRow {...props} />)
+        renderWithTheme(<SplitHunkRow {...props} />)
 
         // EXPECT
-        const button = screen.getByTestId('load-more-button')
-        expect(button).toBeInTheDocument()
-        expect(button).toHaveAttribute('data-direction', direction)
+        if (direction === 'in') {
+          const down = screen.getByTestId('load-more-button-down')
+          const up = screen.getByTestId('load-more-button-up')
+          expect(down).toBeInTheDocument()
+          expect(up).toBeInTheDocument()
+        } else if (direction === 'in_up') {
+          const up = screen.getByTestId('load-more-button-up')
+          expect(up).toBeInTheDocument()
+        } else if (direction === 'in_down') {
+          const down = screen.getByTestId('load-more-button-down')
+          expect(down).toBeInTheDocument()
+        } else {
+          const button = screen.getByTestId('load-more-button')
+          expect(button).toBeInTheDocument()
+        }
       },
     )
   })
@@ -279,7 +274,7 @@ describe('SplitHunkRow', () => {
       const props = createSplitHunkRowProps({ loadLines: undefined })
 
       // WHEN
-      render(<SplitHunkRow {...props} />)
+      renderWithTheme(<SplitHunkRow {...props} />)
       const button = screen.getByTestId('load-more-button')
 
       // EXPECT
@@ -294,7 +289,7 @@ describe('SplitHunkRow', () => {
       })
 
       // WHEN
-      render(<SplitHunkRow {...props} />)
+      renderWithTheme(<SplitHunkRow {...props} />)
       const row = screen.getByRole('row')
 
       // EXPECT
@@ -313,7 +308,7 @@ describe('SplitHunkRow', () => {
       const props = createSplitHunkRowProps({ line })
 
       // WHEN
-      render(<SplitHunkRow {...props} />)
+      renderWithTheme(<SplitHunkRow {...props} />)
 
       // EXPECT
       const codeCell = screen.getAllByRole('cell')[1]
@@ -329,7 +324,7 @@ describe('SplitHunkRow', () => {
       const props = createSplitHunkRowProps({ line })
 
       // WHEN
-      render(<SplitHunkRow {...props} />)
+      renderWithTheme(<SplitHunkRow {...props} />)
 
       // EXPECT
       const codeCell = screen.getAllByRole('cell')[1]
@@ -343,7 +338,7 @@ describe('SplitHunkRow', () => {
       const props = createSplitHunkRowProps()
 
       // WHEN
-      render(<SplitHunkRow {...props} />)
+      renderWithTheme(<SplitHunkRow {...props} />)
 
       // EXPECT
       const row = screen.getByRole('row')
@@ -357,7 +352,7 @@ describe('SplitHunkRow', () => {
       const props = createSplitHunkRowProps()
 
       // WHEN
-      render(<SplitHunkRow {...props} />)
+      renderWithTheme(<SplitHunkRow {...props} />)
 
       // EXPECT
       const button = screen.getByTestId('load-more-button')

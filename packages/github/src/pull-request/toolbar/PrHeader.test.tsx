@@ -1,8 +1,7 @@
-import { Themes } from '@commons'
-import { useDiffViewerConfig } from '@diff-viewer'
+import { ThemeProvider, Themes } from '@commons'
 import { createPropsFactory, render } from '@test-lib'
 import { screen } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import type { PullRequestMetadata } from './models'
 import { PrHeader } from './PrHeader'
 
@@ -44,17 +43,6 @@ const createPullRequestHeaderProps = createPropsFactory<{ pr: PullRequestMetadat
   pr: createMockPullRequestMetadata(),
 })
 
-const setupThemeMock = () => {
-  vi.mocked(useDiffViewerConfig).mockReturnValue({
-    theme: Themes.light,
-    setTheme: vi.fn(),
-    codePanelConfig: { mode: 'unified' as const, ignoreWhitespace: false },
-    setCodePanelConfig: vi.fn(),
-    fileExplorerConfig: undefined,
-    setFileExplorerConfig: undefined,
-  })
-}
-
 // HELPER FUNCTIONS
 const expectStateTagToBePresent = (state: string, color: string) => {
   const tag = screen.getByText(state)
@@ -82,10 +70,6 @@ const expectBranchTagToBePresent = (value: string, label: string, color: string)
 }
 
 describe('PullRequestHeader', () => {
-  beforeEach(() => {
-    setupThemeMock()
-  })
-
   describe('state tag scenarios', () => {
     const stateTestCases = [
       {
@@ -116,7 +100,11 @@ describe('PullRequestHeader', () => {
         })
 
         // WHEN
-        render(<PrHeader {...props} />)
+        render(
+          <ThemeProvider theme={Themes.light}>
+            <PrHeader {...props} />
+          </ThemeProvider>,
+        )
 
         // EXPECT
         expectStateTagToBePresent(expectedText, expectedColor)
@@ -134,7 +122,11 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PrHeader {...props} />)
+      render(
+        <ThemeProvider theme={Themes.light}>
+          <PrHeader {...props} />
+        </ThemeProvider>,
+      )
 
       // EXPECT
       expectLinkToBePresent('Fix critical bug', 'https://github.com/owner/repo/pull/456')
@@ -152,7 +144,11 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PrHeader {...props} />)
+      render(
+        <ThemeProvider theme={Themes.light}>
+          <PrHeader {...props} />
+        </ThemeProvider>,
+      )
 
       // EXPECT
       expectLinkToBePresent('developer123', 'https://github.com/developer123')
@@ -169,7 +165,11 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PrHeader {...props} />)
+      render(
+        <ThemeProvider theme={Themes.light}>
+          <PrHeader {...props} />
+        </ThemeProvider>,
+      )
 
       // EXPECT
       expectStatTagToBePresent(12, 'commits', 'blue')
@@ -185,7 +185,11 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PrHeader {...props} />)
+      render(
+        <ThemeProvider theme={Themes.light}>
+          <PrHeader {...props} />
+        </ThemeProvider>,
+      )
 
       // EXPECT
       expectStatTagToBePresent(0, 'commits', 'blue')
@@ -200,7 +204,11 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PrHeader {...props} />)
+      render(
+        <ThemeProvider theme={Themes.light}>
+          <PrHeader {...props} />
+        </ThemeProvider>,
+      )
 
       // EXPECT
       expectStatTagToBePresent(0, 'files', 'geekblue')
@@ -217,7 +225,11 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PrHeader {...props} />)
+      render(
+        <ThemeProvider theme={Themes.light}>
+          <PrHeader {...props} />
+        </ThemeProvider>,
+      )
 
       // EXPECT
       expectBranchTagToBePresent('feature/new-ui', 'head', 'gold')
@@ -233,7 +245,11 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PrHeader {...props} />)
+      render(
+        <ThemeProvider theme={Themes.light}>
+          <PrHeader {...props} />
+        </ThemeProvider>,
+      )
 
       // EXPECT
       expectBranchTagToBePresent('very-long-feature-branch-name-that-might-wrap', 'head', 'gold')
@@ -250,7 +266,11 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PrHeader {...props} />)
+      render(
+        <ThemeProvider theme={Themes.light}>
+          <PrHeader {...props} />
+        </ThemeProvider>,
+      )
 
       // EXPECT
       expect(screen.getByText('#789')).toBeInTheDocument()
@@ -264,7 +284,11 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PrHeader {...props} />)
+      render(
+        <ThemeProvider theme={Themes.light}>
+          <PrHeader {...props} />
+        </ThemeProvider>,
+      )
 
       // EXPECT
       expect(screen.getByText('#1')).toBeInTheDocument()
@@ -284,7 +308,11 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PrHeader {...props} />)
+      render(
+        <ThemeProvider theme={Themes.light}>
+          <PrHeader {...props} />
+        </ThemeProvider>,
+      )
 
       // EXPECT
       const avatar = screen.getByTestId('avatar')
@@ -307,7 +335,11 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PrHeader {...props} />)
+      render(
+        <ThemeProvider theme={Themes.light}>
+          <PrHeader {...props} />
+        </ThemeProvider>,
+      )
 
       // EXPECT
       const avatar = screen.getByTestId('avatar')
@@ -323,7 +355,11 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps()
 
       // WHEN
-      render(<PrHeader {...props} />)
+      render(
+        <ThemeProvider theme={Themes.light}>
+          <PrHeader {...props} />
+        </ThemeProvider>,
+      )
 
       // EXPECT
       expect(screen.getByText('opened')).toBeInTheDocument()
@@ -355,7 +391,11 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PrHeader {...props} />)
+      render(
+        <ThemeProvider theme={Themes.light}>
+          <PrHeader {...props} />
+        </ThemeProvider>,
+      )
 
       // EXPECT
       // State tag
@@ -399,7 +439,11 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PrHeader {...props} />)
+      render(
+        <ThemeProvider theme={Themes.light}>
+          <PrHeader {...props} />
+        </ThemeProvider>,
+      )
 
       // EXPECT
       expect(screen.getByText(longTitle)).toBeInTheDocument()
@@ -414,7 +458,11 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PrHeader {...props} />)
+      render(
+        <ThemeProvider theme={Themes.light}>
+          <PrHeader {...props} />
+        </ThemeProvider>,
+      )
 
       // EXPECT
       expect(screen.getByText(specialTitle)).toBeInTheDocument()
@@ -430,7 +478,11 @@ describe('PullRequestHeader', () => {
       const props = createPullRequestHeaderProps({ pr })
 
       // WHEN
-      render(<PrHeader {...props} />)
+      render(
+        <ThemeProvider theme={Themes.light}>
+          <PrHeader {...props} />
+        </ThemeProvider>,
+      )
 
       // EXPECT
       expect(screen.getByText('#999999')).toBeInTheDocument()

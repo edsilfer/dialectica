@@ -1,13 +1,13 @@
+import { ThemeContext } from '@commons'
 import { css } from '@emotion/react'
 import { Tooltip, Typography } from 'antd'
-import React from 'react'
-import { useDiffViewerConfig } from '@diff-viewer'
+import React, { useContext } from 'react'
 import { TabActionButton, TabItem } from './types'
 
 const { Text } = Typography
 
 const useStyles = () => {
-  const { theme } = useDiffViewerConfig()
+  const theme = useContext(ThemeContext)
 
   return {
     container: css`

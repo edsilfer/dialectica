@@ -1,8 +1,6 @@
+import { readStorageValue, ThemeContext, ThemeProvider, Themes, writeStorageValue } from '@commons'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createContext, useContextSelector } from 'use-context-selector'
-import { ThemeContext, ThemeProvider } from '../../../../../commons/src/themes/providers/theme-context'
-import { readStorageValue, writeStorageValue } from '../../../../../commons/src/utils/storage-utils'
-import { Themes } from '../../../../../commons/src/themes/themes'
 import {
   CodePanelConfig,
   CodePanelConfigContextProps,

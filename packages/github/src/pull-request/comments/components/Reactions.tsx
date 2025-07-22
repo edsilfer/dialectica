@@ -1,7 +1,7 @@
+import { ThemeContext } from '@commons'
 import { css } from '@emotion/react'
 import { Button } from 'antd'
-import React from 'react'
-import { useDiffViewerConfig } from '@diff-viewer'
+import React, { useContext } from 'react'
 
 export interface CommentReactionsProps {
   /** The reactions data to display */
@@ -22,7 +22,7 @@ const REACTION_EMOJIS: Record<string, string> = {
 }
 
 const useStyles = () => {
-  const { theme } = useDiffViewerConfig()
+  const theme = useContext(ThemeContext)
 
   return {
     container: css`

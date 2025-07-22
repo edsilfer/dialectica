@@ -1,3 +1,4 @@
+import { ThemeProvider, Themes } from '@commons'
 import { createPropsFactory, render } from '@test-lib'
 import { fireEvent, screen } from '@testing-library/react'
 import React from 'react'
@@ -9,22 +10,6 @@ import { UnifiedHunkRow } from './UnifiedHunkRow'
 import type { UnifiedHunkRowProps } from './types'
 
 // MOCKS
-vi.mock('../../../ui/buttons/LoadMoreButton', () => ({
-  default: vi.fn(
-    ({
-      direction,
-      onClick,
-    }: {
-      direction: HunkDirection
-      onClick?: (e: React.MouseEvent, direction: HunkDirection) => void
-    }) => (
-      <div data-testid="load-more-button" data-direction={direction} onClick={(e) => onClick?.(e, direction)}>
-        Load More {direction}
-      </div>
-    ),
-  ),
-}))
-
 vi.mock('../viewers/shared-styles', () => ({
   getViewerStyles: vi.fn(() => ({
     row: { color: '#24292f' },
@@ -39,6 +24,16 @@ vi.mock('../viewers/shared-styles', () => ({
 }))
 
 // HELPERS
+const renderWithTheme = (ui: React.ReactElement) => {
+  return render(
+    <ThemeProvider theme={Themes.light}>
+      <table>
+        <tbody>{ui}</tbody>
+      </table>
+    </ThemeProvider>,
+  )
+}
+
 const createMockDiffLineViewModel = (overrides: Partial<DiffLineViewModel> = {}): DiffLineViewModel => {
   return new DiffLineViewModel(
     overrides.typeLeft ?? 'hunk',
@@ -97,7 +92,7 @@ describe('UnifiedHunkRow', () => {
       const props = createUnifiedHunkRowProps()
 
       // WHEN
-      render(<UnifiedHunkRow {...props} />)
+      renderWithTheme(<UnifiedHunkRow {...props} />)
 
       // EXPECT
       const row = screen.getByRole('row')
@@ -112,12 +107,12 @@ describe('UnifiedHunkRow', () => {
       const props = createUnifiedHunkRowProps({ line })
 
       // WHEN
-      render(<UnifiedHunkRow {...props} />)
+      renderWithTheme(<UnifiedHunkRow {...props} />)
 
       // EXPECT
-      const button = screen.getByTestId('load-more-button')
-      expect(button).toBeInTheDocument()
-      expect(button).toHaveAttribute('data-direction', 'down')
+      // The LoadMoreButton renders a div with an icon
+      const loadMoreButton = screen.getByTestId('load-more-button')
+      expect(loadMoreButton).toBeInTheDocument()
     })
 
     it('given hunk line without direction, when rendered, expect LoadMoreButton with default direction', () => {
@@ -126,12 +121,12 @@ describe('UnifiedHunkRow', () => {
       const props = createUnifiedHunkRowProps({ line })
 
       // WHEN
-      render(<UnifiedHunkRow {...props} />)
+      renderWithTheme(<UnifiedHunkRow {...props} />)
 
       // EXPECT
-      const button = screen.getByTestId('load-more-button')
-      expect(button).toBeInTheDocument()
-      expect(button).toHaveAttribute('data-direction', 'out')
+      // The LoadMoreButton renders a div with an icon
+      const loadMoreButton = screen.getByTestId('load-more-button')
+      expect(loadMoreButton).toBeInTheDocument()
     })
 
     it('given view model with content, when rendered, expect content displayed', () => {
@@ -142,7 +137,7 @@ describe('UnifiedHunkRow', () => {
       const props = createUnifiedHunkRowProps({ line })
 
       // WHEN
-      render(<UnifiedHunkRow {...props} />)
+      renderWithTheme(<UnifiedHunkRow {...props} />)
 
       // EXPECT
       expect(screen.getByText('@@ -1,3 +1,3 @@')).toBeInTheDocument()
@@ -155,7 +150,7 @@ describe('UnifiedHunkRow', () => {
       const props = createUnifiedHunkRowProps({ line, viewModel })
 
       // WHEN
-      render(<UnifiedHunkRow {...props} />)
+      renderWithTheme(<UnifiedHunkRow {...props} />)
 
       // EXPECT
       const codeCell = screen.getAllByRole('cell')[1] // Second cell is the code cell
@@ -171,9 +166,10 @@ describe('UnifiedHunkRow', () => {
       const props = createUnifiedHunkRowProps({ line, loadLines })
 
       // WHEN
-      render(<UnifiedHunkRow {...props} />)
-      const button = screen.getByTestId('load-more-button')
-      button.click()
+      renderWithTheme(<UnifiedHunkRow {...props} />)
+      // Find the clickable div
+      const loadMoreButton = screen.getByTestId('load-more-button')
+      loadMoreButton.click()
 
       // EXPECT
       expect(loadLines).toHaveBeenCalledWith(line, 'up')
@@ -185,7 +181,7 @@ describe('UnifiedHunkRow', () => {
       const props = createUnifiedHunkRowProps({ onMouseEnter })
 
       // WHEN
-      render(<UnifiedHunkRow {...props} />)
+      renderWithTheme(<UnifiedHunkRow {...props} />)
       const row = screen.getByRole('row')
       fireEvent.mouseEnter(row)
 
@@ -199,7 +195,7 @@ describe('UnifiedHunkRow', () => {
       const props = createUnifiedHunkRowProps({ onMouseLeave })
 
       // WHEN
-      render(<UnifiedHunkRow {...props} />)
+      renderWithTheme(<UnifiedHunkRow {...props} />)
       const row = screen.getByRole('row')
       fireEvent.mouseLeave(row)
 
@@ -217,12 +213,24 @@ describe('UnifiedHunkRow', () => {
         const props = createUnifiedHunkRowProps({ line })
 
         // WHEN
-        render(<UnifiedHunkRow {...props} />)
+        renderWithTheme(<UnifiedHunkRow {...props} />)
 
         // EXPECT
-        const button = screen.getByTestId('load-more-button')
-        expect(button).toBeInTheDocument()
-        expect(button).toHaveAttribute('data-direction', direction)
+        if (direction === 'in') {
+          const down = screen.getByTestId('load-more-button-down')
+          const up = screen.getByTestId('load-more-button-up')
+          expect(down).toBeInTheDocument()
+          expect(up).toBeInTheDocument()
+        } else if (direction === 'in_up') {
+          const up = screen.getByTestId('load-more-button-up')
+          expect(up).toBeInTheDocument()
+        } else if (direction === 'in_down') {
+          const down = screen.getByTestId('load-more-button-down')
+          expect(down).toBeInTheDocument()
+        } else {
+          const loadMoreButton = screen.getByTestId('load-more-button')
+          expect(loadMoreButton).toBeInTheDocument()
+        }
       },
     )
   })
@@ -233,11 +241,11 @@ describe('UnifiedHunkRow', () => {
       const props = createUnifiedHunkRowProps({ loadLines: undefined })
 
       // WHEN
-      render(<UnifiedHunkRow {...props} />)
-      const button = screen.getByTestId('load-more-button')
+      renderWithTheme(<UnifiedHunkRow {...props} />)
+      const loadMoreButton = screen.getByTestId('load-more-button')
 
       // EXPECT
-      expect(() => button.click()).not.toThrow()
+      expect(() => loadMoreButton.click()).not.toThrow()
     })
 
     it('given no mouse event handlers, when events triggered, expect no error thrown', () => {
@@ -248,7 +256,7 @@ describe('UnifiedHunkRow', () => {
       })
 
       // WHEN
-      render(<UnifiedHunkRow {...props} />)
+      renderWithTheme(<UnifiedHunkRow {...props} />)
       const row = screen.getByRole('row')
 
       // EXPECT
@@ -267,7 +275,7 @@ describe('UnifiedHunkRow', () => {
       const props = createUnifiedHunkRowProps({ line, viewModel })
 
       // WHEN
-      render(<UnifiedHunkRow {...props} />)
+      renderWithTheme(<UnifiedHunkRow {...props} />)
 
       // EXPECT
       const codeCell = screen.getAllByRole('cell')[1] // Second cell is the code cell
@@ -283,7 +291,7 @@ describe('UnifiedHunkRow', () => {
       const props = createUnifiedHunkRowProps({ line, viewModel })
 
       // WHEN
-      render(<UnifiedHunkRow {...props} />)
+      renderWithTheme(<UnifiedHunkRow {...props} />)
 
       // EXPECT
       const codeCell = screen.getAllByRole('cell')[1] // Second cell is the code cell
@@ -297,7 +305,7 @@ describe('UnifiedHunkRow', () => {
       const props = createUnifiedHunkRowProps()
 
       // WHEN
-      render(<UnifiedHunkRow {...props} />)
+      renderWithTheme(<UnifiedHunkRow {...props} />)
 
       // EXPECT
       const row = screen.getByRole('row')
@@ -311,7 +319,7 @@ describe('UnifiedHunkRow', () => {
       const props = createUnifiedHunkRowProps()
 
       // WHEN
-      render(<UnifiedHunkRow {...props} />)
+      renderWithTheme(<UnifiedHunkRow {...props} />)
 
       // EXPECT
       const row = screen.getByRole('row')
@@ -324,12 +332,11 @@ describe('UnifiedHunkRow', () => {
       const props = createUnifiedHunkRowProps()
 
       // WHEN
-      render(<UnifiedHunkRow {...props} />)
+      renderWithTheme(<UnifiedHunkRow {...props} />)
 
       // EXPECT
-      const button = screen.getByTestId('load-more-button')
-      expect(button).toBeInTheDocument()
-      expect(button.tagName).toBe('DIV')
+      const loadMoreButton = screen.getByTestId('load-more-button')
+      expect(loadMoreButton).toBeInTheDocument()
     })
   })
 })

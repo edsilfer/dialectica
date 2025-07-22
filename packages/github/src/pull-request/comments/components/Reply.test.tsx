@@ -11,21 +11,24 @@ import type { CommentReplyProps } from './Reply'
 import { Reply } from './Reply'
 
 // MOCK
-vi.mock('../../../../components/diff-viewer/providers/diff-viewer-context', () => ({
-  useDiffViewerConfig: () => ({
-    theme: {
+vi.mock('react', async () => {
+  const actual = await vi.importActual('react')
+  return {
+    ...actual,
+    useContext: vi.fn(() => ({
       spacing: {
         sm: '0.5rem',
         xs: '0.25rem',
+        md: '1rem',
       },
       colors: {
         backgroundContainer: '#f6f8fa',
         border: '#d0d7de',
         backgroundPrimary: '#ffffff',
       },
-    },
-  }),
-}))
+    })),
+  }
+})
 
 // Helpers --------------------------------------------------------------
 const createCommentAuthor = createPropsFactory<CommentAuthor>({
