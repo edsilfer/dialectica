@@ -2,8 +2,7 @@
 
 **Dialectica** is a platform for code review. It’s built on the principles of clarity, dialogue, and collaboration in software engineering.
 
-> *"The act of reviewing code is not just technical — it's dialectical: a conversation, a craft, and a collective pursuit of clarity."*
-
+> _"The act of reviewing code is not just technical — it's dialectical: a conversation, a craft, and a collective pursuit of clarity."_
 
 ## Current Status
 

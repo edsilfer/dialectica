@@ -28,7 +28,7 @@ const useStyles = () => {
       border-radius: ${theme.spacing.sm};
 
       * {
-        font-size: 0.7rem;
+        font-size: 0.6rem;
       }
     `,
   }

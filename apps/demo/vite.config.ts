@@ -16,7 +16,7 @@ export default defineConfig({
       },
     }),
   ],
-  
+
   resolve: {
     alias: {
       '@diff-viewer': path.resolve(__dirname, '../../packages/diff-viewer/src'),

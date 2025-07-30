@@ -24,13 +24,14 @@ interface HarnessProps {
 }
 
 const createHarnessProps = createPropsFactory<HarnessProps>({
-  initial: 25,
+  initial: 30,
   min: 15,
   max: 60,
 })
 
-function Harness({ initial = 25, min = 15, max = 60 }: HarnessProps) {
-  const { width, containerRef, onMouseDown } = useResizablePanel(initial, {
+function Harness({ initial = 30, min = 15, max = 60 }: HarnessProps) {
+  const { width, containerRef, onMouseDown } = useResizablePanel({
+    initial,
     min,
     max,
   })
@@ -81,7 +82,7 @@ describe('useResizablePanel', () => {
       render(<Harness {...props} />)
 
       // EXPECT
-      expectWidthToBe('25')
+      expectWidthToBe('30')
     })
 
     it('given custom initial value, when rendered, expect custom width displayed', () => {
@@ -106,8 +107,8 @@ describe('useResizablePanel', () => {
       // WHEN - Drag from x=0 to x=50 (25% of 200px = 25 percentage points)
       performDragOperation(0, 50)
 
-      // EXPECT - Width starts at 25 and adds 25 percentage points → 50
-      expectWidthToBe('50')
+      // EXPECT - Width starts at 30 and adds 25 percentage points → 55
+      expectWidthToBe('55')
     })
 
     it('given drag beyond maximum, when dragged, expect width clamped to maximum', () => {
@@ -147,8 +148,8 @@ describe('useResizablePanel', () => {
       // WHEN - 25px movement in 100px container = 25%
       performDragOperation(0, 25)
 
-      // EXPECT - 25 (initial) + 25 (drag) = 50
-      expectWidthToBe('50')
+      // EXPECT - 30 (initial) + 25 (drag) = 55
+      expectWidthToBe('55')
     })
 
     it('given large container, when dragged, expect proportional scaling', () => {
@@ -160,8 +161,8 @@ describe('useResizablePanel', () => {
       // WHEN - 100px movement in 400px container = 25%
       performDragOperation(0, 100)
 
-      // EXPECT - 25 (initial) + 25 (drag) = 50
-      expectWidthToBe('50')
+      // EXPECT - 30 (initial) + 25 (drag) = 55
+      expectWidthToBe('55')
     })
   })
 

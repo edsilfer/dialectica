@@ -24,7 +24,7 @@ const useStyles = () => {
       z-index: 1;
 
       * {
-        font-size: 0.75rem !important;
+        font-size: 0.6rem !important;
       }
     `,
     browserFrame: css`

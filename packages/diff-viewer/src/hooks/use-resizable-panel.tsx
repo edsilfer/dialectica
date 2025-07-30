@@ -1,145 +1,196 @@
-import type React from 'react'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { MACBOOK_14_WIDTH } from '../utils/screen-utils'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
-/**
- * Get the initial percentage based on screen size
- * - MacBook 14" and smaller screens (≤1600px): 20%
- * - Larger screens (>1600px): 15%
- */
-function getInitialPercentage(): number {
-  if (typeof window === 'undefined') return 25 // SSR fallback
-  return window.innerWidth <= MACBOOK_14_WIDTH ? 25 : 15
+const FRAME_MS = 16
+
+type DragState = {
+  /** The last update time. */
+  lastUpdate: number
+  /** Whether the RAF is queued. */
+  rafQueued: boolean
+  /** The start X position. */
+  startX: number
+  /** The start width. */
+  startWidth: number
 }
 
 /**
- * Hook that encapsulates the logic for a horizontally resizable panel (the file explorer)
+ * Adds horizontal-resize behaviour to side-panels.
  *
- * @param initialPercentage - The initial percentage of the width of the panel. If not provided, it will be determined based on screen size.
- * @param min               - The same as initialPercentage
- * @param max               - The maximum percentage of the width of the panel.
- * @returns                 - The width of the panel, the ref to the container element, and the onMouseDown handler.
+ * @param props.initial - Initial width in % (default 25).
+ * @param props.min     - Minimum width in % (default 15).
+ * @param props.max     - Maximum width in % (default 60).
+ *
+ * @returns - {
+ *  width       : Current width in %.
+ *  containerRef: Attach to the resizable element.
+ *  onMouseDown : Attach to the resize handle.
+ *  dragging    : Whether the user is dragging.
+ * }
  */
 export function useResizablePanel(
-  initialPercentage?: number,
-  {
-    min,
-    max = 60,
-  }: {
+  props: {
+    initial?: number
     min?: number
     max?: number
   } = {},
 ) {
-  const containerRef = useRef<HTMLDivElement | null>(null)
-  const [width, setWidth] = useState(initialPercentage ?? getInitialPercentage())
-  const [minWidth, setMinWidth] = useState(min ?? getInitialPercentage())
+  const { initial = 30, min: rawMin = 15, max: rawMax = 60 } = props
+  const minPct = Math.min(rawMin, rawMax)
+  const maxPct = rawMax
+
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [width, setWidth] = useState(clamp(initial, minPct, maxPct))
   const [dragging, setDragging] = useState(false)
-  const [hasBeenManuallyResized, setHasBeenManuallyResized] = useState(false)
 
-  // Listen for window resize events to update width when moving between monitors
-  useEffect(() => {
-    if (typeof window === 'undefined' || hasBeenManuallyResized) return
+  const minRef = useSyncedRef(minPct)
+  const maxRef = useSyncedRef(maxPct)
 
-    const handleResize = () => {
-      const newDefaultWidth = getInitialPercentage()
-      const newMinWidth = getInitialPercentage()
-
-      // Update minimum width for current screen size
-      setMinWidth(newMinWidth)
-
-      setWidth((currentWidth) => {
-        const isAtDefaultSmallScreen = Math.abs(currentWidth - 25) < 1
-        const isAtDefaultLargeScreen = Math.abs(currentWidth - 15) < 1
-
-        if (isAtDefaultSmallScreen || isAtDefaultLargeScreen) {
-          return newDefaultWidth
-        }
-        return currentWidth
-      })
-    }
-
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [hasBeenManuallyResized])
-
-  // Optimized: Use refs to track drag state and avoid closures over stale values
-  const dragStateRef = useRef({
-    lastUpdateTime: 0,
-    isRequestingFrame: false,
+  const dragState = useRef<DragState>({
+    lastUpdate: 0,
+    rafQueued: false,
     startX: 0,
     startWidth: 0,
   })
 
+  /* Re-clamp current width whenever bounds change */
+  useEffect(() => {
+    setWidth((prev) => clamp(prev, minRef.current, maxRef.current))
+    dragState.current.startWidth = clamp(dragState.current.startWidth, minRef.current, maxRef.current)
+  }, [minPct, maxPct, minRef, maxRef])
+
+  /* Clean up any stray global listeners */
+  useGlobalMouseCleanup()
+
+  /* ----- event handlers ----- */
   const onMouseDown = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       e.preventDefault()
-
-      // Mark the beginning of a drag so consumers can adjust styling (e.g. disable transitions)
       setDragging(true)
 
-      const startX = e.clientX
-      const startWidth = width
-
-      // Store initial drag state
-      dragStateRef.current.startX = startX
-      dragStateRef.current.startWidth = startWidth
-      dragStateRef.current.lastUpdateTime = 0
-      dragStateRef.current.isRequestingFrame = false
-
-      // Optimized: More aggressive throttling - limit updates to 60fps max (16.67ms intervals)
-      const THROTTLE_MS = 16
-
-      const handleMouseMove = (moveEvent: MouseEvent) => {
-        const now = performance.now()
-
-        // Skip if we already have a pending frame request
-        if (dragStateRef.current.isRequestingFrame) return
-
-        // Additional throttling: skip updates that come too quickly
-        if (now - dragStateRef.current.lastUpdateTime < THROTTLE_MS) return
-
-        dragStateRef.current.isRequestingFrame = true
-        dragStateRef.current.lastUpdateTime = now
-
-        requestAnimationFrame(() => {
-          dragStateRef.current.isRequestingFrame = false
-
-          if (!containerRef.current) return
-          const containerWidth = containerRef.current.clientWidth
-          if (containerWidth === 0) return
-
-          const deltaX = moveEvent.clientX - dragStateRef.current.startX
-          const deltaPercent = (deltaX / containerWidth) * 100
-          const nextWidth = Math.min(Math.max(dragStateRef.current.startWidth + deltaPercent, minWidth), max)
-
-          // Optimized: Only update if the change is significant enough (reduces micro-updates)
-          setWidth((prevWidth) => {
-            const currentWidth = prevWidth ?? 0
-            const significantChange = Math.abs(nextWidth - currentWidth) > 0.1
-            return significantChange ? nextWidth : currentWidth
-          })
-        })
+      dragState.current = {
+        lastUpdate: 0,
+        rafQueued: false,
+        startX: e.clientX,
+        startWidth: width,
       }
 
-      const removeListeners = () => {
-        document.removeEventListener('mousemove', handleMouseMove)
-        document.removeEventListener('mouseup', removeListeners)
+      const move = (mv: MouseEvent) =>
+        scheduleResize(mv, containerRef, dragState, minRef.current, maxRef.current, setWidth)
 
-        // Clean up any pending animation frames
-        if (dragStateRef.current.isRequestingFrame) {
-          dragStateRef.current.isRequestingFrame = false
-        }
-
-        // Mark that the panel has been manually resized
-        setHasBeenManuallyResized(true)
+      const up = () => {
+        removeListeners(move, up)
         setDragging(false)
       }
 
-      document.addEventListener('mousemove', handleMouseMove)
-      document.addEventListener('mouseup', removeListeners)
+      addListeners(move, up)
     },
-    [width, minWidth, max],
+    [width, minRef, maxRef],
   )
 
   return { width, containerRef, onMouseDown, dragging }
 }
+
+/**
+ * clamp
+ *
+ * Constrains a value between the provided bounds.
+ */
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max)
+}
+
+/**
+ * Schedules a resize.
+ *
+ * @param ev           - The mouse event.
+ * @param containerRef - The container ref.
+ * @param dragState    - The drag state.
+ * @param minPct       - The minimum percentage.
+ * @param maxPct       - The maximum percentage.
+ * @param setWidth     - The function to set the width.
+ */
+function scheduleResize(
+  ev: MouseEvent,
+  containerRef: React.RefObject<HTMLDivElement | null>,
+  dragState: React.RefObject<DragState>,
+  minPct: number,
+  maxPct: number,
+  setWidth: React.Dispatch<React.SetStateAction<number>>,
+) {
+  const now = performance.now()
+  if (dragState.current.rafQueued || now - dragState.current.lastUpdate < FRAME_MS) return
+
+  dragState.current.rafQueued = true
+  dragState.current.lastUpdate = now
+
+  requestAnimationFrame(() => {
+    dragState.current.rafQueued = false
+
+    const container = containerRef.current
+    if (!container) return
+    const containerWidth = container.clientWidth
+    if (containerWidth === 0) return
+
+    const deltaX = ev.clientX - dragState.current.startX
+    const deltaPct = (deltaX / containerWidth) * 100
+    const next = clamp(dragState.current.startWidth + deltaPct, minPct, maxPct)
+
+    /* Threshold ≈ 1 px */
+    const thresholdPct = (1 / containerWidth) * 100
+    setWidth((prev) => (Math.abs(next - prev) > thresholdPct ? next : prev))
+  })
+}
+
+/**
+ * Keeps a ref synced with the latest value.
+ *
+ * @param value - The value to sync.
+ * @returns - The synced ref.
+ */
+function useSyncedRef<T>(value: T) {
+  const ref = useRef(value)
+  useEffect(() => {
+    ref.current = value
+  }, [value])
+  return ref
+}
+
+/**
+ * Ensures global mouse listeners are cleared on unmount.
+ */
+function useGlobalMouseCleanup() {
+  useEffect(() => {
+    return () => removeListeners()
+  }, [])
+}
+
+/**
+ * Adds the mouse move and mouse up listeners.
+ *
+ * @param move - The mouse move listener.
+ * @param up   - The mouse up listener.
+ */
+function addListeners(move?: (e: MouseEvent) => void, up?: (e: MouseEvent) => void) {
+  if (move) document.addEventListener('mousemove', move)
+  if (up) document.addEventListener('mouseup', up)
+  mouseMoveListener = move ?? mouseMoveListener
+  mouseUpListener = up ?? mouseUpListener
+}
+
+/**
+ * Removes the mouse move and mouse up listeners.
+ *
+ * @param move - The mouse move listener.
+ * @param up   - The mouse up listener.
+ */
+function removeListeners(move?: (e: MouseEvent) => void, up?: (e: MouseEvent) => void) {
+  document.removeEventListener('mousemove', move ?? mouseMoveListener ?? noop)
+  document.removeEventListener('mouseup', up ?? mouseUpListener ?? noop)
+  mouseMoveListener = null
+  mouseUpListener = null
+}
+
+function noop() {}
+
+let mouseMoveListener: ((e: MouseEvent) => void) | null = null
+let mouseUpListener: ((e: MouseEvent) => void) | null = null
