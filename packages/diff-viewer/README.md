@@ -1,5 +1,7 @@
 # @diff-viewer
 
+**Note:** This package is part of the internal Dialectica monorepo. While open source, it is not currently intended for public reuse.
+
 A composable React library for building rich code review UIs. It provides diff viewers, file explorers, activity summaries, contextual commenting, and theming — all integrated, yet modular. Primarily intended for internal use within the Dialectica project.
 
 [Try it now](https://todo) or
@@ -13,8 +15,8 @@ Main features
 
 - **diff viewer (`<DiffViewer />`)** compatible with git / GitHub diff.
 - **file-explorer** with support for scrolling to file, expand-collapse, search, file metadata, etc.
-- **overlay API** that support rendering custom components over a line.
-- **widget API** that allows easy doc of custom components on top of below a line/
+- **overlay API** that supports rendering custom components over a line.
+- **widget API** that allows easy dock of custom components on top of or below a line/
 - **theming** with 5 pre-configured themes and support for adding your own.
 - **GitHub integration** via `./packages/github`
 
@@ -23,10 +25,11 @@ Main features
 ```tsx
 import { DiffViewer } from '@diff-viewer'
 
-  /*
-   * Supports for custom toolbar to render diff metadata. 
-   */
-  const toolbar = <Toolbar
+/*
+ * Supports for custom toolbar to render diff metadata.
+ */
+const toolbar = (
+  <Toolbar
     loading={loading.metadata}
     pr={metadata}
     isPosting={isPosting}
@@ -35,54 +38,54 @@ import { DiffViewer } from '@diff-viewer'
     commentDatastore={commentDs}
     onSearch={setPrUrl}
   />
+)
 
-  /*
-   * Easily dusplay any custom component over the last docked line.
-   */
-  const overlays = [
-    {
-      unifiedDockIdx: 2,
-      splitDockIdx: 1,
-      content: <AddButton key="add-button" onClick={() => onCommentEvent(CommentEvent.ADD)} />,
-      onDock: onLineDock,
-    },
-  ]
+/*
+ * Easily display any custom component over the last docked line.
+ */
+const overlays = [
+  {
+    unifiedDockIdx: 2,
+    splitDockIdx: 1,
+    content: <AddButton key="add-button" onClick={() => onCommentEvent(CommentEvent.ADD)} />,
+    onDock: onLineDock,
+  },
+]
 
-  /*
-   * Easily dock any custom component on a line - perfect for inline comments.
-   */
-  const widgets = [
-    {
-      content: <CommentWidget key="comment-widget" />,
-      line: 10,
-      position: 'top',
-      filepath: 'src/example.ts',
-      side: 'right',
-    },
-  ]
+/*
+ * Easily dock any custom component on a line - perfect for inline comments.
+ */
+const widgets = [
+  {
+    content: <CommentWidget key="comment-widget" />,
+    line: 10,
+    position: 'top',
+    filepath: 'src/example.ts',
+    side: 'right',
+  },
+]
 
-  return (
-    <DiffViewerConfigProvider
-      theme={Themes.light}
-      fileExplorerConfig={DEFAULT_FILE_EXPLORER_CONFIG}
-      fileListConfig={DEFAULT_FILE_LIST_CONFIG}
-      storage="local"
-    >
-      <DiffViewer
-        diff={diff}
-        isMetadataLoading={loading.metadata}
-        isDiffLoading={loading.diff}
-        onLoadMoreLines={loadMoreLines}
-        onLineSelection={onLineSelection}
-        highlightedLines={range}
-        widgets={widgets}
-        toolbar={toolbar}
-        overlays={overlays}
-      />
-    </DiffViewerConfigProvider>
-  )
+return (
+  <DiffViewerConfigProvider
+    theme={Themes.light}
+    fileExplorerConfig={DEFAULT_FILE_EXPLORER_CONFIG}
+    fileListConfig={DEFAULT_FILE_LIST_CONFIG}
+    storage="local"
+  >
+    <DiffViewer
+      diff={diff}
+      isMetadataLoading={loading.metadata}
+      isDiffLoading={loading.diff}
+      onLoadMoreLines={loadMoreLines}
+      onLineSelection={onLineSelection}
+      highlightedLines={range}
+      widgets={widgets}
+      toolbar={toolbar}
+      overlays={overlays}
+    />
+  </DiffViewerConfigProvider>
+)
 ```
-
 
 ## Architecture
 
@@ -115,6 +118,7 @@ flowchart TD
 ```
 
 **Package Structure**
+
 ```
 packages/diff-viewer
 ├── src
@@ -129,9 +133,14 @@ packages/diff-viewer
 └── package.json
 ```
 
-[!image ]
+## Contributing
 
-## Status
-This package is actively maintained but not currently designed for external consumption. APIs may change without notice as Dialectica evolves.
+We welcome feedback and improvements. Please open an issue or submit a pull request if you spot something.
+
+## Versioning
+
+This package uses semantic versioning. APIs may break between minor versions unless otherwise documented.
 
 ## License
+
+This project is licensed under the [GNU AGPLv3](./LICENSE).

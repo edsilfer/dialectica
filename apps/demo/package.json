@@ -1,14 +1,14 @@
 {
     "name": "demo",
     "version": "1.0.0",
-    "description": "",
+    "description": "A demo app for the dialectica repository",
     "main": "index.js",
     "scripts": {
         "dev": "vite",
         "test": "vitest --passWithNoTests"
     },
     "keywords": [],
-    "author": "",
+    "author": "Edgar Fernandes",
     "license": "AGPL-3.0-only",
     "packageManager": "pnpm@10.12.3",
     "dependencies": {
