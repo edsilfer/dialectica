@@ -19,8 +19,8 @@ const useStyles = () => {
 
   return {
     container: css`
-      height: 75%;
-      padding: ${theme.spacing.sm};
+      height: 100%;
+      padding: ${theme.spacing.lg};
       z-index: 1;
 
       * {

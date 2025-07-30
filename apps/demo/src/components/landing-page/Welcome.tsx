@@ -56,6 +56,23 @@ const useStyles = () => {
       z-index: 0;
     `,
 
+    vertical: css`
+      display: flex;
+      flex-direction: column;
+      padding: ${theme.spacing.sm};
+      align-items: center;
+      justify-content: center;
+
+      @media (max-width: 768px) {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+        text-align: center;
+      }
+    `,
+
     // TYPOGRAPHY ----------------------------------------------------------------------------
     title: css`
       margin: 0 !important;
@@ -74,27 +91,38 @@ const useStyles = () => {
     // HERO ----------------------------------------------------------------------------
     hero: css`
       display: flex;
+      flex-direction: row;
       align-items: center;
       width: 100%;
       height: 100%;
       justify-content: center;
-      flex-direction: column;
       position: relative;
-      padding: ${theme.spacing.xl};
+
+      @media (max-width: 768px) {
+        flex-direction: column-reverse !important;
+        padding: 24px;
+      }
     `,
 
     heroActions: css`
       display: flex;
       flex-direction: row;
-      gap: ${theme.spacing.md};
-      margin: ${theme.spacing.sm};
+      gap: ${theme.spacing.sm};
+      margin-top: ${theme.spacing.md};
     `,
 
     diffViewer: css`
       margin: ${theme.spacing.md} 0;
       width: 70%;
+      transition: filter 0.3s;
+
       @media (min-width: 1920px) {
         width: 50%;
+      }
+
+      @media (max-width: 768px) {
+        width: 100%;
+        filter: blur(3px) brightness(0.8); /* Darkens the background slightly */
       }
     `,
 
@@ -264,26 +292,29 @@ const HeroSlide: React.FC<{ styles: ReturnType<typeof useStyles>; onContinue: ()
     <SlideWrapper styles={styles}>
       <div css={styles.hero}>
         <div css={styles.secondColorOverlay('bottom')} />
-        <Title css={styles.title}>Diff Viewer React Library</Title>
-
-        <Paragraph css={styles.subtitle} style={{ textAlign: 'center' }}>
-          A powerful, composable diff viewer for React
-        </Paragraph>
-
-        <div css={styles.heroActions}>
-          <Button type="primary" css={styles.pillButton} icon={<ArrowRightOutlined />} onClick={onContinue}>
-            Continue with mocks
-          </Button>
-          <Button
-            css={styles.pillButton}
-            icon={<CodeOutlined />}
-            onClick={() => window.open('https://github.com/edsilfer/diff-viewer', '_blank')}
-          >
-            View Source Code
-          </Button>
-        </div>
 
         <MockedDiffViewer css={styles.diffViewer} />
+
+        <div css={styles.vertical}>
+          <Title css={styles.title}>Diff Viewer React Library</Title>
+
+          <Paragraph css={styles.subtitle} style={{ textAlign: 'center' }}>
+            A powerful, composable diff viewer for React
+          </Paragraph>
+
+          <div css={styles.heroActions}>
+            <Button type="primary" css={styles.pillButton} icon={<ArrowRightOutlined />} onClick={onContinue}>
+              Continue with mocks
+            </Button>
+            <Button
+              css={styles.pillButton}
+              icon={<CodeOutlined />}
+              onClick={() => window.open('https://github.com/edsilfer/diff-viewer', '_blank')}
+            >
+              View Source Code
+            </Button>
+          </div>
+        </div>
       </div>
     </SlideWrapper>
   )

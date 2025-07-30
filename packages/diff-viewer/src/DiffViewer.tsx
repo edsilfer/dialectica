@@ -12,7 +12,7 @@ import { DiffViewerConfigProvider, useDiffViewerConfig, DiffViewerConfigContext 
 const DRAWER_CLOSED_WIDTH = '2.25rem'
 const TRANSITION_DURATION = '0.3s'
 const HANDLE_SIZE = 14
-const EXPLORER_INITIAL_WIDTH = 27
+const EXPLORER_INITIAL_WIDTH = 28
 const EXPLORER_MIN_WIDTH = 10
 const EXPLORER_MAX_WIDTH = 50
 
