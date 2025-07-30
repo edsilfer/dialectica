@@ -1,0 +1,37 @@
+{
+    "name": "dialetica",
+    "version": "1.0.0",
+    "type": "module",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "build": "pnpm --filter './packages/**' build",
+        "build:watch": "pnpm --filter './packages/**' build:watch",
+        "demo": "pnpm --filter demo dev",
+        "format": "prettier . --write",
+        "coverage:apps": "pnpm --filter './apps/**' test --coverage",
+        "coverage:packages": "pnpm --filter './packages/**' test --coverage",
+        "test": "pnpm -r test",
+        "test:apps": "pnpm --filter './apps/**' test",
+        "test:packages": "pnpm --filter './packages/**' --filter '!./packages/test-lib' test",
+        "lint": "pnpm dlx eslint . --ext .ts,.tsx",
+        "lint:fix": "pnpm dlx eslint . --ext .ts,.tsx --fix && pnpm format"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "AGPL-3.0-only",
+    "packageManager": "pnpm@10.13.1",
+    "devDependencies": {
+        "@eslint/js": "^9.29.0",
+        "@typescript-eslint/eslint-plugin": "^8.35.0",
+        "@typescript-eslint/parser": "^8.35.0",
+        "eslint": "^9.31.0",
+        "eslint-config-prettier": "^10.1.5",
+        "eslint-plugin-react": "^7.37.5",
+        "eslint-plugin-react-hooks": "^5.2.0",
+        "eslint-plugin-unused-imports": "^4.1.4",
+        "globals": "^13.24.0",
+        "knip": "^5.62.0",
+        "prettier": "^3.6.1"
+    }
+}

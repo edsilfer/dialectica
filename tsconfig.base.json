@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "lib": ["DOM", "ESNext"],
+    "jsx": "react-jsx",
+    "moduleResolution": "Bundler",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@diff-viewer": ["packages/diff-viewer/src"],
+      "@commons": ["packages/commons/src"],
+      "@github": ["packages/github/src"],
+      "@file-explorer": ["packages/file-explorer/src"],
+      "@test-lib": ["packages/test-lib/src"]
+    }
+  }
+}

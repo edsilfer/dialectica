@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "declaration": true,
+    "declarationDir": "dist/types",
+    "jsxImportSource": "@emotion/react",
+    "moduleResolution": "Node",
+    "baseUrl": "."
+  },
+  "include": ["src", "vitest.setup.ts", "src/**/*.test.ts", "src/**/*.test.tsx"]
+}

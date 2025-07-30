@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "declaration": true,
+    "declarationDir": "dist/types",
+    "jsxImportSource": "@emotion/react"
+  },
+  "include": [
+    "src",
+    "vitest.setup.ts",
+    "../commons/src/MarkdownText.tsx",
+    "../commons/src/utils/string-utils.test.ts",
+    "../commons/src/utils/string-utils.ts",
+    "../commons/src/utils/time-utils.test.ts",
+    "../commons/src/utils/time-utils.ts",
+    "../commons/src/icons",
+    "../commons/src/buttons/AddButton.test.tsx",
+    "../commons/src/buttons/AddButton.tsx"
+  ]
+}
