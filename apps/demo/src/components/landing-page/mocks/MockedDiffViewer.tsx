@@ -1,6 +1,6 @@
 import { AddButton, useTheme } from '@commons'
 import { DiffViewer, ParsedDiff } from '@diff-viewer'
-import { css } from '@emotion/react'
+import { css, SerializedStyles } from '@emotion/react'
 import {
   CommentState,
   PrKey,
@@ -19,8 +19,7 @@ const useStyles = () => {
 
   return {
     container: css`
-      height: 70%;
-      width: 70%;
+      height: 75%;
       padding: ${theme.spacing.sm};
       z-index: 1;
 
@@ -80,7 +79,7 @@ const USE_MOCKS = true
 const MOCKED_TOKEN = 'mocked-token'
 
 // MOCKED COMPONENT ------------------------------------------------------------------------------
-const MockedDiffViewer: React.FC = () => {
+const MockedDiffViewer: React.FC<{ css?: SerializedStyles; className?: string }> = ({ css: customCss, className }) => {
   const styles = useStyles()
 
   const { commentDs } = useCommentController(MOCKED_USER_1, MOCKED_PR, MOCKED_TOKEN, USE_MOCKS)
@@ -103,7 +102,7 @@ const MockedDiffViewer: React.FC = () => {
   if (!pr.metadata || !diff) return null
 
   return (
-    <div css={styles.container}>
+    <div css={[styles.container, customCss]} className={className}>
       <div css={styles.browserFrame}>
         <div css={styles.browserHeader}>
           <div css={styles.windowControls}>

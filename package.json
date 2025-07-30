@@ -15,7 +15,8 @@
         "test:apps": "pnpm --filter './apps/**' test",
         "test:packages": "pnpm --filter './packages/**' --filter '!./packages/test-lib' test",
         "lint": "pnpm dlx eslint . --ext .ts,.tsx",
-        "lint:fix": "pnpm dlx eslint . --ext .ts,.tsx --fix && pnpm format"
+        "lint:fix": "pnpm dlx eslint . --ext .ts,.tsx --fix && pnpm format",
+        "deploy:demo": "./scripts/deploy-gh-pages.sh --app apps/demo"
     },
     "keywords": [],
     "author": "",

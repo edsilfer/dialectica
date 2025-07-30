@@ -7,6 +7,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 export default defineConfig({
+  base: '/dialectica/',
   plugins: [
     react({
       jsxImportSource: '@emotion/react',
@@ -15,6 +16,7 @@ export default defineConfig({
       },
     }),
   ],
+  
   resolve: {
     alias: {
       '@diff-viewer': path.resolve(__dirname, '../../packages/diff-viewer/src'),

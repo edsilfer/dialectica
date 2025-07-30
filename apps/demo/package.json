@@ -2,10 +2,14 @@
     "name": "demo",
     "version": "1.0.0",
     "description": "A demo app for the dialectica repository",
+    "homepage": "https://edsilfer.github.io/dialectica",
     "main": "index.js",
     "scripts": {
         "dev": "vite",
-        "test": "vitest --passWithNoTests"
+        "test": "vitest --passWithNoTests",
+        "build": "vite build",
+        "clean": "rm -rf dist",
+        "predeploy": "npm run build"
     },
     "keywords": [],
     "author": "Edgar Fernandes",

@@ -3,7 +3,7 @@ import { ParsedDiff } from '@diff-viewer'
 import { css, SerializedStyles } from '@emotion/react'
 import { FileExplorer, FileMetadata } from '@file-explorer'
 import { usePullRequestStore } from '@github'
-import React, { useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 
 import { MOCKED_FILES, MOCKED_PR } from './constants'
 import { useDemo, useIntersectionTrigger } from './use-demo'
@@ -26,6 +26,10 @@ const useStyles = () => {
       padding: ${theme.spacing.md};
       border: 1px solid ${theme.colors.border};
       border-radius: ${theme.spacing.sm};
+
+      * {
+        font-size: 0.7rem;
+      }
     `,
   }
 }

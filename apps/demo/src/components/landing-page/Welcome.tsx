@@ -58,15 +58,16 @@ const useStyles = () => {
 
     // TYPOGRAPHY ----------------------------------------------------------------------------
     title: css`
-      margin: 0 0 ${theme.spacing.md};
+      margin: 0 !important;
+      margin-bottom: ${theme.spacing.sm} !important;
       font-size: 80px;
       font-weight: 700;
       color: ${theme.colors.textPrimary};
     `,
 
     subtitle: css`
-      font-size: 22px;
-      max-width: 700px;
+      margin: 0 !important;
+      font-size: 20px;
       color: ${theme.colors.textContainerPlaceholder};
     `,
 
@@ -79,13 +80,22 @@ const useStyles = () => {
       justify-content: center;
       flex-direction: column;
       position: relative;
+      padding: ${theme.spacing.xl};
     `,
 
     heroActions: css`
       display: flex;
       flex-direction: row;
-      gap: ${theme.spacing.sm};
-      margin-bottom: ${theme.spacing.md};
+      gap: ${theme.spacing.md};
+      margin: ${theme.spacing.sm};
+    `,
+
+    diffViewer: css`
+      margin: ${theme.spacing.md} 0;
+      width: 70%;
+      @media (min-width: 1920px) {
+        width: 50%;
+      }
     `,
 
     // FEATURE ----------------------------------------------------------------------------
@@ -153,18 +163,18 @@ const useStyles = () => {
     // ACTIONS ----------------------------------------------------------------------------
     actions: css`
       display: flex;
-      margin-top: ${theme.spacing.md};
     `,
 
     pillButton: css`
       border-radius: 999px;
       padding: 0 24px;
-      height: 40px;
+      height: 30px;
     `,
 
     button: css`
       height: 40px;
-      margin-bottom: ${theme.spacing.sm};
+      min-width: 230px;
+      margin-bottom: ${theme.spacing.md};
     `,
   }
 }
@@ -255,7 +265,10 @@ const HeroSlide: React.FC<{ styles: ReturnType<typeof useStyles>; onContinue: ()
       <div css={styles.hero}>
         <div css={styles.secondColorOverlay('bottom')} />
         <Title css={styles.title}>Diff Viewer React Library</Title>
-        <Paragraph css={styles.subtitle}>A powerful React library with advanced features for code review.</Paragraph>
+
+        <Paragraph css={styles.subtitle} style={{ textAlign: 'center' }}>
+          A powerful, composable diff viewer for React
+        </Paragraph>
 
         <div css={styles.heroActions}>
           <Button type="primary" css={styles.pillButton} icon={<ArrowRightOutlined />} onClick={onContinue}>
@@ -270,7 +283,7 @@ const HeroSlide: React.FC<{ styles: ReturnType<typeof useStyles>; onContinue: ()
           </Button>
         </div>
 
-        <MockedDiffViewer />
+        <MockedDiffViewer css={styles.diffViewer} />
       </div>
     </SlideWrapper>
   )
@@ -337,9 +350,10 @@ const ViewModeSlide: React.FC<{ styles: ReturnType<typeof useStyles> }> = (props
     <SlideWrapper styles={styles}>
       <div css={styles.feature}>
         <div css={styles.featureText()}>
-          <Title css={styles.title}>Versatile View Modes</Title>
+          <Title css={styles.title}>Split & Unified Views</Title>
           <Paragraph css={styles.subtitle}>
-            Switch seamlessly between unified and split views to match your workflow.
+            Toggle between split and unified modes. Built-in line highlighting and virtual scrolling for fast navigation
+            — even on large diffs.
           </Paragraph>
         </div>
 
@@ -370,7 +384,7 @@ const ExplorerSlide: React.FC<{ styles: ReturnType<typeof useStyles> }> = (props
         <div css={styles.featureText('50%')}>
           <Title css={styles.title}>Powerful File Explorer</Title>
           <Paragraph css={styles.subtitle}>
-            Dive into file structures with intelligent metadata and instant file filtering.
+            Navigate complex file trees with instant search, scroll-to-file, metadata, and SVG-based package guides.
           </Paragraph>
         </div>
       </div>
@@ -387,7 +401,8 @@ const CommentingSlide: React.FC<{ styles: ReturnType<typeof useStyles> }> = (pro
         <div css={styles.featureText('35%')}>
           <Title css={styles.title}>Contextual Commenting</Title>
           <Paragraph css={styles.subtitle}>
-            Support for inline feedback with contextual overlays directly on the diff.
+            Enable contextual commenting and review workflows right on the diff — <i>just like GitHub</i>. Easily extend
+            with your own components using our widget and overlay APIs.
           </Paragraph>
         </div>
 
@@ -411,7 +426,10 @@ const ApiSlide: React.FC<{ styles: ReturnType<typeof useStyles> }> = (props) => 
 
         <div css={styles.featureText(undefined, true)}>
           <Title css={styles.title}>Easy API</Title>
-          <Paragraph css={styles.subtitle}>Easy to use with your own data.</Paragraph>
+          <Paragraph css={styles.subtitle}>
+            Designed for integration. Use your own diff parser or PR data — all components are composable and headless
+            by design.
+          </Paragraph>
         </div>
       </div>
     </SlideWrapper>
@@ -436,23 +454,26 @@ const GetStartedSlide: React.FC<GetStartedSlideProps> = ({ styles, proceed, open
 
         <div css={styles.feature}>
           <div css={styles.featureText('75%', false)} style={{ alignItems: 'flex-start' }}>
-            <Title css={styles.title}>Instructions...</Title>
-            <Paragraph css={styles.subtitle}>
-              Exploring with mocks
-              <Paragraph>You can proceed to the app and explore the features using mocked data.</Paragraph>
-            </Paragraph>
+            <Title css={styles.title}>Get Started</Title>
 
             <Paragraph css={styles.subtitle}>
-              Exploring with real data
+              Interactive demo (no backend required)
               <Paragraph>
-                Setup your own GitHub token in the settings and use the demo app to perform real code reviews.
+                Run entirely in the browser with mocked data. Use overlays, comments, themes, and file browsing.
               </Paragraph>
             </Paragraph>
 
             <Paragraph css={styles.subtitle}>
-              Loading a PR
+              Connect your GitHub
               <Paragraph>
-                You can load a PR by using the URL parameter{' '}
+                Use your own token to review any public PR on GitHub. Load it instantly via URL or file explorer.
+              </Paragraph>
+            </Paragraph>
+
+            <Paragraph css={styles.subtitle}>
+              URL-powered loading
+              <Paragraph>
+                You can deep-link into a PR using:{' '}
                 <Text code>/?owner=&lt;user&gt;&amp;repo=&lt;repo&gt;&amp;pull=&lt;number&gt;</Text>
               </Paragraph>
             </Paragraph>
