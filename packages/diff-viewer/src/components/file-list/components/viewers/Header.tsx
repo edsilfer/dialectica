@@ -70,13 +70,7 @@ const useStyles = () => {
   )
 }
 
-export interface HeaderProps {
-  /* The file diff */
-  file: FileDiff
-}
-
-const Header: React.FC<HeaderProps> = (props) => {
-  const { file } = props
+const Header: React.FC<{ file: FileDiff }> = ({ file }) => {
   const styles = useStyles()
 
   const { isCollapsed, isViewed, toggleCollapsed, toggleViewed } = useFileState(file.key)

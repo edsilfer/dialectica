@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, test, vi } from 'vitest'
 import { FileDiff } from '../../../../models/FileDiff'
 import { DEFAULT_FILE_LIST_CONFIG, FileListConfigProvider } from '../../../../providers/file-list-context'
 import { SAMPLE_FILE_DIFFS } from '../../../../utils/test/__fixtures__/file-diff-fixtures'
-import Header, { HeaderProps } from './Header'
+import Header from './Header'
 
 /**
  * # FileViewerHeader Testing Strategy
@@ -36,11 +36,11 @@ vi.mock('navigator.clipboard', () => ({
   writeText: vi.fn(),
 }))
 
-const createFileViewerHeaderProps = createPropsFactory<HeaderProps>({
+const createFileViewerHeaderProps = createPropsFactory<{ file: FileDiff }>({
   file: SAMPLE_FILE_DIFFS[0],
 })
 
-const renderWithProvider = (props: HeaderProps, config?: Partial<typeof DEFAULT_FILE_LIST_CONFIG>) => {
+const renderWithProvider = (props: { file: FileDiff }, config?: Partial<typeof DEFAULT_FILE_LIST_CONFIG>) => {
   const mergedConfig = config ? { ...DEFAULT_FILE_LIST_CONFIG, ...config } : DEFAULT_FILE_LIST_CONFIG
   return render(
     <FileListConfigProvider config={mergedConfig}>

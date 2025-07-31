@@ -10,6 +10,8 @@ const useStyles = () => {
     container: css`
       display: flex;
       flex-direction: row;
+      justify-content: space-between;
+      gap: ${theme.spacing.sm};
       width: 100%;
       align-items: center;
       padding: ${theme.spacing.xs};

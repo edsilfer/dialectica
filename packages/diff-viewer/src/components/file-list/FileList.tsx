@@ -234,21 +234,6 @@ const FileListContent: React.FC<FileListProps> = (props) => {
         </div>
       </div>
 
-      <div style={{ position: 'absolute', top: 0, left: '-9999px', height: 0, overflow: 'hidden' }}>
-        {sortedFiles.map((file, fileIndex) =>
-          file.rawContent.split('\n').map((line, lineIndex) => (
-            <div
-              key={`hidden-${file.key}-${lineIndex}`}
-              id={`searchable-${file.key}-${lineIndex}`}
-              data-file-index={fileIndex}
-              data-line-index={lineIndex}
-            >
-              {line}
-            </div>
-          )),
-        )}
-      </div>
-
       <Virtuoso
         ref={virtuosoRef}
         increaseViewportBy={{ top: 500, bottom: 500 }}

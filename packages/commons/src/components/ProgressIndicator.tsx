@@ -14,6 +14,8 @@ const useStyles = () => {
       flex-direction: column;
       width: 110px;
       align-items: center;
+      white-space: nowrap;
+      overflow: hidden;
     `,
 
     progressText: css`
