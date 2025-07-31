@@ -1,5 +1,5 @@
 import { css, Global } from '@emotion/react'
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import CommentSlide from '../components/demo/CommentSlide'
 import FileExplorerSlide from '../components/demo/FileExplorerSlide'
 import FileViewerSlide from '../components/demo/FileViewerSlide'
@@ -8,9 +8,6 @@ import IntroSlide from '../components/demo/IntroSlide'
 import ApiSlide from '../components/demo/ApiSlide'
 import GetStartedSlide from '../components/demo/GetStartedSlide'
 import ThemeSelector from '../components/demo/ThemeSelector'
-import SettingsModal from '../components/settings/modals/SettingsModal'
-import { useSettings } from '../hooks/use-settings'
-import { useUrl } from '../hooks/use-url'
 
 /**
  * Creates Emotion style objects for this module.
@@ -46,22 +43,10 @@ const useStyles = () => {
 
 export default function Welcome() {
   const styles = useStyles()
-
-  const { setPrUrl } = useUrl([])
-  const { setEnableTutorial, setUseMocks } = useSettings()
-
-  const [settingsOpen, setSettingsOpen] = useState(false)
   const getStartedRef = useRef<HTMLElement | null>(null)
-
   const scrollToGetStarted = () => {
     getStartedRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
-
-  const proceedWithMocks = useCallback(() => {
-    setPrUrl({ owner: 'facebook', repo: 'react', pullNumber: 33665 })
-    setUseMocks(true)
-    setEnableTutorial(false)
-  }, [setEnableTutorial, setPrUrl, setUseMocks])
 
   return (
     <>
@@ -83,16 +68,10 @@ export default function Welcome() {
         <FileExplorerSlide />
         <CommentSlide />
         <ApiSlide />
-        <GetStartedSlide
-          proceed={proceedWithMocks}
-          openSettings={() => setSettingsOpen(true)}
-          innerRef={getStartedRef}
-        />
+        <GetStartedSlide innerRef={getStartedRef} />
       </main>
 
       <ThemeSelector />
-
-      <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </>
   )
 }

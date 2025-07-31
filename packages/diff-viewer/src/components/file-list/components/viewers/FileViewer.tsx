@@ -1,15 +1,17 @@
-import { ThemeContext } from '@commons'
+import { ThemeContext, useIsMobile } from '@commons'
 import { css } from '@emotion/react'
 import { theme as antTheme, Spin, Typography } from 'antd'
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import React, { memo, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useContextSelector } from 'use-context-selector'
+
 import { FileDiff } from '../../../../models/FileDiff'
 import { LineRange, LoadMoreLinesHandler, Overlay, Widget } from '../../../../models/LineExtensions'
 import { FileListConfigContext, useFileState } from '../../../../providers/file-list-context'
 import { useOverlayController } from '../../hooks/use-overlay-controller'
 import { useRowController } from '../../hooks/use-row-controller'
 import { useRowSelection } from '../../hooks/use-row-selection'
+import { LineMetadata } from '../../models/LineMetadata'
 import { DiffRow } from '../rows/DiffRow'
 import Header from './Header'
 import { getViewerStyles } from './shared-styles'
@@ -18,9 +20,12 @@ const { Text } = Typography
 
 const useStyles = () => {
   const theme = useContext(ThemeContext)
+  const { token } = antTheme.useToken()
 
-  return useMemo(
-    () => ({
+  return useMemo(() => {
+    const viewer = getViewerStyles(theme, token)
+
+    return {
       container: css`
         display: flex;
         flex-direction: column;
@@ -29,7 +34,6 @@ const useStyles = () => {
         overflow: hidden;
         flex: 0 0 auto;
       `,
-
       bodyExpanded: css`
         border: 1px solid ${theme.colors.border};
         border-top: none;
@@ -37,164 +41,221 @@ const useStyles = () => {
         border-bottom-right-radius: ${theme.spacing.xs};
         overflow: hidden;
       `,
-
       bodyCollapsed: css`
         display: none;
       `,
-
       hunksContainer: css`
         display: flex;
         flex-direction: column;
       `,
-
       binaryMessageWrapper: css`
         padding: ${theme.spacing.xs};
       `,
-
-      loadMoreContaier: css`
+      loadMoreContainer: css`
         display: flex;
         justify-content: center;
         gap: ${theme.spacing.md};
         align-items: center;
         padding: ${theme.spacing.md};
       `,
-    }),
-    [theme],
-  )
+      viewerContainer: viewer.container,
+      viewerTable: viewer.table,
+      viewerRow: viewer.row,
+    }
+  }, [theme, token])
 }
 
 interface FileViewerProps {
-  /** A unique identifier for the file viewer. */
+  /** DOM id for the root element. */
   id?: string
-  /** The file diff object. */
+  /** The file to display. */
   file: FileDiff
-  /** Array of overlays to display on top of line columns when hovered. */
+  /** The overlays to display. */
   overlays?: Overlay[]
-  /** Array of widgets to display at specific line positions. */
+  /** The widgets to display. */
   widgets?: Widget[]
-  /** The line range to highlight. */
+  /** The lines to highlight. */
   highlightedLines?: LineRange
-  /** Whether the file is initially collapsed. */
+  /** Whether to start collapsed. */
   startCollapsed?: boolean
-  /** Override the mode from the provider. */
+  /** The mode to use for the diff. */
   overrideMode?: 'unified' | 'split'
-
-  /** Called when the file is force rendered. */
+  /** Callback to force render the file. */
   onForceRender?: (fileKey: string) => void
-  /** Called when user requests to load (expand) more lines around a hunk. */
+  /** Callback to load more lines. */
   onLoadMoreLines?: LoadMoreLinesHandler
-  /** Called when user selects a line range. */
+  /** Callback to select a range. */
   onRangeSelected?: (range: LineRange) => void
 }
 
-const FileViewerComponent = (props: FileViewerProps) => {
-  const {
-    file,
-    id,
-    overlays,
-    widgets,
-    highlightedLines,
-    overrideMode,
-    onLoadMoreLines,
-    onRangeSelected,
-    onForceRender,
-  } = props
-  // Only really lazy‑render gigantic diffs.
-  const lazyRender = props.startCollapsed ?? false
+export const FileViewer = memo(function FileViewer(props: FileViewerProps) {
   const styles = useStyles()
-  const theme = useContext(ThemeContext)
-  const { token: antdThemeToken } = antTheme.useToken()
-  const viewerStyles = useMemo(() => getViewerStyles(theme, antdThemeToken), [theme, antdThemeToken])
-  const { ref: viewerRef, inView } = useInView(
-    lazyRender
-      ? { triggerOnce: true, rootMargin: '1000px' } // wait until the row scrolls near the viewport
-      : { triggerOnce: true, rootMargin: '0px' }, // immediately “in view” for normal‑sized files
-  )
-
-  // small files render right away; huge files wait for the IO callback
-  const [shouldRender, setShouldRender] = useState(!lazyRender)
-  // shows spinner while the heavy <Diff> markup is being scheduled
-  const [contentReady, setContentReady] = useState(
-    // small files are ready immediately
-    !lazyRender || !props.startCollapsed,
-  )
-
-  useEffect(() => {
-    // nothing to do for rows that always render or that have already rendered
-    if (!lazyRender || shouldRender) return
-    if (inView) {
-      const id =
-        typeof window.requestIdleCallback === 'function'
-          ? window.requestIdleCallback(() => setShouldRender(true))
-          : window.setTimeout(() => setShouldRender(true), 30)
-
-      return () => {
-        if (typeof window.cancelIdleCallback === 'function') {
-          window.cancelIdleCallback(id)
-        } else {
-          clearTimeout(id)
-        }
-      }
-    }
-  }, [inView, lazyRender, shouldRender])
+  const isMobile = useIsMobile()
 
   const config = useContextSelector(FileListConfigContext, (ctx) => {
-    if (!ctx) {
-      throw new Error('FileViewer must be inside CodePanelConfigProvider')
-    }
+    if (!ctx) throw new Error('FileViewer must be within FileListConfigProvider')
     return ctx.config
   })
 
-  // Use overrideMode if provided, otherwise use the mode from config
-  const effectiveMode = overrideMode ?? config.mode
-  const containerRef = useRef<HTMLDivElement>(null)
-  const fileWidgets = useMemo(() => (widgets ?? []).filter((w) => w.filepath === file.key), [widgets, file.key])
+  const { file, id, overrideMode, onForceRender, startCollapsed = false } = props
+  const lazyRender = startCollapsed
+  const [{ inView: hasEnteredViewport }, setViewportState] = useState({ inView: !lazyRender })
+  const [contentReady, setContentReady] = useState(!lazyRender || !startCollapsed)
+  const [effectiveMode, setEffectiveMode] = useState<'unified' | 'split'>(overrideMode ?? config.mode)
 
-  // STATE ------------------------------------------------------------------------------------
+  const { ref: ioRef, inView } = useInView(
+    lazyRender ? { triggerOnce: true, rootMargin: '1000px' } : { triggerOnce: true, rootMargin: '0px' },
+  )
+
+  /* Keep DOM references lightweight and intentional. */
+  const containerRef = useRef<HTMLDivElement>(null)
   const { isCollapsed } = useFileState(file.key)
 
-  // CONTROLLERS --------------------------------------------------------------------------------
-  const rowSelectionProps = { highlightedLines, file: file.key, containerRef, onRangeSelected }
-  const { selection, selectionHandle } = useRowSelection(rowSelectionProps)
+  // EFFECTS ------------------------------------------------------------------------------------
+  /* Force unified mode on handhelds */
+  useEffect(() => {
+    if (isMobile) setEffectiveMode('unified')
+  }, [isMobile])
 
-  const rowControllerProps = { file, mode: effectiveMode, max: config.maxLinesToFetch, onLoadLines: onLoadMoreLines }
-  const { hunkList, handleLoadLines } = useRowController(rowControllerProps)
+  /* Defer heavy markup until the diff scrolls near the viewport */
+  useEffect(() => {
+    if (!lazyRender || hasEnteredViewport) return
+    if (inView) defer(() => setViewportState({ inView: true }))
+  }, [inView, hasEnteredViewport, lazyRender])
 
-  const overlayControllerProps = { overlays, lines: hunkList.linePairs, mode: effectiveMode, filepath: file.key }
-  const { overlays: overlayGroups, overlayHandle } = useOverlayController(overlayControllerProps)
+  /* Once we decide to render, wait for an idle slot so we don’t block paint */
+  useEffect(() => {
+    if (contentReady || !hasEnteredViewport) return
+    defer(() => setContentReady(true))
+  }, [contentReady, hasEnteredViewport])
 
-  // RENDER -----------------------------------------------------------------------------------
-  const Loading = (
-    <div css={[styles.bodyExpanded, styles.loadMoreContaier]}>
+  return (
+    <div
+      id={id}
+      ref={(el) => {
+        containerRef.current = el
+        ioRef(el)
+      }}
+    >
+      <Header file={file} />
+
+      {!hasEnteredViewport ? (
+        <Loading styles={styles} />
+      ) : (
+        <div css={isCollapsed ? styles.bodyCollapsed : styles.bodyExpanded}>
+          <div css={styles.hunksContainer}>
+            {lazyRender && startCollapsed ? (
+              <LoadMore styles={styles} onClick={() => handleLoadClick(file.key, onForceRender, setContentReady)} />
+            ) : !contentReady ? (
+              <Loading styles={styles} />
+            ) : file.isBinary ? (
+              <BinaryDisclaimer styles={styles} />
+            ) : (
+              <DiffTable
+                {...props}
+                containerRef={containerRef}
+                maxLinesToFetch={config.maxLinesToFetch}
+                effectiveMode={effectiveMode}
+              />
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+})
+
+/**
+ * Schedules a callback during idle time or ASAP fallback to dodge main‑thread jank.
+ */
+function defer(cb: () => void) {
+  const id =
+    typeof window.requestIdleCallback === 'function' ? window.requestIdleCallback(cb) : window.setTimeout(cb, 30)
+  return () => (typeof window.cancelIdleCallback === 'function' ? window.cancelIdleCallback(id) : clearTimeout(id))
+}
+
+function handleLoadClick(
+  fileKey: string,
+  onForceRender: FileViewerProps['onForceRender'],
+  setContentReady: React.Dispatch<React.SetStateAction<boolean>>,
+) {
+  onForceRender?.(fileKey)
+  setContentReady(false)
+}
+
+// -------------------------------------------------------------------------------------------------
+// HELPER COMPONENTS
+// -------------------------------------------------------------------------------------------------
+function Loading({ styles }: { styles: ReturnType<typeof useStyles> }) {
+  return (
+    <div css={[styles.bodyExpanded, styles.loadMoreContainer]}>
       <Spin />
       <Text type="secondary">Loading…</Text>
     </div>
   )
+}
 
-  const handleLoadClick = useCallback(() => {
-    onForceRender?.(file.key)
-    setContentReady(false)
-  }, [file.key, onForceRender, setContentReady])
-
-  const LoadMore = (
-    <div css={[styles.bodyExpanded, styles.loadMoreContaier]}>
+function LoadMore({ styles, onClick }: { styles: ReturnType<typeof useStyles>; onClick: () => void }) {
+  return (
+    <div css={[styles.bodyExpanded, styles.loadMoreContainer]}>
       <Text type="secondary">
-        <a onClick={handleLoadClick}>This diff is too large to display. Click to load.</a>
+        <a onClick={onClick}>This diff is too large to display. Click to load.</a>
       </Text>
     </div>
   )
+}
 
-  const BinaryDisclaimer = (
+function BinaryDisclaimer({ styles }: { styles: ReturnType<typeof useStyles> }) {
+  return (
     <div css={styles.binaryMessageWrapper}>
       <Text type="secondary">Binary file not shown.</Text>
     </div>
   )
+}
 
-  const Diff = (
-    <div css={viewerStyles.container}>
-      <table css={viewerStyles.table}>
+/**
+ * Renders the actual diff table. Extracted for readability.
+ */
+function DiffTable(
+  props: FileViewerProps & {
+    containerRef: React.RefObject<HTMLDivElement | null>
+    maxLinesToFetch: number
+    effectiveMode: 'unified' | 'split'
+  },
+) {
+  const styles = useStyles()
+
+  const fileWidgets = useMemo(
+    () => (props.widgets ?? []).filter((w) => w.filepath === props.file.key),
+    [props.widgets, props.file.key],
+  )
+
+  const { hunkList, handleLoadLines } = useRowController({
+    file: props.file,
+    mode: props.effectiveMode,
+    max: props.maxLinesToFetch,
+    onLoadLines: props.onLoadMoreLines,
+  })
+
+  const { overlays: overlayGroups, overlayHandle } = useOverlayController({
+    overlays: props.overlays,
+    lines: hunkList.linePairs,
+    mode: props.effectiveMode,
+    filepath: props.file.key,
+  })
+
+  const { selection, selectionHandle } = useRowSelection({
+    highlightedLines: props.highlightedLines,
+    file: props.file.key,
+    containerRef: props.containerRef,
+    onRangeSelected: props.onRangeSelected,
+  })
+
+  return (
+    <div css={styles.viewerContainer}>
+      <table css={styles.viewerTable}>
         <colgroup>
-          {effectiveMode === 'unified' ? (
+          {props.effectiveMode === 'unified' ? (
             <>
               <col style={{ width: '50px' }} />
               <col style={{ width: '50px' }} />
@@ -210,20 +271,19 @@ const FileViewerComponent = (props: FileViewerProps) => {
           )}
         </colgroup>
         <tbody>
-          {hunkList.linePairs.map((line, idx) => {
-            const lineType = line.typeLeft ?? 'empty'
-            const isHunk = lineType === 'hunk'
+          {hunkList.linePairs.map((line: LineMetadata, idx: number) => {
+            const isHunk = (line.typeLeft ?? 'empty') === 'hunk'
             return (
               <DiffRow
                 key={idx}
                 idx={idx}
-                css={viewerStyles.row}
+                css={styles.viewerRow}
                 line={line}
                 isHunk={isHunk}
                 overlays={overlayGroups}
                 widgets={fileWidgets}
-                unified={effectiveMode === 'unified'}
-                loadLines={(line, direction) => void handleLoadLines(line, direction)}
+                unified={props.effectiveMode === 'unified'}
+                loadLines={(ln, dir) => void handleLoadLines(ln, dir)}
                 onMouseEnter={overlayHandle.onRowEnter}
                 onMouseLeave={overlayHandle.onRowLeave}
                 onRowSelectionStart={selectionHandle.onStart}
@@ -237,47 +297,4 @@ const FileViewerComponent = (props: FileViewerProps) => {
       </table>
     </div>
   )
-
-  useEffect(() => {
-    // diff should render but not yet ready → schedule it
-    if (!contentReady && (!lazyRender || !props.startCollapsed)) {
-      const id =
-        typeof window.requestIdleCallback === 'function'
-          ? window.requestIdleCallback(() => setContentReady(true))
-          : window.setTimeout(() => setContentReady(true), 30)
-
-      return () => (typeof window.cancelIdleCallback === 'function' ? window.cancelIdleCallback(id) : clearTimeout(id))
-    }
-  }, [contentReady, lazyRender, props.startCollapsed])
-
-  return (
-    <div
-      id={id}
-      ref={(el) => {
-        containerRef.current = el
-        viewerRef(el)
-      }}
-    >
-      <Header file={file} />
-
-      {!shouldRender ? (
-        Loading
-      ) : (
-        <div css={isCollapsed ? styles.bodyCollapsed : styles.bodyExpanded}>
-          <div css={styles.hunksContainer}>
-            {lazyRender && props.startCollapsed
-              ? LoadMore
-              : !contentReady
-                ? Loading
-                : file.isBinary
-                  ? BinaryDisclaimer
-                  : Diff}
-          </div>
-        </div>
-      )}
-    </div>
-  )
 }
-
-FileViewerComponent.displayName = 'FileViewer'
-export const FileViewer = React.memo(FileViewerComponent)

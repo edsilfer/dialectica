@@ -1,4 +1,4 @@
-import { DirectoryIcon, HandleIcon, Themes } from '@commons'
+import { DirectoryIcon, HandleIcon, Themes, useIsMobile } from '@commons'
 import { css } from '@emotion/react'
 import { FileExplorer, FileMetadata } from '@file-explorer'
 import React, { useContext, useEffect, useMemo, useState, useTransition } from 'react'
@@ -7,7 +7,7 @@ import { FileList } from './components/file-list/FileList'
 import { useResizablePanel } from './hooks/use-resizable-panel'
 import { LineRange, LoadMoreLinesHandler, Overlay, Widget } from './models/LineExtensions'
 import { ParsedDiff } from './models/ParsedDiff'
-import { DiffViewerConfigProvider, useDiffViewerConfig, DiffViewerConfigContext } from './providers/diff-viewer-context'
+import { DiffViewerConfigContext, DiffViewerConfigProvider, useDiffViewerConfig } from './providers/diff-viewer-context'
 
 const DRAWER_CLOSED_WIDTH = '2.25rem'
 const TRANSITION_DURATION = '0.3s'
@@ -58,7 +58,7 @@ function useStyles(theme: ReturnType<typeof useDiffViewerConfig>['theme']) {
         display: flex;
         align-items: center;
         justify-content: center;
-        cursor: default;
+        cursor: grab;
         svg {
           pointer-events: none;
         }
@@ -115,24 +115,35 @@ const InternalDiffViewer: React.FC<DiffViewerProps> = (props) => {
   const { theme } = useDiffViewerConfig()
 
   const enableExplorer = props.enableFileExplorer ?? true
-  const [drawerOpen, setDrawerOpen] = useState(enableExplorer)
   const [scrollToFile, setScrollToFile] = useState<string>()
   const explorerReady = useDeferredReady(props.isMetadataLoading)
   const panelReady = useDeferredReady(props.isDiffLoading)
+  const isMobile = useIsMobile()
+  const [drawerOpen, setDrawerOpen] = useState(() => enableExplorer && !isMobile)
+
+  const showFileList = !(isMobile && drawerOpen)
+  const showHandle = enableExplorer && !isMobile && drawerOpen && explorerReady && panelReady
 
   const {
     width: explorerWidth,
     containerRef,
     dragging,
     onMouseDown,
+    setWidth,
   } = useResizablePanel({
-    initial: EXPLORER_INITIAL_WIDTH,
-    min: EXPLORER_MIN_WIDTH,
-    max: EXPLORER_MAX_WIDTH,
+    initial: isMobile ? 100 : EXPLORER_INITIAL_WIDTH,
+    min: isMobile ? 100 : EXPLORER_MIN_WIDTH,
+    max: isMobile ? 100 : EXPLORER_MAX_WIDTH,
   })
 
   const explorerWidthPct = drawerOpen ? explorerWidth : EXPLORER_INITIAL_WIDTH
   const styles = useStyles(theme)
+
+  useEffect(() => {
+    if (!enableExplorer) return
+    setDrawerOpen(!isMobile)
+    setWidth(isMobile ? 100 : EXPLORER_INITIAL_WIDTH)
+  }, [isMobile, enableExplorer, setWidth])
 
   const dynamicStyles = useMemo(
     () => computeStyles(drawerOpen, explorerWidthPct, dragging, theme.spacing.sm),
@@ -149,7 +160,7 @@ const InternalDiffViewer: React.FC<DiffViewerProps> = (props) => {
     [files, props.additionalDrawerContents, styles],
   )
 
-  const codePanel = useMemo(
+  const fileList = useMemo(
     () => (
       <FileList
         files={props.diff.files}
@@ -192,13 +203,13 @@ const InternalDiffViewer: React.FC<DiffViewerProps> = (props) => {
           </div>
         )}
 
-        {enableExplorer && drawerOpen && explorerReady && panelReady && (
+        {showHandle && (
           <div css={styles.resizerWrapper} onMouseDown={onMouseDown}>
             <HandleIcon size={HANDLE_SIZE} />
           </div>
         )}
 
-        {codePanel}
+        {showFileList && fileList}
       </div>
     </div>
   )

@@ -1,5 +1,5 @@
 import { createPropsFactory, render } from '@test-lib'
-import { fireEvent, screen } from '@testing-library/react'
+import { fireEvent, screen, act, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, test, vi } from 'vitest'
 import { FileDiff } from '../../../../models/FileDiff'
 import { DEFAULT_FILE_LIST_CONFIG, FileListConfigProvider } from '../../../../providers/file-list-context'
@@ -151,7 +151,9 @@ describe('FileViewerHeader', () => {
       // WHEN
       renderWithProvider(props)
       const expandButton = document.querySelector('[data-tooltip="Hide file content"] .expand-button')
-      fireEvent.click(expandButton!)
+      act(() => {
+        fireEvent.click(expandButton!)
+      })
 
       // EXPECT
       expect(expandButton).toBeInTheDocument()
@@ -162,17 +164,21 @@ describe('FileViewerHeader', () => {
     test.each([
       { file: SAMPLE_FILE_DIFFS[0], expected: 'src/components/Button.tsx', desc: 'default file' },
       { file: SAMPLE_FILE_DIFFS[1], expected: 'src/hooks/useFetch.ts', desc: 'another file' },
-    ])('given $desc, when copy button clicked, expect correct path copied', ({ file, expected }) => {
+    ])('given $desc, when copy button clicked, expect correct path copied', async ({ file, expected }) => {
       // GIVEN
       const props = createFileViewerHeaderProps({ file })
 
       // WHEN
       renderWithProvider(props)
       const copyButton = document.querySelector('[data-tooltip="Copy file path"] svg')
-      fireEvent.click(copyButton!)
+      act(() => {
+        fireEvent.click(copyButton!)
+      })
 
       // EXPECT
-      expect(mockWriteText).toHaveBeenCalledWith(expected)
+      await waitFor(() => {
+        expect(mockWriteText).toHaveBeenCalledWith(expected)
+      })
     })
 
     it('given clipboard error, when copy clicked, expect error logged', async () => {
@@ -184,7 +190,9 @@ describe('FileViewerHeader', () => {
       // WHEN
       renderWithProvider(props)
       const copyButton = document.querySelector('[data-tooltip="Copy file path"] svg')
-      fireEvent.click(copyButton!)
+      act(() => {
+        fireEvent.click(copyButton!)
+      })
 
       // EXPECT
       await vi.waitFor(() => {
@@ -205,7 +213,9 @@ describe('FileViewerHeader', () => {
       // WHEN
       renderWithProvider(props)
       const checkbox = screen.getByRole('checkbox')
-      fireEvent.click(checkbox)
+      act(() => {
+        fireEvent.click(checkbox)
+      })
 
       // EXPECT
       expect(checkbox).toBeInTheDocument()
@@ -282,7 +292,9 @@ describe('FileViewerHeader', () => {
       // WHEN
       renderWithProvider(props)
       const copyButton = document.querySelector('[data-tooltip="Copy file path"] svg')
-      fireEvent.click(copyButton!)
+      act(() => {
+        fireEvent.click(copyButton!)
+      })
 
       // EXPECT
       await vi.waitFor(() => {

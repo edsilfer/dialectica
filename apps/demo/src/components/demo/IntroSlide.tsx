@@ -61,6 +61,7 @@ const useStyles = (theme: ThemeTokens) => {
 
       @media (max-width: 768px) {
         width: 100%;
+        pointer-events: none;
         filter: blur(3px) brightness(0.8); /* Darkens the background slightly */
       }
     `,
@@ -68,7 +69,8 @@ const useStyles = (theme: ThemeTokens) => {
     button: css`
       border-radius: 999px;
       padding: 0 24px;
-      height: 30px;
+      height: 40px;
+      min-width: 200px;
     `,
   }
 }
@@ -86,10 +88,10 @@ export default function IntroSlide({ onContinue }: { onContinue: () => void }) {
         <MockedDiffViewer css={styles.diffViewer} />
 
         <div css={styles.textContainer}>
-          <Title css={sharedStyles.title}>Diff Viewer React Library</Title>
+          <Title css={sharedStyles.title}>Dialetica Diff Viewer</Title>
 
           <Paragraph css={sharedStyles.subtitle} style={{ textAlign: 'center' }}>
-            A powerful, composable diff viewer for React
+            A powerful, composable diff viewer React libary
           </Paragraph>
 
           <div css={styles.buttonsContainer}>

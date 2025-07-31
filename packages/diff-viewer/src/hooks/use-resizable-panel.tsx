@@ -61,7 +61,6 @@ export function useResizablePanel(
   /* Clean up any stray global listeners */
   useGlobalMouseCleanup()
 
-  /* ----- event handlers ----- */
   const onMouseDown = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       e.preventDefault()
@@ -87,7 +86,7 @@ export function useResizablePanel(
     [width, minRef, maxRef],
   )
 
-  return { width, containerRef, onMouseDown, dragging }
+  return { containerRef, width, dragging, setWidth, onMouseDown }
 }
 
 /**

@@ -1,10 +1,12 @@
-import React from 'react'
 import { ArrowRightOutlined, SettingOutlined } from '@ant-design/icons'
 import { ThemeContext, ThemeTokens } from '@commons'
 import { css } from '@emotion/react'
 import { Button, Typography } from 'antd'
-import { useContext } from 'react'
+import React, { useCallback, useContext, useState } from 'react'
+import { useSettings } from '../../hooks/use-settings'
+import { useUrl } from '../../hooks/use-url'
 import { SlideWrapper } from '../../pages/Landing'
+import SettingsModal from '../settings/modals/SettingsModal'
 import useSharedStyles from './shared-styles'
 
 const { Title, Paragraph, Text } = Typography
@@ -22,16 +24,26 @@ const useStyles = (theme: ThemeTokens) => {
 interface GetStartedSlideProps {
   /** The ref to the section element */
   innerRef: React.RefObject<HTMLElement | null>
-  /** The function to call when the user clicks the proceed button */
-  proceed: () => void
-  /** The function to call when the user clicks the settings button */
-  openSettings: () => void
 }
 
-export default function GetStartedSlide({ innerRef, proceed, openSettings }: GetStartedSlideProps) {
+export default function GetStartedSlide({ innerRef }: GetStartedSlideProps) {
   const theme = useContext(ThemeContext)
   const styles = useStyles(theme)
   const sharedStyles = useSharedStyles(theme)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+
+  const { setPrUrl } = useUrl([])
+  const { setEnableTutorial, setUseMocks } = useSettings()
+
+  const handleProceed = useCallback(() => {
+    setPrUrl({ owner: 'facebook', repo: 'react', pullNumber: 33665 })
+    setUseMocks(true)
+    setEnableTutorial(false)
+  }, [setEnableTutorial, setPrUrl, setUseMocks])
+
+  const handleSettings = useCallback(() => {
+    setSettingsOpen(true)
+  }, [])
 
   return (
     <SlideWrapper>
@@ -64,14 +76,16 @@ export default function GetStartedSlide({ innerRef, proceed, openSettings }: Get
           </div>
 
           <div css={sharedStyles.featureComponent('25%')}>
-            <Button css={styles.button} type="primary" icon={<ArrowRightOutlined />} onClick={proceed}>
+            <Button css={styles.button} type="primary" icon={<ArrowRightOutlined />} onClick={handleProceed}>
               Proceed with mocked data
             </Button>
-            <Button css={styles.button} icon={<SettingOutlined />} onClick={openSettings}>
+            <Button css={styles.button} icon={<SettingOutlined />} onClick={handleSettings}>
               Settings
             </Button>
           </div>
         </div>
+
+        <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
       </section>
     </SlideWrapper>
   )

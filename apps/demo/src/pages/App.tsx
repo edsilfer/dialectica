@@ -29,6 +29,7 @@ function useStyles({ theme }: ReturnType<typeof useDiffViewerConfig>) {
         width: 100%;
         background-color: ${theme.colors.hunkViewerBg};
         overflow: hidden;
+        padding: ${theme.spacing.sm} ${theme.spacing.md};
       `,
       content: css`
         flex: 1;

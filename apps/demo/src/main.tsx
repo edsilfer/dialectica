@@ -2,7 +2,7 @@ import { DiffViewerConfigProvider, FileListConfig, Themes } from '@diff-viewer'
 import { FileExplorerConfig } from '@file-explorer'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './pages/Landing'
+import App from './pages/App'
 import { SettingsProvider } from './hooks/use-settings'
 
 export const DEFAULT_FILE_EXPLORER_CONFIG: FileExplorerConfig = {
