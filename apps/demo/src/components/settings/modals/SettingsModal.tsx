@@ -22,7 +22,7 @@ const useStyles = () => {
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
   const styles = useStyles()
-  const { theme, setTheme } = useDiffViewerConfig()
+  const { config, setConfig } = useDiffViewerConfig()
 
   const { config: fileExplorerConfig, setConfig: setFileExplorerConfig } = useFileExplorerConfig()
   const { config: fileListConfig, setConfig: setFileListConfig } = useFileListConfig()
@@ -73,8 +73,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               type: 'select',
               label: 'Color Theme',
               description: 'Application-wide color theme.',
-              value: theme.name,
-              onChange: (value: string) => setTheme(Themes[value]),
+              value: config.theme.name,
+              onChange: (value: string) => setConfig((cfg: typeof config) => ({ ...cfg, theme: Themes[value] })),
               options: [
                 { value: 'light', label: 'Light' },
                 { value: 'dark', label: 'Dark' },

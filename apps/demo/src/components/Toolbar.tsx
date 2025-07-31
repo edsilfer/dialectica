@@ -1,5 +1,4 @@
 import { SearchOutlined, SettingOutlined } from '@ant-design/icons'
-import { useDiffViewerConfig } from '@diff-viewer'
 import { css } from '@emotion/react'
 import {
   CommentMetadata,
@@ -14,13 +13,14 @@ import {
 import { Button } from 'antd'
 import React, { useMemo, useState } from 'react'
 
+import { useTheme } from '@commons'
 import { useSettings } from '../hooks/use-settings'
 import { mapPullRequestMetadata } from './mappers'
 import SearchModal from './settings/modals/SearchModal'
 import SettingsModal from './settings/modals/SettingsModal'
 
 const useStyles = () => {
-  const { theme } = useDiffViewerConfig()
+  const theme = useTheme()
 
   return {
     container: css`

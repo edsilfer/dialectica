@@ -5,7 +5,7 @@ import {
   FileExplorerConfigProvider,
   useFileExplorerConfig,
 } from '@file-explorer'
-import React, { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react'
+import React, { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import {
   DEFAULT_FILE_LIST_CONFIG,
   FileListConfig,
@@ -16,60 +16,104 @@ import {
 // CONSTANTS --------------------------------------------------------------------------------------------
 const STORAGE_KEY = '__diff_viewer_config__'
 
+// Default values
+export const DEFAULT_DIFF_VIEWER_CONFIG: DiffViewerConfig = {
+  /** The theme to use for the diff viewer */
+  theme: Themes.light,
+  /** The size of the handle in pixels */
+  handleSize: 14,
+  /** The initial width of the file explorer in percentage of the parent container */
+  explorerInitialWidth: 25,
+  /** The minimum width of the file explorer in percentage of the parent container */
+  explorerMinWidth: 10,
+  /** The maximum width of the file explorer in percentage of the parent container */
+  explorerMaxWidth: 50,
+}
+
 // TYPES ------------------------------------------------------------------------------------------------
+export interface DiffViewerConfig {
+  /** The theme to use for the diff viewer */
+  theme: ThemeTokens
+  /** The size of the handle in pixels */
+  handleSize: number
+  /** The initial width of the file explorer */
+  explorerInitialWidth: number
+  /** The minimum width of the file explorer in percentage of the parent container */
+  explorerMinWidth: number
+  /** The maximum width of the file explorer in percentage of the parent container */
+  explorerMaxWidth: number
+}
+
 export interface DiffViewerConfigContextProps {
   /** The children of the diff viewer config provider */
   children: ReactNode
-  /** The theme to use for the diff viewer */
-  theme: ThemeTokens
+  /** The configuration for the diff viewer */
+  config?: DiffViewerConfig
   /** The configuration for the code panel*/
   fileListConfig?: Omit<FileListConfig, 'theme'>
   /** The configuration for the file explorer */
   fileExplorerConfig?: Omit<FileExplorerConfig, 'theme'>
   /** Where the configuration should be stored. "in-memory" keeps the previous behaviour (default) and "local" persists values in localStorage */
   storage?: 'in-memory' | 'local'
+  /** A suffix to append to the storage key */
+  scope?: string
+  /** Set the configuration for the diff viewer */
+  setConfig?: React.Dispatch<React.SetStateAction<DiffViewerConfig>>
 }
 
-export interface DiffViewerThemeContextState {
-  /** The currently selected theme tokens */
-  theme: ThemeTokens
-  /** Setter for the theme tokens */
-  setTheme: React.Dispatch<React.SetStateAction<ThemeTokens>>
+export interface DiffViewerConfigContextState {
+  /** The configuration for the diff viewer */
+  config: DiffViewerConfig
+  /** Setter for the configuration */
+  setConfig: React.Dispatch<React.SetStateAction<DiffViewerConfig>>
 }
 
 // CONTEXT ----------------------------------------------------------------------------------------------
-export const DiffViewerConfigContext = createContext<DiffViewerThemeContextState | undefined>(undefined)
+export const DiffViewerConfigContext = createContext<DiffViewerConfigContextState | undefined>(undefined)
 
 export const DiffViewerConfigProvider: React.FC<DiffViewerConfigContextProps> = (props) => {
-  // Read the story config from local storage
-  const storedConfig = useMemo<{ theme?: ThemeTokens } | null>(() => {
-    if (props.storage !== 'local' || typeof window === 'undefined') return null
+  const { children, config: externalConfig = DEFAULT_DIFF_VIEWER_CONFIG, storage = 'in-memory' } = props
+
+  // Read the config from local storage
+  const storedConfig = useMemo<DiffViewerConfig | null>(() => {
+    if (storage !== 'local' || typeof window === 'undefined') return null
     try {
-      const raw = window.localStorage.getItem(STORAGE_KEY)
+      const raw = window.localStorage.getItem(STORAGE_KEY + (props.scope ?? ''))
       if (!raw) return null
-      return JSON.parse(raw) as {
-        theme?: ThemeTokens
-      }
+      return JSON.parse(raw) as DiffViewerConfig
     } catch {
       return null
     }
-  }, [props.storage])
+  }, [storage, props.scope])
 
-  const [theme, setTheme] = useState<ThemeTokens>(storedConfig?.theme ?? props.theme)
-  const value: DiffViewerThemeContextState = { theme, setTheme }
+  const [config, setConfig] = useState<DiffViewerConfig>({ ...externalConfig, ...(storedConfig ?? {}) })
 
+  // Keep internal config in sync with incoming prop changes but avoid clobbering
+  // the initially hydrated (possibly persisted) state on the very first render.
+  const isFirstRender = useRef(true)
   useEffect(() => {
-    if (props.storage !== 'local' || typeof window === 'undefined') return
-    const serializable = { theme }
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+    // Merge new externalConfig with stored config, giving precedence to stored values
+    setConfig({ ...externalConfig, ...storedConfig })
+  }, [externalConfig, storedConfig])
+
+  // Persist configuration whenever it changes
+  useEffect(() => {
+    if (storage !== 'local' || typeof window === 'undefined') return
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(serializable))
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(config))
     } catch {
       // Ignore quota / serialization errors silently
     }
-  }, [props.storage, theme])
+  }, [storage, config])
+
+  const value: DiffViewerConfigContextState = { config, setConfig }
 
   return (
-    <ThemeProvider theme={theme ?? Themes.light}>
+    <ThemeProvider theme={config.theme}>
       <DiffViewerConfigContext.Provider value={value}>
         <FileExplorerConfigProvider
           config={{ ...DEFAULT_FILE_EXPLORER_CONFIG, ...props.fileExplorerConfig }}
@@ -79,7 +123,7 @@ export const DiffViewerConfigProvider: React.FC<DiffViewerConfigContextProps> = 
             config={{ ...DEFAULT_FILE_LIST_CONFIG, ...props.fileListConfig }}
             storage={props.storage}
           >
-            {props.children}
+            {children}
           </FileListConfigProvider>
         </FileExplorerConfigProvider>
       </DiffViewerConfigContext.Provider>

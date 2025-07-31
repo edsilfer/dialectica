@@ -11,22 +11,51 @@ const { Title, Paragraph } = Typography
 
 const useStyles = (theme: ThemeTokens) => {
   return {
+    container: css`
+      background: linear-gradient(
+        to bottom,
+        ${theme.colors.backgroundContainer} 50%,
+        ${theme.colors.backgroundPrimary} 50%
+      );
+
+      @media (max-width: 768px) {
+        background: linear-gradient(
+          to bottom,
+          ${theme.colors.backgroundPrimary} 50%,
+          ${theme.colors.backgroundContainer} 50%
+        );
+      }
+    `,
+
     viewerStyle: (isFront: boolean, isPrimaryFront: boolean) => css`
+      // Positioning
       position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: ${isPrimaryFront === isFront
+        ? 'translate(-50%, -50%) translate(-5%, 0)'
+        : 'translate(-50%, -50%) translate(7%, 100px)'};
+
+      // Sizing
+      width: 80%;
+      height: 80%;
+
+      @media (min-width: 1920px) {
+        max-height: 750px;
+        max-width: 1000px;
+      }
+
       transition:
         transform 0.8s cubic-bezier(0.65, 0, 0.35, 1),
         z-index 0.8s,
         width 0.8s,
         height 0.8s,
         filter 0.8s;
-      transform: ${isPrimaryFront === isFront ? 'translate(-5%, 0)' : 'translate(7%, 100px)'};
+
       z-index: ${isPrimaryFront === isFront ? 2 : 1};
-      height: ${isPrimaryFront === isFront ? '70%' : '70%'};
-      width: ${isPrimaryFront === isFront ? '80%' : '80%'};
+
       filter: ${isPrimaryFront === isFront ? 'blur(0px)' : 'blur(2px)'};
       overflow: hidden;
-      border: 1px solid ${theme.colors.border};
-      border-radius: ${theme.spacing.sm};
     `,
 
     mobileContentWrapper: css`
@@ -44,6 +73,7 @@ const useStyles = (theme: ThemeTokens) => {
 
 export default function FileViewerSlide() {
   const theme = useContext(ThemeContext)
+  const styles = useStyles(theme)
   const sharedStyles = useSharedStyles(theme)
   const isMobile = useIsMobile()
 
@@ -56,8 +86,8 @@ export default function FileViewerSlide() {
 
   return (
     <SlideWrapper>
-      <div css={sharedStyles.featureSlide}>
-        <div css={sharedStyles.featureText()}>
+      <div css={[sharedStyles.featureSlide('primary'), styles.container]}>
+        <div css={sharedStyles.featureLeft('30%', 'secondary', { bottomLeft: isMobile, bottomRight: true })}>
           <Title css={sharedStyles.title}>Split & Unified Views</Title>
           <Paragraph css={sharedStyles.subtitle}>
             Toggle between split and unified modes. Built-in line highlighting and virtual scrolling for fast navigation
@@ -80,7 +110,17 @@ function SmallScreenContent({ highlightedLines }: { highlightedLines: LineRange 
   const [mode, setMode] = useState<'split' | 'unified'>('split')
 
   return (
-    <div css={[sharedStyles.featureComponent('100%'), styles.mobileContentWrapper]}>
+    <div
+      css={[
+        sharedStyles.featureRight('100%', 'primary', {
+          topLeft: true,
+          topRight: true,
+          bottomRight: true,
+          bottomLeft: true,
+        }),
+        styles.mobileContentWrapper,
+      ]}
+    >
       <Button
         type="primary"
         css={sharedStyles.pillButton}
@@ -147,7 +187,7 @@ function LargeScreenContent({ highlightedLines }: { highlightedLines: LineRange 
   const backStyle = styles.viewerStyle(false, isPrimaryFront)
 
   return (
-    <div css={[sharedStyles.featureComponent(), styles.largeScreenContentWrapper]}>
+    <div css={[sharedStyles.featureRight('70%', 'primary', { topLeft: true }), styles.largeScreenContentWrapper]}>
       <div ref={frontRef} css={frontStyle} onMouseEnter={frontHoverEnabled ? handleFrontHover : undefined}>
         <MockedFileViewer mode="unified" />
       </div>

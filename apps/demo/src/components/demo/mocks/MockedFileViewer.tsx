@@ -1,4 +1,4 @@
-import { ThemeContext } from '@commons'
+import { ThemeContext, useIsMobile } from '@commons'
 import { DiffSearchProvider, FileDiff, FileViewer, LineRange, ParsedDiff } from '@diff-viewer'
 import { css, SerializedStyles } from '@emotion/react'
 import { CommentMetadata, CommentState, useCommentController, usePullRequestStore } from '@github'
@@ -12,20 +12,18 @@ const useStyles = () => {
   const theme = useContext(ThemeContext)
   return {
     container: css`
-      height: 100%;
-      width: 100%;
       overflow: hidden;
       border-bottom: 1px solid ${theme.colors.border};
       border-bottom-left-radius: ${theme.spacing.sm};
       border-bottom-right-radius: ${theme.spacing.sm};
 
       * {
-        font-size: 0.7rem !important;
+        font-size: 0.8rem !important;
       }
 
       @media (max-width: 768px) {
         * {
-          font-size: 0.6rem !important;
+          font-size: 0.7rem !important;
         }
       }
     `,
@@ -67,6 +65,7 @@ export const MockedFileViewer: React.FC<MockedFileViewerProps> = (props) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isPlaying, setIsPlaying] = useState(true)
   const [hasAnimated, setHasAnimated] = useState(false)
+  const isMobile = useIsMobile()
   useIntersectionTrigger(containerRef, hasAnimated, setHasAnimated)
 
   const pr = usePullRequestStore(MOCKED_PR, MOCKED_TOKEN, USE_MOCKS, false)
@@ -134,13 +133,15 @@ export const MockedFileViewer: React.FC<MockedFileViewerProps> = (props) => {
   }, [diff?.files])
 
   // RENDER ----------------------------------------------------------------------------
+  const classes = [isMobile ? 'mobile-blocker' : '', props.className].join(' ')
+
   if (!file) return null
 
   return (
     <DiffSearchProvider files={[file]}>
       <div
         css={[styles.container, props.css]}
-        className={props.className}
+        className={classes}
         ref={containerRef}
         onMouseEnter={() => setIsPlaying(false)}
         onMouseLeave={() => setIsPlaying(true)}

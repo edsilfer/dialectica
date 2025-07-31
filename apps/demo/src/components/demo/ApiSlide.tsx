@@ -29,12 +29,12 @@ export default function ApiSlide() {
 
   return (
     <SlideWrapper>
-      <div css={sharedStyles.featureSlide}>
-        <div css={[sharedStyles.featureComponent('65%'), styles.editorContainer]}>
+      <div css={sharedStyles.featureSlide('primary')}>
+        <div css={[sharedStyles.featureLeft('65%', 'primary'), styles.editorContainer]}>
           <MockedApiDemo />
         </div>
 
-        <div css={sharedStyles.featureText('35%')}>
+        <div css={sharedStyles.featureRight('35%', 'secondary', { topLeft: true, bottomLeft: true })}>
           <Title css={sharedStyles.title}>Easy API</Title>
           <Paragraph css={sharedStyles.subtitle}>
             Designed for integration. Use your own diff parser or PR data — all components are composable and headless

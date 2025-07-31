@@ -1,4 +1,4 @@
-import { useTheme } from '@commons'
+import { useIsMobile, useTheme } from '@commons'
 import { ParsedDiff } from '@diff-viewer'
 import { css, SerializedStyles } from '@emotion/react'
 import { FileExplorer, FileMetadata } from '@file-explorer'
@@ -28,7 +28,7 @@ const useStyles = () => {
       border-radius: ${theme.spacing.sm};
 
       * {
-        font-size: 0.6rem;
+        font-size: 0.8rem;
       }
     `,
   }
@@ -51,6 +51,7 @@ export default function MockedFileExplorer(props: MockedFileExplorerProps) {
   const [isPlaying, setIsPlaying] = useState(true)
   const [hasAnimated, setHasAnimated] = useState(false)
   const inputRef = useRef<HTMLInputElement | null>(null)
+  const isMobile = useIsMobile()
   useIntersectionTrigger(containerRef, hasAnimated, setHasAnimated)
 
   const pr = usePullRequestStore(MOCKED_PR, MOCKED_TOKEN, USE_MOCKS, false)
@@ -102,13 +103,15 @@ export default function MockedFileExplorer(props: MockedFileExplorerProps) {
     }
   })
 
+  const classes = [isMobile ? 'mobile-blocker' : '', props.className].join(' ')
+
   if (!diff) return null
 
   return (
     <div
       ref={containerRef}
       css={[styles.container, props.css]}
-      className={props.className}
+      className={classes}
       onMouseEnter={() => setIsPlaying(false)}
       onMouseLeave={() => setIsPlaying(true)}
     >

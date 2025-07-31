@@ -6,9 +6,13 @@ import FileViewerSlide from '../components/demo/FileViewerSlide'
 import IntroSlide from '../components/demo/IntroSlide'
 
 import { ThemeContext } from '@commons'
+import { DEFAULT_DIFF_VIEWER_CONFIG, DEFAULT_FILE_LIST_CONFIG, DiffViewerConfigProvider } from '@diff-viewer'
+import { DEFAULT_FILE_EXPLORER_CONFIG } from '@file-explorer'
 import ApiSlide from '../components/demo/ApiSlide'
 import GetStartedSlide from '../components/demo/GetStartedSlide'
 import useSharedStyles from '../components/demo/shared-styles'
+import { usePreferedTheme } from '../hooks/use-prefered-theme'
+import { SettingsProvider } from '../hooks/use-settings'
 
 /**
  * Creates Emotion style objects for this module.
@@ -28,6 +32,23 @@ const useStyles = () => {
 }
 
 export default function Welcome() {
+  const preferredTheme = usePreferedTheme()
+  return (
+    <SettingsProvider>
+      <DiffViewerConfigProvider
+        config={{ ...DEFAULT_DIFF_VIEWER_CONFIG, theme: preferredTheme, explorerInitialWidth: 38 }}
+        scope="welcome"
+        fileExplorerConfig={DEFAULT_FILE_EXPLORER_CONFIG}
+        fileListConfig={DEFAULT_FILE_LIST_CONFIG}
+        storage="local"
+      >
+        <Content />
+      </DiffViewerConfigProvider>
+    </SettingsProvider>
+  )
+}
+
+function Content() {
   const styles = useStyles()
   const getStartedRef = useRef<HTMLElement | null>(null)
   const scrollToGetStarted = () => {
@@ -49,6 +70,20 @@ export default function Welcome() {
 
           body > div > div {
             padding: 0 !important;
+          }
+
+          .mobile-blocker {
+            pointer-events: none !important;
+            overflow: hidden !important;
+            touch-action: none !important;
+            user-select: none !important;
+          }
+
+          .mobile-blocker * {
+            pointer-events: none !important;
+            overflow: hidden !important;
+            touch-action: none !important;
+            user-select: none !important;
           }
         `}
       />

@@ -1,5 +1,4 @@
-import { ThemeTokens } from '@commons'
-import { useDiffViewerConfig } from '@diff-viewer'
+import { ThemeTokens, useTheme } from '@commons'
 import { css } from '@emotion/react'
 import { Input, Select, Switch, Typography } from 'antd'
 import React from 'react'
@@ -45,7 +44,7 @@ const useStyles = (theme: ThemeTokens) => ({
 })
 
 const Setting: React.FC<SettingConfig> = (config) => {
-  const { theme } = useDiffViewerConfig()
+  const theme = useTheme()
   const styles = useStyles(theme)
 
   switch (config.type) {

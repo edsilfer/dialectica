@@ -3,8 +3,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { Alert, notification } from 'antd'
 
-import { AddButton, InfoCard } from '@commons'
-import { DiffViewer, ParsedDiff, useDiffViewerConfig } from '@diff-viewer'
+import { AddButton, InfoCard, useTheme } from '@commons'
+import { DiffViewer, ParsedDiff } from '@diff-viewer'
 import { CommentEvent, CommentState, useCommentController, useReviewController, useReviewDatastore } from '@github'
 
 import { LineRange } from '@diff-viewer'
@@ -19,7 +19,8 @@ import { useWidgetDatastore } from '../hooks/data/use-widget-datastore'
 import { useSettings } from '../hooks/use-settings'
 import { useUrl } from '../hooks/use-url'
 
-function useStyles({ theme }: ReturnType<typeof useDiffViewerConfig>) {
+function useStyles() {
+  const theme = useTheme()
   return useMemo(
     () => ({
       container: css`
@@ -44,8 +45,7 @@ function useStyles({ theme }: ReturnType<typeof useDiffViewerConfig>) {
 }
 
 export default function Home() {
-  const config = useDiffViewerConfig()
-  const styles = useStyles(config)
+  const styles = useStyles()
   const navigate = useNavigate()
   const { currentUser, githubPat: token, useMocks, enableTutorial, setCurrentUser } = useSettings()
 

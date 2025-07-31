@@ -74,22 +74,26 @@ vi.mock('./hooks/use-resizable-panel', () => ({
 }))
 
 vi.mock('./providers/diff-viewer-context', () => ({
-  DiffViewerConfigProvider: ({ children, theme }: { children: React.ReactNode; theme: { name: string } }) => (
-    <div data-testid="config-provider" data-theme={theme.name}>
-      {children}
-    </div>
+  DiffViewerConfigProvider: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="config-provider">{children}</div>
   ),
   useDiffViewerConfig: () => ({
-    theme: {
-      name: 'light',
-      spacing: { xs: '0.25rem', sm: '0.5rem', lg: '1rem' },
-      colors: {
-        border: '#e5e7eb',
-        backgroundContainer: '#ffffff',
-        accent: '#3b82f6',
+    config: {
+      theme: {
+        name: 'light',
+        spacing: { xs: '0.25rem', sm: '0.5rem', lg: '1rem' },
+        colors: {
+          border: '#e5e7eb',
+          backgroundContainer: '#ffffff',
+          accent: '#3b82f6',
+        },
       },
+      handleSize: 14,
+      explorerInitialWidth: 25,
+      explorerMinWidth: 10,
+      explorerMaxWidth: 50,
     },
-    storage: 'in-memory',
+    setConfig: vi.fn(),
   }),
 }))
 

@@ -1,8 +1,15 @@
 # Dialectica
 
-**Dialectica** is a platform for code review. It’s built on the principles of clarity, dialogue, and collaboration in software engineering.
+A platform for code review, built on the principles of clarity, dialogue, and collaboration.
 
-> _"The act of reviewing code is not just technical — it's dialectical: a conversation, a craft, and a collective pursuit of clarity."_
+> _"Dialectic is the art of investigating or discussing the truth of opinions through logical argument, especially by examining contradictions between ideas."_
+
+<div align="center">
+  <img src="./packages/diff-viewer/assets/light-and-dark-themes.png" alt="dialectica diff viewer" style="max-width: 100%; height: auto;">
+
+[Try it now!](https://edsilfer.github.io/dialectica/welcome)
+
+</div>
 
 ## Current Status
 

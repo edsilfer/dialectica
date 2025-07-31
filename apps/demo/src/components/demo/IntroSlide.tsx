@@ -1,11 +1,10 @@
 import { ArrowRightOutlined } from '@ant-design/icons'
-import { ThemeContext, ThemeTokens } from '@commons'
+import { GitHubIcon, ThemeContext, ThemeTokens } from '@commons'
 import { css } from '@emotion/react'
 import { Button, Typography } from 'antd'
 import { useContext } from 'react'
 import MockedDiffViewer from './mocks/MockedDiffViewer'
 import useSharedStyles from './shared-styles'
-import { GitHubIcon } from '@commons'
 import ThemeSelector from './ThemeSelector'
 
 const { Title, Paragraph } = Typography
@@ -15,12 +14,13 @@ const useStyles = (theme: ThemeTokens) => {
     container: css`
       display: flex;
       flex-direction: row;
+      gap: ${theme.spacing.md};
       align-items: center;
       width: 100%;
       height: 100%;
       justify-content: center;
       position: relative;
-      background: linear-gradient(to bottom, transparent 0%, transparent 55%, ${theme.colors.backgroundContainer} 100%);
+      background: linear-gradient(to bottom, transparent 45%, ${theme.colors.backgroundContainer} 55%);
 
       @media (max-width: 768px) {
         flex-direction: column-reverse !important;
@@ -53,8 +53,8 @@ const useStyles = (theme: ThemeTokens) => {
 
     diffViewer: css`
       margin: ${theme.spacing.md} 0;
-      height: 90%;
-      width: 70%;
+      height: 75%;
+      width: 60%;
       transition: filter 0.3s;
 
       @media (min-width: 1920px) {
@@ -76,7 +76,7 @@ export default function IntroSlide({ onContinue }: { onContinue: () => void }) {
   const styles = useStyles(theme)
   const sharedStyles = useSharedStyles(theme)
 
-  const repoURL = 'https://github.com/edsilfer/diff-viewer'
+  const repoURL = 'https://github.com/edsilfer/dialectica/tree/main/packages/diff-viewer'
 
   return (
     <section css={sharedStyles.slide}>
@@ -94,7 +94,11 @@ export default function IntroSlide({ onContinue }: { onContinue: () => void }) {
             <Button type="primary" css={sharedStyles.pillButton} icon={<ArrowRightOutlined />} onClick={onContinue}>
               Continue with mocks
             </Button>
-            <Button css={sharedStyles.pillButton} icon={<GitHubIcon />} onClick={() => window.open(repoURL, '_blank')}>
+            <Button
+              css={sharedStyles.pillButton}
+              icon={<GitHubIcon style={{ fontSize: 18 }} />}
+              onClick={() => window.open(repoURL, '_blank')}
+            >
               View on GitHub
             </Button>
           </div>

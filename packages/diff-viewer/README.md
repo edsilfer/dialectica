@@ -1,10 +1,14 @@
 # @diff-viewer
 
-**Note:** This package is part of the internal Dialectica monorepo. While open source, it is not currently intended for public reuse.
+**Note:** This package is open source but currently designed for internal use at Dialectica. It may not yet be production-ready for general external use.
+
+<p align="center">
+  <img src="./assets/dark-theme-web-split-view.png" alt="dialectica diff viewer" style="max-width: 100%; height: auto;">
+</p>
 
 A composable React library for building rich code review UIs. It provides diff viewers, file explorers, activity summaries, contextual commenting, and theming — all integrated, yet modular. Primarily intended for internal use within the Dialectica project.
 
-[Try it now](https://todo) or
+[Try it now](https://edsilfer.github.io/dialectica/) or
 
 ```bash
 git clone git@github.com:your-org/dialectica.git
@@ -13,12 +17,31 @@ cd dialectica ; pnpm install ; pnpm demo
 
 Main features
 
-- **diff viewer (`<DiffViewer />`)** compatible with git / GitHub diff.
-- **file-explorer** with support for scrolling to file, expand-collapse, search, file metadata, etc.
-- **overlay API** that supports rendering custom components over a line.
-- **widget API** that allows easy dock of custom components on top of or below a line/
-- **theming** with 5 pre-configured themes and support for adding your own.
-- **GitHub integration** via `./packages/github`
+<table>
+  <tr>
+    <td>
+      <img src="./assets/dialectica-mobile-dracula-left.png" alt="Preview" width="300"/>
+    </td>
+    <td>
+      <ul>
+  <li><strong>Diff viewer (<code>&lt;DiffViewer /&gt;</code>)</strong> — compatible with git / GitHub diff.</li>
+  <li><strong>File explorer</strong> — support for scrolling to file, expand/collapse, search, file metadata, etc.</li>
+  <li><strong>Overlay API</strong> — supports rendering custom components over a line.</li>
+  <li><strong>Widget API</strong> — allows easy docking of custom components above or below a line.</li>
+  <li><strong>Theming</strong> — 5 pre-configured themes + support for adding your own.</li>
+  <li><strong>GitHub integration</strong> — via <code>./packages/github</code>.</li>
+  <li><strong>Virtual rows</strong> — enjoy better performance with virtualization.</li>
+  <li><strong>Responsive layout</strong> — UI adapts to smaller screens.</li>
+</ul>
+    </td>
+  </tr>
+</table>
+
+## Installation
+
+```bash
+npm install <coming soon>
+```
 
 ## API
 
@@ -143,4 +166,5 @@ This package uses semantic versioning. APIs may break between minor versions unl
 
 ## License
 
-This project is licensed under the [GNU AGPLv3](./LICENSE).
+- This project is licensed under the [GNU AGPLv3](./LICENSE).
+- **Note:** The AGPL license requires source disclosure for any network-based use. Be sure to review its terms before using this in a proprietary environment.

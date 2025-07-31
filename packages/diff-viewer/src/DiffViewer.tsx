@@ -1,4 +1,4 @@
-import { DirectoryIcon, HandleIcon, Themes, useIsMobile } from '@commons'
+import { DirectoryIcon, HandleIcon, ThemeTokens, useIsMobile } from '@commons'
 import { css } from '@emotion/react'
 import { FileExplorer, FileMetadata } from '@file-explorer'
 import React, { useContext, useEffect, useMemo, useState, useTransition } from 'react'
@@ -11,12 +11,8 @@ import { DiffViewerConfigContext, DiffViewerConfigProvider, useDiffViewerConfig 
 
 const DRAWER_CLOSED_WIDTH = '2.25rem'
 const TRANSITION_DURATION = '0.3s'
-const HANDLE_SIZE = 14
-const EXPLORER_INITIAL_WIDTH = 28
-const EXPLORER_MIN_WIDTH = 10
-const EXPLORER_MAX_WIDTH = 50
 
-function useStyles(theme: ReturnType<typeof useDiffViewerConfig>['theme']) {
+function useStyles(theme: ThemeTokens) {
   return useMemo(
     () => ({
       container: css`
@@ -110,7 +106,7 @@ export const DiffViewer: React.FC<DiffViewerProps> = (props) => {
 
   if (!withinProvider) {
     return (
-      <DiffViewerConfigProvider theme={Themes.light} storage="in-memory">
+      <DiffViewerConfigProvider storage="in-memory">
         <InternalDiffViewer {...props} />
       </DiffViewerConfigProvider>
     )
@@ -120,7 +116,7 @@ export const DiffViewer: React.FC<DiffViewerProps> = (props) => {
 }
 
 const InternalDiffViewer: React.FC<DiffViewerProps> = (props) => {
-  const { theme } = useDiffViewerConfig()
+  const { config } = useDiffViewerConfig()
 
   const enableExplorer = props.enableFileExplorer ?? true
   const [scrollToFile, setScrollToFile] = useState<string>()
@@ -139,23 +135,23 @@ const InternalDiffViewer: React.FC<DiffViewerProps> = (props) => {
     onMouseDown,
     setWidth,
   } = useResizablePanel({
-    initial: isMobile ? 100 : EXPLORER_INITIAL_WIDTH,
-    min: isMobile ? 100 : EXPLORER_MIN_WIDTH,
-    max: isMobile ? 100 : EXPLORER_MAX_WIDTH,
+    initial: isMobile ? 100 : config.explorerInitialWidth,
+    min: isMobile ? 100 : config.explorerMinWidth,
+    max: isMobile ? 100 : config.explorerMaxWidth,
   })
 
-  const explorerWidthPct = drawerOpen ? explorerWidth : EXPLORER_INITIAL_WIDTH
-  const styles = useStyles(theme)
+  const explorerWidthPct = drawerOpen ? explorerWidth : config.explorerInitialWidth
+  const styles = useStyles(config.theme)
 
   useEffect(() => {
     if (!enableExplorer) return
     setDrawerOpen(!isMobile)
-    setWidth(isMobile ? 100 : EXPLORER_INITIAL_WIDTH)
-  }, [isMobile, enableExplorer, setWidth])
+    setWidth(isMobile ? 100 : config.explorerInitialWidth)
+  }, [isMobile, enableExplorer, config.explorerInitialWidth, setWidth])
 
   const dynamicStyles = useMemo(
-    () => computeStyles(drawerOpen, explorerWidthPct, dragging, theme.spacing.sm),
-    [drawerOpen, explorerWidthPct, dragging, theme.spacing.sm],
+    () => computeStyles(drawerOpen, explorerWidthPct, dragging, config.theme.spacing.sm),
+    [drawerOpen, explorerWidthPct, dragging, config.theme.spacing.sm],
   )
 
   const files = useMemo(() => toFileMetadata(props.diff.files), [props.diff.files])
@@ -213,7 +209,7 @@ const InternalDiffViewer: React.FC<DiffViewerProps> = (props) => {
 
         {showHandle && (
           <div css={styles.resizerWrapper} onMouseDown={onMouseDown}>
-            <HandleIcon size={HANDLE_SIZE} />
+            <HandleIcon size={config.handleSize} />
           </div>
         )}
 

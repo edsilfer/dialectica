@@ -1,5 +1,5 @@
 import { ExclamationCircleOutlined, SettingOutlined } from '@ant-design/icons'
-import { useDiffViewerConfig } from '@diff-viewer'
+import { useTheme } from '@commons'
 import { css } from '@emotion/react'
 import { theme as antdTheme, Button, Card, Typography } from 'antd'
 import React, { useState } from 'react'
@@ -8,7 +8,7 @@ import SettingsModal from './settings/modals/SettingsModal'
 const { Title, Paragraph, Text } = Typography
 
 const useStyles = () => {
-  const { theme } = useDiffViewerConfig()
+  const theme = useTheme()
   const { token } = antdTheme.useToken()
 
   return {

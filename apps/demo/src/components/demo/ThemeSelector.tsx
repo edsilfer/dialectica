@@ -20,7 +20,7 @@ const useStyles = (theme: ThemeTokens) => {
 export default function ThemeSelector() {
   const theme = useContext(ThemeContext)
   const styles = useStyles(theme)
-  const { setTheme } = useDiffViewerConfig()
+  const { config, setConfig } = useDiffViewerConfig()
 
   const options = [
     { value: 'light', label: 'Light' },
@@ -35,7 +35,7 @@ export default function ThemeSelector() {
     <Select
       css={styles.themeSwitcher}
       value={theme.name}
-      onChange={(value: string) => setTheme(Themes[value])}
+      onChange={(value: string) => setConfig({ ...config, theme: Themes[value] })}
       options={options}
     />
   )

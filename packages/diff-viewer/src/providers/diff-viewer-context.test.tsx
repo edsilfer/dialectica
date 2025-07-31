@@ -3,7 +3,12 @@ import { DEFAULT_FILE_EXPLORER_CONFIG } from '@file-explorer'
 import { render, renderWithContext } from '@test-lib'
 import React, { PropsWithChildren } from 'react'
 import { describe, expect, it, vi } from 'vitest'
-import { DiffViewerConfigContextProps, DiffViewerConfigProvider, useDiffViewerConfig } from './diff-viewer-context'
+import {
+  DEFAULT_DIFF_VIEWER_CONFIG,
+  DiffViewerConfigContextProps,
+  DiffViewerConfigProvider,
+  useDiffViewerConfig,
+} from './diff-viewer-context'
 import { DEFAULT_FILE_LIST_CONFIG } from './file-list-context'
 
 // Wrapper component to make DiffViewerConfigProvider compatible with renderWithContext
@@ -15,11 +20,13 @@ const DiffViewerConfigWrapper: React.FC<PropsWithChildren<Omit<DiffViewerConfigC
 describe('DiffViewerConfigProvider / useDiffViewerConfig', () => {
   it('provides default configs to its descendants', async () => {
     // WHEN
-    const getConfig = await renderWithContext(DiffViewerConfigWrapper, useDiffViewerConfig, { theme: Themes.light })
+    const getConfig = await renderWithContext(DiffViewerConfigWrapper, useDiffViewerConfig, {
+      config: { ...DEFAULT_DIFF_VIEWER_CONFIG, theme: Themes.light },
+    })
 
     // EXPECT
     const config = getConfig()
-    expect(config.theme.name).toBe('light')
+    expect(config.config.theme.name).toBe('light')
     expect(config.fileListConfig?.mode).toBe(DEFAULT_FILE_LIST_CONFIG.mode)
     expect(config.fileExplorerConfig?.indentPx).toBe(DEFAULT_FILE_EXPLORER_CONFIG.indentPx)
   })
@@ -39,14 +46,14 @@ describe('DiffViewerConfigProvider / useDiffViewerConfig', () => {
 
     // WHEN
     const getConfig = await renderWithContext(DiffViewerConfigWrapper, useDiffViewerConfig, {
-      theme: Themes.dark,
+      config: { ...DEFAULT_DIFF_VIEWER_CONFIG, theme: Themes.dark },
       fileListConfig: customFileListConfig,
       fileExplorerConfig: customFileExplorerConfig,
     })
 
     // EXPECT
     const config = getConfig()
-    expect(config.theme.name).toBe('dark')
+    expect(config.config.theme.name).toBe('dark')
     expect(config.fileListConfig?.mode).toBe('split')
     expect(config.fileExplorerConfig?.indentPx).toBe(24)
   })

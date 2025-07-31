@@ -1,5 +1,4 @@
-import { ThemeTokens } from '@commons'
-import { useDiffViewerConfig } from '@diff-viewer'
+import { ThemeTokens, useTheme } from '@commons'
 import { css } from '@emotion/react'
 import { Typography } from 'antd'
 import React from 'react'
@@ -30,7 +29,7 @@ const useStyles = (theme: ThemeTokens) => ({
 })
 
 const SettingsSection: React.FC<SettingsSectionProps> = ({ title, description, settings }) => {
-  const { theme } = useDiffViewerConfig()
+  const theme = useTheme()
   const styles = useStyles(theme)
 
   return (
