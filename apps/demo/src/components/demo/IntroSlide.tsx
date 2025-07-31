@@ -65,13 +65,6 @@ const useStyles = (theme: ThemeTokens) => {
         filter: blur(3px) brightness(0.8); /* Darkens the background slightly */
       }
     `,
-
-    button: css`
-      border-radius: 999px;
-      padding: 0 24px;
-      height: 40px;
-      min-width: 200px;
-    `,
   }
 }
 
@@ -95,10 +88,14 @@ export default function IntroSlide({ onContinue }: { onContinue: () => void }) {
           </Paragraph>
 
           <div css={styles.buttonsContainer}>
-            <Button type="primary" css={styles.button} icon={<ArrowRightOutlined />} onClick={onContinue}>
+            <Button type="primary" css={sharedStyles.pillButton} icon={<ArrowRightOutlined />} onClick={onContinue}>
               Continue with mocks
             </Button>
-            <Button css={styles.button} icon={<CodeOutlined />} onClick={() => window.open(repoURL, '_blank')}>
+            <Button
+              css={sharedStyles.pillButton}
+              icon={<CodeOutlined />}
+              onClick={() => window.open(repoURL, '_blank')}
+            >
               View on GitHub
             </Button>
           </div>

@@ -13,7 +13,7 @@ export default function FileExplorerSlide() {
 
   return (
     <SlideWrapper>
-      <div css={sharedStyles.feature}>
+      <div css={sharedStyles.featureSlide}>
         <div css={sharedStyles.featureComponent('50%')}>
           <MockedFileExplorer />
         </div>

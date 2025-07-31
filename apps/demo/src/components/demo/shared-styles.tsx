@@ -26,14 +26,17 @@ const useSharedStyles = (theme: ThemeTokens) => {
       color: ${theme.colors.textContainerPlaceholder};
     `,
 
-    feature: css`
+    featureSlide: css`
       display: flex;
       align-items: center;
       justify-content: center;
       width: 100%;
       height: 100%;
       flex-direction: row;
-      gap: ${theme.spacing.lg};
+
+      @media (max-width: 768px) {
+        flex-direction: column;
+      }
     `,
 
     featureText: (width: string = '30%', paint: boolean = true) => css`
@@ -46,6 +49,11 @@ const useSharedStyles = (theme: ThemeTokens) => {
       padding: ${theme.spacing.xl};
       ${paint && `background-color: ${theme.colors.backgroundContainer};`}
       z-index: 1;
+
+      @media (max-width: 768px) {
+        width: 100%;
+        height: auto;
+      }
     `,
 
     featureComponent: (width: string = '70%') => css`
@@ -54,10 +62,17 @@ const useSharedStyles = (theme: ThemeTokens) => {
       gap: ${theme.spacing.sm};
       align-items: center;
       justify-content: center;
-      padding: ${theme.spacing.xl};
+      padding: ${theme.spacing.sm} ${theme.spacing.xl};
       width: ${width};
       height: 80%;
       overflow: hidden;
+    `,
+
+    pillButton: css`
+      border-radius: 999px;
+      padding: 0 24px;
+      height: 40px;
+      min-width: 200px;
     `,
   }
 }

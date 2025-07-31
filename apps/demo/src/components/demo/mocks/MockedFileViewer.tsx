@@ -1,17 +1,23 @@
+import { ThemeContext } from '@commons'
 import { DiffSearchProvider, FileDiff, FileViewer, LineRange, ParsedDiff } from '@diff-viewer'
 import { css, SerializedStyles } from '@emotion/react'
 import { CommentMetadata, CommentState, useCommentController, usePullRequestStore } from '@github'
 import { Tag } from 'antd'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useWidgetDatastore } from '../../../hooks/data/use-widget-datastore'
-import { MOCKED_PR, MOCKED_USER_1, MOCKED_USER_2 } from './constants'
 import { useDemo, useIntersectionTrigger } from '../../../hooks/use-demo'
+import { MOCKED_PR, MOCKED_USER_1, MOCKED_USER_2 } from './constants'
 
 const useStyles = () => {
+  const theme = useContext(ThemeContext)
   return {
     container: css`
       height: 100%;
-      overflow: auto;
+      width: 100%;
+      overflow: hidden;
+      border-bottom: 1px solid ${theme.colors.border};
+      border-bottom-left-radius: ${theme.spacing.sm};
+      border-bottom-right-radius: ${theme.spacing.sm};
       * {
         font-size: 0.7rem !important;
       }

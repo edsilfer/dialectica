@@ -1,7 +1,7 @@
-import { ThemeContext, ThemeTokens } from '@commons'
+import { ThemeContext, ThemeTokens, useIsMobile } from '@commons'
 import { LineRange } from '@diff-viewer'
 import { css } from '@emotion/react'
-import { Typography } from 'antd'
+import { Button, Typography } from 'antd'
 import { useContext, useEffect, useRef, useState } from 'react'
 import { SlideWrapper } from '../../pages/Landing'
 import { MockedFileViewer } from './mocks/MockedFileViewer'
@@ -30,10 +30,69 @@ const useStyles = (theme: ThemeTokens) => {
       border: 1px solid ${theme.colors.border};
       border-radius: ${theme.spacing.sm};
     `,
+
+    mobileContentWrapper: css`
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    `,
   }
 }
 
 export default function FileViewerSlide() {
+  const theme = useContext(ThemeContext)
+  const sharedStyles = useSharedStyles(theme)
+  const isMobile = useIsMobile()
+
+  const highlightedLines: LineRange = {
+    start: 4,
+    end: 6,
+    side: 'left',
+    filepath: 'packages/react-server/src/ReactFlightServer.js',
+  }
+
+  return (
+    <SlideWrapper>
+      <div css={sharedStyles.featureSlide}>
+        <div css={sharedStyles.featureText()}>
+          <Title css={sharedStyles.title}>Split & Unified Views</Title>
+          <Paragraph css={sharedStyles.subtitle}>
+            Toggle between split and unified modes. Built-in line highlighting and virtual scrolling for fast navigation
+            — even on large diffs.
+          </Paragraph>
+        </div>
+
+        {isMobile && <SmallScreenContent highlightedLines={highlightedLines} />}
+
+        {!isMobile && <LargeScreenContent highlightedLines={highlightedLines} />}
+      </div>
+    </SlideWrapper>
+  )
+}
+
+function SmallScreenContent({ highlightedLines }: { highlightedLines: LineRange }) {
+  const theme = useContext(ThemeContext)
+  const styles = useStyles(theme)
+  const sharedStyles = useSharedStyles(theme)
+  const [mode, setMode] = useState<'split' | 'unified'>('split')
+
+  return (
+    <div css={[sharedStyles.featureComponent('100%'), styles.mobileContentWrapper]}>
+      <Button
+        type="primary"
+        css={sharedStyles.pillButton}
+        style={{ margin: `${theme.spacing.sm} 0` }}
+        onClick={() => setMode(mode === 'split' ? 'unified' : 'split')}
+      >
+        View Mode {mode === 'split' ? 'Unified' : 'Split'}
+      </Button>
+      <MockedFileViewer mode={mode} highlightedLines={highlightedLines} />
+    </div>
+  )
+}
+
+function LargeScreenContent({ highlightedLines }: { highlightedLines: LineRange }) {
   const theme = useContext(ThemeContext)
   const styles = useStyles(theme)
   const sharedStyles = useSharedStyles(theme)
@@ -84,34 +143,16 @@ export default function FileViewerSlide() {
 
   const frontStyle = styles.viewerStyle(true, isPrimaryFront)
   const backStyle = styles.viewerStyle(false, isPrimaryFront)
-  const highlightedLines: LineRange = {
-    start: 4,
-    end: 6,
-    side: 'left',
-    filepath: 'packages/react-server/src/ReactFlightServer.js',
-  }
 
   return (
-    <SlideWrapper>
-      <div css={sharedStyles.feature}>
-        <div css={sharedStyles.featureText()}>
-          <Title css={sharedStyles.title}>Split & Unified Views</Title>
-          <Paragraph css={sharedStyles.subtitle}>
-            Toggle between split and unified modes. Built-in line highlighting and virtual scrolling for fast navigation
-            — even on large diffs.
-          </Paragraph>
-        </div>
-
-        <div css={sharedStyles.featureComponent()} style={{ position: 'relative' }}>
-          <div ref={frontRef} css={frontStyle} onMouseEnter={frontHoverEnabled ? handleFrontHover : undefined}>
-            <MockedFileViewer mode="unified" />
-          </div>
-
-          <div ref={backRef} css={backStyle} onMouseEnter={backHoverEnabled ? handleBackHover : undefined}>
-            <MockedFileViewer mode="split" highlightedLines={highlightedLines} />
-          </div>
-        </div>
+    <div css={sharedStyles.featureComponent()} style={{ position: 'relative' }}>
+      <div ref={frontRef} css={frontStyle} onMouseEnter={frontHoverEnabled ? handleFrontHover : undefined}>
+        <MockedFileViewer mode="unified" />
       </div>
-    </SlideWrapper>
+
+      <div ref={backRef} css={backStyle} onMouseEnter={backHoverEnabled ? handleBackHover : undefined}>
+        <MockedFileViewer mode="split" highlightedLines={highlightedLines} />
+      </div>
+    </div>
   )
 }

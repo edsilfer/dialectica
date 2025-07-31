@@ -13,7 +13,7 @@ export default function ApiSlide() {
 
   return (
     <SlideWrapper>
-      <div css={sharedStyles.feature}>
+      <div css={sharedStyles.featureSlide}>
         <div css={sharedStyles.featureComponent()}>
           <MockedApiDemo />
         </div>

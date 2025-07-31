@@ -1,13 +1,15 @@
 import { css, Global } from '@emotion/react'
-import React, { useRef } from 'react'
+import React, { useContext, useRef } from 'react'
 import CommentSlide from '../components/demo/CommentSlide'
 import FileExplorerSlide from '../components/demo/FileExplorerSlide'
 import FileViewerSlide from '../components/demo/FileViewerSlide'
 import IntroSlide from '../components/demo/IntroSlide'
 
+import { ThemeContext } from '@commons'
 import ApiSlide from '../components/demo/ApiSlide'
 import GetStartedSlide from '../components/demo/GetStartedSlide'
 import ThemeSelector from '../components/demo/ThemeSelector'
+import useSharedStyles from '../components/demo/shared-styles'
 
 /**
  * Creates Emotion style objects for this module.
@@ -22,21 +24,6 @@ const useStyles = () => {
       overflow-y: auto;
       scroll-snap-type: y mandatory;
       font-family: 'Segoe UI', sans-serif;
-    `,
-    slide: css`
-      scroll-snap-align: start;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    `,
-    themeSwitcher: css`
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 1000;
-      width: 200px;
     `,
   }
 }
@@ -55,9 +42,14 @@ export default function Welcome() {
           html,
           body,
           #root {
-            margin: 0;
+            margin: 0 !important;
+            padding: 0 !important;
             height: 100%;
             overflow: hidden;
+          }
+
+          body > div > div {
+            padding: 0 !important;
           }
         `}
       />
@@ -77,6 +69,7 @@ export default function Welcome() {
 }
 
 export const SlideWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const styles = useStyles()
-  return <section css={styles.slide}>{children}</section>
+  const theme = useContext(ThemeContext)
+  const sharedStyles = useSharedStyles(theme)
+  return <section css={sharedStyles.slide}>{children}</section>
 }

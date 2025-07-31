@@ -48,7 +48,7 @@ export default function GetStartedSlide({ innerRef }: GetStartedSlideProps) {
   return (
     <SlideWrapper>
       <section ref={innerRef}>
-        <div css={sharedStyles.feature}>
+        <div css={sharedStyles.featureSlide}>
           <div css={sharedStyles.featureText('75%', false)} style={{ alignItems: 'flex-start' }}>
             <Title css={sharedStyles.title}>Get Started</Title>
 

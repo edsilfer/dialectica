@@ -13,7 +13,7 @@ export default function CommentSlide() {
 
   return (
     <SlideWrapper>
-      <div css={sharedStyles.feature}>
+      <div css={sharedStyles.featureSlide}>
         <div css={sharedStyles.featureText('35%')}>
           <Title css={sharedStyles.title}>Contextual Commenting</Title>
           <Paragraph css={sharedStyles.subtitle}>
