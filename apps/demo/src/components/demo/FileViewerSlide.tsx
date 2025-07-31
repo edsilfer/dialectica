@@ -3,7 +3,7 @@ import { LineRange } from '@diff-viewer'
 import { css } from '@emotion/react'
 import { Button, Typography } from 'antd'
 import { useContext, useEffect, useRef, useState } from 'react'
-import { SlideWrapper } from '../../pages/Landing'
+import { SlideWrapper } from '../../pages/Welcome'
 import { MockedFileViewer } from './mocks/MockedFileViewer'
 import useSharedStyles from './shared-styles'
 

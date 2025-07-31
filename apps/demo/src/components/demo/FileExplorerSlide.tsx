@@ -1,7 +1,7 @@
 import { ThemeContext } from '@commons'
 import { Typography } from 'antd'
 import { useContext } from 'react'
-import { SlideWrapper } from '../../pages/Landing'
+import { SlideWrapper } from '../../pages/Welcome'
 import MockedFileExplorer from './mocks/MockedFileExplorer'
 import useSharedStyles from './shared-styles'
 

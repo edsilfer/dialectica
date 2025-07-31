@@ -9,6 +9,7 @@ import { CommentEvent, CommentState, useCommentController, useReviewController, 
 
 import { LineRange } from '@diff-viewer'
 import { usePullRequestStore } from '@github'
+import { useNavigate } from 'react-router-dom'
 import ErrorCard from '../components/ErrorCard'
 import Footer from '../components/Footer'
 import { mapUser } from '../components/mappers'
@@ -17,7 +18,6 @@ import Toolbar from '../components/Toolbar'
 import { useWidgetDatastore } from '../hooks/data/use-widget-datastore'
 import { useSettings } from '../hooks/use-settings'
 import { useUrl } from '../hooks/use-url'
-import Welcome from './Landing'
 
 function useStyles({ theme }: ReturnType<typeof useDiffViewerConfig>) {
   return useMemo(
@@ -43,10 +43,17 @@ function useStyles({ theme }: ReturnType<typeof useDiffViewerConfig>) {
   )
 }
 
-export default function App() {
+export default function Home() {
   const config = useDiffViewerConfig()
   const styles = useStyles(config)
+  const navigate = useNavigate()
   const { currentUser, githubPat: token, useMocks, enableTutorial, setCurrentUser } = useSettings()
+
+  useEffect(() => {
+    if (enableTutorial) {
+      void navigate('/welcome')
+    }
+  }, [enableTutorial, navigate])
 
   // STATE ---------------------------------------------------------------------------------------------
   const [fileNames, setFileNames] = useState<string[]>([])
@@ -109,9 +116,7 @@ export default function App() {
 
   // RENDER --------------------------------------------------------------------------------------------
   const content = () => {
-    if (enableTutorial) {
-      return <Welcome />
-    } else if (errors.metadata || errors.diff) {
+    if (errors.metadata || errors.diff) {
       return <ErrorCard error={errors.user || errors.metadata || errors.diff} />
     } else if (!loading.metadata && !metadata) {
       return (

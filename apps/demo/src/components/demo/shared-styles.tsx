@@ -11,6 +11,7 @@ const useSharedStyles = (theme: ThemeTokens) => {
       justify-content: center;
       position: relative;
       overflow: hidden;
+      background-color: ${theme.colors.backgroundPrimary};
     `,
 
     title: css`
@@ -42,6 +43,7 @@ const useSharedStyles = (theme: ThemeTokens) => {
       width: 100%;
       height: 100%;
       flex-direction: row;
+      background-color: ${theme.colors.backgroundPrimary};
 
       @media (max-width: 768px) {
         flex-direction: column;

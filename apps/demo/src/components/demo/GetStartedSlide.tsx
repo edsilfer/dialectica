@@ -3,9 +3,10 @@ import { ThemeContext, ThemeTokens } from '@commons'
 import { css } from '@emotion/react'
 import { Button, Typography } from 'antd'
 import React, { useCallback, useContext, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useSettings } from '../../hooks/use-settings'
 import { useUrl } from '../../hooks/use-url'
-import { SlideWrapper } from '../../pages/Landing'
+import { SlideWrapper } from '../../pages/Welcome'
 import SettingsModal from '../settings/modals/SettingsModal'
 import useSharedStyles from './shared-styles'
 
@@ -13,6 +14,12 @@ const { Title, Paragraph, Text } = Typography
 
 const useStyles = (theme: ThemeTokens) => {
   return {
+    container: css`
+      @media (max-width: 768px) {
+        padding: ${theme.spacing.lg};
+      }
+    `,
+
     button: css`
       height: 40px;
       min-width: 230px;
@@ -21,12 +28,7 @@ const useStyles = (theme: ThemeTokens) => {
   }
 }
 
-interface GetStartedSlideProps {
-  /** The ref to the section element */
-  innerRef: React.RefObject<HTMLElement | null>
-}
-
-export default function GetStartedSlide({ innerRef }: GetStartedSlideProps) {
+export default function GetStartedSlide({ innerRef }: { innerRef: React.RefObject<HTMLElement | null> }) {
   const theme = useContext(ThemeContext)
   const styles = useStyles(theme)
   const sharedStyles = useSharedStyles(theme)
@@ -34,12 +36,25 @@ export default function GetStartedSlide({ innerRef }: GetStartedSlideProps) {
 
   const { setPrUrl } = useUrl([])
   const { setEnableTutorial, setUseMocks } = useSettings()
+  const navigate = useNavigate()
 
   const handleProceed = useCallback(() => {
-    setPrUrl({ owner: 'facebook', repo: 'react', pullNumber: 33665 })
+    const owner = 'facebook'
+    const repo = 'react'
+    const pullNumber = 33665
+
+    setPrUrl({ owner, repo, pullNumber })
     setUseMocks(true)
     setEnableTutorial(false)
-  }, [setEnableTutorial, setPrUrl, setUseMocks])
+
+    const searchParams = new URLSearchParams({
+      owner,
+      repo,
+      pull: pullNumber.toString(),
+    })
+
+    void navigate(`/?${searchParams.toString()}`)
+  }, [setEnableTutorial, setPrUrl, setUseMocks, navigate])
 
   const handleSettings = useCallback(() => {
     setSettingsOpen(true)
@@ -48,7 +63,7 @@ export default function GetStartedSlide({ innerRef }: GetStartedSlideProps) {
   return (
     <SlideWrapper>
       <section ref={innerRef}>
-        <div css={sharedStyles.featureSlide}>
+        <div css={[sharedStyles.featureSlide, styles.container]}>
           <div css={sharedStyles.featureText('75%', false)} style={{ alignItems: 'flex-start' }}>
             <Title css={sharedStyles.title}>Get Started</Title>
 

@@ -9,6 +9,7 @@ const useStyles = () => {
     container: css`
       height: 100%;
       width: 100%;
+      padding: ${theme.spacing.md} 0;
       border-radius: ${theme.spacing.sm};
       border: 1px solid ${theme.colors.border};
       font-size: 0.7rem;
