@@ -18,7 +18,7 @@ const useStyles = () => {
   }
 }
 
-export default function MockedApiDemo() {
+export default function MockedApi() {
   const styles = useStyles()
   const theme = useTheme()
   const content = `

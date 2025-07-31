@@ -2,8 +2,6 @@ import { css } from '@emotion/react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { Alert, notification } from 'antd'
-import Footer from './components/Footer'
-import Toolbar from './components/Toolbar'
 
 import { AddButton, InfoCard } from '@commons'
 import { DiffViewer, ParsedDiff, useDiffViewerConfig } from '@diff-viewer'
@@ -11,13 +9,15 @@ import { CommentEvent, CommentState, useCommentController, useReviewController, 
 
 import { LineRange } from '@diff-viewer'
 import { usePullRequestStore } from '@github'
-import ErrorCard from './components/ErrorCard'
-import { mapUser } from './components/mappers'
-import SearchForm from './components/search-form'
-import Welcome from './components/landing-page/Welcome'
-import { useWidgetDatastore } from './hooks/data/use-widget-datastore'
-import { useSettings } from './hooks/use-settings'
-import { useUrl } from './hooks/use-url'
+import ErrorCard from '../components/ErrorCard'
+import Footer from '../components/Footer'
+import { mapUser } from '../components/mappers'
+import SearchForm from '../components/search-form'
+import Toolbar from '../components/Toolbar'
+import { useWidgetDatastore } from '../hooks/data/use-widget-datastore'
+import { useSettings } from '../hooks/use-settings'
+import { useUrl } from '../hooks/use-url'
+import Welcome from './Landing'
 
 function useStyles({ theme }: ReturnType<typeof useDiffViewerConfig>) {
   return useMemo(

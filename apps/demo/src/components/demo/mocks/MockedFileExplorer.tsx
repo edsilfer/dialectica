@@ -6,7 +6,7 @@ import { usePullRequestStore } from '@github'
 import { useMemo, useRef, useState } from 'react'
 
 import { MOCKED_FILES, MOCKED_PR } from './constants'
-import { useDemo, useIntersectionTrigger } from './use-demo'
+import { useDemo, useIntersectionTrigger } from '../../../hooks/use-demo'
 
 import { Tag } from 'antd'
 

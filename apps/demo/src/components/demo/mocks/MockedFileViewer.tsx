@@ -5,7 +5,7 @@ import { Tag } from 'antd'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useWidgetDatastore } from '../../../hooks/data/use-widget-datastore'
 import { MOCKED_PR, MOCKED_USER_1, MOCKED_USER_2 } from './constants'
-import { useDemo, useIntersectionTrigger } from './use-demo'
+import { useDemo, useIntersectionTrigger } from '../../../hooks/use-demo'
 
 const useStyles = () => {
   return {
