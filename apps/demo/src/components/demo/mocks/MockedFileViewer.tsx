@@ -25,7 +25,7 @@ const useStyles = () => {
 
       @media (max-width: 768px) {
         * {
-          font-size: 0.5rem !important;
+          font-size: 0.6rem !important;
         }
       }
     `,
@@ -69,7 +69,7 @@ export const MockedFileViewer: React.FC<MockedFileViewerProps> = (props) => {
   const [hasAnimated, setHasAnimated] = useState(false)
   useIntersectionTrigger(containerRef, hasAnimated, setHasAnimated)
 
-  const pr = usePullRequestStore(MOCKED_PR, MOCKED_TOKEN, USE_MOCKS)
+  const pr = usePullRequestStore(MOCKED_PR, MOCKED_TOKEN, USE_MOCKS, false)
   const diff = useMemo(() => (pr.diff ? ParsedDiff.build(pr.diff) : undefined), [pr.diff])
   const [file, setFile] = useState<FileDiff | undefined>(undefined)
 

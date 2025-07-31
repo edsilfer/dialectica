@@ -85,7 +85,7 @@ const MockedDiffViewer: React.FC<{ css?: SerializedStyles; className?: string }>
   const { commentDs } = useCommentController(MOCKED_USER_1, MOCKED_PR, MOCKED_TOKEN, USE_MOCKS)
   const { reviewDs } = useReviewDatastore(MOCKED_TOKEN, MOCKED_PR, USE_MOCKS)
   const { isPosting, onSubmitReview } = useReviewController(reviewDs, commentDs)
-  const pr = usePullRequestStore(MOCKED_PR, MOCKED_TOKEN, USE_MOCKS)
+  const pr = usePullRequestStore(MOCKED_PR, MOCKED_TOKEN, USE_MOCKS, false)
   const diff = useMemo(() => (pr.diff ? ParsedDiff.build(pr.diff) : undefined), [pr.diff])
 
   const pendingComments = useMemo(() => {

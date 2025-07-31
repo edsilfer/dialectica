@@ -106,12 +106,12 @@ describe('ReviewButton', () => {
       {
         description: 'no pending comments',
         comments: [],
-        expectedLabel: 'Review changes',
+        expectedLabel: 'Start review',
       },
       {
         description: 'one pending comment',
         comments: [createMockCommentMetadata({ state: CommentState.PENDING })],
-        expectedLabel: 'Finish your review (1)',
+        expectedLabel: 'Finish review (1)',
       },
       {
         description: 'multiple pending comments',
@@ -119,7 +119,7 @@ describe('ReviewButton', () => {
           createMockCommentMetadata({ state: CommentState.PENDING }),
           createMockCommentMetadata({ id: 2, state: CommentState.PENDING }),
         ],
-        expectedLabel: 'Finish your review (2)',
+        expectedLabel: 'Finish review (2)',
       },
     ]
 
@@ -436,7 +436,7 @@ describe('ReviewButton', () => {
       // EXPECT
       const mainButton = screen.getByRole('button')
       expect(mainButton).toBeDisabled()
-      expect(screen.getByText('Review changes')).toBeInTheDocument()
+      expect(screen.getByText('Start review')).toBeInTheDocument()
     })
 
     it('given isPosting is true, when button clicked, expect popover does not open', () => {
@@ -459,7 +459,7 @@ describe('ReviewButton', () => {
       // EXPECT
       const mainButton = screen.getByRole('button')
       expect(mainButton).not.toBeDisabled()
-      expect(screen.getByText('Review changes')).toBeInTheDocument()
+      expect(screen.getByText('Start review')).toBeInTheDocument()
     })
 
     it('given isPosting is false, when button clicked, expect popover opens normally', async () => {

@@ -53,7 +53,7 @@ export default function MockedFileExplorer(props: MockedFileExplorerProps) {
   const inputRef = useRef<HTMLInputElement | null>(null)
   useIntersectionTrigger(containerRef, hasAnimated, setHasAnimated)
 
-  const pr = usePullRequestStore(MOCKED_PR, MOCKED_TOKEN, USE_MOCKS)
+  const pr = usePullRequestStore(MOCKED_PR, MOCKED_TOKEN, USE_MOCKS, false)
   const diff = useMemo(() => (pr.diff ? ParsedDiff.build(pr.diff) : undefined), [pr.diff])
   const inputSelector = 'input[placeholder="Filter / Search Files"]'
 

@@ -33,11 +33,19 @@ function useStyles(theme: ReturnType<typeof useDiffViewerConfig>['theme']) {
         width: 100%;
         overflow: hidden;
         gap: ${theme.spacing.sm};
+
+        @media (max-width: 768px) {
+          flex-direction: column;
+        }
       `,
       drawerContainer: css`
         width: var(--drawer-width);
         transition: var(--drawer-transition);
         overflow: hidden;
+
+        @media (max-width: 768px) {
+          width: 100%;
+        }
       `,
       fileExplorer: css`
         height: 100%;

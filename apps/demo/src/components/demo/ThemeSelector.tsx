@@ -1,22 +1,25 @@
-import { ThemeContext, Themes } from '@commons'
+import { ThemeContext, Themes, ThemeTokens } from '@commons'
 import { useDiffViewerConfig } from '@diff-viewer'
 import { css } from '@emotion/react'
 import { Select } from 'antd'
 import { useContext } from 'react'
 
-const useStyles = () => {
+const useStyles = (theme: ThemeTokens) => {
   return {
     themeSwitcher: css`
       position: absolute;
-      top: 0;
-      right: 0;
+      min-width: 150px;
+      top: ${theme.spacing.sm};
+      right: ${theme.spacing.sm};
+      border-radius: ${theme.spacing.sm};
+      box-shadow: 0 0 10px ${theme.colors.accent}40;
     `,
   }
 }
 
 export default function ThemeSelector() {
   const theme = useContext(ThemeContext)
-  const styles = useStyles()
+  const styles = useStyles(theme)
   const { setTheme } = useDiffViewerConfig()
 
   const options = [

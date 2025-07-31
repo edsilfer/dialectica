@@ -3,7 +3,7 @@ import { ThemeContext } from '@commons'
 import { css, keyframes } from '@emotion/react'
 import { Tooltip } from 'antd'
 import React, { useContext } from 'react'
-import { DrawerProps } from './Drawer'
+import { DrawerContent, DrawerProps } from './Drawer'
 
 const slideInFromLeft = keyframes`
   0% {
@@ -32,7 +32,7 @@ const useStyles = () => {
   const iconColumnWidth = '2.25rem' // Fixed width for the icon rail
 
   return {
-    iconRail: css`
+    container: css`
       width: ${iconColumnWidth};
       min-width: ${iconColumnWidth};
       height: 100%;
@@ -41,6 +41,11 @@ const useStyles = () => {
       align-items: center;
       gap: ${theme.spacing.md};
       background-color: ${theme.colors.backgroundPrimary};
+
+      @media (max-width: 768px) {
+        flex-direction: row;
+        height: auto;
+      }
     `,
 
     iconButton: (selected: boolean): ReturnType<typeof css> => css`
@@ -52,7 +57,6 @@ const useStyles = () => {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 100%;
 
       ${selected &&
       `
@@ -89,21 +93,19 @@ export interface IconRailProps {
 export const IconRail: React.FC<IconRailProps> = (props) => {
   const styles = useStyles()
   return (
-    <div css={styles.iconRail}>
+    <div css={styles.container}>
       {props.isCloseable && <ToggleDrawer open={props.open} onToggleDrawer={props.onToggleDrawer} />}
 
       {/* Render one icon per provided content */}
       {props.contents.map((content) => {
         const selected = content.key === props.selectedKey
-        const IconElement = (
-          <span css={styles.iconButton(selected)} onClick={() => props.onSelect(content.key)}>
-            {content.icon}
-          </span>
-        )
         return (
-          <Tooltip key={content.key} title={content.title} placement="right">
-            {IconElement}
-          </Tooltip>
+          <IconButton
+            key={content.key}
+            content={content}
+            selected={selected}
+            onClick={() => props.onSelect(content.key)}
+          />
         )
       })}
     </div>
@@ -119,6 +121,17 @@ const ToggleDrawer: React.FC<{ open: boolean; onToggleDrawer: () => void }> = (p
       ) : (
         <MenuUnfoldOutlined css={[styles.iconButton(false), styles.iconSlideInRight]} onClick={props.onToggleDrawer} />
       )}
+    </Tooltip>
+  )
+}
+
+function IconButton(props: { content: DrawerContent; selected: boolean; onClick: () => void }) {
+  const styles = useStyles()
+  return (
+    <Tooltip key={props.content.key} title={props.content.title} placement="right">
+      <span css={styles.iconButton(props.selected)} onClick={props.onClick}>
+        {props.content.icon}
+      </span>
     </Tooltip>
   )
 }

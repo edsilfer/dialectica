@@ -88,7 +88,7 @@ export const ReviewButton: React.FC<ReviewButtonProps> = ({
   const styles = useStyles()
 
   const commentCount = comments.filter((c) => c.state === CommentState.PENDING).length
-  const buttonLabel = commentCount === 0 ? 'Review changes' : `Finish your review (${commentCount})`
+  const buttonLabel = commentCount === 0 ? 'Start review' : `Finish review (${commentCount})`
 
   const handleOpenChange = (open: boolean) => {
     setIsPopoverOpen(open)

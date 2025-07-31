@@ -8,7 +8,6 @@ import IntroSlide from '../components/demo/IntroSlide'
 import { ThemeContext } from '@commons'
 import ApiSlide from '../components/demo/ApiSlide'
 import GetStartedSlide from '../components/demo/GetStartedSlide'
-import ThemeSelector from '../components/demo/ThemeSelector'
 import useSharedStyles from '../components/demo/shared-styles'
 
 /**
@@ -62,8 +61,6 @@ export default function Welcome() {
         <ApiSlide />
         <GetStartedSlide innerRef={getStartedRef} />
       </main>
-
-      <ThemeSelector />
     </>
   )
 }

@@ -8,12 +8,13 @@ import { PullRequestRepository } from '../data/PullRequestRepository'
 /**
  * Fetches pull request data
  *
- * @param prKey - The pull request key
- * @param token - The GitHub token for API authentication
+ * @param prKey    - The pull request key
+ * @param token    - The GitHub token for API authentication
  * @param useMocks - Whether to use mock data instead of real API calls
+ * @param setTitle - Whether to set the document title (default: true)
  * @returns The pull request data with loading states, errors, and operations
  */
-export function usePullRequestStore(prKey?: PrKey, token?: string, useMocks?: boolean) {
+export function usePullRequestStore(prKey?: PrKey, token?: string, useMocks?: boolean, setTitle: boolean = true) {
   const repository = useMemo(() => {
     const remoteStore = new PullRequestRemoteStore(token, useMocks)
     return new PullRequestRepository(remoteStore)
@@ -27,7 +28,9 @@ export function usePullRequestStore(prKey?: PrKey, token?: string, useMocks?: bo
 
   const metadataRq = useAsync<GitHubPullRequest>(!!prKey, [prKey, token, useMocks], async () => {
     const data = await repository.readMetadata(prKey!)
-    document.title = data.title ?? 'Diff Viewer Demo'
+    if (setTitle) {
+      document.title = data.title ?? 'Diff Viewer Demo'
+    }
     return data
   })
 

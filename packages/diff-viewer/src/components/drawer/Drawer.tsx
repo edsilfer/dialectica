@@ -18,6 +18,11 @@ const useStyles = () => {
       transition: width 0.3s ease-in-out;
       gap: ${theme.spacing.sm};
       overflow: hidden;
+
+      @media (max-width: 768px) {
+        width: 100%;
+        flex-direction: column !important;
+      }
     `,
 
     /* Right-hand side – actual content */

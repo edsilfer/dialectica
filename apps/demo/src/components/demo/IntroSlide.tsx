@@ -1,10 +1,12 @@
-import { ArrowRightOutlined, CodeOutlined } from '@ant-design/icons'
+import { ArrowRightOutlined } from '@ant-design/icons'
 import { ThemeContext, ThemeTokens } from '@commons'
 import { css } from '@emotion/react'
 import { Button, Typography } from 'antd'
 import { useContext } from 'react'
 import MockedDiffViewer from './mocks/MockedDiffViewer'
 import useSharedStyles from './shared-styles'
+import { GitHubIcon } from '@commons'
+import ThemeSelector from './ThemeSelector'
 
 const { Title, Paragraph } = Typography
 
@@ -92,15 +94,13 @@ export default function IntroSlide({ onContinue }: { onContinue: () => void }) {
             <Button type="primary" css={sharedStyles.pillButton} icon={<ArrowRightOutlined />} onClick={onContinue}>
               Continue with mocks
             </Button>
-            <Button
-              css={sharedStyles.pillButton}
-              icon={<CodeOutlined />}
-              onClick={() => window.open(repoURL, '_blank')}
-            >
+            <Button css={sharedStyles.pillButton} icon={<GitHubIcon />} onClick={() => window.open(repoURL, '_blank')}>
               View on GitHub
             </Button>
           </div>
         </div>
+
+        <ThemeSelector />
       </div>
     </section>
   )

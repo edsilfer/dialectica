@@ -1,4 +1,4 @@
-import { Marquee, ThemeContext } from '@commons'
+import { Marquee, ThemeContext, useIsMobile } from '@commons'
 import { css } from '@emotion/react'
 import { Avatar, Tag, Typography } from 'antd'
 import React, { useContext } from 'react'
@@ -93,14 +93,16 @@ function getStateTag(pr: PullRequestMetadata) {
 export const Header: React.FC<{ pr: PullRequestMetadata }> = ({ pr }) => {
   const styles = useStyles()
   const stateTag = getStateTag(pr)
+  const isMobile = useIsMobile()
 
   return (
     <div css={styles.container}>
-      <div css={styles.stateTag}>{stateTag}</div>
+      {!isMobile && <div css={styles.stateTag}>{stateTag}</div>}
 
       <div css={styles.headerContainer}>
         {/* Title and state */}
         <Marquee css={styles.header}>
+          {isMobile && <div css={styles.stateTag}>{stateTag}</div>}
           <Link href={pr.html_url} target="_blank" rel="noreferrer">
             <Title level={4}>{pr.title}</Title>
           </Link>

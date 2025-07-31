@@ -86,9 +86,9 @@ const useSharedStyles = (theme: ThemeTokens) => {
 
     pillButton: css`
       border-radius: 999px;
-      padding: 0 24px;
+      padding: 0 16px;
       height: 40px;
-      min-width: 200px;
+      min-width: 180px;
     `,
 
     scrollingRow: css`
