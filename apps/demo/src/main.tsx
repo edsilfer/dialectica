@@ -1,6 +1,6 @@
 import { DiffViewerConfigProvider, FileListConfig, Themes } from '@diff-viewer'
 import { FileExplorerConfig } from '@file-explorer'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { SettingsProvider } from './hooks/use-settings'
@@ -24,10 +24,23 @@ export const DEFAULT_FILE_LIST_CONFIG: FileListConfig = {
 }
 
 function Root() {
+  const [preferredTheme, setPreferredTheme] = useState(() =>
+    window.matchMedia('(prefers-color-scheme: dark)').matches ? Themes.dark : Themes.light,
+  )
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const handleChange = (e: MediaQueryListEvent) => {
+      setPreferredTheme(e.matches ? Themes.dark : Themes.light)
+    }
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
+  }, [])
+
   return (
     <SettingsProvider>
       <DiffViewerConfigProvider
-        theme={Themes.light}
+        theme={preferredTheme}
         fileExplorerConfig={DEFAULT_FILE_EXPLORER_CONFIG}
         fileListConfig={DEFAULT_FILE_LIST_CONFIG}
         storage="local"

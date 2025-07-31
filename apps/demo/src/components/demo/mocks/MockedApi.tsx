@@ -88,7 +88,7 @@ export default function MockedApi() {
   `.trim()
 
   const handleEditorMount: OnMount = useCallback(
-    (_, monaco) => {
+    (editor, monaco) => {
       monaco.editor.defineTheme('custom-theme', {
         base: theme.flavor === 'dark' ? 'vs-dark' : 'vs',
         inherit: true,
@@ -98,6 +98,16 @@ export default function MockedApi() {
         },
       })
       monaco.editor.setTheme('custom-theme')
+
+      // Disable focus on mobile devices
+      if (typeof navigator !== 'undefined' && /Mobi|Android/i.test(navigator.userAgent)) {
+        const textarea = editor.getDomNode()?.querySelector('textarea')
+        if (textarea) {
+          textarea.setAttribute('tabindex', '-1') // prevent focus by tab
+          textarea.setAttribute('readonly', 'true') // soft hint to block input
+          textarea.style.pointerEvents = 'none' // prevent click/focus
+        }
+      }
     },
     [theme],
   )

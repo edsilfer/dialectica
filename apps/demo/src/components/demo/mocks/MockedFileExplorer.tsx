@@ -3,10 +3,10 @@ import { ParsedDiff } from '@diff-viewer'
 import { css, SerializedStyles } from '@emotion/react'
 import { FileExplorer, FileMetadata } from '@file-explorer'
 import { usePullRequestStore } from '@github'
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
-import { MOCKED_FILES, MOCKED_PR } from './constants'
 import { useDemo, useIntersectionTrigger } from '../../../hooks/use-demo'
+import { MOCKED_FILES, MOCKED_PR } from './constants'
 
 import { Tag } from 'antd'
 
@@ -50,14 +50,33 @@ export default function MockedFileExplorer(props: MockedFileExplorerProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isPlaying, setIsPlaying] = useState(true)
   const [hasAnimated, setHasAnimated] = useState(false)
+  const inputRef = useRef<HTMLInputElement | null>(null)
   useIntersectionTrigger(containerRef, hasAnimated, setHasAnimated)
 
   const pr = usePullRequestStore(MOCKED_PR, MOCKED_TOKEN, USE_MOCKS)
   const diff = useMemo(() => (pr.diff ? ParsedDiff.build(pr.diff) : undefined), [pr.diff])
+  const inputSelector = 'input[placeholder="Filter / Search Files"]'
+
+  /** Whenever the animation state flips, (de)activate the keyboard */
+  useEffect(() => {
+    const input = inputRef.current ?? containerRef.current?.querySelector<HTMLInputElement>(inputSelector)
+    if (!input) return
+    inputRef.current = input
+
+    if (isPlaying) {
+      // Disable the keyboard while demo is playing
+      input.readOnly = true
+      input.setAttribute('inputmode', 'none')
+    } else {
+      // Re-enable normal editing for the user
+      input.readOnly = false
+      input.removeAttribute('inputmode')
+    }
+  }, [isPlaying, inputSelector])
 
   useDemo(containerRef, isPlaying && hasAnimated, 500, async (demo) => {
     while (true) {
-      const input = demo.findElement<HTMLInputElement>('input[placeholder="Filter / Search Files"]')
+      const input = demo.findElement<HTMLInputElement>(inputSelector)
       if (!input) break
 
       // Reset input state

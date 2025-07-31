@@ -18,8 +18,15 @@ const useStyles = () => {
       border-bottom: 1px solid ${theme.colors.border};
       border-bottom-left-radius: ${theme.spacing.sm};
       border-bottom-right-radius: ${theme.spacing.sm};
+
       * {
         font-size: 0.7rem !important;
+      }
+
+      @media (max-width: 768px) {
+        * {
+          font-size: 0.5rem !important;
+        }
       }
     `,
   }

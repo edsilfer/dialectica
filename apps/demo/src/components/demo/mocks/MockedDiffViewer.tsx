@@ -1,6 +1,6 @@
 import { AddButton, useTheme } from '@commons'
 import { DiffViewer, ParsedDiff } from '@diff-viewer'
-import { css, SerializedStyles } from '@emotion/react'
+import { css, Global, SerializedStyles } from '@emotion/react'
 import {
   CommentState,
   PrKey,
@@ -103,7 +103,26 @@ const MockedDiffViewer: React.FC<{ css?: SerializedStyles; className?: string }>
 
   return (
     <div css={[styles.container, customCss]} className={className}>
-      <div css={styles.browserFrame}>
+      <Global
+        styles={css`
+          @media (max-width: 768px) {
+            .mobile-blocker {
+              pointer-events: none !important;
+              overflow: hidden !important;
+              touch-action: none !important;
+              user-select: none !important;
+            }
+
+            .mobile-blocker * {
+              pointer-events: none !important;
+              overflow: hidden !important;
+              touch-action: none !important;
+              user-select: none !important;
+            }
+          }
+        `}
+      />
+      <div css={styles.browserFrame} className="mobile-blocker">
         <div css={styles.browserHeader}>
           <div css={styles.windowControls}>
             <span css={styles.redDot} />
