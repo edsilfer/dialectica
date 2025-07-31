@@ -13,15 +13,13 @@ const useStyles = (theme: ThemeTokens) => {
   return {
     viewerStyle: (isFront: boolean, isPrimaryFront: boolean) => css`
       position: absolute;
-      top: 10%;
-      left: 0;
       transition:
         transform 0.8s cubic-bezier(0.65, 0, 0.35, 1),
         z-index 0.8s,
         width 0.8s,
         height 0.8s,
         filter 0.8s;
-      transform: ${isPrimaryFront === isFront ? 'translate(0, 0)' : 'translate(20%, 100px)'};
+      transform: ${isPrimaryFront === isFront ? 'translate(-5%, 0)' : 'translate(7%, 100px)'};
       z-index: ${isPrimaryFront === isFront ? 2 : 1};
       height: ${isPrimaryFront === isFront ? '70%' : '70%'};
       width: ${isPrimaryFront === isFront ? '80%' : '80%'};
@@ -36,6 +34,10 @@ const useStyles = (theme: ThemeTokens) => {
       flex-direction: column;
       align-items: center;
       justify-content: center;
+    `,
+
+    largeScreenContentWrapper: css`
+      position: relative;
     `,
   }
 }
@@ -145,7 +147,7 @@ function LargeScreenContent({ highlightedLines }: { highlightedLines: LineRange 
   const backStyle = styles.viewerStyle(false, isPrimaryFront)
 
   return (
-    <div css={sharedStyles.featureComponent()} style={{ position: 'relative' }}>
+    <div css={[sharedStyles.featureComponent(), styles.largeScreenContentWrapper]}>
       <div ref={frontRef} css={frontStyle} onMouseEnter={frontHoverEnabled ? handleFrontHover : undefined}>
         <MockedFileViewer mode="unified" />
       </div>

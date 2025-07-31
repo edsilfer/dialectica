@@ -5,11 +5,12 @@ const useSharedStyles = (theme: ThemeTokens) => {
   return {
     slide: css`
       scroll-snap-align: start;
-      height: 100vh;
+      height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
+      overflow: hidden;
     `,
 
     title: css`
@@ -18,12 +19,20 @@ const useSharedStyles = (theme: ThemeTokens) => {
       font-size: 80px;
       font-weight: 700;
       color: ${theme.colors.textPrimary};
+
+      @media (max-width: 768px) {
+        font-size: 60px;
+      }
     `,
 
     subtitle: css`
       margin: 0 !important;
       font-size: 20px;
       color: ${theme.colors.textContainerPlaceholder};
+
+      @media (max-width: 768px) {
+        font-size: 16px;
+      }
     `,
 
     featureSlide: css`
@@ -46,7 +55,7 @@ const useSharedStyles = (theme: ThemeTokens) => {
       height: 100%;
       justify-content: center;
       gap: ${theme.spacing.sm};
-      padding: ${theme.spacing.xl};
+      padding: ${theme.spacing.md};
       ${paint && `background-color: ${theme.colors.backgroundContainer};`}
       z-index: 1;
 
@@ -62,10 +71,15 @@ const useSharedStyles = (theme: ThemeTokens) => {
       gap: ${theme.spacing.sm};
       align-items: center;
       justify-content: center;
-      padding: ${theme.spacing.sm} ${theme.spacing.xl};
+      padding: ${theme.spacing.sm} ${theme.spacing.md};
       width: ${width};
       height: 80%;
       overflow: hidden;
+
+      @media (max-width: 768px) {
+        width: 100%;
+        height: 100%;
+      }
     `,
 
     pillButton: css`
@@ -73,6 +87,12 @@ const useSharedStyles = (theme: ThemeTokens) => {
       padding: 0 24px;
       height: 40px;
       min-width: 200px;
+    `,
+
+    scrollingRow: css`
+      position: relative;
+      z-index: 2;
+      background-color: ${theme.colors.backgroundPrimary};
     `,
   }
 }

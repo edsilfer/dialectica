@@ -22,7 +22,6 @@ const useStyles = (theme: ThemeTokens) => {
 
       @media (max-width: 768px) {
         flex-direction: column-reverse !important;
-        padding: 24px;
       }
     `,
 
@@ -52,6 +51,7 @@ const useStyles = (theme: ThemeTokens) => {
 
     diffViewer: css`
       margin: ${theme.spacing.md} 0;
+      height: 90%;
       width: 70%;
       transition: filter 0.3s;
 
@@ -61,6 +61,7 @@ const useStyles = (theme: ThemeTokens) => {
 
       @media (max-width: 768px) {
         width: 100%;
+        height: 100%;
         pointer-events: none;
         filter: blur(3px) brightness(0.8); /* Darkens the background slightly */
       }

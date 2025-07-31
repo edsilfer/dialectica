@@ -1,4 +1,4 @@
-import { useTheme } from '@commons'
+import { useIsMobile, useTheme } from '@commons'
 import { css } from '@emotion/react'
 import Editor, { OnMount } from '@monaco-editor/react'
 import { useCallback } from 'react'
@@ -21,6 +21,8 @@ const useStyles = () => {
 export default function MockedApi() {
   const styles = useStyles()
   const theme = useTheme()
+  const isMobile = useIsMobile()
+
   const content = `
   import { DiffViewer } from '@diff-viewer'
 
@@ -112,6 +114,8 @@ export default function MockedApi() {
           scrollBeyondLastLine: false,
           minimap: { enabled: false },
           renderLineHighlight: 'none',
+          wordWrap: 'on',
+          fontSize: isMobile ? 10 : 12,
         }}
         onMount={handleEditorMount}
         theme={theme.flavor === 'dark' ? 'vs-dark' : 'light'}

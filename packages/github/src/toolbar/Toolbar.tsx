@@ -46,6 +46,13 @@ const useStyles = () => {
       align-items: center;
       gap: ${theme.spacing.sm};
     `,
+
+    headerContainer: css`
+      flex: 1 1 auto;
+      min-width: 0; /* let header shrink inside flexbox */
+      display: flex;
+      overflow: hidden; /* clip if needed—header component handles scrolling */
+    `,
   }
 }
 
@@ -94,7 +101,7 @@ export const Toolbar: React.FC<ToolbarProps> = (props) => {
       )}
 
       {/* Header */}
-      {props.header && props.header}
+      {props.header && <div css={styles.headerContainer}>{props.header}</div>}
 
       {/* Right cluster */}
       <div css={styles.rightCluster}>

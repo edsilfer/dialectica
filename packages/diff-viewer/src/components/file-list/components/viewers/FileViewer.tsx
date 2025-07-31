@@ -114,8 +114,8 @@ export const FileViewer = memo(function FileViewer(props: FileViewerProps) {
   // EFFECTS ------------------------------------------------------------------------------------
   /* Force unified mode on handhelds */
   useEffect(() => {
-    if (isMobile) setEffectiveMode('unified')
-  }, [isMobile])
+    if (isMobile) setEffectiveMode(overrideMode ?? 'unified')
+  }, [isMobile, overrideMode])
 
   /* Defer heavy markup until the diff scrolls near the viewport */
   useEffect(() => {
