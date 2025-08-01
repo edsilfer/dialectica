@@ -7,9 +7,10 @@
  */
 import './utils/styles/highlight-themes.css'
 
+export { Themes } from '@commons'
+export * from '@file-explorer'
 export * from './components'
+export * from './DiffViewer'
 export * from './hooks'
 export * from './models'
 export * from './providers'
-export * from './DiffViewer'
-export { Themes } from '@commons'

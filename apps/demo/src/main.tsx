@@ -1,5 +1,9 @@
-import { DEFAULT_DIFF_VIEWER_CONFIG, DiffViewerConfigProvider, FileListConfig } from '@edsilfer/diff-viewer'
-import { FileExplorerConfig } from '@file-explorer'
+import {
+  FileExplorerConfig,
+  DEFAULT_DIFF_VIEWER_CONFIG,
+  DiffViewerConfigProvider,
+  FileListConfig,
+} from '@edsilfer/diff-viewer'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'

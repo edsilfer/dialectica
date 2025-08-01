@@ -14,10 +14,10 @@ export default defineConfig({
   clean: true,
 
   // externals that must stay `require('…')`
-  external: ['react', 'react-dom'],
+  external: ['react', 'react-dom', '@file-explorer'],
 
   // packages we want to BUNDLE (inline) ↓
-  noExternal: ['@commons', '@file-explorer'],
+  noExternal: ['@commons'],
 
   loader: { '.css': 'copy' },
 
