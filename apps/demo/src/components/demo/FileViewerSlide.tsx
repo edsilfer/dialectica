@@ -63,6 +63,7 @@ const useStyles = (theme: ThemeTokens) => {
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
     `,
 
     largeScreenContentWrapper: css`

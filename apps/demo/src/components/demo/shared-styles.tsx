@@ -103,6 +103,7 @@ const useSharedStyles = (theme: ThemeTokens) => {
       gap: ${theme.spacing.sm};
       align-items: center;
       justify-content: center;
+      box-sizing: border-box;
       padding: ${theme.spacing.sm} ${theme.spacing.md};
       width: ${width};
       height: 100%;

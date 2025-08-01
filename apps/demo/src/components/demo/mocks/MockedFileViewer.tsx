@@ -8,10 +8,13 @@ import { useWidgetDatastore } from '../../../hooks/data/use-widget-datastore'
 import { useDemo, useIntersectionTrigger } from '../../../hooks/use-demo'
 import { MOCKED_PR, MOCKED_USER_1, MOCKED_USER_2 } from './constants'
 
-const useStyles = () => {
+const useStyles = (mode: 'unified' | 'split') => {
   const theme = useContext(ThemeContext)
   return {
     container: css`
+      width: 100%;
+      box-sizing: border-box;
+
       overflow: hidden;
       border-bottom: 1px solid ${theme.colors.border};
       border-bottom-left-radius: ${theme.spacing.sm};
@@ -22,8 +25,9 @@ const useStyles = () => {
       }
 
       @media (max-width: 768px) {
+        margin: 0 ${theme.spacing.md};
         * {
-          font-size: 0.7rem !important;
+          font-size: ${mode === 'unified' ? '0.8rem' : '0.5rem'} !important;
         }
       }
     `,
@@ -60,10 +64,9 @@ interface MockedFileViewerProps {
 }
 
 export const MockedFileViewer: React.FC<MockedFileViewerProps> = (props) => {
-  const styles = useStyles()
+  const styles = useStyles(props.mode)
 
   const containerRef = useRef<HTMLDivElement>(null)
-  const [isPlaying, setIsPlaying] = useState(true)
   const [hasAnimated, setHasAnimated] = useState(false)
   const isMobile = useIsMobile()
   useIntersectionTrigger(containerRef, hasAnimated, setHasAnimated)
@@ -78,9 +81,25 @@ export const MockedFileViewer: React.FC<MockedFileViewerProps> = (props) => {
     return props.withComment ? widgetDatastore.handle.list() : []
   }, [widgetDatastore, props.withComment])
 
-  useDemo(containerRef, isPlaying && hasAnimated, 500, async (demo) => {
+  const inputSelector = '[data-testid="editor-textarea"]'
+
+  /** Whenever the animation state flips, (de)activate the keyboard */
+  useEffect(() => {
+    const el = containerRef.current?.querySelector<HTMLTextAreaElement>(inputSelector)
+    if (!el) return
+
+    el.readOnly = true
+    el.setAttribute('inputmode', 'none')
+
+    const killFocus = () => el.blur()
+    el.addEventListener('focus', killFocus)
+
+    return () => el.removeEventListener('focus', killFocus)
+  }, [props.withComment])
+
+  useDemo(containerRef, hasAnimated, 500, async (demo) => {
     // Reset the editor
-    const cancel = demo.findElement<HTMLTextAreaElement>('[data-testid="editor-textarea"]')
+    const cancel = demo.findElement<HTMLTextAreaElement>(inputSelector)
     if (cancel) demo.clickElement('[data-testid="editor-button-cancel"]')
 
     // Make sure we can find the comment reply button
@@ -91,12 +110,12 @@ export const MockedFileViewer: React.FC<MockedFileViewerProps> = (props) => {
     await demo.sleep(500)
     demo.clickElement('[data-testid="comment-reply"]')
 
-    let input = demo.findElement<HTMLTextAreaElement>('[data-testid="editor-textarea"]')
+    let input = demo.findElement<HTMLTextAreaElement>(inputSelector)
     const maxRetries = 20
     const delay = 100
 
     for (let i = 0; i < maxRetries; i++) {
-      input = demo.findElement<HTMLTextAreaElement>('[data-testid="editor-textarea"]')
+      input = demo.findElement<HTMLTextAreaElement>(inputSelector)
       if (input) break
       await demo.sleep(delay)
     }
@@ -139,16 +158,10 @@ export const MockedFileViewer: React.FC<MockedFileViewerProps> = (props) => {
 
   return (
     <DiffSearchProvider files={[file]}>
-      <div
-        css={[styles.container, props.css]}
-        className={classes}
-        ref={containerRef}
-        onMouseEnter={() => setIsPlaying(false)}
-        onMouseLeave={() => setIsPlaying(true)}
-      >
+      <div css={[styles.container, props.css]} className={classes} ref={containerRef}>
         {props.withComment && (
           <div style={{ marginBottom: '8px', display: 'inline-block' }}>
-            <Tag color={isPlaying ? 'green' : 'red'}>Animation {isPlaying ? 'Playing' : 'Paused'}</Tag>
+            <Tag color={'green'}>Animation playing (interactions disabled)</Tag>
           </div>
         )}
         <FileViewer

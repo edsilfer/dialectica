@@ -48,7 +48,6 @@ interface MockedFileExplorerProps {
 export default function MockedFileExplorer(props: MockedFileExplorerProps) {
   const styles = useStyles()
   const containerRef = useRef<HTMLDivElement>(null)
-  const [isPlaying, setIsPlaying] = useState(true)
   const [hasAnimated, setHasAnimated] = useState(false)
   const inputRef = useRef<HTMLInputElement | null>(null)
   const isMobile = useIsMobile()
@@ -63,19 +62,11 @@ export default function MockedFileExplorer(props: MockedFileExplorerProps) {
     const input = inputRef.current ?? containerRef.current?.querySelector<HTMLInputElement>(inputSelector)
     if (!input) return
     inputRef.current = input
+    input.readOnly = true
+    input.setAttribute('inputmode', 'none')
+  }, [inputSelector, diff])
 
-    if (isPlaying) {
-      // Disable the keyboard while demo is playing
-      input.readOnly = true
-      input.setAttribute('inputmode', 'none')
-    } else {
-      // Re-enable normal editing for the user
-      input.readOnly = false
-      input.removeAttribute('inputmode')
-    }
-  }, [isPlaying, inputSelector])
-
-  useDemo(containerRef, isPlaying && hasAnimated, 500, async (demo) => {
+  useDemo(containerRef, hasAnimated, 500, async (demo) => {
     while (true) {
       const input = demo.findElement<HTMLInputElement>(inputSelector)
       if (!input) break
@@ -108,16 +99,10 @@ export default function MockedFileExplorer(props: MockedFileExplorerProps) {
   if (!diff) return null
 
   return (
-    <div
-      ref={containerRef}
-      css={[styles.container, props.css]}
-      className={classes}
-      onMouseEnter={() => setIsPlaying(false)}
-      onMouseLeave={() => setIsPlaying(true)}
-    >
+    <div ref={containerRef} css={[styles.container, props.css]} className={classes}>
       {
         <div style={{ marginBottom: '8px', display: 'inline-block' }}>
-          <Tag color={isPlaying ? 'green' : 'red'}>Animation {isPlaying ? 'Playing' : 'Paused'}</Tag>
+          <Tag color={'green'}>Animation playing (interactions disabled)</Tag>
         </div>
       }
       <FileExplorer files={MOCKED_FILES} onFileClick={props.onFileClick} onDirectoryToggle={props.onDirectoryToggle} />

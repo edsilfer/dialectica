@@ -103,9 +103,17 @@ export default function MockedApi() {
       if (typeof navigator !== 'undefined' && /Mobi|Android/i.test(navigator.userAgent)) {
         const textarea = editor.getDomNode()?.querySelector('textarea')
         if (textarea) {
-          textarea.setAttribute('tabindex', '-1') // prevent focus by tab
-          textarea.setAttribute('readonly', 'true') // soft hint to block input
-          textarea.style.pointerEvents = 'none' // prevent click/focus
+          textarea.setAttribute('tabindex', '-1')
+          textarea.setAttribute('readonly', 'true')
+          textarea.setAttribute('inputmode', 'none')
+          textarea.style.pointerEvents = 'none'
+
+          const killFocus = () => textarea.blur()
+          textarea.addEventListener('focus', killFocus)
+
+          editor.onDidDispose(() => {
+            textarea.removeEventListener('focus', killFocus)
+          })
         }
       }
     },

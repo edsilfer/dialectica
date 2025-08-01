@@ -9,7 +9,7 @@ import globals from 'globals'
 
 export default [
   {
-    ignores: ['**/dist/**', '**/build/**', '**/node_modules/**'],
+    ignores: ['**/.eslintrc.*', '**/dist/**', '**/build/**', '**/node_modules/**'],
   },
 
   js.configs.recommended,
