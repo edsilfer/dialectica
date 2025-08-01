@@ -1,6 +1,6 @@
 {
     "name": "@edsilfer/diff-viewer",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "A React library for rendering Git diffs",
     "main": "dist/index.js",
     "module": "dist/index.mjs",
@@ -17,8 +17,7 @@
         "build:watch": "tsup --watch",
         "test": "vitest run",
         "lint": "eslint \"src/**/*.{ts,tsx}\"",
-        "prepublishOnly": "pnpm build && pnpm lint && pnpm test",
-        "publish": "pnpm publish --access public"
+        "prepublishOnly": "pnpm build && pnpm lint && pnpm test"
     },
     "keywords": [
         "git",
