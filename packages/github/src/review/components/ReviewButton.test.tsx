@@ -1,4 +1,4 @@
-import { ThemeProvider, Themes } from '@commons'
+import { ThemeProvider, Themes } from '@edsilfer/commons'
 import { createPropsFactory, render } from '@edsilfer/test-lib'
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import React, { type ChangeEvent } from 'react'

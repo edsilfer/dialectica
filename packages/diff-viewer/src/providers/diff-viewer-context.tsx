@@ -1,10 +1,10 @@
-import { ThemeProvider, Themes, ThemeTokens } from '@commons'
+import { ThemeProvider, Themes, ThemeTokens } from '@edsilfer/commons'
 import {
   DEFAULT_FILE_EXPLORER_CONFIG,
   FileExplorerConfig,
   FileExplorerConfigProvider,
   useFileExplorerConfig,
-} from '@file-explorer'
+} from '@edsilfer/file-explorer'
 import React, { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import {
   DEFAULT_FILE_LIST_CONFIG,

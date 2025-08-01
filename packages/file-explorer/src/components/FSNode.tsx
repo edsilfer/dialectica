@@ -1,4 +1,4 @@
-import { ExpandButton, RichTooltip, ThemeContext } from '@commons'
+import { ExpandButton, RichTooltip, ThemeContext } from '@edsilfer/commons'
 import { css } from '@emotion/react'
 import { Dropdown, MenuProps, message, theme } from 'antd'
 import React, { useCallback, useContext, useMemo } from 'react'

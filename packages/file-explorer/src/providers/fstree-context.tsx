@@ -1,4 +1,4 @@
-import { ThemeTokens } from '@commons'
+import { ThemeTokens } from '@edsilfer/commons'
 import React, { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react'
 import { FileMetadata } from '../models/FileMetadata'
 import { DirectoryNode } from '../models/Nodes'

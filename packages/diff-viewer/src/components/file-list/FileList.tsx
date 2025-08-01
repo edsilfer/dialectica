@@ -1,4 +1,4 @@
-import { ActionButtons, CustomButton, ProgressIndicator, ThemeContext } from '@commons'
+import { ActionButtons, CustomButton, ProgressIndicator, ThemeContext } from '@edsilfer/commons'
 import { css, Interpolation, Theme } from '@emotion/react'
 import { Skeleton } from 'antd'
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'

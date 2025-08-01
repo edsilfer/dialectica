@@ -1,5 +1,5 @@
 {
-  "name": "@file-explorer",
+  "name": "@edsilfer/file-explorer",
   "private": true,
   "version": "0.1.0",
   "description": "A generic file-explorer for rendering file trees",
@@ -48,7 +48,7 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
-    "@commons": "workspace:*",
+    "@edsilfer/commons": "workspace:*",
     "@emotion/react": "^11.14.0",
     "antd": "^5.26.2"
   }

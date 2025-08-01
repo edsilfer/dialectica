@@ -1,4 +1,4 @@
-import { AddButton, useTheme } from '@commons'
+import { AddButton, useTheme } from '@edsilfer/commons'
 import { DiffViewer, ParsedDiff } from '@edsilfer/diff-viewer'
 import { css, SerializedStyles } from '@emotion/react'
 import {

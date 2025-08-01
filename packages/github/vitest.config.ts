@@ -34,11 +34,9 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@github': resolve(__dirname, 'src'),
-      '@commons': resolve(__dirname, '../commons/src'),
-      '@diff-viewer': resolve(__dirname, '../diff-viewer/src'),
-      '@file-explorer': resolve(__dirname, '../file-explorer/src'),
-      '@test-lib': resolve(__dirname, '../test-lib/src'),
+      '@edsilfer/commons': resolve(__dirname, '../commons/src'),
+      '@edsilfer/diff-viewer': resolve(__dirname, '../diff-viewer/src'),
+      '@edsilfer/test-lib': resolve(__dirname, '../test-lib/src'),
     },
   },
 })

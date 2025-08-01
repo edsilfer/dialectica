@@ -1,4 +1,4 @@
-import { ThemeContext, useIsMobile } from '@commons'
+import { ThemeContext, useIsMobile } from '@edsilfer/commons'
 import { css } from '@emotion/react'
 import { theme as antTheme, Spin, Typography } from 'antd'
 import React, { memo, useContext, useEffect, useMemo, useRef, useState } from 'react'

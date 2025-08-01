@@ -35,7 +35,7 @@ vi.mock('./components/file-list/FileList', () => ({
   ),
 }))
 
-vi.mock('@file-explorer', () => ({
+vi.mock('@edsilfer/file-explorer', () => ({
   FileExplorer: ({
     files,
     onFileClick,

@@ -1,4 +1,4 @@
-import { ThemeContext, Themes, ThemeTokens } from '@commons'
+import { ThemeContext, Themes, ThemeTokens } from '@edsilfer/commons'
 import { useDiffViewerConfig } from '@edsilfer/diff-viewer'
 import { css } from '@emotion/react'
 import { Select } from 'antd'

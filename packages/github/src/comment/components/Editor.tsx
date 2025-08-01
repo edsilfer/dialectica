@@ -17,7 +17,7 @@ import {
   TabActionButton,
   TabItem,
   ThemeContext,
-} from '@commons'
+} from '@edsilfer/commons'
 import { css } from '@emotion/react'
 import { Button, Input, Tag } from 'antd'
 import React, { useContext } from 'react'

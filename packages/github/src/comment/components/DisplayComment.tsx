@@ -1,4 +1,4 @@
-import { MarkdownText, ThemeContext } from '@commons'
+import { MarkdownText, ThemeContext } from '@edsilfer/commons'
 import { css } from '@emotion/react'
 import { Avatar, Divider } from 'antd'
 import React, { useContext } from 'react'

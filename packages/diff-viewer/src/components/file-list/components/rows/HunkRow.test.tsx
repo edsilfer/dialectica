@@ -1,4 +1,4 @@
-import { ThemeProvider, Themes } from '@commons'
+import { ThemeProvider, Themes } from '@edsilfer/commons'
 import { createPropsFactory, render as baseRender } from '@edsilfer/test-lib'
 import { fireEvent, screen } from '@testing-library/react'
 import React from 'react'

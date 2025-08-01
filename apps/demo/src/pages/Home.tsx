@@ -1,12 +1,13 @@
 import { css } from '@emotion/react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { Alert, notification } from 'antd'
+import { Alert, Button, notification } from 'antd'
 
-import { AddButton, InfoCard, useTheme } from '@commons'
+import { AddButton, InfoCard, useTheme } from '@edsilfer/commons'
 import { DiffViewer, ParsedDiff } from '@edsilfer/diff-viewer'
 import { CommentEvent, CommentState, useCommentController, useReviewController, useReviewDatastore } from '@github'
 
+import { SettingOutlined } from '@ant-design/icons'
 import { LineRange } from '@edsilfer/diff-viewer'
 import { usePullRequestStore } from '@github'
 import { useNavigate } from 'react-router-dom'
@@ -14,6 +15,7 @@ import ErrorCard from '../components/ErrorCard'
 import Footer from '../components/Footer'
 import { mapUser } from '../components/mappers'
 import SearchForm from '../components/search-form'
+import SettingsModal from '../components/settings/modals/SettingsModal'
 import Toolbar from '../components/Toolbar'
 import { useWidgetDatastore } from '../hooks/data/use-widget-datastore'
 import { useSettings } from '../hooks/use-settings'
@@ -39,6 +41,21 @@ function useStyles() {
       alert: css`
         margin: ${theme.spacing.md} 0;
       `,
+      settingsButton: css`
+        display: flex;
+        align-items: center;
+        margin-top: ${theme.spacing.sm};
+
+        /* Smooth rotation animation for the icon */
+        .anticon {
+          transition: transform 0.3s ease;
+        }
+
+        /* Rotate the cog when the button is hovered */
+        &:hover .anticon {
+          transform: rotate(90deg);
+        }
+      `,
     }),
     [theme],
   )
@@ -46,14 +63,7 @@ function useStyles() {
 
 export default function Home() {
   const styles = useStyles()
-  const navigate = useNavigate()
-  const { currentUser, githubPat: token, useMocks, enableTutorial, setCurrentUser } = useSettings()
-
-  useEffect(() => {
-    if (enableTutorial) {
-      void navigate('/welcome')
-    }
-  }, [enableTutorial, navigate])
+  const { currentUser, githubPat: token, useMocks, setCurrentUser } = useSettings()
 
   // STATE ---------------------------------------------------------------------------------------------
   const [fileNames, setFileNames] = useState<string[]>([])
@@ -61,6 +71,8 @@ export default function Home() {
   const { commentDs, onCommentEvent, onLineDock } = useCommentController(mapUser(currentUser), pr, token, useMocks)
   const { reviewDs } = useReviewDatastore(token, pr, useMocks)
   const { isPosting, onSubmitReview } = useReviewController(reviewDs, commentDs)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const navigate = useNavigate()
 
   // Get pending comments from the comment datastore
   const pendingComments = useMemo(() => {
@@ -126,6 +138,25 @@ export default function Home() {
             <div>
               <p>No PR coordinates found in the URL. Use the search below to load a GitHub Pull Request.</p>
               <SearchForm onSearch={setPrUrl} />
+
+              <div style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
+                <Button
+                  css={styles.settingsButton}
+                  type="primary"
+                  icon={<SettingOutlined />}
+                  onClick={() => void navigate('/welcome')}
+                >
+                  Back to Welcome
+                </Button>
+                <Button
+                  css={styles.settingsButton}
+                  type="default"
+                  icon={<SettingOutlined />}
+                  onClick={() => setSettingsOpen(true)}
+                >
+                  Settings
+                </Button>
+              </div>
             </div>
           }
         />
@@ -174,6 +205,8 @@ export default function Home() {
           />
 
           <Footer />
+
+          <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
         </>
       )
     } else {

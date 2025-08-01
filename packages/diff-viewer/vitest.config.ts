@@ -1,6 +1,6 @@
-import { defineConfig } from 'vitest/config'
-import { resolve, dirname } from 'path'
+import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
+import { defineConfig } from 'vitest/config'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -35,10 +35,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@diff-viewer': resolve(__dirname, 'src'),
-      '@commons': resolve(__dirname, '../commons/src'),
+      '@edsilfer/commons': resolve(__dirname, '../commons/src'),
       '@github': resolve(__dirname, '../github/src'),
-      '@file-explorer': resolve(__dirname, '../file-explorer/src'),
-      '@test-lib': resolve(__dirname, '../test-lib/src'),
+      '@edsilfer/file-explorer': resolve(__dirname, '../file-explorer/src'),
+      '@edsilfer/test-lib': resolve(__dirname, '../test-lib/src'),
     },
   },
 })
