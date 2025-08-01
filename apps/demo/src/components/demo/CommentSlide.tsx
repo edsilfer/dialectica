@@ -14,7 +14,7 @@ export default function CommentSlide() {
   return (
     <SlideWrapper>
       <div css={sharedStyles.featureSlide('primary')}>
-        <div css={sharedStyles.featureLeft('35%', 'secondary', { topRight: true, bottomRight: true })}>
+        <div css={sharedStyles.featureLeft('20%', 'secondary', { topRight: true, bottomRight: true })}>
           <Title css={sharedStyles.title}>Contextual Commenting</Title>
           <Paragraph css={sharedStyles.subtitle}>
             Enable contextual commenting and review workflows right on the diff — <i>just like GitHub</i>. Easily extend
@@ -22,7 +22,7 @@ export default function CommentSlide() {
           </Paragraph>
         </div>
 
-        <div css={sharedStyles.featureRight('65%')}>
+        <div css={sharedStyles.featureRight('80%')}>
           <MockedFileViewer mode="unified" withComment />
         </div>
       </div>

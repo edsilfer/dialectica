@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 /**
  * A controller for the demo loop.
@@ -51,6 +51,15 @@ export class DemoController {
   }
 
   public async typeInInput(input: HTMLInputElement | HTMLTextAreaElement, text: string) {
+    if (input) {
+      input.setAttribute('readonly', 'true')
+      input.setAttribute('disabled', 'true')
+      input.setAttribute('inputmode', 'none')
+      input.style.pointerEvents = 'none'
+      input.style.userSelect = 'none'
+      input.blur()
+    }
+
     for (let i = 0; i <= text.length; i += 1) {
       if (this.signal.aborted) throw new DOMException('Aborted', 'AbortError')
       this.setNativeInputValue(input, text.slice(0, i))
@@ -138,31 +147,19 @@ export const useDemo = (
   }, [ref, enabled, delay])
 }
 
-/**
- * Observes when an element becomes visible (≥50% intersection) and triggers a one-shot callback.
- *
- * @param ref          - The ref to the element to observe
- * @param cb           - Whether the element has been triggered
- * @param setTriggered - A function to set the triggered state
- */
-export const useIntersectionTrigger = (
-  ref: React.RefObject<Element | null>,
-  cb: boolean,
-  setTriggered: (v: boolean) => void,
-) => {
+export const useVisibility = (ref: React.RefObject<Element | null>, threshold: number = 0.5): boolean => {
+  const [isVisible, setIsVisible] = useState(false)
+
   useEffect(() => {
-    if (cb || !ref.current) return
+    if (!ref.current) return
 
-    const handler: IntersectionObserverCallback = ([entry], observer) => {
-      if (entry.isIntersecting) {
-        setTriggered(true)
-        observer.disconnect()
-      }
-    }
-
-    const observer = new IntersectionObserver(handler, { threshold: 0.5 })
+    const observer = new IntersectionObserver(([entry]) => setIsVisible(entry.intersectionRatio >= threshold), {
+      threshold,
+    })
     observer.observe(ref.current)
 
-    // We intentionally include `ref.current` so the effect runs again once the ref gets its element
-  }, [cb, ref.current, setTriggered])
+    return () => observer.disconnect()
+  }, [ref.current, threshold])
+
+  return isVisible
 }

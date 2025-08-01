@@ -3,9 +3,9 @@ import { ParsedDiff } from '@diff-viewer'
 import { css, SerializedStyles } from '@emotion/react'
 import { FileExplorer, FileMetadata } from '@file-explorer'
 import { usePullRequestStore } from '@github'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 
-import { useDemo, useIntersectionTrigger } from '../../../hooks/use-demo'
+import { useDemo, useVisibility } from '../../../hooks/use-demo'
 import { MOCKED_FILES, MOCKED_PR } from './constants'
 
 import { Tag } from 'antd'
@@ -48,10 +48,9 @@ interface MockedFileExplorerProps {
 export default function MockedFileExplorer(props: MockedFileExplorerProps) {
   const styles = useStyles()
   const containerRef = useRef<HTMLDivElement>(null)
-  const [hasAnimated, setHasAnimated] = useState(false)
   const inputRef = useRef<HTMLInputElement | null>(null)
   const isMobile = useIsMobile()
-  useIntersectionTrigger(containerRef, hasAnimated, setHasAnimated)
+  const isVisible = useVisibility(containerRef)
 
   const pr = usePullRequestStore(MOCKED_PR, MOCKED_TOKEN, USE_MOCKS, false)
   const diff = useMemo(() => (pr.diff ? ParsedDiff.build(pr.diff) : undefined), [pr.diff])
@@ -66,7 +65,7 @@ export default function MockedFileExplorer(props: MockedFileExplorerProps) {
     input.setAttribute('inputmode', 'none')
   }, [inputSelector, diff])
 
-  useDemo(containerRef, hasAnimated, 500, async (demo) => {
+  useDemo(containerRef, isVisible, 500, async (demo) => {
     while (true) {
       const input = demo.findElement<HTMLInputElement>(inputSelector)
       if (!input) break
@@ -100,6 +99,7 @@ export default function MockedFileExplorer(props: MockedFileExplorerProps) {
 
   return (
     <div ref={containerRef} css={[styles.container, props.css]} className={classes}>
+      <div className="interaction-blocker" />
       {
         <div style={{ marginBottom: '8px', display: 'inline-block' }}>
           <Tag color={'green'}>Animation playing (interactions disabled)</Tag>

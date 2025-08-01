@@ -50,7 +50,6 @@
     "@ant-design/icons": "^6.0.0",
     "@commons": "workspace:*",
     "@emotion/react": "^11.14.0",
-    "antd": "^5.26.2",
-    "@diff-viewer": "workspace:*"
+    "antd": "^5.26.2"
   }
 }

@@ -103,7 +103,7 @@ const MockedDiffViewer: React.FC<{ css?: SerializedStyles; className?: string }>
 
   return (
     <div css={[styles.container, customCss]} className={className}>
-      <div css={styles.browserFrame} className="mobile-blocker">
+      <div css={styles.browserFrame}>
         <div css={styles.browserHeader}>
           <div css={styles.windowControls}>
             <span css={styles.redDot} />

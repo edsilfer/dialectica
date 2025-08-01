@@ -1,7 +1,6 @@
 import { css, Global } from '@emotion/react'
 import React, { useContext, useRef } from 'react'
 import CommentSlide from '../components/demo/CommentSlide'
-import FileExplorerSlide from '../components/demo/FileExplorerSlide'
 import FileViewerSlide from '../components/demo/FileViewerSlide'
 import IntroSlide from '../components/demo/IntroSlide'
 
@@ -9,6 +8,7 @@ import { ThemeContext } from '@commons'
 import { DEFAULT_DIFF_VIEWER_CONFIG, DEFAULT_FILE_LIST_CONFIG, DiffViewerConfigProvider } from '@diff-viewer'
 import { DEFAULT_FILE_EXPLORER_CONFIG } from '@file-explorer'
 import ApiSlide from '../components/demo/ApiSlide'
+import FileExplorerSlide from '../components/demo/FileExplorerSlide'
 import GetStartedSlide from '../components/demo/GetStartedSlide'
 import useSharedStyles from '../components/demo/shared-styles'
 import { usePreferedTheme } from '../hooks/use-prefered-theme'
@@ -72,14 +72,14 @@ function Content() {
             padding: 0 !important;
           }
 
-          .mobile-blocker {
+          .interaction-blocker {
             pointer-events: none !important;
             overflow: hidden !important;
             touch-action: none !important;
             user-select: none !important;
           }
 
-          .mobile-blocker * {
+          .interaction-blocker * {
             pointer-events: none !important;
             overflow: hidden !important;
             touch-action: none !important;

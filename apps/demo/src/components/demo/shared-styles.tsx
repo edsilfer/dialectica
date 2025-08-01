@@ -1,10 +1,14 @@
 import { ThemeTokens } from '@commons'
 import { css } from '@emotion/react'
 
-export interface Border {
+interface Border {
+  /** Whether to add a border to the bottom left corner */
   bottomLeft?: boolean
+  /** Whether to add a border to the bottom right corner */
   bottomRight?: boolean
+  /** Whether to add a border to the top left corner */
   topLeft?: boolean
+  /** Whether to add a border to the top right corner */
   topRight?: boolean
 }
 
