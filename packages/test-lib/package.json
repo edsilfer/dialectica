@@ -1,5 +1,5 @@
 {
-  "name": "@test-lib",
+  "name": "@edsilfer/test-lib",
   "version": "0.1.0",
   "description": "Utitilities for testing",
   "main": "dist/index.js",

@@ -4,14 +4,14 @@ import {
   expectElementNotToBeInTheDocument,
   expectElementToBeInTheDocument,
   render,
-} from '@test-lib'
+} from '@edsilfer/test-lib'
 import { fireEvent, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import type { CommentEditorProps } from './Editor'
 import { Editor } from './Editor'
 
 vi.mock('antd', async () => {
-  const { createAntdMocks } = await import('@test-lib')
+  const { createAntdMocks } = await import('@edsilfer/test-lib')
   return createAntdMocks()
 })
 

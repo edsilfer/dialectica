@@ -1,4 +1,4 @@
-import { createPropsFactory, render } from '@test-lib'
+import { createPropsFactory, render } from '@edsilfer/test-lib'
 import { screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { SAMPLE_FILE_DIFFS } from '../__fixtures__/file-diff-fixtures'

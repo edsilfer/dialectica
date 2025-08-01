@@ -1,5 +1,5 @@
 import { readStorageValue, Themes, writeStorageValue } from '@commons'
-import { createPropsFactory, render, renderWithContext } from '@test-lib'
+import { createPropsFactory, render, renderWithContext } from '@edsilfer/test-lib'
 import { act, screen } from '@testing-library/react'
 import React from 'react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'

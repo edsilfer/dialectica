@@ -1,5 +1,5 @@
 import { ThemeProvider, Themes } from '@commons'
-import { createPropsFactory, render } from '@test-lib'
+import { createPropsFactory, render } from '@edsilfer/test-lib'
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import React, { type ChangeEvent } from 'react'
 import { describe, expect, it, vi } from 'vitest'
@@ -9,7 +9,7 @@ import { ReviewButton, ReviewButtonProps } from './ReviewButton'
 
 vi.mock('antd', async (importOriginal: () => Promise<typeof import('antd')>) => {
   const actual = await importOriginal()
-  const { createAntdMocks } = await import('@test-lib')
+  const { createAntdMocks } = await import('@edsilfer/test-lib')
   // Use generic mocks but keep critical components real
   const mocks: Record<string, unknown> = createAntdMocks()
   return {

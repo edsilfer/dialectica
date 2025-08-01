@@ -4,7 +4,7 @@ import {
   expectElementNotToBeInTheDocument,
   expectElementToBeInTheDocument,
   render,
-} from '@test-lib'
+} from '@edsilfer/test-lib'
 import { fireEvent, screen } from '@testing-library/react'
 import React from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -15,7 +15,7 @@ import { InlineComment, type InlineCommentProps } from './InlineComment'
 import { CommentAuthor, CommentEvent, CommentMetadata, CommentState } from './models'
 
 vi.mock('antd', async () => {
-  const { createAntdMocks } = await import('@test-lib')
+  const { createAntdMocks } = await import('@edsilfer/test-lib')
   return createAntdMocks()
 })
 

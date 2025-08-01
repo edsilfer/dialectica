@@ -1,5 +1,5 @@
 import { ThemeProvider, Themes } from '@commons'
-import { createPropsFactory, render } from '@test-lib'
+import { createPropsFactory, render } from '@edsilfer/test-lib'
 import { screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { PullRequestMetadata } from '../models/pull-request-metadata'
@@ -10,7 +10,7 @@ vi.mock('../../../components/diff-viewer/providers/diff-viewer-context', () => (
 }))
 
 vi.mock('antd', async () => {
-  const { createAntdMocks } = await import('@test-lib')
+  const { createAntdMocks } = await import('@edsilfer/test-lib')
   return createAntdMocks()
 })
 

@@ -1,4 +1,9 @@
-import { createAntdMocks, createPropsFactory, expectElementToBeInTheDocument, renderWithContext } from '@test-lib'
+import {
+  createAntdMocks,
+  createPropsFactory,
+  expectElementToBeInTheDocument,
+  renderWithContext,
+} from '@edsilfer/test-lib'
 import { render } from '@testing-library/react'
 import React from 'react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'

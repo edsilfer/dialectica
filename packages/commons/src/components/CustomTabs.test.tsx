@@ -1,4 +1,4 @@
-import { createPropsFactory, expectElementToBeInTheDocument, render } from '@test-lib'
+import { createPropsFactory, expectElementToBeInTheDocument, render } from '@edsilfer/test-lib'
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, screen } from '@testing-library/react'
 import React from 'react'

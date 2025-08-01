@@ -32,7 +32,7 @@
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "@test-lib": "workspace:*",
+    "@edsilfer/test-lib": "workspace:*",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@types/react": "^19.1.8",

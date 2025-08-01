@@ -1,4 +1,4 @@
-import { createPropsFactory } from '@test-lib'
+import { createPropsFactory } from '@edsilfer/test-lib'
 import { describe, expect, it } from 'vitest'
 import { CommentMetadata, CommentState } from './CommentMetadata'
 

@@ -1,9 +1,8 @@
+import { createPropsFactory, render } from '@edsilfer/test-lib'
 import { fireEvent, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-import { createPropsFactory } from '@test-lib'
-import { render } from '@test-lib'
-import { IconRail, IconRailProps } from './IconRail'
 import { DrawerContent } from './Drawer'
+import { IconRail, IconRailProps } from './IconRail'
 
 /**
  * # IconRail Testing Strategy

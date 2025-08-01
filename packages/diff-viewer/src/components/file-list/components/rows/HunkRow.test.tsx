@@ -1,5 +1,5 @@
 import { ThemeProvider, Themes } from '@commons'
-import { render as baseRender, createPropsFactory } from '@test-lib'
+import { createPropsFactory, render as baseRender } from '@edsilfer/test-lib'
 import { fireEvent, screen } from '@testing-library/react'
 import React from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'

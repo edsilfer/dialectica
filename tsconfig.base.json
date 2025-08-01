@@ -24,7 +24,10 @@
       "@github/*": ["packages/github/src/*"],
 
       "@file-explorer": ["packages/file-explorer/src"],
-      "@file-explorer/*": ["packages/file-explorer/src/*"]
+      "@file-explorer/*": ["packages/file-explorer/src/*"],
+
+      "@edsilfer/test-lib": ["packages/test-lib/src"],
+      "@edsilfer/test-lib/*": ["packages/test-lib/src/*"]
     }
   }
 }

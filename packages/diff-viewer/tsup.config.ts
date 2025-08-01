@@ -25,5 +25,6 @@ export default defineConfig({
     options.alias ??= {}
     options.alias['@commons'] = path.resolve(__dirname, '../commons/src')
     options.alias['@file-explorer'] = path.resolve(__dirname, '../file-explorer/src')
+    options.alias['@edsilfer/test-lib'] = path.resolve(__dirname, '../test-lib/src')
   },
 })

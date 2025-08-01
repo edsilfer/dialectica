@@ -1,4 +1,4 @@
-import { createPropsFactory, render } from '@test-lib'
+import { createPropsFactory, render } from '@edsilfer/test-lib'
 import { fireEvent, screen, act, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, test, vi } from 'vitest'
 import { FileDiff } from '../../../../models/FileDiff'
