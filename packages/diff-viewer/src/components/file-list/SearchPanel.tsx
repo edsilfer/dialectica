@@ -1,5 +1,5 @@
 import { DownOutlined, QuestionCircleOutlined, UpOutlined } from '@ant-design/icons'
-import { ThemeContext } from '@commons'
+import { ThemeContext } from '@edsilfer/commons'
 import { css } from '@emotion/react'
 import { Input, Tooltip, Typography } from 'antd'
 import { debounce } from 'lodash'

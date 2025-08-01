@@ -1,5 +1,5 @@
 import { ArrowRightOutlined } from '@ant-design/icons'
-import { GitHubIcon, ThemeContext, ThemeTokens } from '@commons'
+import { GitHubIcon, ThemeContext, ThemeTokens } from '@edsilfer/commons'
 import { css } from '@emotion/react'
 import { Button, Typography } from 'antd'
 import { useContext } from 'react'

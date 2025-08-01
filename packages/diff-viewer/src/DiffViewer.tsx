@@ -1,6 +1,6 @@
-import { DirectoryIcon, HandleIcon, ThemeTokens, useIsMobile } from '@commons'
+import { DirectoryIcon, HandleIcon, ThemeTokens, useIsMobile } from '@edsilfer/commons'
 import { css } from '@emotion/react'
-import { FileExplorer, FileMetadata } from '@file-explorer'
+import { FileExplorer, FileMetadata } from '@edsilfer/file-explorer'
 import React, { useContext, useEffect, useMemo, useState, useTransition } from 'react'
 import { Drawer, DrawerContent } from './components/drawer/Drawer'
 import { FileList } from './components/file-list/FileList'

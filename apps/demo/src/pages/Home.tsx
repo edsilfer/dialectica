@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { Alert, notification } from 'antd'
 
-import { AddButton, InfoCard, useTheme } from '@commons'
+import { AddButton, InfoCard, useTheme } from '@edsilfer/commons'
 import { DiffViewer, ParsedDiff } from '@edsilfer/diff-viewer'
 import { CommentEvent, CommentState, useCommentController, useReviewController, useReviewDatastore } from '@github'
 

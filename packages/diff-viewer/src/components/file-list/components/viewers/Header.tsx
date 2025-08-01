@@ -2,7 +2,7 @@ import { css } from '@emotion/react'
 import { Checkbox, Typography } from 'antd'
 import React, { useCallback, useContext, useMemo } from 'react'
 
-import { CopyButton, ExpandButton, ThemeContext } from '@commons'
+import { CopyButton, ExpandButton, ThemeContext } from '@edsilfer/commons'
 import { FileDiff } from '../../../../models/FileDiff'
 import { useFileState } from '../../../../providers/file-list-context'
 import FileActivitySummary from '../../../activity-summary/FileActivitySummary'

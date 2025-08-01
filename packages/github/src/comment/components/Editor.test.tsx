@@ -1,4 +1,4 @@
-import { ThemeProvider, Themes } from '@commons'
+import { ThemeProvider, Themes } from '@edsilfer/commons'
 import {
   createPropsFactory,
   expectElementNotToBeInTheDocument,

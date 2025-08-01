@@ -1,4 +1,4 @@
-import { useIsMobile, useTheme } from '@commons'
+import { useIsMobile, useTheme } from '@edsilfer/commons'
 import { css } from '@emotion/react'
 import Editor, { OnMount } from '@monaco-editor/react'
 import { useCallback } from 'react'

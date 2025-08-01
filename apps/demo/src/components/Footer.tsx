@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import { Typography } from 'antd'
-import { PixelHeartIcon } from '@commons'
+import { PixelHeartIcon } from '@edsilfer/commons'
 
 const { Text } = Typography
 

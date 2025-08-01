@@ -1,4 +1,4 @@
-import { readStorageValue, Themes, writeStorageValue } from '@commons'
+import { readStorageValue, Themes, writeStorageValue } from '@edsilfer/commons'
 import { createPropsFactory, render, renderWithContext } from '@edsilfer/test-lib'
 import { act, screen } from '@testing-library/react'
 import React from 'react'
@@ -49,8 +49,8 @@ import {
  */
 
 // MOCKS
-vi.mock('@commons', async () => {
-  const actual = await vi.importActual<typeof import('@commons')>('@commons')
+vi.mock('@edsilfer/commons', async () => {
+  const actual = await vi.importActual<typeof import('@edsilfer/commons')>('@edsilfer/commons')
   return {
     ...actual,
     readStorageValue: vi.fn(),

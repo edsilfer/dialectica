@@ -1,4 +1,4 @@
-import { ThemeContext } from '@commons'
+import { ThemeContext } from '@edsilfer/commons'
 import { css, Interpolation, Theme } from '@emotion/react'
 import React, { memo, useContext, useRef } from 'react'
 import { FSNode } from './components/FSNode'

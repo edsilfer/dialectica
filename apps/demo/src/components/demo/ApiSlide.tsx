@@ -1,4 +1,4 @@
-import { ThemeContext } from '@commons'
+import { ThemeContext } from '@edsilfer/commons'
 import { css } from '@emotion/react'
 import { Typography } from 'antd'
 import { useContext } from 'react'

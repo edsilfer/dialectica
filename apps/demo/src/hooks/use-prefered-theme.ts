@@ -1,4 +1,4 @@
-import { Themes, ThemeTokens } from '@commons'
+import { Themes, ThemeTokens } from '@edsilfer/commons'
 import { useEffect, useState } from 'react'
 
 export function usePreferedTheme() {

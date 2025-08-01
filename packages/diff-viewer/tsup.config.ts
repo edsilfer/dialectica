@@ -14,17 +14,14 @@ export default defineConfig({
   clean: true,
 
   // externals that must stay `require('…')`
-  external: ['react', 'react-dom', '@file-explorer'],
-
-  // packages we want to BUNDLE (inline) ↓
-  noExternal: ['@commons'],
+  external: ['react', 'react-dom', '@edsilfer/file-explorer', '@edsilfer/commons'],
 
   loader: { '.css': 'copy' },
 
   esbuildOptions(options) {
     options.alias ??= {}
-    options.alias['@commons'] = path.resolve(__dirname, '../commons/src')
-    options.alias['@file-explorer'] = path.resolve(__dirname, '../file-explorer/src')
+    options.alias['@edsilfer/commons'] = path.resolve(__dirname, '../commons/src')
+    options.alias['@edsilfer/file-explorer'] = path.resolve(__dirname, '../file-explorer/src')
     options.alias['@edsilfer/test-lib'] = path.resolve(__dirname, '../test-lib/src')
   },
 })

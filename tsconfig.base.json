@@ -17,17 +17,14 @@
       "@edsilfer/diff-viewer": ["packages/diff-viewer/src"],
       "@edsilfer/diff-viewer/*": ["packages/diff-viewer/src/*"],
 
-      "@commons": ["packages/commons/src"],
-      "@commons/*": ["packages/commons/src/*"],
+      "@edsilfer/commons": ["packages/commons/src"],
+      "@edsilfer/commons/*": ["packages/commons/src/*"],
+
+      "@edsilfer/file-explorer": ["packages/file-explorer/src"],
+      "@edsilfer/file-explorer/*": ["packages/file-explorer/src/*"],
 
       "@github": ["packages/github/src"],
-      "@github/*": ["packages/github/src/*"],
-
-      "@file-explorer": ["packages/file-explorer/src"],
-      "@file-explorer/*": ["packages/file-explorer/src/*"],
-
-      "@edsilfer/test-lib": ["packages/test-lib/src"],
-      "@edsilfer/test-lib/*": ["packages/test-lib/src/*"]
+      "@github/*": ["packages/github/src/*"]
     }
   }
 }

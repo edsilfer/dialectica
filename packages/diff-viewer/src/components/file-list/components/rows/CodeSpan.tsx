@@ -1,4 +1,4 @@
-import { highlight, HighlightMatch, ThemeContext } from '@commons'
+import { highlight, HighlightMatch, ThemeContext } from '@edsilfer/commons'
 import type { CSSObject } from '@emotion/react'
 import React, { useContext } from 'react'
 import { useDiffSearch } from '../../../../providers/diff-search-provider'

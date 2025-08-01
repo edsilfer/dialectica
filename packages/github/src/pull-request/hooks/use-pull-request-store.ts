@@ -1,4 +1,4 @@
-import { useAsync } from '@commons'
+import { useAsync } from '@edsilfer/commons'
 import { LineRequest, LoadMoreLinesResult } from '@edsilfer/diff-viewer'
 import { GitHubInlineComment, GitHubPullRequest, GitHubUser, PrKey } from '@github'
 import { useCallback, useMemo } from 'react'

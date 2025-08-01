@@ -1,4 +1,4 @@
-import { useIsMobile, useTheme } from '@commons'
+import { useIsMobile, useTheme } from '@edsilfer/commons'
 import { FileExplorer, FileMetadata, ParsedDiff } from '@edsilfer/diff-viewer'
 import { css, SerializedStyles } from '@emotion/react'
 import { usePullRequestStore } from '@github'

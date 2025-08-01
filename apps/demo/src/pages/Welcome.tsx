@@ -4,7 +4,7 @@ import CommentSlide from '../components/demo/CommentSlide'
 import FileViewerSlide from '../components/demo/FileViewerSlide'
 import IntroSlide from '../components/demo/IntroSlide'
 
-import { ThemeContext } from '@commons'
+import { ThemeContext } from '@edsilfer/commons'
 import {
   DEFAULT_DIFF_VIEWER_CONFIG,
   DEFAULT_FILE_EXPLORER_CONFIG,

@@ -1,5 +1,5 @@
-import { Themes } from '@commons'
-import { DEFAULT_FILE_EXPLORER_CONFIG } from '@file-explorer'
+import { Themes } from '@edsilfer/commons'
+import { DEFAULT_FILE_EXPLORER_CONFIG } from '@edsilfer/file-explorer'
 import { render, renderWithContext } from '@edsilfer/test-lib'
 import React, { PropsWithChildren } from 'react'
 import { describe, expect, it, vi } from 'vitest'
