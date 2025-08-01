@@ -1,5 +1,6 @@
 {
   "name": "@github",
+  "private": true,
   "version": "0.1.0",
   "description": "Extensions to deal with GitHub PR data and enrich @diff-viewer",
   "main": "dist/index.js",
@@ -49,6 +50,7 @@
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
     "@commons": "workspace:*",
+    "@edsilfer/diff-viewer": "workspace:*",
     "@emotion/react": "^11.14.0",
     "antd": "^5.26.2"
   }

@@ -1,5 +1,6 @@
 {
   "name": "@file-explorer",
+  "private": true,
   "version": "0.1.0",
   "description": "A generic file-explorer for rendering file trees",
   "main": "dist/index.js",

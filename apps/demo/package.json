@@ -1,5 +1,6 @@
 {
   "name": "demo",
+  "private": true,
   "version": "1.0.0",
   "description": "A demo app for the dialectica repository",
   "homepage": "https://edsilfer.github.io/dialectica",
@@ -17,17 +18,18 @@
   "packageManager": "pnpm@10.12.3",
   "dependencies": {
     "@ant-design/icons": "~5.6.1",
-    "@commons": "workspace:*",
     "@emotion/react": "^11.14.0",
-    "@file-explorer": "workspace:*",
-    "@github": "workspace:*",
     "@monaco-editor/react": "^4.7.0",
     "@types/lodash": "^4.17.19",
     "antd": "^5.26.2",
     "lodash": "^4.17.21",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router-dom": "^7.7.1"
+    "react-router-dom": "^7.7.1",
+    "@edsilfer/diff-viewer": "^0.1.1",
+    "@commons": "workspace:*",
+    "@github": "workspace:*",
+    "@file-explorer": "workspace:*"
   },
   "devDependencies": {
     "@emotion/babel-plugin": "^11.11.0",

@@ -1,4 +1,4 @@
-import { LineMetadata } from '@diff-viewer'
+import { LineMetadata } from '@edsilfer/diff-viewer'
 import { GitHubUser } from '../../api'
 import { CommentFactory, CommentMetadata, CommentState } from '../models'
 import { CommentLocalStore } from './CommentLocalStore'

@@ -1,5 +1,5 @@
 import { useIsMobile, useTheme } from '@commons'
-import { ParsedDiff } from '@diff-viewer'
+import { ParsedDiff } from '@edsilfer/diff-viewer'
 import { css, SerializedStyles } from '@emotion/react'
 import { FileExplorer, FileMetadata } from '@file-explorer'
 import { usePullRequestStore } from '@github'

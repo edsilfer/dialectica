@@ -4,10 +4,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Alert, notification } from 'antd'
 
 import { AddButton, InfoCard, useTheme } from '@commons'
-import { DiffViewer, ParsedDiff } from '@diff-viewer'
+import { DiffViewer, ParsedDiff } from '@edsilfer/diff-viewer'
 import { CommentEvent, CommentState, useCommentController, useReviewController, useReviewDatastore } from '@github'
 
-import { LineRange } from '@diff-viewer'
+import { LineRange } from '@edsilfer/diff-viewer'
 import { usePullRequestStore } from '@github'
 import { useNavigate } from 'react-router-dom'
 import ErrorCard from '../components/ErrorCard'

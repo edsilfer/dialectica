@@ -1,5 +1,5 @@
 import { useAsync } from '@commons'
-import { LineRequest, LoadMoreLinesResult } from '@diff-viewer'
+import { LineRequest, LoadMoreLinesResult } from '@edsilfer/diff-viewer'
 import { GitHubInlineComment, GitHubPullRequest, GitHubUser, PrKey } from '@github'
 import { useCallback, useMemo } from 'react'
 import { PullRequestRemoteStore } from '../data/PullRequestRemoteStore'

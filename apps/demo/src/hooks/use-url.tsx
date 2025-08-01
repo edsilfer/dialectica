@@ -1,4 +1,4 @@
-import { LineRange } from '@diff-viewer'
+import { LineRange } from '@edsilfer/diff-viewer'
 import { PrKey } from '@github'
 import { useEffect, useState } from 'react'
 

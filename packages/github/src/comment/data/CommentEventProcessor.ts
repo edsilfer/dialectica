@@ -1,6 +1,6 @@
+import { LineMetadata } from '@edsilfer/diff-viewer'
 import { CommentEvent, CommentMetadata, CommentState } from '../models/CommentMetadata'
 import { CommentStore } from './CommentStore'
-import { LineMetadata } from '@diff-viewer'
 
 /**
  * Event handler for comment widget events

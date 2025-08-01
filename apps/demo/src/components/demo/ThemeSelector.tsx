@@ -1,5 +1,5 @@
 import { ThemeContext, Themes, ThemeTokens } from '@commons'
-import { useDiffViewerConfig } from '@diff-viewer'
+import { useDiffViewerConfig } from '@edsilfer/diff-viewer'
 import { css } from '@emotion/react'
 import { Select } from 'antd'
 import { useContext } from 'react'

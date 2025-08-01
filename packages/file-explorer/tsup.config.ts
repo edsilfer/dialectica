@@ -9,6 +9,6 @@ export default defineConfig({
   },
   sourcemap: true,
   clean: true,
-  external: ['react', '@commons'],
+  external: ['react'],
   loader: { '.css': 'file' },
 })

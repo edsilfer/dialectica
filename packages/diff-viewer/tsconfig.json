@@ -7,16 +7,5 @@
     "jsxImportSource": "@emotion/react",
     "moduleResolution": "Node"
   },
-  "include": [
-    "src",
-    "vitest.setup.ts",
-    "../commons/vitest.setup.ts",
-    "../commons/src/test/antd-utils.ts",
-    "../commons/src/test/context-test-utils.tsx",
-    "../commons/src/test/generic-test-utils.ts",
-    "../test-lib/src/render.tsx",
-    "../commons/src/test/setup.ts",
-    "../commons/src/themes",
-    "src/components/file-list/components/rows/CodeSpan.tsx"
-  ]
+  "include": ["src", "vitest.setup.ts", "../test-lib/src/render.tsx"]
 }

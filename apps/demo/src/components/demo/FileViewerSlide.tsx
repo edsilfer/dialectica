@@ -1,5 +1,5 @@
 import { ThemeContext, ThemeTokens, useIsMobile } from '@commons'
-import { LineRange } from '@diff-viewer'
+import { LineRange } from '@edsilfer/diff-viewer'
 import { css } from '@emotion/react'
 import { Button, Typography } from 'antd'
 import { useContext, useEffect, useRef, useState } from 'react'

@@ -1,6 +1,6 @@
-import { defineConfig } from 'vitest/config'
-import { resolve, dirname } from 'path'
+import { dirname } from 'path'
 import { fileURLToPath } from 'url'
+import { defineConfig } from 'vitest/config'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -21,17 +21,9 @@ export default defineConfig({
         '**/*.test.{ts,tsx}',
         '**/*.config.{ts,js}',
         'vitest.setup.ts',
-        'src/components/ui/icons/',
         '**/types.ts',
         '**/index.ts',
       ],
-    },
-  },
-  resolve: {
-    alias: {
-      '@file-explorer': resolve(__dirname, 'src'),
-      '@commons': resolve(__dirname, '../commons/src'),
-      '@test-lib': resolve(__dirname, '../test-lib/src'),
     },
   },
 })

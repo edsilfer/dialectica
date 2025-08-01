@@ -1,5 +1,6 @@
 {
   "name": "@commons",
+  "private": true,
   "version": "0.1.0",
   "description": "Common utilities for dialectica repository",
   "main": "dist/index.js",

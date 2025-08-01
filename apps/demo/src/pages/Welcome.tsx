@@ -5,7 +5,7 @@ import FileViewerSlide from '../components/demo/FileViewerSlide'
 import IntroSlide from '../components/demo/IntroSlide'
 
 import { ThemeContext } from '@commons'
-import { DEFAULT_DIFF_VIEWER_CONFIG, DEFAULT_FILE_LIST_CONFIG, DiffViewerConfigProvider } from '@diff-viewer'
+import { DEFAULT_DIFF_VIEWER_CONFIG, DEFAULT_FILE_LIST_CONFIG, DiffViewerConfigProvider } from '@edsilfer/diff-viewer'
 import { DEFAULT_FILE_EXPLORER_CONFIG } from '@file-explorer'
 import ApiSlide from '../components/demo/ApiSlide'
 import FileExplorerSlide from '../components/demo/FileExplorerSlide'

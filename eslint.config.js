@@ -15,6 +15,18 @@ export default [
   js.configs.recommended,
   prettier,
 
+  // Node-only tool-config files
+  {
+    files: ['**/vite.config.{js,ts}', '**/tsup.config.{js,ts}', '**/*.config.{js,ts}'],
+    languageOptions: {
+      globals: {
+        ...globals.node, // 👈 provides process, __dirname, module, etc.
+      },
+      // optional but nice:
+      parserOptions: { ecmaVersion: 2020, sourceType: 'module' },
+    },
+  },
+
   /*
    * - React and React Hooks rules for JSX/TSX files.
    * ------------------------------------------------------------------------------------------------

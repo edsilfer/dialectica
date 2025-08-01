@@ -1,4 +1,4 @@
-import { LineMetadata } from '@diff-viewer'
+import { LineMetadata } from '@edsilfer/diff-viewer'
 import { GitHubInlineComment } from '../../api/models'
 import { CommentAuthor, CommentMetadata, CommentState } from './CommentMetadata'
 

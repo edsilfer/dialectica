@@ -1,4 +1,4 @@
-import { DEFAULT_DIFF_VIEWER_CONFIG, DiffViewerConfigProvider, FileListConfig } from '@diff-viewer'
+import { DEFAULT_DIFF_VIEWER_CONFIG, DiffViewerConfigProvider, FileListConfig } from '@edsilfer/diff-viewer'
 import { FileExplorerConfig } from '@file-explorer'
 import React from 'react'
 import ReactDOM from 'react-dom/client'

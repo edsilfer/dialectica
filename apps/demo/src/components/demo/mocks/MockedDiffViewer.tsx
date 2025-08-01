@@ -1,5 +1,5 @@
 import { AddButton, useTheme } from '@commons'
-import { DiffViewer, ParsedDiff } from '@diff-viewer'
+import { DiffViewer, ParsedDiff } from '@edsilfer/diff-viewer'
 import { css, SerializedStyles } from '@emotion/react'
 import {
   CommentState,

@@ -1,4 +1,4 @@
-import type { LineRequest, LoadMoreLinesResult } from '@diff-viewer'
+import type { LineRequest, LoadMoreLinesResult } from '@edsilfer/diff-viewer'
 import type { GetMoreLinesRequest } from './types'
 import { getFileContent } from './get-file-content'
 

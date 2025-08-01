@@ -1,5 +1,5 @@
 import { ThemeContext, Themes } from '@commons'
-import { useDiffViewerConfig, useFileListConfig } from '@diff-viewer'
+import { useDiffViewerConfig, useFileListConfig } from '@edsilfer/diff-viewer'
 import { css } from '@emotion/react'
 import { useFileExplorerConfig } from '@file-explorer'
 import { Divider, Modal } from 'antd'

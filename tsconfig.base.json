@@ -4,7 +4,8 @@
     "module": "ESNext",
     "lib": ["DOM", "ESNext"],
     "jsx": "react-jsx",
-    "moduleResolution": "Bundler",
+    "types": ["node"],
+    "moduleResolution": "node",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
@@ -13,11 +14,17 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
-      "@diff-viewer": ["packages/diff-viewer/src"],
+      "@edsilfer/diff-viewer": ["packages/diff-viewer/src"],
+      "@edsilfer/diff-viewer/*": ["packages/diff-viewer/src/*"],
+
       "@commons": ["packages/commons/src"],
+      "@commons/*": ["packages/commons/src/*"],
+
       "@github": ["packages/github/src"],
+      "@github/*": ["packages/github/src/*"],
+
       "@file-explorer": ["packages/file-explorer/src"],
-      "@test-lib": ["packages/test-lib/src"]
+      "@file-explorer/*": ["packages/file-explorer/src/*"]
     }
   }
 }
