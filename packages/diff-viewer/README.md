@@ -11,7 +11,7 @@ A composable React library for building rich code review UIs. It provides diff v
 [Try it now](https://edsilfer.github.io/dialectica/) or
 
 ```bash
-git clone git@github.com:your-org/dialectica.git
+git clone git@github.com:edsilfer/dialectica.git
 cd dialectica ; pnpm install ; pnpm demo
 ```
 
@@ -40,13 +40,13 @@ Main features
 ## Installation
 
 ```bash
-npm install <coming soon>
+npm install @edsilfer/diff-viewer
 ```
 
 ## API
 
 ```tsx
-import { DiffViewer } from '@diff-viewer'
+import { DiffViewerConfigProvider, DiffViewer } from '@edsilfer/diff-viewer'
 
 /*
  * Supports for custom toolbar to render diff metadata.
@@ -91,8 +91,8 @@ const widgets = [
 return (
   <DiffViewerConfigProvider
     theme={Themes.light}
-    fileExplorerConfig={DEFAULT_FILE_EXPLORER_CONFIG}
-    fileListConfig={DEFAULT_FILE_LIST_CONFIG}
+    fileExplorerConfig={ ... }
+    fileListConfig={ ... }
     storage="local"
   >
     <DiffViewer

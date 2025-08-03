@@ -63,7 +63,7 @@ function useStyles() {
 
 export default function Home() {
   const styles = useStyles()
-  const { currentUser, githubPat: token, useMocks, setCurrentUser } = useSettings()
+  const { currentUser, githubPat: token, useMocks, enableTutorial, setCurrentUser } = useSettings()
 
   // STATE ---------------------------------------------------------------------------------------------
   const [fileNames, setFileNames] = useState<string[]>([])
@@ -83,6 +83,12 @@ export default function Home() {
   const widgetDatastore = useWidgetDatastore(commentDs, onCommentEvent)
 
   // ERRORS --------------------------------------------------------------------------------------------
+  useEffect(() => {
+    if (enableTutorial) {
+      void navigate('/welcome')
+    }
+  }, [enableTutorial, navigate])
+
   useEffect(() => {
     if (errors.comments) {
       notification.error({

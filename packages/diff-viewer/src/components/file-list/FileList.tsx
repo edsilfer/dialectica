@@ -38,8 +38,9 @@ const useStyles = () => {
     header: css`
       display: flex;
       flex-direction: row;
+      justify-content: space-between;
       align-items: center;
-      gap: ${theme.spacing.xs};
+      gap: ${theme.spacing.sm};
 
       @media (max-width: 768px) {
         width: 100%;
@@ -49,10 +50,11 @@ const useStyles = () => {
     rightHeaderContainer: css`
       display: flex;
       flex-direction: row;
+      justify-content: flex-end;
       align-items: center;
       margin-left: auto;
       width: 100%;
-      gap: ${theme.spacing.xs};
+      gap: ${theme.spacing.sm};
     `,
 
     leftHeaderContainer: css`
@@ -61,7 +63,7 @@ const useStyles = () => {
       width: 100%;
       align-items: center;
       justify-content: space-between;
-      gap: ${theme.spacing.xs};
+      gap: ${theme.spacing.sm};
     `,
   }
 }

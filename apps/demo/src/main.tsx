@@ -1,7 +1,7 @@
 import {
-  FileExplorerConfig,
   DEFAULT_DIFF_VIEWER_CONFIG,
   DiffViewerConfigProvider,
+  FileExplorerConfig,
   FileListConfig,
 } from '@edsilfer/diff-viewer'
 import React from 'react'
@@ -10,7 +10,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { usePreferedTheme } from './hooks/use-prefered-theme'
 import { SettingsProvider } from './hooks/use-settings'
 import Home from './pages/Home'
-import Landing from './pages/Welcome'
+import Welcome from './pages/Welcome'
 
 export const DEFAULT_FILE_EXPLORER_CONFIG: FileExplorerConfig = {
   startExpanded: true,
@@ -43,7 +43,7 @@ function Root() {
       >
         <BrowserRouter basename="/dialectica">
           <Routes>
-            <Route path="/welcome" element={<Landing />} />
+            <Route path="/welcome" element={<Welcome />} />
             <Route path="/" element={<Home />} />
           </Routes>
         </BrowserRouter>

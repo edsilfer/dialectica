@@ -13,11 +13,16 @@ const useStyles = () => {
 
   return {
     popoverContainer: css`
-      width: 600px;
-      max-height: 450px;
-      max-width: 100%;
       padding: ${theme.spacing.xs};
       overflow-y: auto;
+
+      @media (min-width: 768px) {
+        width: 600px;
+      }
+
+      @media (max-width: 768px) {
+        width: 100vw;
+      }
     `,
 
     radioGroup: css`
@@ -186,7 +191,7 @@ export const ReviewButton: React.FC<ReviewButtonProps> = ({
         trigger={['click']}
         open={isPopoverOpen}
         onOpenChange={handleOpenChange}
-        placement="bottomRight"
+        placement={isMobile ? 'bottom' : 'bottomRight'}
       >
         {isMobile ? MobileButton : RegularButton}
       </Popover>

@@ -17,6 +17,7 @@ const useStyles = () => {
       display: flex;
       flex-direction: row;
       width: 100%;
+      max-width: 300px;
       flex-grow: 1;
       align-items: center;
       gap: ${theme.spacing.xs};

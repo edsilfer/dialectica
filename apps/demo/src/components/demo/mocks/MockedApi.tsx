@@ -25,12 +25,13 @@ export default function MockedApi() {
   const isMobile = useIsMobile()
 
   const content = `
-  import { DiffViewer } from '@diff-viewer'
+import { DiffViewerConfigProvider, DiffViewer } from '@edsilfer/diff-viewer'
 
-  /*
-   * Supports for custom toolbar to render diff metadata. 
-   */
-  const toolbar = <Toolbar
+/*
+ * Supports for custom toolbar to render diff metadata.
+ */
+const toolbar = (
+  <Toolbar
     loading={loading.metadata}
     pr={metadata}
     isPosting={isPosting}
@@ -39,52 +40,53 @@ export default function MockedApi() {
     commentDatastore={commentDs}
     onSearch={setPrUrl}
   />
+)
 
-  /*
-   * Easily dusplay any custom component over the last docked line.
-   */
-  const overlays = [
-    {
-      unifiedDockIdx: 2,
-      splitDockIdx: 1,
-      content: <AddButton key="add-button" onClick={() => onCommentEvent(CommentEvent.ADD)} />,
-      onDock: onLineDock,
-    },
-  ]
+/*
+ * Easily display any custom component over the last docked line.
+ */
+const overlays = [
+  {
+    unifiedDockIdx: 2,
+    splitDockIdx: 1,
+    content: <AddButton key="add-button" onClick={() => onCommentEvent(CommentEvent.ADD)} />,
+    onDock: onLineDock,
+  },
+]
 
-  /*
-   * Easily dock any custom component on a line - perfect for inline comments.
-   */
-  const widgets = [
-    {
-      content: <CommentWidget key="comment-widget" />,
-      line: 10,
-      position: 'top',
-      filepath: 'src/example.ts',
-      side: 'right',
-    },
-  ]
+/*
+ * Easily dock any custom component on a line - perfect for inline comments.
+ */
+const widgets = [
+  {
+    content: <CommentWidget key="comment-widget" />,
+    line: 10,
+    position: 'top',
+    filepath: 'src/example.ts',
+    side: 'right',
+  },
+]
 
-  return (
-    <DiffViewerConfigProvider
-      theme={Themes.light}
-      fileExplorerConfig={DEFAULT_FILE_EXPLORER_CONFIG}
-      fileListConfig={DEFAULT_FILE_LIST_CONFIG}
-      storage="local"
-    >
-      <DiffViewer
-        diff={diff}
-        isMetadataLoading={loading.metadata}
-        isDiffLoading={loading.diff}
-        onLoadMoreLines={loadMoreLines}
-        onLineSelection={onLineSelection}
-        highlightedLines={range}
-        widgets={widgets}
-        toolbar={toolbar}
-        overlays={overlays}
-      />
-    </DiffViewerConfigProvider>
-  )
+return (
+  <DiffViewerConfigProvider
+    theme={Themes.light}
+    fileExplorerConfig={ ... }
+    fileListConfig={ ... }
+    storage="local"
+  >
+    <DiffViewer
+      diff={diff}
+      isMetadataLoading={loading.metadata}
+      isDiffLoading={loading.diff}
+      onLoadMoreLines={loadMoreLines}
+      onLineSelection={onLineSelection}
+      highlightedLines={range}
+      widgets={widgets}
+      toolbar={toolbar}
+      overlays={overlays}
+    />
+  </DiffViewerConfigProvider>
+)
   `.trim()
 
   const handleEditorMount: OnMount = useCallback(

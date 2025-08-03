@@ -104,11 +104,11 @@ export const DiffViewerConfigProvider: React.FC<DiffViewerConfigContextProps> = 
   useEffect(() => {
     if (storage !== 'local' || typeof window === 'undefined') return
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(config))
+      window.localStorage.setItem(STORAGE_KEY + (props.scope ?? ''), JSON.stringify(config))
     } catch {
       // Ignore quota / serialization errors silently
     }
-  }, [storage, config])
+  }, [storage, config, props.scope])
 
   const value: DiffViewerConfigContextState = { config, setConfig }
 

@@ -1,6 +1,6 @@
-import { DirectoryIcon, HandleIcon, ThemeTokens, useIsMobile } from '@edsilfer/commons'
-import { css } from '@emotion/react'
+import { DirectoryIcon, HandleIcon, ThemeContext, useIsMobile } from '@edsilfer/commons'
 import { FileExplorer, FileMetadata } from '@edsilfer/file-explorer'
+import { css } from '@emotion/react'
 import React, { useContext, useEffect, useMemo, useState, useTransition } from 'react'
 import { Drawer, DrawerContent } from './components/drawer/Drawer'
 import { FileList } from './components/file-list/FileList'
@@ -12,7 +12,8 @@ import { DiffViewerConfigContext, DiffViewerConfigProvider, useDiffViewerConfig 
 const DRAWER_CLOSED_WIDTH = '2.25rem'
 const TRANSITION_DURATION = '0.3s'
 
-function useStyles(theme: ThemeTokens) {
+function useStyles() {
+  const theme = useContext(ThemeContext)
   return useMemo(
     () => ({
       container: css`
@@ -141,7 +142,7 @@ const InternalDiffViewer: React.FC<DiffViewerProps> = (props) => {
   })
 
   const explorerWidthPct = drawerOpen ? explorerWidth : config.explorerInitialWidth
-  const styles = useStyles(config.theme)
+  const styles = useStyles()
 
   useEffect(() => {
     if (!enableExplorer) return
