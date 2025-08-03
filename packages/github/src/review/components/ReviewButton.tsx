@@ -1,5 +1,6 @@
 import { RocketOutlined } from '@ant-design/icons'
-import { ChevronDownIcon, ThemeContext, useIsMobile } from '@edsilfer/commons'
+import { ChevronDownIcon, useIsMobile } from '@edsilfer/commons'
+import { ThemeContext } from '@edsilfer/diff-viewer'
 import { css } from '@emotion/react'
 import { Button, Divider, Popover, Radio, Space } from 'antd'
 import React, { useContext, useState } from 'react'

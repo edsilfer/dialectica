@@ -1,4 +1,5 @@
-import { useIsMobile, useTheme } from '@edsilfer/commons'
+import { useIsMobile } from '@edsilfer/commons'
+import { useTheme } from '@edsilfer/diff-viewer'
 import { css } from '@emotion/react'
 import Editor, { OnMount } from '@monaco-editor/react'
 import { useCallback } from 'react'

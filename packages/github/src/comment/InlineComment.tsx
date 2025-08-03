@@ -1,4 +1,4 @@
-import { ThemeContext } from '@edsilfer/commons'
+import { ThemeContext } from '@edsilfer/diff-viewer'
 import { css } from '@emotion/react'
 import { Divider } from 'antd'
 import React, { useContext } from 'react'

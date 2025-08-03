@@ -16,6 +16,8 @@ import useSharedStyles from '../components/demo/shared-styles'
  * @returns Object mapping semantic keys to Emotion `css` declarations.
  */
 const useStyles = () => {
+  const theme = useContext(ThemeContext)
+
   return {
     root: css`
       height: 100%;
@@ -23,6 +25,7 @@ const useStyles = () => {
       overflow-y: auto;
       scroll-snap-type: y mandatory;
       font-family: 'Segoe UI', sans-serif;
+      background-color: ${theme.colors.backgroundPrimary} !important;
     `,
   }
 }

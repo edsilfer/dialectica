@@ -1,5 +1,6 @@
 import { MoreOutlined } from '@ant-design/icons'
-import { formatTimestamp, ThemeContext } from '@edsilfer/commons'
+import { ThemeContext } from '@edsilfer/diff-viewer'
+import { formatTimestamp } from '@edsilfer/commons'
 import { css } from '@emotion/react'
 import { Dropdown, MenuProps, message, Tag, Typography } from 'antd'
 import { ItemType } from 'antd/es/menu/interface'

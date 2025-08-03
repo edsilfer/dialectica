@@ -14,6 +14,7 @@ const TRANSITION_DURATION = '0.3s'
 
 function useStyles() {
   const theme = useContext(ThemeContext)
+
   return useMemo(
     () => ({
       container: css`
@@ -22,6 +23,7 @@ function useStyles() {
         gap: ${theme.spacing.sm};
         height: 100%;
         width: 100%;
+        background-color: ${theme.colors.backgroundPrimary};
       `,
       content: css`
         position: relative;
