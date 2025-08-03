@@ -4,11 +4,19 @@ import CommentSlide from '../components/demo/CommentSlide'
 import FileViewerSlide from '../components/demo/FileViewerSlide'
 import IntroSlide from '../components/demo/IntroSlide'
 
-import { ThemeContext } from '@edsilfer/diff-viewer'
+import {
+  DEFAULT_DIFF_VIEWER_CONFIG,
+  DEFAULT_FILE_EXPLORER_CONFIG,
+  DEFAULT_FILE_LIST_CONFIG,
+  DiffViewerConfigProvider,
+  ThemeContext,
+} from '@edsilfer/diff-viewer'
 import ApiSlide from '../components/demo/ApiSlide'
 import FileExplorerSlide from '../components/demo/FileExplorerSlide'
 import GetStartedSlide from '../components/demo/GetStartedSlide'
 import useSharedStyles from '../components/demo/shared-styles'
+import { usePreferedTheme } from '../hooks/use-prefered-theme'
+import { SettingsProvider } from '../hooks/use-settings'
 
 /**
  * Creates Emotion style objects for this module.
@@ -30,7 +38,58 @@ const useStyles = () => {
   }
 }
 
+const GLOBAL_STYLE = (
+  <Global
+    styles={css`
+      html,
+      body,
+      #root {
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      body > div > div {
+        padding: 0 !important;
+      }
+
+      .interaction-blocker {
+        pointer-events: none !important;
+        overflow: hidden !important;
+        touch-action: none !important;
+        user-select: none !important;
+      }
+
+      .interaction-blocker * {
+        pointer-events: none !important;
+        overflow: hidden !important;
+        touch-action: none !important;
+        user-select: none !important;
+      }
+    `}
+  />
+)
+
 export default function Welcome() {
+  const preferredTheme = usePreferedTheme()
+
+  return (
+    <SettingsProvider>
+      <DiffViewerConfigProvider
+        config={{ ...DEFAULT_DIFF_VIEWER_CONFIG, theme: preferredTheme, explorerInitialWidth: 35 }}
+        scope="welcome"
+        fileExplorerConfig={DEFAULT_FILE_EXPLORER_CONFIG}
+        fileListConfig={DEFAULT_FILE_LIST_CONFIG}
+        storage="local"
+      >
+        <Content />
+      </DiffViewerConfigProvider>
+    </SettingsProvider>
+  )
+}
+
+function Content() {
   const styles = useStyles()
   const getStartedRef = useRef<HTMLElement | null>(null)
   const scrollToGetStarted = () => {
@@ -39,37 +98,7 @@ export default function Welcome() {
 
   return (
     <>
-      <Global
-        styles={css`
-          html,
-          body,
-          #root {
-            margin: 0 !important;
-            padding: 0 !important;
-            height: 100%;
-            overflow: hidden;
-          }
-
-          body > div > div {
-            padding: 0 !important;
-          }
-
-          .interaction-blocker {
-            pointer-events: none !important;
-            overflow: hidden !important;
-            touch-action: none !important;
-            user-select: none !important;
-          }
-
-          .interaction-blocker * {
-            pointer-events: none !important;
-            overflow: hidden !important;
-            touch-action: none !important;
-            user-select: none !important;
-          }
-        `}
-      />
-
+      {GLOBAL_STYLE}
       <main css={styles.root}>
         <IntroSlide onContinue={scrollToGetStarted} />
         <FileViewerSlide />
