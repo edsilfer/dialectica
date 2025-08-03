@@ -11,7 +11,7 @@ const useStyles = () => {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-      gap: ${theme.spacing.sm};
+      gap: ${theme.spacing.xs};
       width: 100%;
       align-items: center;
       padding: ${theme.spacing.xs};
@@ -39,14 +39,14 @@ const useStyles = () => {
       justify-content: flex-end;
       margin-left: auto;
       align-items: center;
-      gap: ${theme.spacing.sm};
+      gap: ${theme.spacing.xs};
     `,
 
     leftCluster: css`
       display: flex;
       flex-direction: row;
       align-items: center;
-      gap: ${theme.spacing.sm};
+      gap: ${theme.spacing.xs};
     `,
 
     headerContainer: css`

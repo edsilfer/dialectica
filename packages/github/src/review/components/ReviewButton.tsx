@@ -1,4 +1,5 @@
-import { ChevronDownIcon, ThemeContext } from '@edsilfer/commons'
+import { RocketOutlined } from '@ant-design/icons'
+import { ChevronDownIcon, ThemeContext, useIsMobile } from '@edsilfer/commons'
 import { css } from '@emotion/react'
 import { Button, Divider, Popover, Radio, Space } from 'antd'
 import React, { useContext, useState } from 'react'
@@ -14,6 +15,7 @@ const useStyles = () => {
     popoverContainer: css`
       width: 600px;
       max-height: 450px;
+      max-width: 100%;
       padding: ${theme.spacing.xs};
       overflow-y: auto;
     `,
@@ -86,6 +88,7 @@ export const ReviewButton: React.FC<ReviewButtonProps> = ({
   const [reviewText, setReviewText] = useState('')
   const [reviewType, setReviewType] = useState<ReviewStatus>(ReviewStatus.COMMENT)
   const styles = useStyles()
+  const isMobile = useIsMobile()
 
   const commentCount = comments.filter((c) => c.state === CommentState.PENDING).length
   const buttonLabel = commentCount === 0 ? 'Start review' : `Finish review (${commentCount})`
@@ -154,6 +157,27 @@ export const ReviewButton: React.FC<ReviewButtonProps> = ({
     </div>
   )
 
+  const RegularButton = (
+    <Button type="primary" disabled={isPosting} loading={isPosting}>
+      <div css={styles.buttonContent}>
+        <>
+          {buttonLabel}
+          <ChevronDownIcon size={16} css={styles.chevron} className={isPopoverOpen ? 'open' : ''} />
+        </>
+      </div>
+    </Button>
+  )
+
+  const MobileButton = (
+    <Button
+      css={styles.buttonContent}
+      type="default"
+      icon={<RocketOutlined />}
+      disabled={isPosting}
+      loading={isPosting}
+    />
+  )
+
   return (
     <>
       <Popover
@@ -164,14 +188,7 @@ export const ReviewButton: React.FC<ReviewButtonProps> = ({
         onOpenChange={handleOpenChange}
         placement="bottomRight"
       >
-        <Button type="primary" disabled={isPosting} loading={isPosting}>
-          <div css={styles.buttonContent}>
-            <>
-              {buttonLabel}
-              <ChevronDownIcon size={16} css={styles.chevron} className={isPopoverOpen ? 'open' : ''} />
-            </>
-          </div>
-        </Button>
+        {isMobile ? MobileButton : RegularButton}
       </Popover>
     </>
   )

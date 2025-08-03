@@ -26,7 +26,7 @@ const useStyles = () => {
     header: css`
       display: flex;
       align-items: center;
-      gap: ${theme.spacing.sm};
+      gap: ${theme.spacing.xs};
 
       /* Reset margin/padding for the typography title inside this row */
       .ant-typography {

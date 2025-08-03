@@ -1,4 +1,4 @@
-import { ActionButtons, CustomButton, ProgressIndicator, ThemeContext } from '@edsilfer/commons'
+import { ActionButtons, CustomButton, ProgressIndicator, ThemeContext, useIsMobile } from '@edsilfer/commons'
 import { css, Interpolation, Theme } from '@emotion/react'
 import { Skeleton } from 'antd'
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
@@ -38,9 +38,12 @@ const useStyles = () => {
     header: css`
       display: flex;
       flex-direction: row;
-      padding-right: 10px;
       align-items: center;
-      gap: ${theme.spacing.md};
+      gap: ${theme.spacing.xs};
+
+      @media (max-width: 768px) {
+        width: 100%;
+      }
     `,
 
     rightHeaderContainer: css`
@@ -48,7 +51,17 @@ const useStyles = () => {
       flex-direction: row;
       align-items: center;
       margin-left: auto;
-      gap: ${theme.spacing.sm};
+      width: 100%;
+      gap: ${theme.spacing.xs};
+    `,
+
+    leftHeaderContainer: css`
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      align-items: center;
+      justify-content: space-between;
+      gap: ${theme.spacing.xs};
     `,
   }
 }
@@ -112,6 +125,7 @@ const FileListContent: React.FC<FileListProps> = (props) => {
   const virtuosoRef = useRef<VirtuosoHandle>(null)
   const { focusedMatch } = useDiffSearch()
   const { config, fileStateMap, allFileKeys, setAllFileKeys, setViewed, setCollapsed } = useFileListConfig()
+  const isMobile = useIsMobile()
 
   /*
    * - List of file keys that are too large to start open
@@ -153,27 +167,31 @@ const FileListContent: React.FC<FileListProps> = (props) => {
     return [
       {
         key: 'collapse-all',
-        label: 'Collapse',
+        label: isMobile ? ' - ' : 'Collapse all',
         tooltipText: 'Collapse all files',
         onClick: collapseAll,
         side: 'right',
       },
       {
         key: 'expand-all',
-        label: 'Expand',
+        label: isMobile ? ' + ' : 'Expand all',
         tooltipText: 'Expand all files',
         onClick: expandAll,
         side: 'right',
       },
-      {
-        key: 'mark-all-viewed',
-        label: viewedFilesCount === allFileKeys.length ? 'Unview' : 'Viewed',
-        tooltipText: 'Toggle viewed state for all files',
-        onClick: toggleAllViewed,
-        side: 'right',
-      },
+      ...(isMobile
+        ? []
+        : [
+            {
+              key: 'mark-all-viewed',
+              label: viewedFilesCount === allFileKeys.length ? 'Unview' : 'Viewed',
+              tooltipText: 'Toggle viewed state for all files',
+              onClick: toggleAllViewed,
+              side: 'right' as const,
+            },
+          ]),
     ]
-  }, [allFileKeys, viewedFilesCount, setViewed, setCollapsed])
+  }, [isMobile, allFileKeys, viewedFilesCount, setViewed, setCollapsed])
 
   // EFFECTS ----------------------------------------------------------------
   useEffect(() => {
@@ -216,6 +234,24 @@ const FileListContent: React.FC<FileListProps> = (props) => {
   }, [])
 
   // RENDER ----------------------------------------------------------------
+  const LargeScreenHeader = (
+    <div css={styles.header}>
+      <ProgressIndicator current={viewedFilesCount} total={allFileKeys.length} suffix="files viewed" />
+      <div css={styles.rightHeaderContainer}>
+        <ActionButtons buttons={controllers} />
+        <SearchPanel />
+      </div>
+    </div>
+  )
+
+  const MobileHeader = (
+    <div css={styles.header}>
+      <ProgressIndicator current={viewedFilesCount} total={allFileKeys.length} suffix="files viewed" />
+      <SearchPanel />
+      <ActionButtons buttons={controllers} />
+    </div>
+  )
+
   if (props.isLoading) {
     return (
       <div css={[styles.skeletonContainer, props.css]} className={props.className}>
@@ -226,13 +262,7 @@ const FileListContent: React.FC<FileListProps> = (props) => {
 
   return (
     <div css={[styles.container, props.css]} className={props.className}>
-      <div css={styles.header}>
-        <ProgressIndicator current={viewedFilesCount} total={allFileKeys.length} suffix="files viewed" />
-        <div css={styles.rightHeaderContainer}>
-          <ActionButtons buttons={controllers} />
-          <SearchPanel />
-        </div>
-      </div>
+      {isMobile ? MobileHeader : LargeScreenHeader}
 
       <Virtuoso
         ref={virtuosoRef}

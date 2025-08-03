@@ -1,5 +1,5 @@
 import { DownOutlined, QuestionCircleOutlined, UpOutlined } from '@ant-design/icons'
-import { ThemeContext } from '@edsilfer/commons'
+import { ThemeContext, useIsMobile } from '@edsilfer/commons'
 import { css } from '@emotion/react'
 import { Input, Tooltip, Typography } from 'antd'
 import { debounce } from 'lodash'
@@ -16,8 +16,10 @@ const useStyles = () => {
     container: css`
       display: flex;
       flex-direction: row;
+      width: 100%;
+      flex-grow: 1;
       align-items: center;
-      gap: ${theme.spacing.sm};
+      gap: ${theme.spacing.xs};
       overflow: hidden;
 
       * {
@@ -47,7 +49,10 @@ const useStyles = () => {
       }
     `,
 
-    search: css``,
+    search: css`
+      width: 100%;
+      flex-grow: 1;
+    `,
 
     status: css`
       display: flex;
@@ -62,6 +67,7 @@ export default function SearchPanel() {
   const styles = useStyles()
   const { currentIndex, totalMatches, nextMatch, previousMatch, search } = useDiffSearch()
   const [searchText, setSearchText] = useState('')
+  const isMobile = useIsMobile()
   const helpText = `
   We rely on row virtualization to render large diffs. This means that
   search via brower's native search will not work as not all content is
@@ -97,9 +103,11 @@ export default function SearchPanel() {
 
   return (
     <div css={styles.container}>
-      <Tooltip title={helpText.trim()} placement="bottom">
-        <QuestionCircleOutlined />
-      </Tooltip>
+      {!isMobile && (
+        <Tooltip title={helpText.trim()} placement="bottom">
+          <QuestionCircleOutlined />
+        </Tooltip>
+      )}
 
       <Search
         placeholder="Search diff..."

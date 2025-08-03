@@ -1,5 +1,5 @@
 import { css, Global } from '@emotion/react'
-import React, { useContext, useRef } from 'react'
+import React, { useContext, useEffect, useRef } from 'react'
 import CommentSlide from '../components/demo/CommentSlide'
 import FileViewerSlide from '../components/demo/FileViewerSlide'
 import IntroSlide from '../components/demo/IntroSlide'
@@ -11,12 +11,13 @@ import {
   DEFAULT_FILE_LIST_CONFIG,
   DiffViewerConfigProvider,
 } from '@edsilfer/diff-viewer'
+import { useNavigate } from 'react-router-dom'
 import ApiSlide from '../components/demo/ApiSlide'
 import FileExplorerSlide from '../components/demo/FileExplorerSlide'
 import GetStartedSlide from '../components/demo/GetStartedSlide'
 import useSharedStyles from '../components/demo/shared-styles'
 import { usePreferedTheme } from '../hooks/use-prefered-theme'
-import { SettingsProvider } from '../hooks/use-settings'
+import { SettingsProvider, useSettings } from '../hooks/use-settings'
 
 /**
  * Creates Emotion style objects for this module.
@@ -55,9 +56,17 @@ export default function Welcome() {
 function Content() {
   const styles = useStyles()
   const getStartedRef = useRef<HTMLElement | null>(null)
+  const { enableTutorial } = useSettings()
+  const navigate = useNavigate()
   const scrollToGetStarted = () => {
     getStartedRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
+
+  useEffect(() => {
+    if (!enableTutorial) {
+      void navigate('/')
+    }
+  }, [enableTutorial, navigate])
 
   return (
     <>

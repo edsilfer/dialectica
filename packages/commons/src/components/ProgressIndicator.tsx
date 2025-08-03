@@ -1,65 +1,43 @@
 import { css } from '@emotion/react'
-import { Progress, Typography } from 'antd'
-import { useContext } from 'react'
-import { ThemeContext } from '../themes/providers/theme-context'
-
-const { Text } = Typography
+import { Progress } from 'antd'
+import { useIsMobile } from '../hooks/use-is-mobile'
 
 const useStyles = () => {
-  const theme = useContext(ThemeContext)
-
   return {
-    progressContainer: css`
+    container: css`
       display: flex;
+      min-width: 110px;
       flex-direction: column;
-      width: 110px;
-      align-items: center;
-      white-space: nowrap;
-      overflow: hidden;
-    `,
 
-    progressText: css`
-      color: ${theme.colors.textPrimary};
-      font-size: 0.75rem;
-      cursor: default;
+      @media (max-width: 768px) {
+        min-width: 28px;
+      }
     `,
   }
 }
 
 interface ProgressIndicatorProps {
-  /** Current progress (0 ≤ current ≤ total) */
   current: number
-  /** Total value (> 0) */
   total: number
-  /** Optional suffix text (e.g., 'files', 'items') */
   suffix?: string
 }
 
-/**
- * Shows a horizontal progress indicator with text and progress bar.
- */
-export function ProgressIndicator(props: ProgressIndicatorProps) {
+export function ProgressIndicator({ current, total }: ProgressIndicatorProps) {
   const styles = useStyles()
-
-  // Handle total = 0 as special case (infinite progress)
-  if (props.total <= 0) {
-    return (
-      <div css={styles.progressContainer}>
-        <Text css={styles.progressText}>{`infinite (total ${props.total})`}</Text>
-        <Progress percent={100} size="small" showInfo={false} />
-      </div>
-    )
-  }
-
-  // Normal case: total > 0
-  const safeTotal = props.total
-  const safeCurrent = Math.min(Math.max(props.current, 0), safeTotal)
-  const percent = Math.round((safeCurrent / safeTotal) * 100)
+  const isMobile = useIsMobile()
+  const safeTotal = Math.max(total, 1)
+  const safeCurrent = Math.min(Math.max(current, 0), safeTotal)
+  const percent = total <= 0 ? 100 : Math.round((safeCurrent / safeTotal) * 100)
 
   return (
-    <div css={styles.progressContainer}>
-      <Text css={styles.progressText}>{`${safeCurrent} / ${safeTotal}${props.suffix ? ` ${props.suffix}` : ''}`}</Text>
-      <Progress percent={percent} size="small" showInfo={false} />
+    <div css={styles.container}>
+      <Progress
+        type={isMobile ? 'circle' : 'line'}
+        percent={percent}
+        size={isMobile ? 24 : undefined}
+        showInfo={!isMobile}
+        format={(pct) => (isMobile ? '' : `${pct}%`)}
+      />
     </div>
   )
 }
