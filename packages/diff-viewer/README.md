@@ -3,7 +3,7 @@
 **Note:** This package is open source but currently designed for internal use at Dialectica. It may not yet be production-ready for general external use.
 
 <p align="center">
-  <img src="./assets/dark-theme-web-split-view.png" alt="dialectica diff viewer" style="max-width: 100%; height: auto;">
+  <img src="https://github.com/edsilfer/dialectica/blob/main/packages/diff-viewer/assets/dark-theme-web-split-view.png?raw=true" alt="dialectica diff viewer" style="max-width: 100%; height: auto;">
 </p>
 
 A composable React library for building rich code review UIs. It provides diff viewers, file explorers, activity summaries, contextual commenting, and theming — all integrated, yet modular. Primarily intended for internal use within the Dialectica project.
@@ -17,13 +17,7 @@ cd dialectica ; pnpm install ; pnpm demo
 
 Main features
 
-<table>
-  <tr>
-    <td>
-      <img src="./assets/dialectica-mobile-dracula-left.png" alt="Preview" width="300"/>
-    </td>
-    <td>
-      <ul>
+<ul>
   <li><strong>Diff viewer (<code>&lt;DiffViewer /&gt;</code>)</strong> — compatible with git / GitHub diff.</li>
   <li><strong>File explorer</strong> — support for scrolling to file, expand/collapse, search, file metadata, etc.</li>
   <li><strong>Overlay API</strong> — supports rendering custom components over a line.</li>
@@ -33,9 +27,6 @@ Main features
   <li><strong>Virtual rows</strong> — enjoy better performance with virtualization.</li>
   <li><strong>Responsive layout</strong> — UI adapts to smaller screens.</li>
 </ul>
-    </td>
-  </tr>
-</table>
 
 ## Installation
 
