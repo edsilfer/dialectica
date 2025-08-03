@@ -1,4 +1,5 @@
-import { ThemeContext, useIsMobile } from '@edsilfer/commons'
+import { ThemeContext } from '@edsilfer/diff-viewer'
+import { useIsMobile } from '@edsilfer/commons'
 import { DiffSearchProvider, FileDiff, FileViewer, LineMetadata, LineRange, ParsedDiff } from '@edsilfer/diff-viewer'
 import { css, SerializedStyles } from '@emotion/react'
 import {

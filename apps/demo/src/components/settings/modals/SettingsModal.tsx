@@ -1,5 +1,10 @@
-import { ThemeContext, Themes } from '@edsilfer/commons'
-import { useFileExplorerConfig, useDiffViewerConfig, useFileListConfig } from '@edsilfer/diff-viewer'
+import {
+  ThemeContext,
+  Themes,
+  useDiffViewerConfig,
+  useFileExplorerConfig,
+  useFileListConfig,
+} from '@edsilfer/diff-viewer'
 import { css } from '@emotion/react'
 import { Divider, Modal } from 'antd'
 import React, { useContext, useEffect, useState } from 'react'

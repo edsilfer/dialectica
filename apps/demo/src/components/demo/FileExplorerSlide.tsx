@@ -1,4 +1,5 @@
-import { ThemeContext, useIsMobile } from '@edsilfer/commons'
+import { ThemeContext } from '@edsilfer/diff-viewer'
+import { useIsMobile } from '@edsilfer/commons'
 import { Typography } from 'antd'
 import { useContext } from 'react'
 import { SlideWrapper } from '../../pages/Welcome'

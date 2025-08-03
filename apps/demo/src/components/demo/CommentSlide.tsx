@@ -1,4 +1,4 @@
-import { ThemeContext } from '@edsilfer/commons'
+import { ThemeContext } from '@edsilfer/diff-viewer'
 import { Typography } from 'antd'
 import { useContext } from 'react'
 import { SlideWrapper } from '../../pages/Welcome'

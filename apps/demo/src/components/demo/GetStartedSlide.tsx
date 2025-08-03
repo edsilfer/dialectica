@@ -1,5 +1,5 @@
 import { ArrowRightOutlined, SettingOutlined } from '@ant-design/icons'
-import { ThemeContext, ThemeTokens } from '@edsilfer/commons'
+import { ThemeContext, ThemeTokens } from '@edsilfer/diff-viewer'
 import { css } from '@emotion/react'
 import { Button, Typography } from 'antd'
 import React, { useCallback, useContext, useState } from 'react'
