@@ -34,9 +34,9 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@dialectica/commons': resolve(__dirname, '../commons/src'),
-      '@dialectica/diff-viewer': resolve(__dirname, '../diff-viewer/src'),
-      '@dialectica/test-lib': resolve(__dirname, '../test-lib/src'),
+      '@dialectica-org/commons': resolve(__dirname, '../commons/src'),
+      '@dialectica-org/diff-viewer': resolve(__dirname, '../diff-viewer/src'),
+      '@dialectica-org/test-lib': resolve(__dirname, '../test-lib/src'),
     },
   },
 })

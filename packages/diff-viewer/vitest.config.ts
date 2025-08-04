@@ -34,11 +34,10 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@dialectica/diff-viewer': resolve(__dirname, 'src'),
-      '@dialectica/commons': resolve(__dirname, '../commons/src'),
-      '@github': resolve(__dirname, '../github/src'),
-      '@dialectica/file-explorer': resolve(__dirname, '../file-explorer/src'),
-      '@dialectica/test-lib': resolve(__dirname, '../test-lib/src'),
+      '@dialectica-org/diff-viewer': resolve(__dirname, 'src'),
+      '@dialectica-org/commons': resolve(__dirname, '../commons/src'),
+      '@dialectica-org/file-explorer': resolve(__dirname, '../file-explorer/src'),
+      '@dialectica-org/test-lib': resolve(__dirname, '../test-lib/src'),
     },
   },
 })

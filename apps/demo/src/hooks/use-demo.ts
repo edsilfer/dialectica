@@ -52,8 +52,6 @@ export class DemoController {
 
   public async typeInInput(input: HTMLInputElement | HTMLTextAreaElement, text: string) {
     if (input) {
-      input.setAttribute('readonly', 'true')
-      input.setAttribute('disabled', 'true')
       input.setAttribute('inputmode', 'none')
       input.style.pointerEvents = 'none'
       input.style.userSelect = 'none'

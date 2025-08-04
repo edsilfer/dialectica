@@ -46,6 +46,7 @@ export default defineConfig(() => {
         ...(useLocalDiff ? { '@dialectica-org/commons': pkg('../../packages/commons/src') } : {}),
         ...(useLocalDiff ? { '@dialectica-org/diff-viewer': pkg('../../packages/diff-viewer/src') } : {}),
       },
+      dedupe: ['react', 'react-dom', '@dialectica-org/commons'],
     },
   }
 })

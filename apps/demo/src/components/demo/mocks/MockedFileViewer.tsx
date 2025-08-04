@@ -180,7 +180,7 @@ export const MockedFileViewer: React.FC<MockedFileViewerProps> = (props) => {
 
       if (!input) return
 
-      await demo.typeInInput(input, '> (...) )It is deprecated!\n\nOh, I see. Makes sense, thanks!')
+      await demo.typeInInput(input, '> (...) It is deprecated!\n\nOh, I see. Makes sense, thanks!')
       await demo.sleep(1000)
 
       demo.clickElement('[data-testid="tab-header-Preview"]')
