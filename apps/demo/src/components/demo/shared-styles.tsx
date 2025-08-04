@@ -1,4 +1,4 @@
-import { ThemeTokens } from '@edsilfer/commons'
+import { ThemeTokens } from '@edsilfer/diff-viewer'
 import { css } from '@emotion/react'
 
 interface Border {

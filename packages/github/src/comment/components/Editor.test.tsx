@@ -1,4 +1,4 @@
-import { ThemeProvider, Themes } from '@edsilfer/commons'
+import { ThemeProvider, Themes } from '@edsilfer/diff-viewer'
 import {
   createPropsFactory,
   expectElementNotToBeInTheDocument,

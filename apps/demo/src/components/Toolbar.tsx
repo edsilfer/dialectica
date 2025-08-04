@@ -13,7 +13,7 @@ import {
 import { Button } from 'antd'
 import React, { useMemo, useState } from 'react'
 
-import { useTheme } from '@edsilfer/commons'
+import { useTheme } from '@edsilfer/diff-viewer'
 import { useSettings } from '../hooks/use-settings'
 import { mapPullRequestMetadata } from './mappers'
 import SearchModal from './settings/modals/SearchModal'

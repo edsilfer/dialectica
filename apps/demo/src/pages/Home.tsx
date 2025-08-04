@@ -3,8 +3,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { Alert, Button, notification } from 'antd'
 
-import { AddButton, InfoCard, useTheme } from '@edsilfer/commons'
-import { DiffViewer, ParsedDiff } from '@edsilfer/diff-viewer'
+import { AddButton, InfoCard } from '@edsilfer/commons'
+import { DiffViewer, ParsedDiff, useTheme } from '@edsilfer/diff-viewer'
 import { CommentEvent, CommentState, useCommentController, useReviewController, useReviewDatastore } from '@github'
 
 import { SettingOutlined } from '@ant-design/icons'

@@ -7,7 +7,7 @@
  */
 import './utils/styles/highlight-themes.css'
 
-export { ThemeContext, Themes, useTheme } from '@edsilfer/commons'
+export { ThemeContext, ThemeProvider, Themes, useTheme } from '@edsilfer/commons'
 export type { ThemeTokens } from '@edsilfer/commons'
 export * from '@edsilfer/file-explorer'
 export * from './components'
