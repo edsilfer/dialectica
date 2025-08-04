@@ -1,5 +1,5 @@
-import { AddButton } from '@edsilfer/commons'
-import { DiffViewer, ParsedDiff, useTheme } from '@edsilfer/diff-viewer'
+import { AddButton, useTheme } from '@dialectica-org/commons'
+import { DiffViewer, ParsedDiff } from '@dialectica-org/diff-viewer'
 import { css, SerializedStyles } from '@emotion/react'
 import {
   CommentState,

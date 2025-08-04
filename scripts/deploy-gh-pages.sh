@@ -11,10 +11,10 @@ function main {
   _build "$APP_PATH"
 
   _info "Preparing temporary directory..."
-  _create_staging_area "$BUILD_DIR" "/tmp/dialetica-gh-pages"
+  _create_staging_area "$BUILD_DIR" "/tmp/dialectica-gh-pages"
 
   _info "Deploying to branch: ${GH_BRANCH} on repo: ${REPO_URL}"
-  _deploy "/tmp/dialetica-gh-pages" "$GH_BRANCH" "$REPO_URL"
+  _deploy "/tmp/dialectica-gh-pages" "$GH_BRANCH" "$REPO_URL"
 
   _info "Deployment complete!"
 }
@@ -102,7 +102,7 @@ function _deploy {
 }
 
 function _cleanup {
-  local temp_dir="/tmp/dialetica-gh-pages"
+  local temp_dir="/tmp/dialectica-gh-pages"
   
   _info "Cleaning up temporary directories & files..."
   rm -rf "${temp_dir}"

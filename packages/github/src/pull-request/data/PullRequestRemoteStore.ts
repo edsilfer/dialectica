@@ -1,4 +1,4 @@
-import { LineRequest, LoadMoreLinesResult } from '@edsilfer/diff-viewer'
+import { LineRequest, LoadMoreLinesResult } from '@dialectica-org/diff-viewer'
 import {
   getInlineComments,
   getMoreLines,

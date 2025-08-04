@@ -1,5 +1,5 @@
 import { GitHubUser, PrKey } from '@github'
-import { FileMetadata } from '@edsilfer/diff-viewer'
+import { FileMetadata } from '@dialectica-org/diff-viewer'
 
 export const MOCKED_USER_1 = {
   id: 1,

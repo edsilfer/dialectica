@@ -1,4 +1,4 @@
-import { Themes, ThemeTokens } from '@edsilfer/diff-viewer'
+import { Themes, ThemeTokens } from '@dialectica-org/commons'
 import { useEffect, useState } from 'react'
 
 export function usePreferedTheme() {

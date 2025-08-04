@@ -1,3 +1,4 @@
+import { ThemeContext } from '@dialectica-org/commons'
 import { css, Global } from '@emotion/react'
 import React, { useContext, useRef } from 'react'
 import CommentSlide from '../components/demo/CommentSlide'
@@ -9,14 +10,13 @@ import {
   DEFAULT_FILE_EXPLORER_CONFIG,
   DEFAULT_FILE_LIST_CONFIG,
   DiffViewerConfigProvider,
-  ThemeContext,
-} from '@edsilfer/diff-viewer'
+} from '@dialectica-org/diff-viewer'
+
 import ApiSlide from '../components/demo/ApiSlide'
 import FileExplorerSlide from '../components/demo/FileExplorerSlide'
 import GetStartedSlide from '../components/demo/GetStartedSlide'
 import useSharedStyles from '../components/demo/shared-styles'
 import { usePreferedTheme } from '../hooks/use-prefered-theme'
-import { SettingsProvider } from '../hooks/use-settings'
 
 /**
  * Creates Emotion style objects for this module.
@@ -75,9 +75,8 @@ export default function Welcome() {
   const preferredTheme = usePreferedTheme()
 
   return (
-    <SettingsProvider>
       <DiffViewerConfigProvider
-        config={{ ...DEFAULT_DIFF_VIEWER_CONFIG, theme: preferredTheme, explorerInitialWidth: 35 }}
+        config={{ ...DEFAULT_DIFF_VIEWER_CONFIG, theme: preferredTheme, explorerInitialWidth: 37 }}
         scope="welcome"
         fileExplorerConfig={DEFAULT_FILE_EXPLORER_CONFIG}
         fileListConfig={DEFAULT_FILE_LIST_CONFIG}
@@ -85,7 +84,6 @@ export default function Welcome() {
       >
         <Content />
       </DiffViewerConfigProvider>
-    </SettingsProvider>
   )
 }
 

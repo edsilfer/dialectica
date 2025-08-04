@@ -3,12 +3,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { Alert, Button, notification } from 'antd'
 
-import { AddButton, InfoCard } from '@edsilfer/commons'
-import { DiffViewer, ParsedDiff, useTheme } from '@edsilfer/diff-viewer'
+import { AddButton, InfoCard, useTheme } from '@dialectica-org/commons'
+import { DiffViewer, ParsedDiff } from '@dialectica-org/diff-viewer'
 import { CommentEvent, CommentState, useCommentController, useReviewController, useReviewDatastore } from '@github'
 
 import { SettingOutlined } from '@ant-design/icons'
-import { LineRange } from '@edsilfer/diff-viewer'
+import { LineRange } from '@dialectica-org/diff-viewer'
 import { usePullRequestStore } from '@github'
 import { useNavigate } from 'react-router-dom'
 import ErrorCard from '../components/ErrorCard'

@@ -1,4 +1,4 @@
-import { LineRequest, LoadMoreLinesResult } from '@edsilfer/diff-viewer'
+import { LineRequest, LoadMoreLinesResult } from '@dialectica-org/diff-viewer'
 import { GitHubInlineComment, GitHubPullRequest, GitHubUser, PrKey } from '@github'
 import { PullRequestStore } from './PullRequestStore'
 import { PullRequestRemoteStore } from './PullRequestRemoteStore'

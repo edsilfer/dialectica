@@ -1,7 +1,7 @@
 import { css, SerializedStyles } from '@emotion/react'
 import { GlobalToken } from 'antd'
 import { DiffLineType } from '../../../../models/LineDiff'
-import { ThemeTokens, transparentize } from '@edsilfer/commons'
+import { ThemeTokens, transparentize } from '@dialectica-org/commons'
 
 /**
  * Generates the full style map required by both `UnifiedViewer` and `SplitViewer`.

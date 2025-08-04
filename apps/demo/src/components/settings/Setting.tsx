@@ -1,4 +1,4 @@
-import { ThemeTokens, useTheme } from '@edsilfer/commons'
+import { ThemeTokens, useTheme } from '@dialectica-org/commons'
 import { css } from '@emotion/react'
 import { Input, Select, Switch, Typography } from 'antd'
 import React from 'react'

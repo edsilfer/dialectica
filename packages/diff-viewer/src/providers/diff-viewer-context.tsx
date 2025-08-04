@@ -1,10 +1,10 @@
-import { ThemeProvider, Themes, ThemeTokens } from '@edsilfer/commons'
+import { ThemeProvider, Themes, ThemeTokens } from '@dialectica-org/commons'
 import {
   DEFAULT_FILE_EXPLORER_CONFIG,
   FileExplorerConfig,
   FileExplorerConfigProvider,
   useFileExplorerConfig,
-} from '@edsilfer/file-explorer'
+} from '@dialectica-org/file-explorer'
 import React, { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import {
   DEFAULT_FILE_LIST_CONFIG,
@@ -86,7 +86,7 @@ export const DiffViewerConfigProvider: React.FC<DiffViewerConfigContextProps> = 
     }
   }, [storage, props.scope])
 
-  const [config, setConfig] = useState<DiffViewerConfig>({ ...externalConfig, ...(storedConfig ?? {}) })
+  const [config, setConfig] = useState<DiffViewerConfig>({ ...(storedConfig ?? {}), ...externalConfig })
 
   // Keep internal config in sync with incoming prop changes but avoid clobbering
   // the initially hydrated (possibly persisted) state on the very first render.
@@ -97,7 +97,7 @@ export const DiffViewerConfigProvider: React.FC<DiffViewerConfigContextProps> = 
       return
     }
     // Merge new externalConfig with stored config, giving precedence to stored values
-    setConfig({ ...externalConfig, ...storedConfig })
+    setConfig({ ...storedConfig, ...externalConfig })
   }, [externalConfig, storedConfig])
 
   // Persist configuration whenever it changes

@@ -36,7 +36,7 @@ export const SAMPLE_FILE_DIFFS: FileMetadata[] = [
   }),
   // New file (added)
   new FileMetadata({
-    oldPath: '/dev/null',
+    oldPath: '-org/dev/null',
     newPath: 'src/utils/helpers.ts',
     isRenamed: false,
     isNew: true,
@@ -46,7 +46,7 @@ export const SAMPLE_FILE_DIFFS: FileMetadata[] = [
   // Deleted file
   new FileMetadata({
     oldPath: 'src/legacy/api.js',
-    newPath: '/dev/null',
+    newPath: '-org/dev/null',
     isRenamed: false,
     isNew: false,
     isDeleted: true,

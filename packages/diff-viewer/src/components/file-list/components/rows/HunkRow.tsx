@@ -1,4 +1,4 @@
-import { LoadMoreButton, ThemeContext } from '@edsilfer/commons'
+import { LoadMoreButton, ThemeContext } from '@dialectica-org/commons'
 import { theme as antTheme } from 'antd'
 import React, { useContext, useMemo } from 'react'
 import { getViewerStyles } from '../viewers/shared-styles'

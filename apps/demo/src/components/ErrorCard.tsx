@@ -1,5 +1,5 @@
 import { ExclamationCircleOutlined, SettingOutlined } from '@ant-design/icons'
-import { useTheme } from '@edsilfer/diff-viewer'
+import { useTheme } from '@dialectica-org/commons'
 import { css } from '@emotion/react'
 import { theme as antdTheme, Button, Card, Typography } from 'antd'
 import React, { useState } from 'react'

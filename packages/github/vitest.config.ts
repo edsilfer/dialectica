@@ -34,9 +34,9 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@edsilfer/commons': resolve(__dirname, '../commons/src'),
-      '@edsilfer/diff-viewer': resolve(__dirname, '../diff-viewer/src'),
-      '@edsilfer/test-lib': resolve(__dirname, '../test-lib/src'),
+      '@dialectica/commons': resolve(__dirname, '../commons/src'),
+      '@dialectica/diff-viewer': resolve(__dirname, '../diff-viewer/src'),
+      '@dialectica/test-lib': resolve(__dirname, '../test-lib/src'),
     },
   },
 })

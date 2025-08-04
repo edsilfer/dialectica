@@ -1,4 +1,4 @@
-import { createPropsFactory, expectElementToHaveTextContent, mockElementProperty } from '@edsilfer/test-lib'
+import { createPropsFactory, expectElementToHaveTextContent, mockElementProperty } from '@dialectica-org/test-lib'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, it, vi } from 'vitest'
 import { useResizablePanel } from './use-resizable-panel'

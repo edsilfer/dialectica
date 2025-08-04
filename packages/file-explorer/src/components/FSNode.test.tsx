@@ -6,11 +6,11 @@ import { FSNode } from './FSNode'
 import type { FSNodeProps } from './types'
 
 // Mocks placed at top before imports as per guidelines
-import { createPropsFactory, render } from '@edsilfer/test-lib'
+import { createPropsFactory, render } from '@dialectica-org/test-lib'
 import { vi } from 'vitest'
 
 vi.mock('antd', async () => {
-  const { createAntdMocks } = await import('@edsilfer/test-lib')
+  const { createAntdMocks } = await import('@dialectica-org/test-lib')
   return {
     ...createAntdMocks(),
     theme: {

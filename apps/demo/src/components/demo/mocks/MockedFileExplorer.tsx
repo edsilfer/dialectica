@@ -1,5 +1,5 @@
-import { useIsMobile, useTheme } from '@edsilfer/commons'
-import { FileExplorer, FileMetadata, ParsedDiff } from '@edsilfer/diff-viewer'
+import { useIsMobile, useTheme } from '@dialectica-org/commons'
+import { FileExplorer, FileMetadata, ParsedDiff } from '@dialectica-org/diff-viewer'
 import { css, SerializedStyles } from '@emotion/react'
 import { usePullRequestStore } from '@github'
 import { useEffect, useMemo, useRef } from 'react'

@@ -1,10 +1,10 @@
-import { ThemeProvider, Themes } from '@edsilfer/diff-viewer'
+import { ThemeProvider, Themes } from '@dialectica-org/commons'
 import {
   createPropsFactory,
   expectElementNotToBeInTheDocument,
   expectElementToBeInTheDocument,
   render,
-} from '@edsilfer/test-lib'
+} from '@dialectica-org/test-lib'
 import { fireEvent, screen } from '@testing-library/react'
 import React from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -15,7 +15,7 @@ import { InlineComment, type InlineCommentProps } from './InlineComment'
 import { CommentAuthor, CommentEvent, CommentMetadata, CommentState } from './models'
 
 vi.mock('antd', async () => {
-  const { createAntdMocks } = await import('@edsilfer/test-lib')
+  const { createAntdMocks } = await import('@dialectica-org/test-lib')
   return createAntdMocks()
 })
 

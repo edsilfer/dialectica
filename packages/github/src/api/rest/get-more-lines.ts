@@ -1,4 +1,4 @@
-import type { LineRequest, LoadMoreLinesResult } from '@edsilfer/diff-viewer'
+import type { LineRequest, LoadMoreLinesResult } from '@dialectica-org/diff-viewer'
 import type { GetMoreLinesRequest } from './types'
 import { getFileContent } from './get-file-content'
 

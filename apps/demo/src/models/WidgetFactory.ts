@@ -1,4 +1,4 @@
-import { Widget } from '@edsilfer/diff-viewer'
+import { Widget } from '@dialectica-org/diff-viewer'
 import {
   CommentAuthor,
   CommentEventHandler,

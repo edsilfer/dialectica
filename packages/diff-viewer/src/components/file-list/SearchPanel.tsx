@@ -1,5 +1,5 @@
 import { DownOutlined, QuestionCircleOutlined, UpOutlined } from '@ant-design/icons'
-import { ThemeContext, useIsMobile } from '@edsilfer/commons'
+import { ThemeContext, useIsMobile } from '@dialectica-org/commons'
 import { css } from '@emotion/react'
 import { Input, Tooltip, Typography } from 'antd'
 import { debounce } from 'lodash'

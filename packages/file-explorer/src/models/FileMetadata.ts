@@ -40,6 +40,6 @@ export class FileMetadata {
    * @returns The key for this file.
    */
   get key(): string {
-    return this.newPath && this.newPath !== '/dev/null' ? this.newPath : this.oldPath
+    return this.newPath && this.newPath !== '-org/dev/null' ? this.newPath : this.oldPath
   }
 }

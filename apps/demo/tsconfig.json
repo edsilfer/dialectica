@@ -9,9 +9,9 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
-      "@edsilfer/diff-viewer": ["../../packages/diff-viewer/src"],
+      "@dialectica-org/diff-viewer": ["../../packages/diff-viewer/src"],
       "@github": ["../../packages/github/src"],
-      "@commons": ["../../packages/commons/src"]
+      "@dialectica-org/commons": ["../../packages/commons/src"]
     }
   },
   "include": ["src", "../../packages/github/src", "../../packages/diff-viewer/src", "../../packages/commons/src"]

@@ -1,4 +1,4 @@
-import { createPropsFactory, expectElementToBeInTheDocument, render } from '@edsilfer/test-lib'
+import { createPropsFactory, expectElementToBeInTheDocument, render } from '@dialectica-org/test-lib'
 import { act, fireEvent, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { CommentAuthor, CommentEvent, CommentState } from '../models'
@@ -38,7 +38,7 @@ const { mockWriteText, mockMessageSuccess, mockMessageError } = vi.hoisted(() =>
 }))
 
 vi.mock('antd', async () => {
-  const { createAntdMocks } = await import('@edsilfer/test-lib')
+  const { createAntdMocks } = await import('@dialectica-org/test-lib')
   return {
     ...createAntdMocks(),
     message: {

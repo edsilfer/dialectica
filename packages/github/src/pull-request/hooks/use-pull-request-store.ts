@@ -1,5 +1,5 @@
-import { useAsync } from '@edsilfer/commons'
-import { LineRequest, LoadMoreLinesResult } from '@edsilfer/diff-viewer'
+import { useAsync } from '@dialectica-org/commons'
+import { LineRequest, LoadMoreLinesResult } from '@dialectica-org/diff-viewer'
 import { GitHubInlineComment, GitHubPullRequest, GitHubUser, PrKey } from '@github'
 import { useCallback, useMemo } from 'react'
 import { PullRequestRemoteStore } from '../data/PullRequestRemoteStore'

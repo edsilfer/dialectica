@@ -3,7 +3,7 @@ import {
   createPropsFactory,
   expectElementToBeInTheDocument,
   renderWithContext,
-} from '@edsilfer/test-lib'
+} from '@dialectica-org/test-lib'
 import { render } from '@testing-library/react'
 import React from 'react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'

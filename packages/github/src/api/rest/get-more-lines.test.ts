@@ -1,4 +1,4 @@
-import type { LineRequest } from '@edsilfer/diff-viewer'
+import type { LineRequest } from '@dialectica-org/diff-viewer'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { getFileContent } from './get-file-content'
 import { getMoreLines } from './get-more-lines'

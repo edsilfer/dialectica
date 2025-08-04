@@ -42,7 +42,7 @@ export const SAMPLE_FILE_DIFFS: FileDiff[] = [
   }),
   // New file (added)
   new FileDiff({
-    oldPath: '/dev/null',
+    oldPath: '-org/dev/null',
     newPath: 'src/utils/helpers.ts',
     hunks: [],
     isRenamed: false,
@@ -54,7 +54,7 @@ export const SAMPLE_FILE_DIFFS: FileDiff[] = [
   // Deleted file
   new FileDiff({
     oldPath: 'src/legacy/api.js',
-    newPath: '/dev/null',
+    newPath: '-org/dev/null',
     hunks: [],
     isRenamed: false,
     isNew: false,

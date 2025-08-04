@@ -1,4 +1,4 @@
-import { LineMetadata } from '@edsilfer/diff-viewer'
+import { LineMetadata } from '@dialectica-org/diff-viewer'
 import React from 'react'
 import { CommentMetadata, CommentState } from '../models/CommentMetadata'
 import { CommentStore } from './CommentStore'

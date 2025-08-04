@@ -1,7 +1,6 @@
 {
-  "name": "@edsilfer/commons",
-  "private": true,
-  "version": "0.1.0",
+  "name": "@dialectica-org/commons",
+  "version": "0.1.1",
   "description": "Common utilities for dialectica repository",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -16,7 +15,9 @@
   "scripts": {
     "build": "tsup",
     "build:watch": "tsup --watch",
-    "test": "vitest"
+    "test": "vitest run",
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "prepublishOnly": "pnpm build && pnpm lint && pnpm test"
   },
   "keywords": [
     "git",
@@ -32,7 +33,7 @@
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "@edsilfer/test-lib": "workspace:*",
+    "@dialectica-org/test-lib": "workspace:*",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@types/react": "^19.1.8",
@@ -42,7 +43,6 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "tsup": "^8.5.0",
-    "typescript": "^5.8.3",
     "vitest": "^3.2.4"
   },
   "dependencies": {

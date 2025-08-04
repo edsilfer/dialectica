@@ -1,4 +1,4 @@
-import { LineMetadata } from '@edsilfer/diff-viewer'
+import { LineMetadata } from '@dialectica-org/diff-viewer'
 import { CommentMetadata, GitHubUser, PrKey } from '@github'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { CommentEventHandler, CommentEventProcessorImpl } from '../data/CommentEventProcessor'

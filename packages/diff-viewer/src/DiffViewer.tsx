@@ -1,5 +1,5 @@
-import { DirectoryIcon, HandleIcon, ThemeContext, useIsMobile } from '@edsilfer/commons'
-import { FileExplorer, FileMetadata } from '@edsilfer/file-explorer'
+import { DirectoryIcon, HandleIcon, ThemeContext, useIsMobile } from '@dialectica-org/commons'
+import { FileExplorer, FileMetadata } from '@dialectica-org/file-explorer'
 import { css } from '@emotion/react'
 import React, { useContext, useEffect, useMemo, useState, useTransition } from 'react'
 import { Drawer, DrawerContent } from './components/drawer/Drawer'

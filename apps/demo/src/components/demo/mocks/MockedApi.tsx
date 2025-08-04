@@ -1,5 +1,4 @@
-import { useIsMobile } from '@edsilfer/commons'
-import { useTheme } from '@edsilfer/diff-viewer'
+import { useIsMobile, useTheme } from '@dialectica-org/commons'
 import { css } from '@emotion/react'
 import Editor, { OnMount } from '@monaco-editor/react'
 import { useCallback } from 'react'
@@ -26,7 +25,7 @@ export default function MockedApi() {
   const isMobile = useIsMobile()
 
   const content = `
-import { DiffViewerConfigProvider, DiffViewer } from '@edsilfer/diff-viewer'
+import { DiffViewerConfigProvider, DiffViewer } from '@dialectica/diff-viewer'
 
 /*
  * Supports for custom toolbar to render diff metadata.

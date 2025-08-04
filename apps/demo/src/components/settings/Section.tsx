@@ -1,4 +1,4 @@
-import { ThemeTokens, useTheme } from '@edsilfer/diff-viewer'
+import { ThemeTokens, useTheme } from '@dialectica-org/commons'
 import { css } from '@emotion/react'
 import { Typography } from 'antd'
 import React from 'react'

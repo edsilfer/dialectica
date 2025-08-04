@@ -1,5 +1,5 @@
-import { ThemeProvider, Themes } from '@edsilfer/commons'
-import { createPropsFactory, render as baseRender } from '@edsilfer/test-lib'
+import { ThemeProvider, Themes } from '@dialectica-org/commons'
+import { createPropsFactory, render as baseRender } from '@dialectica-org/test-lib'
 import { fireEvent, screen } from '@testing-library/react'
 import React from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'

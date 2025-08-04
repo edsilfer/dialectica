@@ -1,4 +1,4 @@
-import { render, renderWithContext } from '@edsilfer/test-lib'
+import { render, renderWithContext } from '@dialectica-org/test-lib'
 import { act, waitFor } from '@testing-library/react'
 import React from 'react'
 import { describe, expect, it, vi } from 'vitest'

@@ -1,3 +1,5 @@
+import { dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import js from '@eslint/js'
 import tsPlugin from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
@@ -6,6 +8,8 @@ import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import unusedImports from 'eslint-plugin-unused-imports'
 import globals from 'globals'
+
+const rootDir = dirname(fileURLToPath(import.meta.url))
 
 export default [
   {
@@ -61,6 +65,7 @@ export default [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
+        tsconfigRootDir: rootDir,
         project: './tsconfig.base.json',
         sourceType: 'module',
       },

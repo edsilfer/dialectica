@@ -9,6 +9,6 @@ export default defineConfig({
   },
   sourcemap: true,
   clean: true,
-  external: ['react', '@edsilfer/diff-viewer'],
+  external: ['react', '@dialectica-org/diff-viewer', '@dialectica-org/commons'],
   loader: { '.css': 'file' },
 })

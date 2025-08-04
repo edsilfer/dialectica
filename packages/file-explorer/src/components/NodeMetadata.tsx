@@ -1,4 +1,4 @@
-import { DirectoryIcon, FileIcon, ThemeContext } from '@edsilfer/commons'
+import { DirectoryIcon, FileIcon, ThemeContext } from '@dialectica-org/commons'
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
 import { DirectoryNode, FileNode } from '../models/Nodes'

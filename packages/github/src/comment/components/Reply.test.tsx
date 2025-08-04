@@ -3,7 +3,7 @@ import {
   expectElementNotToBeInTheDocument,
   expectElementToBeInTheDocument,
   render,
-} from '@edsilfer/test-lib'
+} from '@dialectica-org/test-lib'
 import { fireEvent, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { CommentAuthor } from '../models'

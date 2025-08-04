@@ -1,4 +1,4 @@
-import { RichTooltip, ThemeContext } from '@edsilfer/commons'
+import { RichTooltip, ThemeContext } from '@dialectica-org/commons'
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
 import { DiffActivitySummaryProps } from './types'

@@ -1,4 +1,4 @@
-import { Widget } from '@edsilfer/diff-viewer'
+import { Widget } from '@dialectica-org/diff-viewer'
 import type { CommentEventHandler, CommentStore } from '@github'
 import { CommentState } from '@github'
 import { useMemo } from 'react'

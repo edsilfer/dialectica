@@ -1,8 +1,8 @@
-import { ThemeContext } from '@edsilfer/diff-viewer'
+import { ThemeContext } from '@dialectica-org/commons'
 import { css } from '@emotion/react'
 import React, { useContext } from 'react'
-import { CommentEvent, CommentMetadata, CommentState } from '../models/CommentMetadata'
 import { CommentEventHandler } from '../data/CommentEventProcessor'
+import { CommentEvent, CommentMetadata, CommentState } from '../models/CommentMetadata'
 import { ButtonMetadata, Editor } from './Editor'
 
 const useStyles = () => {

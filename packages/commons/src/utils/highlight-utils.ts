@@ -93,10 +93,11 @@ const highlightMatches = (html: string, matches: HighlightMatch[], style: string
     for (const { node, start: nodeStart, end: nodeEnd } of nodes) {
       if (nodeEnd <= start || nodeStart >= start + remaining) continue
 
-      const relStart = Math.max(start - nodeStart, 0)
-      const relEnd = Math.min(start + remaining - nodeStart, node.textContent!.length)
+      const text = node.textContent
+      if (!text) continue
 
-      const text = node.textContent!
+      const relStart = Math.max(start - nodeStart, 0)
+      const relEnd = Math.min(start + remaining - nodeStart, text.length)
       const before = text.slice(0, relStart)
       const match = text.slice(relStart, relEnd)
       const after = text.slice(relEnd)

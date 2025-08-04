@@ -1,4 +1,4 @@
-import { ThemeContext } from '@edsilfer/commons'
+import { ThemeContext } from '@dialectica-org/commons'
 import { css } from '@emotion/react'
 import { Skeleton } from 'antd'
 import React, { useContext, useEffect, useMemo, useState } from 'react'

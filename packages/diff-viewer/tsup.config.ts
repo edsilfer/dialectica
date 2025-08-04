@@ -12,16 +12,6 @@ export default defineConfig({
   splitting: true,
   sourcemap: true,
   clean: true,
-
-  // externals that must stay `require('…')`
-  external: ['react', 'react-dom', '@edsilfer/file-explorer', '@edsilfer/commons'],
-
+  external: ['react', 'react-dom', '@dialectica-org/commons'],
   loader: { '.css': 'copy' },
-
-  esbuildOptions(options) {
-    options.alias ??= {}
-    options.alias['@edsilfer/commons'] = path.resolve(__dirname, '../commons/src')
-    options.alias['@edsilfer/file-explorer'] = path.resolve(__dirname, '../file-explorer/src')
-    options.alias['@edsilfer/test-lib'] = path.resolve(__dirname, '../test-lib/src')
-  },
 })

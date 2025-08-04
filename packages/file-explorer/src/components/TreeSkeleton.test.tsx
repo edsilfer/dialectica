@@ -1,4 +1,4 @@
-import { createPropsFactory, mockElementProperty, render } from '@edsilfer/test-lib'
+import { createPropsFactory, mockElementProperty, render } from '@dialectica-org/test-lib'
 import { RefObject } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useFileExplorerContext } from '../providers/fstree-context'

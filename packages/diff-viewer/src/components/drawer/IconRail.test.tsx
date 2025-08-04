@@ -1,4 +1,4 @@
-import { createPropsFactory, render } from '@edsilfer/test-lib'
+import { createPropsFactory, render } from '@dialectica-org/test-lib'
 import { fireEvent, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { DrawerContent } from './Drawer'

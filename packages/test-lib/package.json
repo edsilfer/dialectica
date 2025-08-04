@@ -1,5 +1,5 @@
 {
-  "name": "@edsilfer/test-lib",
+  "name": "@dialectica-org/test-lib",
   "version": "0.1.0",
   "description": "Utitilities for testing",
   "main": "dist/index.js",
@@ -34,7 +34,6 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "tsup": "^8.5.0",
-    "typescript": "^5.8.3",
     "vitest": "^3.2.4"
   },
   "dependencies": {

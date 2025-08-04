@@ -1,4 +1,4 @@
-import { ThemeContext } from '@edsilfer/commons'
+import { ThemeContext } from '@dialectica-org/commons'
 import { css } from '@emotion/react'
 import { Button, Input, Tag } from 'antd'
 import React, { useContext } from 'react'

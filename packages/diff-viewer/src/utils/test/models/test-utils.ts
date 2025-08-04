@@ -149,11 +149,11 @@ export const createMockFileDiff = (
 
   // Handle special cases for new/deleted files
   if (defaultProps.isNew) {
-    defaultProps.oldPath = '/dev/null'
+    defaultProps.oldPath = '-org/dev/null'
     defaultProps.isRenamed = true
   }
   if (defaultProps.isDeleted) {
-    defaultProps.newPath = '/dev/null'
+    defaultProps.newPath = '-org/dev/null'
     defaultProps.isRenamed = true
   }
 

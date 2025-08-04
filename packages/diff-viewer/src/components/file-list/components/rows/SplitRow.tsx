@@ -1,4 +1,4 @@
-import { ThemeContext } from '@edsilfer/commons'
+import { ThemeContext } from '@dialectica-org/commons'
 import { theme as antTheme } from 'antd'
 import React, { useContext, useMemo } from 'react'
 import { Side } from '../../models/types'

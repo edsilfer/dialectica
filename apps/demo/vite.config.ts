@@ -41,10 +41,9 @@ export default defineConfig(() => {
     resolve: {
       alias: {
         // always-local packages
-        '@edsilfer/commons': pkg('../../packages/commons/src'),
         '@github': pkg('../../packages/github/src'),
         // conditional alias
-        ...(useLocalDiff ? { '@edsilfer/diff-viewer': pkg('../../packages/diff-viewer/src') } : {}),
+        ...(useLocalDiff ? { '@dialectica-org/diff-viewer': pkg('../../packages/diff-viewer/src') } : {}),
       },
     },
   }

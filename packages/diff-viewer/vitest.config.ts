@@ -34,11 +34,11 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@diff-viewer': resolve(__dirname, 'src'),
-      '@edsilfer/commons': resolve(__dirname, '../commons/src'),
+      '@dialectica/diff-viewer': resolve(__dirname, 'src'),
+      '@dialectica/commons': resolve(__dirname, '../commons/src'),
       '@github': resolve(__dirname, '../github/src'),
-      '@edsilfer/file-explorer': resolve(__dirname, '../file-explorer/src'),
-      '@edsilfer/test-lib': resolve(__dirname, '../test-lib/src'),
+      '@dialectica/file-explorer': resolve(__dirname, '../file-explorer/src'),
+      '@dialectica/test-lib': resolve(__dirname, '../test-lib/src'),
     },
   },
 })

@@ -1,4 +1,4 @@
-import { ThemeContext, ThemeProvider, Themes } from '@edsilfer/commons'
+import { ThemeContext, ThemeProvider, Themes } from '@dialectica-org/commons'
 import React, { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { FileExplorerConfig, FileExplorerConfigState } from './fstree-context'
 

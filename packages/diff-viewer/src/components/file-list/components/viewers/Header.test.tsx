@@ -1,4 +1,4 @@
-import { createPropsFactory, render } from '@edsilfer/test-lib'
+import { createPropsFactory, render } from '@dialectica-org/test-lib'
 import { fireEvent, screen, act, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, test, vi } from 'vitest'
 import { FileDiff } from '../../../../models/FileDiff'
@@ -120,7 +120,7 @@ describe('FileViewerHeader', () => {
       // GIVEN: create a deleted binary file diff
       const file = new FileDiff({
         oldPath: 'foo.bin',
-        newPath: '/dev/null',
+        newPath: '-org/dev/null',
         hunks: [],
         isRenamed: false,
         isNew: false,

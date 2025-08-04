@@ -1,4 +1,4 @@
-import { createPropsFactory, render as customRender } from '@edsilfer/test-lib'
+import { createPropsFactory, render as customRender } from '@dialectica-org/test-lib'
 import { fireEvent, screen } from '@testing-library/react'
 import React from 'react'
 import { describe, expect, it, vi } from 'vitest'
@@ -35,7 +35,7 @@ vi.mock('./components/file-list/FileList', () => ({
   ),
 }))
 
-vi.mock('@edsilfer/file-explorer', () => ({
+vi.mock('@dialectica-org/file-explorer', () => ({
   FileExplorer: ({
     files,
     onFileClick,

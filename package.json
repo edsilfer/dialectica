@@ -1,5 +1,5 @@
 {
-  "name": "dialetica",
+  "name": "dialectica",
   "version": "1.0.2",
   "type": "module",
   "description": "",
@@ -17,7 +17,7 @@
     "test:packages": "pnpm --filter './packages/**' --filter '!./packages/test-lib' test",
     "lint": "pnpm dlx eslint . --ext .ts,.tsx",
     "lint:fix": "pnpm dlx eslint . --ext .ts,.tsx --fix && pnpm format",
-    "deploy:demo": "./scripts/deploy-gh-pages.sh --app apps/demo"
+    "demo:deploy": "./scripts/deploy-gh-pages.sh --app apps/demo"
   },
   "keywords": [],
   "author": "",
@@ -36,6 +36,7 @@
     "eslint-plugin-unused-imports": "^4.1.4",
     "globals": "^13.24.0",
     "knip": "^5.62.0",
-    "prettier": "^3.6.1"
+    "prettier": "^3.6.1",
+    "typescript": "~5.8.3"
   }
 }

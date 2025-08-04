@@ -1,5 +1,5 @@
-import { Themes } from '@edsilfer/commons'
-import { createPropsFactory, render, renderWithContext } from '@edsilfer/test-lib'
+import { Themes } from '@dialectica-org/commons'
+import { createPropsFactory, render, renderWithContext } from '@dialectica-org/test-lib'
 import { act, screen } from '@testing-library/react'
 import React from 'react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'

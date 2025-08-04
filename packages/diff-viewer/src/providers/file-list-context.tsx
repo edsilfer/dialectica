@@ -5,7 +5,7 @@ import {
   Themes,
   ThemeTokens,
   writeStorageValue,
-} from '@edsilfer/commons'
+} from '@dialectica-org/commons'
 import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createContext, useContextSelector } from 'use-context-selector'
 import { DisplayType } from '../components/file-list/models/types'

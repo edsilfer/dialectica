@@ -11,6 +11,11 @@ A composable React library for building rich code review UIs. It provides diff v
 [Try it now](https://edsilfer.github.io/dialectica/) or
 
 ```bash
+npm install @dialectica-org/diff-viewer @dialectica-org/commons
+```
+**Note:** `@dialectica-org/commons` is required!
+
+```bash
 git clone git@github.com:edsilfer/dialectica.git
 cd dialectica ; pnpm install ; pnpm demo
 ```
@@ -27,12 +32,6 @@ Main features
   <li><strong>Virtual rows</strong> — enjoy better performance with virtualization.</li>
   <li><strong>Responsive layout</strong> — UI adapts to smaller screens.</li>
 </ul>
-
-## Installation
-
-```bash
-npm install @edsilfer/diff-viewer
-```
 
 ## API
 

@@ -1,5 +1,5 @@
-import { ThemeContext, Themes, ThemeTokens } from '@edsilfer/diff-viewer'
-import { useDiffViewerConfig } from '@edsilfer/diff-viewer'
+import { ThemeContext, Themes, ThemeTokens } from '@dialectica-org/commons'
+import { useDiffViewerConfig } from '@dialectica-org/diff-viewer'
 import { css } from '@emotion/react'
 import { Select } from 'antd'
 import { useContext } from 'react'

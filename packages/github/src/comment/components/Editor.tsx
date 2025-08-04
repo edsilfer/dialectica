@@ -16,8 +16,8 @@ import {
   QuotingIcon,
   TabActionButton,
   TabItem,
-} from '@edsilfer/commons'
-import { ThemeContext } from '@edsilfer/diff-viewer'
+  ThemeContext,
+} from '@dialectica-org/commons'
 import { css } from '@emotion/react'
 import { Button, Input, Tag } from 'antd'
 import React, { useContext } from 'react'

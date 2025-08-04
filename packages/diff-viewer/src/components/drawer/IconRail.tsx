@@ -1,5 +1,5 @@
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
-import { ThemeContext } from '@edsilfer/commons'
+import { ThemeContext } from '@dialectica-org/commons'
 import { css, keyframes } from '@emotion/react'
 import { Tooltip } from 'antd'
 import React, { useContext } from 'react'

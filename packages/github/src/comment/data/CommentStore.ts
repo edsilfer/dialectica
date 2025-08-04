@@ -1,4 +1,4 @@
-import { LineMetadata } from '@edsilfer/diff-viewer'
+import { LineMetadata } from '@dialectica-org/diff-viewer'
 import { CommentMetadata, CommentState } from '../models'
 
 /**

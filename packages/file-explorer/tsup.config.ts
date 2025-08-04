@@ -9,6 +9,6 @@ export default defineConfig({
   },
   sourcemap: true,
   clean: true,
-  external: ['react'],
+  external: ['react', '@dialectica-org/commons'],
   loader: { '.css': 'file' },
 })

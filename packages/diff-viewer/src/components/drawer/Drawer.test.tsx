@@ -2,7 +2,7 @@ import {
   createPropsFactory,
   expectElementNotToBeInTheDocument,
   expectElementToBeInTheDocument,
-} from '@edsilfer/test-lib'
+} from '@dialectica-org/test-lib'
 import { fireEvent, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { render } from '../../../../test-lib/src/render'

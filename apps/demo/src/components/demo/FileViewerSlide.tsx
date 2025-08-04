@@ -1,6 +1,5 @@
-import { ThemeContext, ThemeTokens } from '@edsilfer/diff-viewer'
-import { useIsMobile } from '@edsilfer/commons'
-import { LineRange } from '@edsilfer/diff-viewer'
+import { ThemeContext, ThemeTokens, useIsMobile } from '@dialectica-org/commons'
+import { LineRange } from '@dialectica-org/diff-viewer'
 import { css } from '@emotion/react'
 import { Button, Typography } from 'antd'
 import { useContext, useEffect, useRef, useState } from 'react'

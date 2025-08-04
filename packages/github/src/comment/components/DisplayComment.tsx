@@ -1,5 +1,4 @@
-import { ThemeContext } from '@edsilfer/diff-viewer'
-import { MarkdownText } from '@edsilfer/commons'
+import { ThemeContext, MarkdownText } from '@dialectica-org/commons'
 import { css } from '@emotion/react'
 import { Avatar, Divider } from 'antd'
 import React, { useContext } from 'react'

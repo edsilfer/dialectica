@@ -3,7 +3,7 @@ import {
   DiffViewerConfigProvider,
   FileExplorerConfig,
   FileListConfig,
-} from '@edsilfer/diff-viewer'
+} from '@dialectica-org/diff-viewer'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
@@ -23,8 +23,6 @@ export const DEFAULT_FILE_EXPLORER_CONFIG: FileExplorerConfig = {
 
 export const DEFAULT_FILE_LIST_CONFIG: FileListConfig = {
   mode: 'unified',
-  // TODO: not implemented yet
-  ignoreWhitespace: false,
   maxFileLines: 400,
   maxLinesToFetch: 10,
 }
@@ -35,13 +33,13 @@ function Root() {
   return (
     <SettingsProvider>
       <DiffViewerConfigProvider
-        config={{ ...DEFAULT_DIFF_VIEWER_CONFIG, theme: preferredTheme }}
+        config={{ ...DEFAULT_DIFF_VIEWER_CONFIG, theme: preferredTheme, explorerInitialWidth: 25 }}
         scope="main"
         fileExplorerConfig={DEFAULT_FILE_EXPLORER_CONFIG}
         fileListConfig={DEFAULT_FILE_LIST_CONFIG}
         storage="local"
       >
-        <BrowserRouter basename="/dialectica">
+        <BrowserRouter basename="dialectica">
           <Routes>
             <Route path="/welcome" element={<Welcome />} />
             <Route path="/" element={<Home />} />

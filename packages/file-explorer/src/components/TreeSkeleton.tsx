@@ -1,5 +1,5 @@
 import React from 'react'
-import { ThemeContext } from '@edsilfer/commons'
+import { ThemeContext } from '@dialectica-org/commons'
 import { css } from '@emotion/react'
 import { useContext, useEffect, useState } from 'react'
 import { useFileExplorerContext } from '../providers/fstree-context'
