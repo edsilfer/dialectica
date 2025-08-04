@@ -16,6 +16,7 @@ import ApiSlide from '../components/demo/ApiSlide'
 import FileExplorerSlide from '../components/demo/FileExplorerSlide'
 import GetStartedSlide from '../components/demo/GetStartedSlide'
 import useSharedStyles from '../components/demo/shared-styles'
+import TryItSlide from '../components/demo/TryItSlide'
 import { usePreferedTheme } from '../hooks/use-prefered-theme'
 
 /**
@@ -75,15 +76,15 @@ export default function Welcome() {
   const preferredTheme = usePreferedTheme()
 
   return (
-      <DiffViewerConfigProvider
-        config={{ ...DEFAULT_DIFF_VIEWER_CONFIG, theme: preferredTheme, explorerInitialWidth: 37 }}
-        scope="welcome"
-        fileExplorerConfig={DEFAULT_FILE_EXPLORER_CONFIG}
-        fileListConfig={DEFAULT_FILE_LIST_CONFIG}
-        storage="local"
-      >
-        <Content />
-      </DiffViewerConfigProvider>
+    <DiffViewerConfigProvider
+      config={{ ...DEFAULT_DIFF_VIEWER_CONFIG, theme: preferredTheme, explorerInitialWidth: 37 }}
+      scope="welcome"
+      fileExplorerConfig={DEFAULT_FILE_EXPLORER_CONFIG}
+      fileListConfig={DEFAULT_FILE_LIST_CONFIG}
+      storage="local"
+    >
+      <Content />
+    </DiffViewerConfigProvider>
   )
 }
 
@@ -103,6 +104,7 @@ function Content() {
         <FileExplorerSlide />
         <CommentSlide />
         <ApiSlide />
+        <TryItSlide />
         <GetStartedSlide innerRef={getStartedRef} />
       </main>
     </>

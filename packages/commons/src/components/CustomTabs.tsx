@@ -1,5 +1,5 @@
 import { MoreOutlined } from '@ant-design/icons'
-import { css } from '@emotion/react'
+import { css, SerializedStyles } from '@emotion/react'
 import { Dropdown, Tooltip, Typography } from 'antd'
 import { ItemType } from 'antd/es/menu/interface'
 import React, { useContext, useEffect, useRef, useState } from 'react'
@@ -14,6 +14,10 @@ const useStyles = () => {
 
   return {
     container: css`
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      height: 100%;
       border: 1px solid ${theme.colors.border};
       border-radius: ${theme.spacing.xs};
     `,
@@ -92,6 +96,10 @@ const useStyles = () => {
     `,
 
     tabContent: css`
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
       padding: ${theme.spacing.sm};
       background-color: ${theme.colors.backgroundPrimary};
       border-top: 1px solid ${theme.colors.border};
@@ -144,6 +152,8 @@ export interface CustomTabsProps {
   actions?: TabActionButton[]
   /** Currently active tab key */
   activeTab: string
+  /** Optional CSS styles */
+  css?: SerializedStyles
   /** Optional CSS class name */
   className?: string
 
@@ -161,7 +171,14 @@ export interface CustomTabsProps {
  * @param className - Optional CSS class name
  * @returns A React component that displays tabs with custom header actions
  */
-export const CustomTabs: React.FC<CustomTabsProps> = ({ tabs, actions = [], activeTab, onTabChange, className }) => {
+export const CustomTabs: React.FC<CustomTabsProps> = ({
+  tabs,
+  actions = [],
+  activeTab,
+  onTabChange,
+  css: customCss,
+  className,
+}) => {
   const styles = useStyles()
 
   const containerRef = useRef<HTMLDivElement>(null)
@@ -245,7 +262,7 @@ export const CustomTabs: React.FC<CustomTabsProps> = ({ tabs, actions = [], acti
   const activeTabItem = tabs.find((tab) => tab.key === activeTab)
 
   return (
-    <div ref={containerRef} css={styles.container} className={className}>
+    <div ref={containerRef} css={[styles.container, customCss]} className={className}>
       {/* Custom Tab Header */}
       <div css={styles.headerContainer}>
         <div css={styles.headerRow} ref={tabHeaderRef}>

@@ -13,6 +13,7 @@ A composable React library for building rich code review UIs. It provides diff v
 ```bash
 npm install @dialectica-org/diff-viewer @dialectica-org/commons
 ```
+
 **Note:** `@dialectica-org/commons` is required!
 
 ```bash

@@ -77,7 +77,7 @@ export default function GetStartedSlide({ innerRef }: { innerRef: React.RefObjec
     <SlideWrapper>
       <section ref={innerRef} style={{ height: '100%', width: '100%' }}>
         <div css={[sharedStyles.featureSlide('primary'), styles.container]}>
-          <div css={sharedStyles.featureLeft('70%', 'secondary', { topRight: true, bottomRight: true })}>
+          <div css={sharedStyles.featureLeft('70%', 'primary')}>
             <Title css={sharedStyles.title}>Get Started</Title>
 
             <Paragraph css={sharedStyles.subtitle}>
@@ -103,7 +103,7 @@ export default function GetStartedSlide({ innerRef }: { innerRef: React.RefObjec
             </Paragraph>
           </div>
 
-          <div css={sharedStyles.featureRight('30%')}>
+          <div css={sharedStyles.featureRight('30%', 'secondary', { topLeft: true, bottomLeft: true })}>
             <Button css={styles.button} type="primary" icon={<ArrowRightOutlined />} onClick={handleProceed}>
               Proceed with mocked data
             </Button>
